@@ -150,6 +150,9 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		{
 			// If a key is pressed send it to the input object so it can record that state.
 			m_Input->KeyDown((unsigned int)wparam);
+			if (m_Input->IsKeyDown(VK_F12)) {
+				createScreenshot();
+			}
 			return 0;
 		}
 
@@ -169,6 +172,10 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 }
 
+void SystemClass::createScreenshot()
+{
+	printf("create screenshot");
+}
 
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
@@ -184,7 +191,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	m_hinstance = GetModuleHandle(NULL);
 
 	// Give the application a name.
-	m_applicationName = L"Engine";
+	m_applicationName = L"DS Engine";
 
 	// Setup the windows class with default settings.
 	wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -237,7 +244,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// Create the window with the screen settings and get the handle to it.
 	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName, 
-						    WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
+						    WS_OVERLAPPEDWINDOW,
 						    posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
 
 	// Bring the window up on the screen and set it as main focus.
