@@ -37,6 +37,10 @@ public:
 	void Shutdown();
 	bool Frame();
 
+	D3DClass* getD3D() {
+		return m_D3D;
+	}
+
 private:
 	bool Render();
 

@@ -40,6 +40,7 @@ public:
 	void EndScene();
 
 	ID3D11Device* GetDevice();
+	ID3D11RenderTargetView* getTargetView();
 	ID3D11DeviceContext* GetDeviceContext();
 
 	void GetProjectionMatrix(D3DXMATRIX&);

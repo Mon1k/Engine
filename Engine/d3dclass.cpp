@@ -454,6 +454,10 @@ ID3D11Device* D3DClass::GetDevice()
 	return m_device;
 }
 
+ID3D11RenderTargetView* D3DClass::getTargetView()
+{
+	return m_renderTargetView;
+}
 
 ID3D11DeviceContext* D3DClass::GetDeviceContext()
 {

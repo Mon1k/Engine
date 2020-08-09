@@ -1,4 +1,6 @@
 #include "systemclass.h"
+#include <time.h>
+#include <stdio.h>
 
 SystemClass::SystemClass()
 {
@@ -175,6 +177,44 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 void SystemClass::createScreenshot()
 {
 	printf("create screenshot");
+	time_t t;
+	struct tm local_time;
+	time(&t);
+	localtime_s(&local_time, &t);
+	
+	char filename[80];
+	sprintf(filename, "screenshot_%d_%d_%d__%d_%d_%d.jpg", local_time.tm_year + 1900, local_time.tm_mon, local_time.tm_mday, local_time.tm_hour, local_time.tm_min, local_time.tm_sec);
+	ID3D11RenderTargetView* m_renderTargetView = m_Graphics->getD3D()->getTargetView();
+
+	ID3D11Resource* pSurface = nullptr;
+	m_renderTargetView->GetResource(&pSurface);
+
+	if (pSurface)
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.Width = 800;
+		desc.Height = 600;
+		desc.MipLevels = 1;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.BindFlags = 0;
+		desc.CPUAccessFlags = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+
+		ID3D11Texture2D* pTexture = nullptr;
+		m_Graphics->getD3D()->GetDevice()->CreateTexture2D(&desc, nullptr, &pTexture);
+		if (pTexture)
+		{
+			ID3D11DeviceContext* m_pContext = m_Graphics->getD3D()->GetDeviceContext();
+			m_pContext->CopyResource(pTexture, pSurface);
+			D3DX11SaveTextureToFileA(m_pContext, pTexture, D3DX11_IFF_JPG, filename);
+			pTexture->Release();
+		}
+		pSurface->Release();
+	}
 }
 
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
