@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: graphicsclass.cpp
-////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
 
 
@@ -30,23 +27,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
-	if(!m_D3D)
-	{
+	if (!m_D3D) {
 		return false;
 	}
 
 	// Initialize the Direct3D object.
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
-	{
+	if (!result) {
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
 	}
 
 	// Create the camera object.
 	m_Camera = new CameraClass;
-	if(!m_Camera)
-	{
+	if (!m_Camera) {
 		return false;
 	}
 
@@ -55,30 +49,26 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	
 	// Create the model object.
 	m_Model = new ModelClass;
-	if(!m_Model)
-	{
+	if (!m_Model) {
 		return false;
 	}
 
 	// Initialize the model object.
 	result = m_Model->Initialize(m_D3D->GetDevice());
-	if(!result)
-	{
+	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
 	// Create the color shader object.
 	m_ColorShader = new ColorShaderClass;
-	if(!m_ColorShader)
-	{
+	if (!m_ColorShader) {
 		return false;
 	}
 
 	// Initialize the color shader object.
 	result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if(!result)
-	{
+	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
 		return false;
 	}
@@ -90,31 +80,27 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 void GraphicsClass::Shutdown()
 {
 	// Release the color shader object.
-	if(m_ColorShader)
-	{
+	if (m_ColorShader) {
 		m_ColorShader->Shutdown();
 		delete m_ColorShader;
 		m_ColorShader = 0;
 	}
 
 	// Release the model object.
-	if(m_Model)
-	{
+	if (m_Model) {
 		m_Model->Shutdown();
 		delete m_Model;
 		m_Model = 0;
 	}
 
 	// Release the camera object.
-	if(m_Camera)
-	{
+	if (m_Camera) {
 		delete m_Camera;
 		m_Camera = 0;
 	}
 
 	// Release the D3D object.
-	if(m_D3D)
-	{
+	if (m_D3D) {
 		m_D3D->Shutdown();
 		delete m_D3D;
 		m_D3D = 0;
@@ -131,8 +117,7 @@ bool GraphicsClass::Frame()
 
 	// Render the graphics scene.
 	result = Render();
-	if(!result)
-	{
+	if (!result) {
 		return false;
 	}
 
@@ -162,8 +147,7 @@ bool GraphicsClass::Render()
 
 	// Render the model using the color shader.
 	result = m_ColorShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-	if(!result)
-	{
+	if (!result) {
 		return false;
 	}
 

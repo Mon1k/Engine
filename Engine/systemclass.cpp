@@ -29,27 +29,24 @@ bool SystemClass::Initialize()
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
-	// Create the input object.  This object will be used to handle reading the keyboard input from the user.
+	// Create the input object. This object will be used to handle reading the keyboard input from the user.
 	m_Input = new InputClass;
-	if(!m_Input)
-	{
+	if (!m_Input) {
 		return false;
 	}
 
 	// Initialize the input object.
 	m_Input->Initialize();
 
-	// Create the graphics object.  This object will handle rendering all the graphics for this application.
+	// Create the graphics object. This object will handle rendering all the graphics for this application.
 	m_Graphics = new GraphicsClass;
-	if(!m_Graphics)
-	{
+	if (!m_Graphics) {
 		return false;
 	}
 
 	// Initialize the graphics object.
 	result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
-	if(!result)
-	{
+	if (!result) {
 		return false;
 	}
 	
@@ -59,16 +56,14 @@ bool SystemClass::Initialize()
 void SystemClass::Shutdown()
 {
 	// Release the graphics object.
-	if(m_Graphics)
-	{
+	if (m_Graphics) {
 		m_Graphics->Shutdown();
 		delete m_Graphics;
 		m_Graphics = 0;
 	}
 
 	// Release the input object.
-	if(m_Input)
-	{
+	if (m_Input) {
 		delete m_Input;
 		m_Input = 0;
 	}
@@ -91,26 +86,20 @@ void SystemClass::Run()
 	
 	// Loop until there is a quit message from the window or the user.
 	done = false;
-	while(!done)
-	{
+	while (!done) {
 		// Handle the windows messages.
-		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 
 		// If windows signals to end the application then exit out.
-		if(msg.message == WM_QUIT)
-		{
+		if(msg.message == WM_QUIT) {
 			done = true;
-		}
-		else
-		{
+		} else {
 			// Otherwise do the frame processing.
 			result = Frame();
-			if(!result)
-			{
+			if (!result) {
 				done = true;
 			}
 		}
@@ -127,15 +116,13 @@ bool SystemClass::Frame()
 
 
 	// Check if the user pressed escape and wants to exit the application.
-	if(m_Input->IsKeyDown(VK_ESCAPE))
-	{
+	if (m_Input->IsKeyDown(VK_ESCAPE)) {
 		return false;
 	}
 
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame();
-	if(!result)
-	{
+	if (!result) {
 		return false;
 	}
 
@@ -145,8 +132,7 @@ bool SystemClass::Frame()
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch(umsg)
-	{
+	switch(umsg) {
 		// Check if a key has been pressed on the keyboard.
 		case WM_KEYDOWN:
 		{
@@ -184,19 +170,18 @@ void SystemClass::createScreenshot()
 	
 	char filename[80];
 	sprintf(filename, "screenshot_%d_%d_%d__%d_%d_%d.jpg", local_time.tm_year + 1900, local_time.tm_mon, local_time.tm_mday, local_time.tm_hour, local_time.tm_min, local_time.tm_sec);
+	
 	ID3D11RenderTargetView* m_renderTargetView = m_Graphics->getD3D()->getTargetView();
-
 	ID3D11Resource* pSurface = nullptr;
-	m_renderTargetView->GetResource(&pSurface);
 
-	if (pSurface)
-	{
+	m_renderTargetView->GetResource(&pSurface);
+	if (pSurface) {
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 		desc.ArraySize = 1;
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc.Width = 800;
-		desc.Height = 600;
+		desc.Width = this->screenWidth;
+		desc.Height = this->screenHeight;
 		desc.MipLevels = 1;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
@@ -206,8 +191,7 @@ void SystemClass::createScreenshot()
 
 		ID3D11Texture2D* pTexture = nullptr;
 		m_Graphics->getD3D()->GetDevice()->CreateTexture2D(&desc, nullptr, &pTexture);
-		if (pTexture)
-		{
+		if (pTexture) {
 			ID3D11DeviceContext* m_pContext = m_Graphics->getD3D()->GetDeviceContext();
 			m_pContext->CopyResource(pTexture, pSurface);
 			D3DX11SaveTextureToFileA(m_pContext, pTexture, D3DX11_IFF_JPG, filename);
@@ -255,8 +239,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if(FULL_SCREEN)
-	{
+	if (FULL_SCREEN) {
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize       = sizeof(dmScreenSettings);
@@ -270,12 +253,10 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 		// Set the position of the window to the top left corner.
 		posX = posY = 0;
-	}
-	else
-	{
+	} else {
 		// If windowed then set it to 800x600 resolution.
-		screenWidth  = 800;
-		screenHeight = 600;
+		screenWidth  = this->screenWidth;
+		screenHeight = this->screenHeight;
 
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;
@@ -305,8 +286,7 @@ void SystemClass::ShutdownWindows()
 	ShowCursor(true);
 
 	// Fix the display settings if leaving full screen mode.
-	if(FULL_SCREEN)
-	{
+	if (FULL_SCREEN) {
 		ChangeDisplaySettings(NULL, 0);
 	}
 
@@ -327,8 +307,7 @@ void SystemClass::ShutdownWindows()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
-	switch(umessage)
-	{
+	switch (umessage) {
 		// Check if the window is being destroyed.
 		case WM_DESTROY:
 		{

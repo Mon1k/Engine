@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: d3dclass.cpp
-////////////////////////////////////////////////////////////////////////////////
 #include "d3dclass.h"
 
 
@@ -54,54 +51,46 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create a DirectX graphics interface factory.
 	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
 	result = factory->EnumAdapters(0, &adapter);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Enumerate the primary adapter output (monitor).
 	result = adapter->EnumOutputs(0, &adapterOutput);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
 	displayModeList = new DXGI_MODE_DESC[numModes];
-	if(!displayModeList)
-	{
+	if (!displayModeList) {
 		return false;
 	}
 
 	// Now fill the display mode list structures.
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Now go through all the display modes and find the one that matches the screen width and height.
 	// When a match is found store the numerator and denominator of the refresh rate for that monitor.
-	for(i=0; i<numModes; i++)
+	for (i = 0; i < numModes; i++)
 	{
-		if(displayModeList[i].Width == (unsigned int)screenWidth)
-		{
-			if(displayModeList[i].Height == (unsigned int)screenHeight)
-			{
+		if (displayModeList[i].Width == (unsigned int)screenWidth) {
+			if (displayModeList[i].Height == (unsigned int)screenHeight) {
 				numerator = displayModeList[i].RefreshRate.Numerator;
 				denominator = displayModeList[i].RefreshRate.Denominator;
 			}
@@ -110,8 +99,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Get the adapter (video card) description.
 	result = adapter->GetDesc(&adapterDesc);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -120,8 +108,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Convert the name of the video card to a character array and store it.
 	error = wcstombs_s(&stringLength, m_videoCardDescription, 128, adapterDesc.Description, 128);
-	if(error != 0)
-	{
+	if (error != 0) {
 		return false;
 	}
 
@@ -155,13 +142,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Set the refresh rate of the back buffer.
-	if(m_vsync_enabled)
-	{
+	if (m_vsync_enabled) {
 	    swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
-	}
-	else
-	{
+	} else {
 	    swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 	}
@@ -177,12 +161,9 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
     swapChainDesc.SampleDesc.Quality = 0;
 
 	// Set to full screen or windowed mode.
-	if(fullscreen)
-	{
+	if (fullscreen) {
 		swapChainDesc.Windowed = false;
-	}
-	else
-	{
+	} else {
 		swapChainDesc.Windowed = true;
 	}
 
@@ -202,22 +183,19 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Create the swap chain, Direct3D device, and Direct3D device context.
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, 
 										   D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceContext);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Get the pointer to the back buffer.
 	result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	// Create the render target view with the back buffer pointer.
 	result = m_device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -243,8 +221,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create the texture for the depth buffer using the filled out description.
 	result = m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -274,8 +251,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create the depth stencil state.
 	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -292,8 +268,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create the depth stencil view.
 	result = m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -314,8 +289,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create the rasterizer state from the description we just filled out.
 	result = m_device->CreateRasterizerState(&rasterDesc, &m_rasterState);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -353,55 +327,46 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 void D3DClass::Shutdown()
 {
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	if(m_swapChain)
-	{
+	if (m_swapChain) {
 		m_swapChain->SetFullscreenState(false, NULL);
 	}
 
-	if(m_rasterState)
-	{
+	if (m_rasterState) {
 		m_rasterState->Release();
 		m_rasterState = 0;
 	}
 
-	if(m_depthStencilView)
-	{
+	if (m_depthStencilView) {
 		m_depthStencilView->Release();
 		m_depthStencilView = 0;
 	}
 
-	if(m_depthStencilState)
-	{
+	if (m_depthStencilState) {
 		m_depthStencilState->Release();
 		m_depthStencilState = 0;
 	}
 
-	if(m_depthStencilBuffer)
-	{
+	if (m_depthStencilBuffer) {
 		m_depthStencilBuffer->Release();
 		m_depthStencilBuffer = 0;
 	}
 
-	if(m_renderTargetView)
-	{
+	if (m_renderTargetView) {
 		m_renderTargetView->Release();
 		m_renderTargetView = 0;
 	}
 
-	if(m_deviceContext)
-	{
+	if (m_deviceContext) {
 		m_deviceContext->Release();
 		m_deviceContext = 0;
 	}
 
-	if(m_device)
-	{
+	if (m_device) {
 		m_device->Release();
 		m_device = 0;
 	}
 
-	if(m_swapChain)
-	{
+	if (m_swapChain) {
 		m_swapChain->Release();
 		m_swapChain = 0;
 	}
@@ -434,13 +399,10 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 void D3DClass::EndScene()
 {
 	// Present the back buffer to the screen since rendering is complete.
-	if(m_vsync_enabled)
-	{
+	if (m_vsync_enabled) {
 		// Lock to screen refresh rate.
 		m_swapChain->Present(1, 0);
-	}
-	else
-	{
+	} else {
 		// Present as fast as possible.
 		m_swapChain->Present(0, 0);
 	}
