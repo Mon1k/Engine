@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: modelclass.cpp
-////////////////////////////////////////////////////////////////////////////////
 #include "modelclass.h"
 
 
@@ -25,11 +22,9 @@ bool ModelClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
-
 	// Initialize the vertex and index buffers.
 	result = InitializeBuffers(device);
-	if(!result)
-	{
+	if (!result) {
 		return false;
 	}
 
@@ -78,15 +73,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
-	if(!vertices)
-	{
+	if (!vertices) {
 		return false;
 	}
 
 	// Create the index array.
 	indices = new unsigned long[m_indexCount];
-	if(!indices)
-	{
+	if (!indices) {
 		return false;
 	}
 
@@ -95,10 +88,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].color = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[2].color = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// Load the index array with data.
 	indices[0] = 0;  // Bottom left.
@@ -120,8 +113,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// Now create the vertex buffer.
     result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -140,8 +132,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// Create the index buffer.
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
-	if(FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -159,15 +150,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 void ModelClass::ShutdownBuffers()
 {
 	// Release the index buffer.
-	if(m_indexBuffer)
-	{
+	if (m_indexBuffer) {
 		m_indexBuffer->Release();
 		m_indexBuffer = 0;
 	}
 
 	// Release the vertex buffer.
-	if(m_vertexBuffer)
-	{
+	if (m_vertexBuffer) {
 		m_vertexBuffer->Release();
 		m_vertexBuffer = 0;
 	}
