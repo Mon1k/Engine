@@ -6,9 +6,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 
-// INCLUDES //
 #include <windows.h>
-
 
 #include "inputclass.h"
 #include "graphicsclass.h"
@@ -47,8 +45,6 @@ private:
 
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
-
 static SystemClass* ApplicationHandle = 0;
 
 

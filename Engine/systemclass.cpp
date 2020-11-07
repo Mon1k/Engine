@@ -80,7 +80,6 @@ void SystemClass::Run()
 	MSG msg;
 	bool done, result;
 
-
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
 	
@@ -113,7 +112,6 @@ void SystemClass::Run()
 bool SystemClass::Frame()
 {
 	bool result;
-
 
 	// Check if the user pressed escape and wants to exit the application.
 	if (m_Input->IsKeyDown(VK_ESCAPE)) {

@@ -24,7 +24,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
-
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
 	if (!m_D3D) {
@@ -113,7 +112,6 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
 	bool result;
-
 
 	// Render the graphics scene.
 	result = Render();
