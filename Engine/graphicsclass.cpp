@@ -128,7 +128,6 @@ bool GraphicsClass::Render()
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
 
-
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 

@@ -87,8 +87,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Now go through all the display modes and find the one that matches the screen width and height.
 	// When a match is found store the numerator and denominator of the refresh rate for that monitor.
-	for (i = 0; i < numModes; i++)
-	{
+	for (i = 0; i < numModes; i++) {
 		if (displayModeList[i].Width == (unsigned int)screenWidth && displayModeList[i].Height == (unsigned int)screenHeight) {
 			numerator = displayModeList[i].RefreshRate.Numerator;
 			denominator = displayModeList[i].RefreshRate.Denominator;
