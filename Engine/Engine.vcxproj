@@ -86,6 +86,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
+    <ClCompile Include="textureclass.cpp" />
+    <ClCompile Include="textureshaderclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h" />
@@ -95,10 +97,14 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="systemclass.h" />
+    <ClInclude Include="textureclass.h" />
+    <ClInclude Include="textureshaderclass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="color.ps" />
     <None Include="color.vs" />
+    <None Include="data\shaders\texture.ps" />
+    <None Include="data\shaders\texture.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
