@@ -84,10 +84,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 
 	// Set the number of vertices in the vertex array.
-	m_vertexCount = 6;
+	m_vertexCount = 3;
 
 	// Set the number of indices in the index array.
-	m_indexCount = 6;
+	m_indexCount = 3;
 
 	// Create the vertex array.
 	int sizeofVertex;
@@ -103,12 +103,15 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		// Load the vertex array with data.
 		vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
 		vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
+		vertices[0].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 		vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
 		vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
+		vertices[1].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 		vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
 		vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
+		vertices[2].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 		vertexData.pSysMem = vertices;
 	} else {
 		VertexType* vertices;

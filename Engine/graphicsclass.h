@@ -8,6 +8,8 @@
 
 #include "colorshaderclass.h"
 #include "textureshaderclass.h"
+#include "lightshaderclass.h"
+#include "lightclass.h"
 
 
 const bool FULL_SCREEN = false;
@@ -32,7 +34,7 @@ public:
 	}
 
 private:
-	bool Render();
+	bool Render(float);
 
 private:
 	D3DClass* m_D3D;
@@ -42,6 +44,8 @@ private:
 
 	ColorShaderClass* m_ColorShader;
 	TextureShaderClass* m_TextureShader;
+	LightShaderClass* m_LightShader;
+	LightClass* m_Light;
 };
 
 #endif

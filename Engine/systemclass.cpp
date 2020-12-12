@@ -160,8 +160,10 @@ void SystemClass::createScreenshot()
 	time(&t);
 	localtime_s(&local_time, &t);
 	
+	_wmkdir(L"screenshots");
+
 	char filename[80];
-	sprintf(filename, "screenshot_%d_%d_%d__%d_%d_%d.jpg", local_time.tm_year + 1900, local_time.tm_mon + 1, local_time.tm_mday, local_time.tm_hour, local_time.tm_min, local_time.tm_sec);
+	sprintf(filename, "screenshots/screenshot_%d_%02d_%02d__%02d_%02d_%02d.jpg", local_time.tm_year + 1900, local_time.tm_mon + 1, local_time.tm_mday, local_time.tm_hour, local_time.tm_min, local_time.tm_sec);
 	
 	ID3D11RenderTargetView* m_renderTargetView = m_Graphics->getD3D()->getTargetView();
 	ID3D11Resource* pSurface = nullptr;
