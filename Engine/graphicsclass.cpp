@@ -6,9 +6,7 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_Camera = 0;
 	m_Model = 0;
-	m_Model2 = 0;
 	
-	m_ColorShader = 0;
 	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_Light = 0;
@@ -56,36 +54,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if (!m_Model) {
 		return false;
 	}
-	m_Model2 = new ModelClass;
-	if (!m_Model2) {
-		return false;
-	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"data/textures/seafloor.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "data/models/cube.txt", L"data/textures/seafloor.dds");
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
-	m_Model2->type = 2;
-	result = m_Model2->Initialize(m_D3D->GetDevice(), L"data/textures/seafloor.dds");
-	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model2 object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the color shader object.
-	m_ColorShader = new ColorShaderClass;
-	if (!m_ColorShader) {
-		return false;
-	}
-
-	// Initialize the color shader object.
-	result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
-		return false;
-	}
+	
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -120,7 +96,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the light object.
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 0.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(-1.0f, -1.0f, 1.0f);
 
 	return true;
@@ -149,23 +125,11 @@ void GraphicsClass::Shutdown()
 		m_TextureShader = 0;
 	}
 
-	// Release the color shader object.
-	if (m_ColorShader) {
-		m_ColorShader->Shutdown();
-		delete m_ColorShader;
-		m_ColorShader = 0;
-	}
-
 	// Release the model object.
 	if (m_Model) {
 		m_Model->Shutdown();
 		delete m_Model;
 		m_Model = 0;
-	}
-	if (m_Model2) {
-		m_Model2->Shutdown();
-		delete m_Model2;
-		m_Model2 = 0;
 	}
 
 	// Release the camera object.
@@ -191,12 +155,12 @@ bool GraphicsClass::Frame()
 
 	static float rotation = 0.0f;
 
-
 	// Update the rotation variable each frame.
 	rotation += (float)D3DX_PI * 0.01f;
 	if (rotation > 360.0f) {
 		rotation -= 360.0f;
 	}
+
 
 	// Render the graphics scene.
 	result = Render(rotation);
@@ -226,12 +190,6 @@ bool GraphicsClass::Render(float rotation)
 
 	// Rotate the world matrix by the rotation value so that the triangle will spin.
 	D3DXMatrixRotationY(&worldMatrix, rotation);
-
-	m_Model2->Render(m_D3D->GetDeviceContext());
-	result = m_ColorShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-	if (!result) {
-		return false;
-	}
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Model->Render(m_D3D->GetDeviceContext());
