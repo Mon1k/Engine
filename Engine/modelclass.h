@@ -5,6 +5,7 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 
+#include <iostream>
 #include <fstream>
 using namespace std;
 
@@ -39,6 +40,7 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	bool LoadModel(char*);
+	bool LoadModelObj(char*);
 	void ReleaseModel();
 
 private:
