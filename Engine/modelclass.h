@@ -40,6 +40,7 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	bool LoadModel(char*);
+	bool LoadModelDs(char*);
 	bool LoadModelObj(char*);
 	void ReleaseModel();
 

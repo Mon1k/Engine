@@ -25,8 +25,7 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	bool result;
 
 	// Load in the model data,
-	//result = LoadModel(modelFilename);
-	result = LoadModelObj(modelFilename);
+	result = LoadModel(modelFilename);
 	if (!result) {
 		return false;
 	}
@@ -193,6 +192,19 @@ void ModelClass::ReleaseTexture()
 }
 
 bool ModelClass::LoadModel(char* filename)
+{
+	std::string string(filename);
+	
+	if (string.rfind(".ds") != std::string::npos) {
+		return LoadModelDs(filename);
+	} else if (string.rfind(".obj") != std::string::npos) {
+		return LoadModelObj(filename);
+	}
+
+	return false;
+}
+
+bool ModelClass::LoadModelDs(char* filename)
 {
 	ifstream fin;
 	char input;
@@ -415,7 +427,6 @@ bool ModelClass::LoadModelObj(char* filename)
 
 	// Close the file.
 	fin.close();
-
 
 	///// create model with readed data
 	m_indexCount = m_vertexCount = faceIndex * 3;

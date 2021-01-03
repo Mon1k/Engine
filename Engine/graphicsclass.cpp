@@ -47,7 +47,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -120.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -40.0f);
 	
 	// Create the model object.
 	m_Model = new ModelClass;
@@ -56,8 +56,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), "data/models/LOD1_long_house.obj", L"data/textures/seafloor.dds");
-	//result = m_Model->Initialize(m_D3D->GetDevice(), "data/models/cube.obj", L"data/textures/seafloor.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "data/models/midpoly_town_house_01.obj", L"data/textures/T_brightwood_basecolor.png");
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
