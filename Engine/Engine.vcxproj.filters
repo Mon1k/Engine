@@ -110,9 +110,4 @@
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Engine.rc">
-      <Filter>Shader Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
 </Project>
