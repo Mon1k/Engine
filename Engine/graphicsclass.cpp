@@ -10,6 +10,7 @@ GraphicsClass::GraphicsClass()
 	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+	m_Bitmap = 0;
 }
 
 
@@ -102,12 +103,32 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
+	// Create the bitmap object.
+	m_Bitmap = new BitmapClass;
+	if (!m_Bitmap) {
+		return false;
+	}
+
+	// Initialize the bitmap object.
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"data/textures/ui/button.png", 76, 28);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
 
 void GraphicsClass::Shutdown()
 {
+	// Release the bitmap object.
+	if (m_Bitmap) {
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
+	}
+
 	// Release the light object.
 	if (m_Light) {
 		delete m_Light;
@@ -176,7 +197,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render(float rotation)
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, worldMatrix2D;
 	bool result;
 
 	// Clear the buffers to begin the scene.
@@ -203,6 +224,27 @@ bool GraphicsClass::Render(float rotation)
 	if (!result) {
 		return false;
 	}
+
+	m_D3D->GetWorldMatrix(worldMatrix2D);
+	m_D3D->GetOrthoMatrix(orthoMatrix);
+
+	// Turn off the Z buffer to begin all 2D rendering.
+	m_D3D->TurnZBufferOff();
+
+	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 10, 10);
+	if (!result) {
+		return false;
+	}
+	// Render the bitmap with the texture shader.
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix2D, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	if (!result) {
+		return false;
+	}
+
+	// Turn the Z buffer back on now that all 2D rendering has completed.
+	m_D3D->TurnZBufferOn();
+
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
