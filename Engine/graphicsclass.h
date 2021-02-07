@@ -10,6 +10,8 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "bitmapclass.h"
+#include "textclass.h"
+#include "ui/button.h"
 
 
 const bool FULL_SCREEN = false;
@@ -45,7 +47,10 @@ private:
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 
-	BitmapClass* m_Bitmap;
+	TextClass* m_Text;
+
+	Button* m_Button;
+	Button* m_Button2;
 };
 
 #endif

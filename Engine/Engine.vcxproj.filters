@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{b74448d3-a542-44e9-a556-d7b6506ddc25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -53,6 +56,18 @@
     </ClCompile>
     <ClCompile Include="bitmapclass.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\button.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +110,18 @@
     <ClInclude Include="bitmapclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fontclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fontshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\button.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -113,6 +140,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\light.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\font.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\font.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
