@@ -11,9 +11,10 @@ GraphicsClass::GraphicsClass()
 	m_LightShader = 0;
 	m_Light = 0;
 
-	m_Text = 0;
+	m_Label = 0;
 	m_Button = 0;
 	m_Button2 = 0;
+	m_Cursor = 0;
 }
 
 
@@ -57,21 +58,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 
-	// Create the text object.
-	m_Text = new TextClass;
-	if (!m_Text) {
-		return false;
-	}
-
-	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
-	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
-		return false;
-	}
-	m_Text->AddText("Hello world", 100, 200, 1.0f, 1.0f, 0.5f);
-
-	
 	// Create the model object.
 	m_Model = new ModelClass;
 	if (!m_Model) {
@@ -128,11 +114,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_Button = new Button;
 	m_Button->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	m_Button->Add("New", 10, 10, 100, 50, 1.0f, 1.0f, 1.0f);
+	m_Button->Add("New", 10, 10, 1.0f, 1.0f, 1.0f);
 
 	m_Button2 = new Button;
 	m_Button2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	m_Button2->Add("Exit", 10, 40, 100, 50, 1.0f, 0.3f, 0.3f);
+	m_Button2->Add("Exit", 10, 40, 1.0f, 0.3f, 0.3f);
+
+	m_Label = new Label;
+	m_Label->Initialize(m_D3D, screenWidth, screenHeight, hwnd, 76, 28, baseViewMatrix);
+	m_Label->Add("Hello World", 10, 100, 1.0f, 0.3f, 0.3f);
+
+	m_Cursor = new Cursor;
+	m_Cursor->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/cursor.png", 32, 32, baseViewMatrix);
+	m_Cursor->Set(screenWidth / 2, screenHeight / 2);
 
 	return true;
 }
@@ -152,11 +146,16 @@ void GraphicsClass::Shutdown()
 		m_Button2 = 0;
 	}
 
-	// Release the text object.
-	if (m_Text) {
-		m_Text->Shutdown();
-		delete m_Text;
-		m_Text = 0;
+	if (m_Label) {
+		m_Label->Shutdown();
+		delete m_Label;
+		m_Label = 0;
+	}
+
+	if (m_Cursor) {
+		m_Cursor->Shutdown();
+		delete m_Cursor;
+		m_Cursor = 0;
 	}
 
 	// Release the light object.
@@ -258,23 +257,19 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->GetWorldMatrix(worldMatrix2D);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-
 	m_Button->Render(viewMatrix);
 	m_Button2->Render(viewMatrix);
+	m_Label->Render();
+	m_Cursor->Render(viewMatrix);
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
-	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix2D, orthoMatrix);
-	if (!result) {
-		return false;
-	}
+	
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
-
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();

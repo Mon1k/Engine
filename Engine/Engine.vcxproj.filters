@@ -69,6 +69,12 @@
     <ClCompile Include="ui\button.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="ui\label.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\cursor.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -120,6 +126,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui\button.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\label.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\cursor.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

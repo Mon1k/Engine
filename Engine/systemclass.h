@@ -2,7 +2,6 @@
 #define _SYSTEMCLASS_H_
 
 
-// PRE-PROCESSING DIRECTIVES //
 #define WIN32_LEAN_AND_MEAN
 
 
@@ -39,8 +38,8 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 
-	int screenWidth = 1024;
-	int screenHeight = 768;
+	int screenWidth = 1680;
+	int screenHeight = 1050;
 };
 
 

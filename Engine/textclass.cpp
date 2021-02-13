@@ -59,6 +59,12 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
+	// Initialize the first sentence.
+	result = InitializeSentence(&m_sentence, 128, m_device);
+	if (!result) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -67,12 +73,6 @@ bool TextClass::AddText(char* text, int positionX, int positionY, float red, flo
 	bool result;
 
 	m_text = text;
-
-	// Initialize the first sentence.
-	result = InitializeSentence(&m_sentence, 16, m_device);
-	if (!result) {
-		return false;
-	}
 
 	// Now update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentence, m_text, positionX, positionY, red, green, blue, m_deviceContext);
