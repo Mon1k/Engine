@@ -86,6 +86,7 @@
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
+    <ClCompile Include="fpsclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
+    <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="ui\button.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
     <ClCompile Include="ui\label.cpp" />
@@ -107,6 +109,7 @@
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
+    <ClInclude Include="fpsclass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
@@ -117,6 +120,7 @@
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
+    <ClInclude Include="timerclass.h" />
     <ClInclude Include="ui\button.h" />
     <ClInclude Include="ui\cursor.h" />
     <ClInclude Include="ui\label.h" />

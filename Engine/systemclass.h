@@ -9,6 +9,8 @@
 
 #include "inputclass.h"
 #include "graphicsclass.h"
+#include "fpsclass.h"
+#include "timerclass.h"
 
 
 class SystemClass
@@ -37,6 +39,8 @@ private:
 
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+	FpsClass* m_Fps;
+	TimerClass* m_Timer;
 
 	int screenWidth = 1680;
 	int screenHeight = 1050;

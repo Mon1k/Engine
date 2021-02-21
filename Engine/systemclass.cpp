@@ -6,6 +6,8 @@ SystemClass::SystemClass()
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_Fps = 0;
+	m_Timer = 0;
 }
 
 
@@ -53,12 +55,47 @@ bool SystemClass::Initialize()
 	if (!result) {
 		return false;
 	}
+
+	// Create the fps object.
+	m_Fps = new FpsClass;
+	if (!m_Fps) {
+		return false;
+	}
+
+	// Initialize the fps object.
+	m_Fps->Initialize();
+
+	// Create the timer object.
+	m_Timer = new TimerClass;
+	if (!m_Timer) {
+		return false;
+	}
+
+	// Initialize the timer object.
+	result = m_Timer->Initialize();
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
+		return false;
+	}
+
 	
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	// Release the timer object.
+	if (m_Timer) {
+		delete m_Timer;
+		m_Timer = 0;
+	}
+
+	// Release the fps object.
+	if (m_Fps) {
+		delete m_Fps;
+		m_Fps = 0;
+	}
+
 	// Release the graphics object.
 	if (m_Graphics) {
 		m_Graphics->Shutdown();
@@ -126,6 +163,10 @@ bool SystemClass::Frame()
 	bool result;
 	int mouseX, mouseY;
 
+	// Update the system stats.
+	//m_Timer->Frame();
+	m_Fps->Frame();
+
 	// Do the input frame processing.
 	result = m_Input->Frame();
 	if (!result) {
@@ -136,8 +177,8 @@ bool SystemClass::Frame()
 	m_Input->GetMouseLocation(mouseX, mouseY);
 	m_Graphics->m_Cursor->Set(mouseX, mouseY);
 
-	char mouseString[40];
-	sprintf(mouseString, "MouseX: %d, MouseY: %d", mouseX, mouseY);
+	char mouseString[128];
+	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY);
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
 
 	// Do the frame processing for the graphics object.

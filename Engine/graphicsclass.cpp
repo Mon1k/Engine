@@ -209,7 +209,7 @@ bool GraphicsClass::Frame()
 	static float rotation = 0.0f;
 
 	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.005f;
+	rotation += (float)D3DX_PI * 0.00005f;
 	if (rotation > 360.0f) {
 		rotation -= 360.0f;
 	}
