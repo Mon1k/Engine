@@ -11,7 +11,7 @@
 #include "graphicsclass.h"
 #include "fpsclass.h"
 #include "timerclass.h"
-
+#include "sound/soundclass.h"
 
 class SystemClass
 {
@@ -41,6 +41,7 @@ private:
 	GraphicsClass* m_Graphics;
 	FpsClass* m_Fps;
 	TimerClass* m_Timer;
+	SoundClass* m_Sound;
 
 	int screenWidth = 1680;
 	int screenHeight = 1050;

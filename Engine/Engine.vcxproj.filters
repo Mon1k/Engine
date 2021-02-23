@@ -16,6 +16,9 @@
     <Filter Include="ui">
       <UniqueIdentifier>{b74448d3-a542-44e9-a556-d7b6506ddc25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{040d0f55-3012-4a6f-b5d8-0fe566fc9580}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -81,6 +84,9 @@
     <ClCompile Include="timerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sound\soundclass.cpp">
+      <Filter>sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -145,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="timerclass.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\soundclass.h">
+      <Filter>sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
