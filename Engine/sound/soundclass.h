@@ -10,7 +10,9 @@
 #include <mmsystem.h>
 #include <dsound.h>
 #include <stdio.h>
+#include <iostream>
 
+using namespace std;
 
 class SoundClass
 {
@@ -45,6 +47,7 @@ private:
 	bool InitializeDirectSound(HWND);
 	void ShutdownDirectSound();
 
+	bool Load(char*);
 	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 

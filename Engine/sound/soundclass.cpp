@@ -13,7 +13,6 @@ SoundClass::SoundClass(const SoundClass& other)
 {
 }
 
-
 SoundClass::~SoundClass()
 {
 }
@@ -30,13 +29,7 @@ bool SoundClass::Initialize(HWND hwnd, char* soundFilename)
 	}
 
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile(soundFilename, &m_secondaryBuffer1);
-	if (!result) {
-		return false;
-	}
-
-	// Play the wave file now that it has been loaded.
-	result = Play();
+	result = Load(soundFilename);
 	if (!result) {
 		return false;
 	}
@@ -122,6 +115,17 @@ void SoundClass::ShutdownDirectSound()
 	}
 
 	return;
+}
+
+bool SoundClass::Load(char* filename)
+{
+	std::string string(filename);
+
+	if (string.rfind(".wav") != std::string::npos) {
+		return LoadWaveFile(filename, &m_secondaryBuffer1);
+	}
+	
+	return false;
 }
 
 bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)

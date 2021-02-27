@@ -17,6 +17,7 @@ public:
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Render(D3DXMATRIX);
+    bool Button::onButtonPress(int x, int y);
 
 private:
     D3DClass* m_D3D;

@@ -140,7 +140,7 @@ void SystemClass::Shutdown()
 void SystemClass::Run()
 {
 	MSG msg;
-	bool done, result;
+	bool result;
 
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
@@ -195,11 +195,20 @@ bool SystemClass::Frame()
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
-	m_Graphics->m_Cursor->Set(mouseX, mouseY);
+	int mouseButton = m_Input->GetMouseButton();
 
+	m_Graphics->m_Cursor->Set(mouseX, mouseY);
 	char mouseString[128];
-	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY);
+	
+	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d, MouseButton: %u", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY, mouseButton);
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
+
+	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button->onButtonPress(mouseX, mouseY)) {
+		m_Sound->Play();
+	}
+	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button2->onButtonPress(mouseX, mouseY)) {
+		done = true;
+	}
 
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame();

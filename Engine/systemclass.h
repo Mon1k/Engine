@@ -45,6 +45,7 @@ private:
 
 	int screenWidth = 1680;
 	int screenHeight = 1050;
+	bool done;
 };
 
 

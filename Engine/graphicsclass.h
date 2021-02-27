@@ -50,10 +50,9 @@ private:
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 
+public:
 	Button* m_Button;
 	Button* m_Button2;
-
-public:
 	Label* m_Label;
 	Cursor* m_Cursor;
 };

@@ -2,6 +2,9 @@
 #define _INPUTCLASS_H_
 
 #define DIRECTINPUT_VERSION 0x0800
+#define MOUSE_BUTTON1 0
+#define MOUSE_BUTTON2 1
+#define MOUSE_BUTTON3 2
 
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -22,6 +25,7 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(int&, int&);
 	bool IsKeyDown(unsigned int);
+	BYTE GetMouseButton();
 
 private:
 	bool ReadKeyboard();

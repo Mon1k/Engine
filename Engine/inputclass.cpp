@@ -139,6 +139,17 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 	return;
 }
 
+BYTE InputClass::GetMouseButton()
+{
+	for (int i = 0; i < 4; i++) {
+		if (m_mouseState.rgbButtons[i]) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
 bool InputClass::Frame()
 {
 	bool result;
