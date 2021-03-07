@@ -8,6 +8,7 @@ SystemClass::SystemClass()
 	m_Graphics = 0;
 	m_Fps = 0;
 	m_Timer = 0;
+	m_Position = 0;
 	m_Sound = 0;
 }
 
@@ -91,12 +92,24 @@ bool SystemClass::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Create the position object.
+	m_Position = new PositionClass;
+	if (!m_Position) {
+		return false;
+	}
 	
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	// Release the position object.
+	if (m_Position) {
+		delete m_Position;
+		m_Position = 0;
+	}
+
 	// Release the sound object.
 	if (m_Sound) {
 		m_Sound->Shutdown();
@@ -180,11 +193,12 @@ void SystemClass::Run()
 
 bool SystemClass::Frame()
 {
-	bool result;
+	bool keyDown, result;
+	float rotationY;
 	int mouseX, mouseY;
 
 	// Update the system stats.
-	//m_Timer->Frame();
+	m_Timer->Frame();
 	m_Fps->Frame();
 
 	// Do the input frame processing.
@@ -193,13 +207,22 @@ bool SystemClass::Frame()
 		return false;
 	}
 
+	// Set the frame time for calculating the updated position.
+	m_Position->SetFrameTime(m_Timer->GetTime());
+
+	// Check if the left or right arrow key has been pressed, if so rotate the camera accordingly.
+	keyDown = m_Input->IsKeyDown(DIK_LEFTARROW);
+	m_Position->TurnLeft(keyDown);
+
+	keyDown = m_Input->IsKeyDown(DIK_RIGHTARROW);
+	m_Position->TurnRight(keyDown);
+
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 	int mouseButton = m_Input->GetMouseButton();
 
 	m_Graphics->m_Cursor->Set(mouseX, mouseY);
 	char mouseString[128];
-	
 	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d, MouseButton: %u", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY, mouseButton);
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
 
@@ -210,8 +233,17 @@ bool SystemClass::Frame()
 		done = true;
 	}
 
+	// Get the current view point rotation.
+	m_Position->GetRotation(rotationY);
+
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame();
+	result = m_Graphics->Frame(rotationY);
+	if (!result) {
+		return false;
+	}
+
+	// Finally render the graphics to the screen.
+	result = m_Graphics->Render();
 	if (!result) {
 		return false;
 	}

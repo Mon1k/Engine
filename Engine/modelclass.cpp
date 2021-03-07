@@ -103,8 +103,30 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
+	m_Min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	// Load the vertex array and index array with data.
 	for (i = 0; i < m_vertexCount; i++) {
+		if (m_model[i].x > m_Max.x) {
+			m_Max.x = m_model[i].x;
+		}
+		if (m_model[i].y > m_Max.y) {
+			m_Max.y = m_model[i].y;
+		}
+		if (m_model[i].z > m_Max.z) {
+			m_Max.z = m_model[i].z;
+		}
+		if (m_model[i].x < m_Min.x) {
+			m_Min.x = m_model[i].x;
+		}
+		if (m_model[i].y < m_Min.y) {
+			m_Min.y = m_model[i].y;
+		}
+		if (m_model[i].z < m_Min.z) {
+			m_Min.z = m_model[i].z;
+		}
+
 		vertices[i].position = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
 		vertices[i].texture = D3DXVECTOR2(m_model[i].tu, m_model[i].tv);
 		vertices[i].normal = D3DXVECTOR3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
@@ -535,4 +557,15 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
     // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void ModelClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
+{
+	size.x = m_Max.x - m_Min.x;
+	size.y = m_Max.y - m_Min.y;
+	size.z = m_Max.z - m_Min.z;
+
+	position.x = m_Min.x + size.x / 2;
+	position.y = m_Min.y + size.y / 2;
+	position.z = m_Min.z + size.z / 2;
 }

@@ -15,13 +15,14 @@ public:
     bool Initialize(D3DClass*, int, int, HWND, WCHAR*, int, int, D3DXMATRIX);
     void Shutdown();
     bool Set(int, int);
-    bool Render(D3DXMATRIX);
+    bool Render();
 
 private:
     D3DClass* m_D3D;
 
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
+    D3DMATRIX m_ViewMatrix;
 
     int m_width, m_height, m_x, m_y;
 };

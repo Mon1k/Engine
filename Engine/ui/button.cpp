@@ -113,7 +113,7 @@ bool Button::onButtonPress(int x, int y)
 	return false;
 }
 
-bool Button::Render(D3DXMATRIX viewMatrix)
+bool Button::Render()
 {
 	bool result;
 	D3DXMATRIX worldMatrix, orthoMatrix;
@@ -126,7 +126,7 @@ bool Button::Render(D3DXMATRIX viewMatrix)
 
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_Text->GetViewMartix(), orthoMatrix, m_Bitmap->GetTexture());
 	if (!result) {
 		return false;
 	}

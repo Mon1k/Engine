@@ -43,6 +43,7 @@ public:
 	bool LoadModelDs(char*);
 	bool LoadModelObj(char*);
 	void ReleaseModel();
+	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
 
 private:
 	bool InitializeBuffers(ID3D11Device*);
@@ -55,6 +56,8 @@ private:
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
+	D3DXVECTOR3 m_Min, m_Max;
+
 	TextureClass* m_Texture;
 	ModelType* m_model;
 };

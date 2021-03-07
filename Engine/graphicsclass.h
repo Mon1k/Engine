@@ -11,6 +11,8 @@
 #include "lightclass.h"
 #include "bitmapclass.h"
 #include "textclass.h"
+#include "modellistclass.h"
+#include "frustumclass.h"
 
 #include "ui/button.h"
 #include "ui/label.h"
@@ -32,23 +34,30 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Frame(float);
+	bool Render();
 
 	D3DClass* getD3D() {
 		return m_D3D;
-	}
-
-private:
-	bool Render(float);
+	};
+	int GetRenderCount() {
+		return m_RenderCount;
+	};
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	ModelClass* m_Model;
+	ModelClass* m_Model2;
 
 	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
+	ModelListClass* m_ModelList;
+	FrustumClass* m_Frustum;
+	Label* m_Label2;
+
+	int m_RenderCount;
 
 public:
 	Button* m_Button;
