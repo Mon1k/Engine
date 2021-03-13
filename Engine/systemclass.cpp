@@ -194,12 +194,15 @@ void SystemClass::Run()
 bool SystemClass::Frame()
 {
 	bool keyDown, result;
-	float rotationY;
 	int mouseX, mouseY;
+	D3DXVECTOR3 position, rotation;
 
 	// Update the system stats.
 	m_Timer->Frame();
 	m_Fps->Frame();
+
+	position = m_Graphics->getCamera()->GetPosition();
+	rotation = m_Graphics->getCamera()->GetRotation();
 
 	// Do the input frame processing.
 	result = m_Input->Frame();
@@ -216,6 +219,12 @@ bool SystemClass::Frame()
 
 	keyDown = m_Input->IsKeyDown(DIK_RIGHTARROW);
 	m_Position->TurnRight(keyDown);
+	if (m_Input->IsKeyDown(DIK_UPARROW)) {
+		position.z += 0.01 * m_Timer->GetTime();
+	}
+	if (m_Input->IsKeyDown(DIK_DOWNARROW)) {
+		position.z -= 0.01 * m_Timer->GetTime();
+	}
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
@@ -234,10 +243,12 @@ bool SystemClass::Frame()
 	}
 
 	// Get the current view point rotation.
-	m_Position->GetRotation(rotationY);
+	rotation.y = m_Position->GetRotation();;
+	m_Graphics->getCamera()->SetRotation(rotation);
+	m_Graphics->getCamera()->SetPosition(position);
 
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame(rotationY);
+	result = m_Graphics->Frame();
 	if (!result) {
 		return false;
 	}

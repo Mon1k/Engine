@@ -11,7 +11,7 @@ public:
 	~PositionClass();
 
 	void SetFrameTime(float);
-	void GetRotation(float&);
+	float GetRotation();
 
 	void TurnLeft(bool);
 	void TurnRight(bool);

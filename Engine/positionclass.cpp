@@ -24,10 +24,9 @@ void PositionClass::SetFrameTime(float time)
 	return;
 }
 
-void PositionClass::GetRotation(float& y)
+float PositionClass::GetRotation()
 {
-	y = m_rotationY;
-	return;
+	return m_rotationY;
 }
 
 void PositionClass::TurnLeft(bool keydown)

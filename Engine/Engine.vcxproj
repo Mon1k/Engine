@@ -101,6 +101,8 @@
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
+    <ClCompile Include="textures\multitextureshaderclass.cpp" />
+    <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="ui\button.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
@@ -128,6 +130,8 @@
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
+    <ClInclude Include="textures\multitextureshaderclass.h" />
+    <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="ui\button.h" />
     <ClInclude Include="ui\cursor.h" />
@@ -140,6 +144,8 @@
     <None Include="data\shaders\font.vs" />
     <None Include="data\shaders\light.ps" />
     <None Include="data\shaders\light.vs" />
+    <None Include="data\shaders\multitexture.ps" />
+    <None Include="data\shaders\multitexture.vs" />
     <None Include="data\shaders\texture.ps" />
     <None Include="data\shaders\texture.vs" />
   </ItemGroup>

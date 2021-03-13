@@ -5,6 +5,7 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "modelclass.h"
+#include "textures/multitextureshaderclass.h"
 
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
@@ -34,7 +35,7 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(float);
+	bool Frame();
 	bool Render();
 
 	D3DClass* getD3D() {
@@ -43,14 +44,21 @@ public:
 	int GetRenderCount() {
 		return m_RenderCount;
 	};
+	CameraClass* getCamera() {
+		return m_Camera;
+	};
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
+	
 	ModelClass* m_Model;
 	ModelClass* m_Model2;
+	ModelClass* m_ModelPlane;
 
 	TextureShaderClass* m_TextureShader;
+	MultiTextureShaderClass* m_MultiTextureShader;
+
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	ModelListClass* m_ModelList;

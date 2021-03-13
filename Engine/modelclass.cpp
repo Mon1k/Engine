@@ -6,7 +6,10 @@ ModelClass::ModelClass()
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_Texture = 0;
+	m_TextureArray = 0;
 	m_model = 0;
+
+	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -20,9 +23,11 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
+bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
 {
 	bool result;
+
+	m_D3D = d3dClass;
 
 	// Load in the model data,
 	result = LoadModel(modelFilename);
@@ -31,18 +36,25 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	}
 
 	// Initialize the vertex and index buffers.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers(m_D3D->GetDevice());
 	if (!result) {
 		return false;
 	}
 
-	// Load the texture for this model.
-	if (wcslen(textureFilename) > 0) {
-		result = LoadTexture(device, textureFilename);
+
+	if (wcslen(textureFilename2) > 0) {
+		// Load the textures for this model.
+		result = LoadTextures(m_D3D->GetDevice(), textureFilename, textureFilename2);
+		if (!result) {
+			return false;
+		}
+	} else if (wcslen(textureFilename) > 0) {
+		result = LoadTexture(m_D3D->GetDevice(), textureFilename);
 		if (!result) {
 			return false;
 		}
 	}
+
 
 	return true;
 }
@@ -62,7 +74,6 @@ void ModelClass::Shutdown()
 	return;
 }
 
-
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -70,7 +81,6 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 
 	return;
 }
-
 
 int ModelClass::GetIndexCount()
 {
@@ -82,6 +92,10 @@ ID3D11ShaderResourceView* ModelClass::GetTexture()
 	return m_Texture->GetTexture();
 }
 
+ID3D11ShaderResourceView** ModelClass::GetTextureArray()
+{
+	return m_TextureArray->GetTextureArray();
+}
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
@@ -182,6 +196,25 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	return true;
 }
 
+bool ModelClass::LoadTextures(ID3D11Device* device, WCHAR* filename1, WCHAR* filename2)
+{
+	bool result;
+
+	// Create the texture array object.
+	m_TextureArray = new TextureArrayClass;
+	if (!m_TextureArray) {
+		return false;
+	}
+
+	// Initialize the texture array object.
+	result = m_TextureArray->Initialize(device, filename1, filename2);
+	if (!result) {
+		return false;
+	}
+
+	return true;
+}
+
 bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 {
 	bool result;
@@ -208,6 +241,13 @@ void ModelClass::ReleaseTexture()
 		m_Texture->Shutdown();
 		delete m_Texture;
 		m_Texture = 0;
+	}
+
+	// Release the texture array object.
+	if (m_TextureArray) {
+		m_TextureArray->Shutdown();
+		delete m_TextureArray;
+		m_TextureArray = 0;
 	}
 
 	return;
@@ -548,7 +588,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType);
 	offset = 0;
-    
+
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
@@ -568,4 +608,14 @@ void ModelClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
 	position.x = m_Min.x + size.x / 2;
 	position.y = m_Min.y + size.y / 2;
 	position.z = m_Min.z + size.z / 2;
+}
+
+void ModelClass::SetPosition(D3DXVECTOR3 _position)
+{
+	position = _position;
+}
+
+void ModelClass::SetScale(D3DXVECTOR3 _scale)
+{
+	scale = _scale;
 }

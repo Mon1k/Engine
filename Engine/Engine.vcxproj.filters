@@ -19,6 +19,9 @@
     <Filter Include="sound">
       <UniqueIdentifier>{040d0f55-3012-4a6f-b5d8-0fe566fc9580}</UniqueIdentifier>
     </Filter>
+    <Filter Include="textures">
+      <UniqueIdentifier>{2646a391-2ea3-461d-be9a-3d26d2f11826}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -95,6 +98,12 @@
     </ClCompile>
     <ClCompile Include="positionclass.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\multitextureshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\texturearrayclass.cpp">
+      <Filter>textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +182,12 @@
     <ClInclude Include="positionclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="textures\multitextureshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\texturearrayclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -197,6 +212,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\font.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\multitexture.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\multitexture.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
