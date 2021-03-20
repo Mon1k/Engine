@@ -122,14 +122,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Model2 = new ModelClass;
 	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", L"data/textures/seafloor.dds", L"");
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model2 object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the model2 object", L"Error", MB_OK);
 		return false;
 	}
 
 	m_ModelPlane = new ModelClass;
 	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", L"data/textures/stone01.dds",	L"data/textures/dirt01.dds");
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the model plane object", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane->SetPosition(D3DXVECTOR3(50.0f, -40.0f, -10.0f));
@@ -144,7 +144,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the multitexture shader object.
 	result = m_MultiTextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the multitexture shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
 		return false;
 	}
 
