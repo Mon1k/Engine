@@ -105,6 +105,9 @@
     <ClCompile Include="textures\texturearrayclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="textures\lightmapshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -188,6 +191,9 @@
     <ClInclude Include="textures\texturearrayclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="textures\lightmapshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -218,6 +224,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\multitexture.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\lightmap.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\lightmap.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

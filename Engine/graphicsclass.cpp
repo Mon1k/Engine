@@ -8,9 +8,11 @@ GraphicsClass::GraphicsClass()
 	m_Model = 0;
 	m_Model2 = 0;
 	m_ModelPlane = 0;
+	m_ModelPlane2 = 0;
 	
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
+	m_LightMapShader = 0;
 
 	m_LightShader = 0;
 	m_Light = 0;
@@ -132,8 +134,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model plane object", L"Error", MB_OK);
 		return false;
 	}
-	m_ModelPlane->SetPosition(D3DXVECTOR3(50.0f, -40.0f, -10.0f));
-	m_ModelPlane->SetScale(D3DXVECTOR3(10.0f, 10.0f, 1.0f));
+	m_ModelPlane->SetPosition(D3DXVECTOR3(25.0f, 0.0f, -20.0f));
+	m_ModelPlane->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+
+	m_ModelPlane2 = new ModelClass;
+	result = m_ModelPlane2->Initialize(m_D3D, "data/models/square.ds", L"data/textures/stone01.dds", L"data/textures/light01.dds");
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model plane2 object", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane2->SetPosition(D3DXVECTOR3(10.0f, 0.0f, -20.0f));
+	m_ModelPlane2->SetScale(D3DXVECTOR3(2.0f, 2.0f, 1.0f));
 
 	// Create the multitexture shader object.
 	m_MultiTextureShader = new MultiTextureShaderClass;
@@ -145,6 +156,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_MultiTextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the light map shader object.
+	m_LightMapShader = new LightMapShaderClass;
+	if (!m_LightMapShader) {
+		return false;
+	}
+
+	// Initialize the light map shader object.
+	result = m_LightMapShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the light map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -243,6 +267,13 @@ void GraphicsClass::Shutdown()
 		m_Light = 0;
 	}
 
+	// Release the light map shader object.
+	if (m_LightMapShader) {
+		m_LightMapShader->Shutdown();
+		delete m_LightMapShader;
+		m_LightMapShader = 0;
+	}
+
 	// Release the multitexture shader object.
 	if (m_MultiTextureShader) {
 		m_MultiTextureShader->Shutdown();
@@ -255,6 +286,11 @@ void GraphicsClass::Shutdown()
 		m_ModelPlane->Shutdown();
 		delete m_ModelPlane;
 		m_ModelPlane = 0;
+	}
+	if (m_ModelPlane2) {
+		m_ModelPlane2->Shutdown();
+		delete m_ModelPlane2;
+		m_ModelPlane2 = 0;
 	}
 
 	// Release the light shader object.
@@ -384,15 +420,42 @@ bool GraphicsClass::Render()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		D3DXVECTOR3 position = m_ModelPlane->GetPosition();
 		D3DXVECTOR3 scale = m_ModelPlane->GetScale();
+		D3DXMATRIX scaleWorld, positionWorld;
+		scaleWorld = worldMatrix;
+		positionWorld = worldMatrix;
 		if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
-			D3DXMatrixTranslation(&worldMatrix, position.x, position.y, position.z);
+			D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
 		}
 		if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
-			D3DXMatrixScaling(&worldMatrix, scale.x, scale.y, scale.z);
+			D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
 		}
+		worldMatrix = scaleWorld * positionWorld;
 		m_ModelPlane->Render(m_D3D->GetDeviceContext());
 		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
 		triangleCount += m_ModelPlane->GetTtriangleCount();
+		m_RenderCount++;
+		m_D3D->GetWorldMatrix(worldMatrix);
+	}
+
+
+	// Render the model using the light map shader.
+	m_ModelPlane2->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		D3DXVECTOR3 position = m_ModelPlane2->GetPosition();
+		D3DXVECTOR3 scale = m_ModelPlane2->GetScale();
+		D3DXMATRIX scaleWorld, positionWorld;
+		scaleWorld = worldMatrix;
+		positionWorld = worldMatrix;
+		if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
+			D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
+		}
+		if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
+			D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
+		}
+		worldMatrix = scaleWorld * positionWorld;
+		m_ModelPlane2->Render(m_D3D->GetDeviceContext());
+		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
+		triangleCount += m_ModelPlane2->GetTtriangleCount();
 		m_RenderCount++;
 		m_D3D->GetWorldMatrix(worldMatrix);
 	}

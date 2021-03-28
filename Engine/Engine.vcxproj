@@ -101,6 +101,7 @@
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
+    <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
+    <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="timerclass.h" />
@@ -144,6 +146,8 @@
     <None Include="data\shaders\font.vs" />
     <None Include="data\shaders\light.ps" />
     <None Include="data\shaders\light.vs" />
+    <None Include="data\shaders\lightmap.ps" />
+    <None Include="data\shaders\lightmap.vs" />
     <None Include="data\shaders\multitexture.ps" />
     <None Include="data\shaders\multitexture.vs" />
     <None Include="data\shaders\texture.ps" />

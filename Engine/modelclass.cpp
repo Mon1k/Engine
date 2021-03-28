@@ -10,6 +10,7 @@ ModelClass::ModelClass()
 	m_model = 0;
 
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 }
 
 
