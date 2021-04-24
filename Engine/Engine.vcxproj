@@ -95,6 +95,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="modellistclass.cpp" />
+    <ClCompile Include="models\bbox.cpp" />
+    <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="sound\soundclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
@@ -124,6 +126,8 @@
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="modellistclass.h" />
+    <ClInclude Include="models\bbox.h" />
+    <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sound\soundclass.h" />

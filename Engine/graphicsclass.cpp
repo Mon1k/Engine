@@ -9,6 +9,7 @@ GraphicsClass::GraphicsClass()
 	m_Model2 = 0;
 	m_ModelPlane = 0;
 	m_ModelPlane2 = 0;
+	m_Bbox = 0;
 	
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
@@ -186,6 +187,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+
+	D3DXVECTOR3 position, size;
+	m_Model->GetBoundingBox(position, size);
+	m_Bbox = new BBox;
+	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);
+
+
 	// Create the frustum object.
 	m_Frustum = new FrustumClass;
 	if (!m_Frustum) {
@@ -259,6 +267,12 @@ void GraphicsClass::Shutdown()
 		m_ModelList->Shutdown();
 		delete m_ModelList;
 		m_ModelList = 0;
+	}
+
+	if (m_Bbox) {
+		m_Bbox->Shutdown();
+		delete m_Bbox;
+		m_Bbox = 0;
 	}
 
 	// Release the light object.
@@ -338,7 +352,7 @@ bool GraphicsClass::Frame()
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	bool renderModel, result;
+	bool renderModel;
 	int modelCount, index, triangleCount = 0;
 	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR4 color;
@@ -403,62 +417,34 @@ bool GraphicsClass::Render()
 	m_Model->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model->Render(m_D3D->GetDeviceContext());
+		// Render the model using the light shader.
+		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		triangleCount += m_Model->GetTtriangleCount();
 		m_RenderCount++;
-	}
-
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result) {
-		return false;
 	}
 
 
 	m_ModelPlane->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		D3DXVECTOR3 position = m_ModelPlane->GetPosition();
-		D3DXVECTOR3 scale = m_ModelPlane->GetScale();
-		D3DXMATRIX scaleWorld, positionWorld;
-		scaleWorld = worldMatrix;
-		positionWorld = worldMatrix;
-		if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
-			D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
-		}
-		if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
-			D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
-		}
-		worldMatrix = scaleWorld * positionWorld;
 		m_ModelPlane->Render(m_D3D->GetDeviceContext());
-		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
+		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
 		triangleCount += m_ModelPlane->GetTtriangleCount();
 		m_RenderCount++;
-		m_D3D->GetWorldMatrix(worldMatrix);
 	}
 
 
-	// Render the model using the light map shader.
 	m_ModelPlane2->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		D3DXVECTOR3 position = m_ModelPlane2->GetPosition();
-		D3DXVECTOR3 scale = m_ModelPlane2->GetScale();
-		D3DXMATRIX scaleWorld, positionWorld;
-		scaleWorld = worldMatrix;
-		positionWorld = worldMatrix;
-		if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
-			D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
-		}
-		if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
-			D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
-		}
-		worldMatrix = scaleWorld * positionWorld;
 		m_ModelPlane2->Render(m_D3D->GetDeviceContext());
-		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
+		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), m_ModelPlane2->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
 		triangleCount += m_ModelPlane2->GetTtriangleCount();
 		m_RenderCount++;
-		m_D3D->GetWorldMatrix(worldMatrix);
 	}
+
+
+	m_Bbox->Render(m_D3D, viewMatrix);
 
 
 	// render ui
@@ -471,19 +457,6 @@ bool GraphicsClass::Render()
 	m_Label->Render();
 	m_Label2->Render();
 	m_Cursor->Render();
-
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-	
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
-
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();

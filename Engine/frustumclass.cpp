@@ -91,46 +91,7 @@ bool FrustumClass::CheckPoint(float x, float y, float z)
 
 bool FrustumClass::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
 {
-	int i;
-
-	// Check if any one point of the cube is in the view frustum.
-	for (i = 0; i < 6; i++) {
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - radius), (yCenter - radius), (zCenter - radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter + radius), (yCenter - radius), (zCenter - radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - radius), (yCenter + radius), (zCenter - radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter + radius), (yCenter + radius), (zCenter - radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - radius), (yCenter - radius), (zCenter + radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter + radius), (yCenter - radius), (zCenter + radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - radius), (yCenter + radius), (zCenter + radius))) >= 0.0f) {
-			continue;
-		}
-
-		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter + radius), (yCenter + radius), (zCenter + radius))) >= 0.0f) {
-			continue;
-		}
-
-		return false;
-	}
-
-	return true;
+	return CheckRectangle(xCenter, yCenter, zCenter, radius, radius, radius);
 }
 
 bool FrustumClass::CheckSphere(float xCenter, float yCenter, float zCenter, float radius)

@@ -216,9 +216,9 @@ bool SystemClass::Frame()
 	// Check if the left or right arrow key has been pressed, if so rotate the camera accordingly.
 	keyDown = m_Input->IsKeyDown(DIK_LEFTARROW);
 	m_Position->TurnLeft(keyDown);
-
 	keyDown = m_Input->IsKeyDown(DIK_RIGHTARROW);
 	m_Position->TurnRight(keyDown);
+
 	if (m_Input->IsKeyDown(DIK_UPARROW)) {
 		position.z += 0.01 * m_Timer->GetTime();
 	}

@@ -22,6 +22,9 @@
     <Filter Include="textures">
       <UniqueIdentifier>{2646a391-2ea3-461d-be9a-3d26d2f11826}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models">
+      <UniqueIdentifier>{55da235f-1bc4-4210-b9d3-fba4bba12e87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -108,6 +111,12 @@
     <ClCompile Include="textures\lightmapshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="models\modelcolor.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="models\bbox.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -193,6 +202,12 @@
     </ClInclude>
     <ClInclude Include="textures\lightmapshaderclass.h">
       <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="models\modelcolor.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\bbox.h">
+      <Filter>models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

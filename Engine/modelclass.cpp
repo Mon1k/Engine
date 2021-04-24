@@ -118,8 +118,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-	m_Min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 
 	// Load the vertex array and index array with data.
 	for (i = 0; i < m_vertexCount; i++) {
@@ -619,4 +619,24 @@ void ModelClass::SetPosition(D3DXVECTOR3 _position)
 void ModelClass::SetScale(D3DXVECTOR3 _scale)
 {
 	scale = _scale;
+}
+
+D3DXMATRIX ModelClass::GetWorldMatrix()
+{
+	D3DXVECTOR3 position = GetPosition();
+	D3DXVECTOR3 scale = GetScale();
+	D3DXMATRIX scaleWorld, positionWorld, worldMatrix;
+
+	m_D3D->GetWorldMatrix(worldMatrix);
+	scaleWorld = worldMatrix;
+	positionWorld = worldMatrix;
+	if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
+		D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
+	}
+	if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
+		D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
+	}
+	worldMatrix = scaleWorld * positionWorld;
+
+	return worldMatrix;
 }

@@ -5,6 +5,7 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "modelclass.h"
+#include "models/bbox.h"
 #include "textures/multitextureshaderclass.h"
 #include "textures/lightmapshaderclass.h"
 
@@ -57,7 +58,8 @@ private:
 	ModelClass* m_Model2;
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
-
+	BBox* m_Bbox;
+	
 	TextureShaderClass* m_TextureShader;
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;
