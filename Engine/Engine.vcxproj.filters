@@ -117,6 +117,9 @@
     <ClCompile Include="models\bbox.cpp">
       <Filter>models</Filter>
     </ClCompile>
+    <ClCompile Include="alphamapshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -209,6 +212,9 @@
     <ClInclude Include="models\bbox.h">
       <Filter>models</Filter>
     </ClInclude>
+    <ClInclude Include="alphamapshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -245,6 +251,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\lightmap.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\alphamap.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\alphamap.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

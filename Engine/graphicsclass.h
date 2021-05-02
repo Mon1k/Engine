@@ -7,10 +7,12 @@
 #include "modelclass.h"
 #include "models/bbox.h"
 #include "textures/multitextureshaderclass.h"
-#include "textures/lightmapshaderclass.h"
 
+#include "textures/lightmapshaderclass.h"
 #include "textureshaderclass.h"
+#include "alphamapshaderclass.h"
 #include "lightshaderclass.h"
+
 #include "lightclass.h"
 #include "bitmapclass.h"
 #include "textclass.h"
@@ -58,11 +60,13 @@ private:
 	ModelClass* m_Model2;
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
+	ModelClass* m_ModelPlane3;
 	BBox* m_Bbox;
 	
 	TextureShaderClass* m_TextureShader;
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;
+	AlphaMapShaderClass* m_AlphaMapShader;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;

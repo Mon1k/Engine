@@ -34,7 +34,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(D3DClass*, char*, WCHAR*, WCHAR*);
+	bool Initialize(D3DClass*, char*, WCHAR**);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -50,6 +50,7 @@ public:
 	}
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView** GetTextureArray();
+	ID3D11ShaderResourceView** GetTextureArray(int);
 
 	bool LoadModel(char*);
 	bool LoadModelDs(char*);
@@ -67,6 +68,7 @@ private:
 
 	bool LoadTexture(ID3D11Device*, WCHAR*);
 	bool LoadTextures(ID3D11Device*, WCHAR*, WCHAR*);
+	bool LoadTexturesArray(ID3D11Device*, WCHAR**);
 	void ReleaseTexture();
 
 private:

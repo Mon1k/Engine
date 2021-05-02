@@ -9,11 +9,13 @@ GraphicsClass::GraphicsClass()
 	m_Model2 = 0;
 	m_ModelPlane = 0;
 	m_ModelPlane2 = 0;
+	m_ModelPlane3 = 0;
 	m_Bbox = 0;
 	
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
 	m_LightMapShader = 0;
+	m_AlphaMapShader = 0;
 
 	m_LightShader = 0;
 	m_Light = 0;
@@ -46,11 +48,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
-	if (!m_D3D) {
-		return false;
-	}
-
-	// Initialize the Direct3D object.
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
@@ -59,36 +56,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the camera object.
 	m_Camera = new CameraClass;
-	if (!m_Camera) {
-		return false;
-	}
-
-	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->SetPosition(0.0f, 0.0f, -40.0f);
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 
-	// Create the model object.
-	m_Model = new ModelClass;
-	if (!m_Model) {
-		return false;
-	}
-
-	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D, "data/models/midpoly_town_house_01.obj", L"data/textures/T_brightwood_basecolor.png", L"");
-	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model1 object.", L"Error", MB_OK);
-		return false;
-	}
-	
-
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader) {
-		return false;
-	}
-
-	// Initialize the texture shader object.
 	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
@@ -97,11 +70,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
-	if (!m_LightShader) {
-		return false;
-	}
-
-	// Initialize the light shader object.
 	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
@@ -110,50 +78,57 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the light object.
 	m_Light = new LightClass;
-	if (!m_Light) {
-		return false;
-	}
-
-	// Initialize the light object.
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
+	// Create the model object.
+	/*WCHAR** textures = new WCHAR * [1];
+	textures[0] = L"data/textures/T_brightwood_basecolor.png";
+	m_Model = new ModelClass;
+	result = m_Model->Initialize(m_D3D, "data/models/midpoly_town_house_01.obj", textures);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model1 object.", L"Error", MB_OK);
+		return false;
+	}
 
 	m_Model2 = new ModelClass;
-	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", L"data/textures/seafloor.dds", L"");
+	textures = new WCHAR * [1];
+	textures[0] = L"data/textures/seafloor.dds";
+	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", textures);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model2 object", L"Error", MB_OK);
 		return false;
 	}
 
 	m_ModelPlane = new ModelClass;
-	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", L"data/textures/stone01.dds",	L"data/textures/dirt01.dds");
+	WCHAR** textures2 = new WCHAR * [2];
+	textures2[0] = L"data/textures/seafloor.dds";
+	textures2[1] = L"data/textures/dirt01.dds";
+	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", textures2);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model plane object", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane->SetPosition(D3DXVECTOR3(25.0f, 0.0f, -20.0f));
-	m_ModelPlane->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+	m_ModelPlane->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));*/
 
-	m_ModelPlane2 = new ModelClass;
-	result = m_ModelPlane2->Initialize(m_D3D, "data/models/square.ds", L"data/textures/stone01.dds", L"data/textures/light01.dds");
+	/*m_ModelPlane2 = new ModelClass;
+	textures = new WCHAR * [2];
+	textures[0] = L"data/textures/stone01.dds";
+	textures[1] = L"data/textures/light01.dds";
+	result = m_ModelPlane2->Initialize(m_D3D, "data/models/square.ds", textures);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model plane2 object", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane2->SetPosition(D3DXVECTOR3(10.0f, 0.0f, -20.0f));
-	m_ModelPlane2->SetScale(D3DXVECTOR3(2.0f, 2.0f, 1.0f));
+	m_ModelPlane2->SetScale(D3DXVECTOR3(2.0f, 2.0f, 1.0f));*/
 
 	// Create the multitexture shader object.
 	m_MultiTextureShader = new MultiTextureShaderClass;
-	if (!m_MultiTextureShader) {
-		return false;
-	}
-
-	// Initialize the multitexture shader object.
 	result = m_MultiTextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
@@ -162,25 +137,35 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the light map shader object.
 	m_LightMapShader = new LightMapShaderClass;
-	if (!m_LightMapShader) {
-		return false;
-	}
-
-	// Initialize the light map shader object.
 	result = m_LightMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the light map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
+	// Initialize the model object.
+	WCHAR* textures3[3] = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds", L"data/textures/alpha01.dds" };
+	m_ModelPlane3 = new ModelClass;
+	result = m_ModelPlane3->Initialize(m_D3D, "data/models/square.ds", textures3);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model model plane 3 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane3->SetPosition(D3DXVECTOR3(35.0f, 0.0f, -20.0f));
+	m_ModelPlane3->SetScale(D3DXVECTOR3(2.0f, 2.0f, 1.0f));
 
-	// Create the model list object.
-	m_ModelList = new ModelListClass;
-	if (!m_ModelList) {
+	// Create the alpha map shader object.
+	m_AlphaMapShader = new AlphaMapShaderClass;
+	result = m_AlphaMapShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
-	// Initialize the model list object.
+
+	// Create the model list object.
+	m_ModelList = new ModelListClass;
 	result = m_ModelList->Initialize(25);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model list object.", L"Error", MB_OK);
@@ -188,17 +173,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 
-	D3DXVECTOR3 position, size;
+	/*D3DXVECTOR3 position, size;
 	m_Model->GetBoundingBox(position, size);
 	m_Bbox = new BBox;
-	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);
+	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);*/
 
 
 	// Create the frustum object.
 	m_Frustum = new FrustumClass;
-	if (!m_Frustum) {
-		return false;
-	}
 
 	m_Button = new Button;
 	m_Button->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
@@ -295,6 +277,13 @@ void GraphicsClass::Shutdown()
 		m_MultiTextureShader = 0;
 	}
 
+	// Release the alpha map shader object.
+	if (m_AlphaMapShader) {
+		m_AlphaMapShader->Shutdown();
+		delete m_AlphaMapShader;
+		m_AlphaMapShader = 0;
+	}
+
 	// Release the model object.
 	if (m_ModelPlane) {
 		m_ModelPlane->Shutdown();
@@ -305,6 +294,11 @@ void GraphicsClass::Shutdown()
 		m_ModelPlane2->Shutdown();
 		delete m_ModelPlane2;
 		m_ModelPlane2 = 0;
+	}
+	if (m_ModelPlane3) {
+		m_ModelPlane3->Shutdown();
+		delete m_ModelPlane3;
+		m_ModelPlane3 = 0;
 	}
 
 	// Release the light shader object.
@@ -353,7 +347,7 @@ bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool renderModel;
-	int modelCount, index, triangleCount = 0;
+	int modelCount, index, triangleCount;
 	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR4 color;
 	D3DXVECTOR3 position, size;
@@ -370,16 +364,14 @@ bool GraphicsClass::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
+	triangleCount = 0;
+	m_RenderCount = 0;
+
 	// Construct the frustum.
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
-	// Get the number of models that will be rendered.
-	modelCount = m_ModelList->GetModelCount();
-
-	// Initialize the count of models that have been rendered.
-	m_RenderCount = 0;
-
 	// Go through all the models and render them only if they can be seen by the camera view.
+	/*modelCount = m_ModelList->GetModelCount();
 	for (index = 0; index < modelCount; index++) {
 		// Get the position and color of the sphere model at this index.
 		m_ModelList->GetData(index, positionX, positionY, positionZ, color);
@@ -410,11 +402,11 @@ bool GraphicsClass::Render()
 			m_RenderCount++;
 			triangleCount += m_Model2->GetTtriangleCount();
 		}
-	}
+	}*/
 
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model->GetBoundingBox(position, size);
+	/*m_Model->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
@@ -423,28 +415,35 @@ bool GraphicsClass::Render()
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		triangleCount += m_Model->GetTtriangleCount();
 		m_RenderCount++;
-	}
+	}*/
 
 
-	m_ModelPlane->GetBoundingBox(position, size);
+	/*m_ModelPlane->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane->Render(m_D3D->GetDeviceContext());
-		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
+		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray(2));
 		triangleCount += m_ModelPlane->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
 
-	m_ModelPlane2->GetBoundingBox(position, size);
+	/*m_ModelPlane2->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane2->Render(m_D3D->GetDeviceContext());
 		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), m_ModelPlane2->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
 		triangleCount += m_ModelPlane2->GetTtriangleCount();
 		m_RenderCount++;
+	}*/
+
+	m_ModelPlane3->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_ModelPlane3->Render(m_D3D->GetDeviceContext());
+		m_AlphaMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane3->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_ModelPlane3->GetTextureArray());
+		triangleCount += m_ModelPlane->GetTtriangleCount();
+		m_RenderCount++;
 	}
 
-
-	m_Bbox->Render(m_D3D, viewMatrix);
+	//m_Bbox->Render(m_D3D, viewMatrix);
 
 
 	// render ui

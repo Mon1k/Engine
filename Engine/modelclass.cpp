@@ -24,7 +24,7 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
+bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR** texturesFilename)
 {
 	bool result;
 
@@ -43,14 +43,14 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR* text
 	}
 
 
-	if (wcslen(textureFilename2) > 0) {
+	if (sizeof(texturesFilename)/sizeof(texturesFilename[0]) > 1) {
 		// Load the textures for this model.
-		result = LoadTextures(m_D3D->GetDevice(), textureFilename, textureFilename2);
+		result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
 		if (!result) {
 			return false;
 		}
-	} else if (wcslen(textureFilename) > 0) {
-		result = LoadTexture(m_D3D->GetDevice(), textureFilename);
+	} else if (wcslen(texturesFilename[0]) > 0) {
+		result = LoadTexture(m_D3D->GetDevice(), texturesFilename[0]);
 		if (!result) {
 			return false;
 		}
@@ -96,6 +96,11 @@ ID3D11ShaderResourceView* ModelClass::GetTexture()
 ID3D11ShaderResourceView** ModelClass::GetTextureArray()
 {
 	return m_TextureArray->GetTextureArray();
+}
+
+ID3D11ShaderResourceView** ModelClass::GetTextureArray(int size)
+{
+	return m_TextureArray->GetTextureArray(size);
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
@@ -211,6 +216,32 @@ bool ModelClass::LoadTextures(ID3D11Device* device, WCHAR* filename1, WCHAR* fil
 	result = m_TextureArray->Initialize(device, filename1, filename2);
 	if (!result) {
 		return false;
+	}
+
+	return true;
+}
+
+bool ModelClass::LoadTexturesArray(ID3D11Device* device, WCHAR** filenames)
+{
+	bool result;
+
+	// Create the texture array object.
+	m_TextureArray = new TextureArrayClass;
+	if (!m_TextureArray) {
+		return false;
+	}
+
+	// Initialize the texture array object.
+	result = m_TextureArray->Initialize(device, filenames[0], filenames[1]);
+	if (!result) {
+		return false;
+	}
+
+	int size = sizeof(filenames) / sizeof(filenames[0]);
+	if (size > 2) {
+		for (int i = 2; i < size; i++) {
+			m_TextureArray->AddTexture(device, filenames[i], i);
+		}
 	}
 
 	return true;

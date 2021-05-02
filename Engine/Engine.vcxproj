@@ -80,6 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="alphamapshaderclass.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
@@ -112,6 +113,7 @@
     <ClCompile Include="ui\label.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="alphamapshaderclass.h" />
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="colorshaderclass.h" />
@@ -144,6 +146,8 @@
     <ClInclude Include="ui\label.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\shaders\alphamap.ps" />
+    <None Include="data\shaders\alphamap.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
     <None Include="data\shaders\font.ps" />
