@@ -24,7 +24,7 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR** texturesFilename)
+bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
 {
 	bool result;
 
@@ -42,14 +42,13 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, WCHAR** tex
 		return false;
 	}
 
-
-	if (sizeof(texturesFilename)/sizeof(texturesFilename[0]) > 1) {
+	if (texturesFilename.size() > 1) {
 		// Load the textures for this model.
 		result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
 		if (!result) {
 			return false;
 		}
-	} else if (wcslen(texturesFilename[0]) > 0) {
+	} else if (texturesFilename[0].size() > 0) {
 		result = LoadTexture(m_D3D->GetDevice(), texturesFilename[0]);
 		if (!result) {
 			return false;
@@ -202,7 +201,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	return true;
 }
 
-bool ModelClass::LoadTextures(ID3D11Device* device, WCHAR* filename1, WCHAR* filename2)
+bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename1, std::wstring filename2)
 {
 	bool result;
 
@@ -213,7 +212,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, WCHAR* filename1, WCHAR* fil
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, filename1, filename2);
+	result = m_TextureArray->Initialize(device, &filename1[0], &filename2[0]);
 	if (!result) {
 		return false;
 	}
@@ -221,7 +220,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, WCHAR* filename1, WCHAR* fil
 	return true;
 }
 
-bool ModelClass::LoadTexturesArray(ID3D11Device* device, WCHAR** filenames)
+bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstring> filenames)
 {
 	bool result;
 
@@ -232,22 +231,22 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, WCHAR** filenames)
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, filenames[0], filenames[1]);
+	result = m_TextureArray->Initialize(device, &filenames[0][0], &filenames[1][0]);
 	if (!result) {
 		return false;
 	}
 
-	int size = sizeof(filenames) / sizeof(filenames[0]);
+	int size = filenames.size();
 	if (size > 2) {
 		for (int i = 2; i < size; i++) {
-			m_TextureArray->AddTexture(device, filenames[i], i);
+			m_TextureArray->AddTexture(device, &filenames[i][0], i);
 		}
 	}
 
 	return true;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool ModelClass::LoadTexture(ID3D11Device* device, std::wstring filename)
 {
 	bool result;
 
@@ -258,7 +257,7 @@ bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 	}
 
 	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize(device, &filename[0]);
 	if (!result) {
 		return false;
 	}
@@ -644,12 +643,31 @@ void ModelClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
 
 void ModelClass::SetPosition(D3DXVECTOR3 _position)
 {
+	D3DXVECTOR3 delta;
+	delta.x = _position.x - position.x;
+	delta.y = _position.y - position.y;
+	delta.z = _position.z - position.z;
 	position = _position;
+
+	m_Max.x += delta.x;
+	m_Max.y += delta.y;
+	m_Max.z += delta.z;
+	m_Min.x += delta.x;
+	m_Min.y += delta.y;
+	m_Min.z += delta.z;
 }
 
 void ModelClass::SetScale(D3DXVECTOR3 _scale)
 {
+	D3DXVECTOR3 delta;
+	delta.x = _scale.x / scale.x;
+	delta.y = _scale.y / scale.y;
+	delta.z = _scale.z / scale.z;
 	scale = _scale;
+
+	m_Max.x *= delta.x;
+	m_Max.y *= delta.y;
+	m_Max.z *= delta.z;
 }
 
 D3DXMATRIX ModelClass::GetWorldMatrix()

@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 using namespace std;
 
 #include "d3dclass.h"
@@ -34,7 +35,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(D3DClass*, char*, WCHAR**);
+	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -66,9 +67,9 @@ private:
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
 
-	bool LoadTexture(ID3D11Device*, WCHAR*);
-	bool LoadTextures(ID3D11Device*, WCHAR*, WCHAR*);
-	bool LoadTexturesArray(ID3D11Device*, WCHAR**);
+	bool LoadTexture(ID3D11Device*, std::wstring);
+	bool LoadTextures(ID3D11Device*, std::wstring, std::wstring);
+	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
 	void ReleaseTexture();
 
 private:
