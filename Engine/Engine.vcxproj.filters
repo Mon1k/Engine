@@ -120,6 +120,12 @@
     <ClCompile Include="alphamapshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="textures\bumpmapshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="models\modelbumpclass.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -215,6 +221,12 @@
     <ClInclude Include="alphamapshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="textures\bumpmapshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="models\modelbumpclass.h">
+      <Filter>models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -257,6 +269,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\alphamap.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\bumpmap.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\bumpmap.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -5,9 +5,11 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "modelclass.h"
+#include "models/modelbumpclass.h"
 #include "models/bbox.h"
 #include "textures/multitextureshaderclass.h"
 
+#include "textures/bumpmapshaderclass.h"
 #include "textures/lightmapshaderclass.h"
 #include "textureshaderclass.h"
 #include "alphamapshaderclass.h"
@@ -58,11 +60,13 @@ private:
 	
 	ModelClass* m_Model;
 	ModelClass* m_Model2;
+	ModelBumpClass* m_Model3;
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
 	ModelClass* m_ModelPlane3;
 	BBox* m_Bbox;
 	
+	BumpMapShaderClass* m_BumpMapShader;
 	TextureShaderClass* m_TextureShader;
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;

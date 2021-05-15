@@ -62,7 +62,7 @@ public:
 	void SetScale(D3DXVECTOR3);
 	D3DXMATRIX GetWorldMatrix();
 
-private:
+protected:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
@@ -72,7 +72,7 @@ private:
 	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
 	void ReleaseTexture();
 
-private:
+protected:
 	D3DClass* m_D3D;
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;

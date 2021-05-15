@@ -303,7 +303,6 @@ bool ModelClass::LoadModelDs(char* filename)
 	char input;
 	int i;
 
-
 	// Open the model file.
 	fin.open(filename);
 
@@ -325,8 +324,8 @@ bool ModelClass::LoadModelDs(char* filename)
 	m_indexCount = m_vertexCount;
 
 	// Create the model using the vertex count that was read in.
-	m_model = new ModelType[m_vertexCount];
-	if (!m_model) {
+	this->m_model = new ModelType[m_vertexCount];
+	if (!this->m_model) {
 		return false;
 	}
 
@@ -340,9 +339,9 @@ bool ModelClass::LoadModelDs(char* filename)
 
 	// Read in the vertex data.
 	for (i = 0; i < m_vertexCount; i++) {
-		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
-		fin >> m_model[i].tu >> m_model[i].tv;
-		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
+		fin >> this->m_model[i].x >> this->m_model[i].y >> this->m_model[i].z;
+		fin >> this->m_model[i].tu >> this->m_model[i].tv;
+		fin >> this->m_model[i].nx >> this->m_model[i].ny >> this->m_model[i].nz;
 	}
 
 	// Close the model file.

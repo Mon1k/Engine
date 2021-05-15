@@ -97,6 +97,7 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="modellistclass.cpp" />
     <ClCompile Include="models\bbox.cpp" />
+    <ClCompile Include="models\modelbumpclass.cpp" />
     <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="sound\soundclass.cpp" />
@@ -104,6 +105,7 @@
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
+    <ClCompile Include="textures\bumpmapshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
@@ -129,6 +131,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="modellistclass.h" />
     <ClInclude Include="models\bbox.h" />
+    <ClInclude Include="models\modelbumpclass.h" />
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="resource.h" />
@@ -137,6 +140,7 @@
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
+    <ClInclude Include="textures\bumpmapshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
@@ -148,6 +152,8 @@
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps" />
     <None Include="data\shaders\alphamap.vs" />
+    <None Include="data\shaders\bumpmap.ps" />
+    <None Include="data\shaders\bumpmap.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
     <None Include="data\shaders\font.ps" />

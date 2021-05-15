@@ -7,11 +7,13 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;
 	m_Model = 0;
 	m_Model2 = 0;
+	m_Model3 = 0;
 	m_ModelPlane = 0;
 	m_ModelPlane2 = 0;
 	m_ModelPlane3 = 0;
 	m_Bbox = 0;
 	
+	m_BumpMapShader = 0;
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
 	m_LightMapShader = 0;
@@ -101,6 +103,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_Model3 = new ModelBumpClass;
+	std::vector<std::wstring> textures1_2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
+	result = m_Model3->Initialize(m_D3D, "data/models/cube.ds", textures1_2);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model 3 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_Model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+	m_Model3->SetPosition(D3DXVECTOR3(5.0f, 0.0f, -40.0f));
+
 	m_ModelPlane = new ModelClass;
 	std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds" };
 	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", textures2);
@@ -156,6 +168,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bump map shader object.
+	m_BumpMapShader = new BumpMapShaderClass;
+	if (!m_BumpMapShader) {
+		return false;
+	}
+
+	// Initialize the bump map shader object.
+	result = m_BumpMapShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -259,6 +284,13 @@ void GraphicsClass::Shutdown()
 		m_Light = 0;
 	}
 
+	// Release the bump map shader object.
+	if (m_BumpMapShader) {
+		m_BumpMapShader->Shutdown();
+		delete m_BumpMapShader;
+		m_BumpMapShader = 0;
+	}
+
 	// Release the light map shader object.
 	if (m_LightMapShader) {
 		m_LightMapShader->Shutdown();
@@ -304,18 +336,22 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the texture shader object.
 	if (m_TextureShader) {
 		m_TextureShader->Shutdown();
 		delete m_TextureShader;
 		m_TextureShader = 0;
 	}
 
-	// Release the model object.
 	if (m_Model) {
 		m_Model->Shutdown();
 		delete m_Model;
 		m_Model = 0;
+	}
+
+	if (m_Model3) {
+		m_Model3->Shutdown();
+		delete m_Model3;
+		m_Model3 = 0;
 	}
 
 	// Release the camera object.
@@ -410,6 +446,15 @@ bool GraphicsClass::Render()
 			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		triangleCount += m_Model->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_Model3->GetBoundingBox(position, size);
+	if (1 || m_Frustum->CheckRectangle(position, size)) {
+		m_Model3->Render(m_D3D->GetDeviceContext());
+		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+		triangleCount += m_Model3->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
