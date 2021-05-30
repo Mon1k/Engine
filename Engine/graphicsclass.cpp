@@ -87,7 +87,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularPower(32.0f);
 
 	// Create the model object.
-	m_Model = new ModelClass;
+	/*m_Model = new ModelClass;
 	std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
 	result = m_Model->Initialize(m_D3D, "data/models/midpoly_town_house_01.obj", textures1);
 	if (!result) {
@@ -101,7 +101,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the model2 object", L"Error", MB_OK);
 		return false;
-	}
+	}*/
 
 	m_Model3 = new ModelBumpClass;
 	std::vector<std::wstring> textures1_2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
@@ -110,10 +110,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model 3 object.", L"Error", MB_OK);
 		return false;
 	}
-	m_Model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
-	m_Model3->SetPosition(D3DXVECTOR3(5.0f, 0.0f, -40.0f));
+	m_Model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+	m_Model3->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
 
-	m_ModelPlane = new ModelClass;
+	/*m_ModelPlane = new ModelClass;
 	std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds" };
 	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", textures2);
 	if (!result) {
@@ -132,7 +132,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_ModelPlane2->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
-	m_ModelPlane2->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+	m_ModelPlane2->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));*/
 
 	// Initialize the model object.
 	std::vector<std::wstring> textures3 = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds", L"data/textures/alpha01.dds" };
@@ -194,10 +194,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 
-	D3DXVECTOR3 position, size;
+	/*D3DXVECTOR3 position, size;
 	m_ModelPlane->GetBoundingBox(position, size);
 	m_Bbox = new BBox;
-	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);
+	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);*/
 
 
 	// Create the frustum object.
@@ -403,7 +403,7 @@ bool GraphicsClass::Render()
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
 	// Go through all the models and render them only if they can be seen by the camera view.
-	modelCount = m_ModelList->GetModelCount();
+	/*modelCount = m_ModelList->GetModelCount();
 	for (index = 0; index < modelCount; index++) {
 		// Get the position and color of the sphere model at this index.
 		m_ModelList->GetData(index, positionX, positionY, positionZ, color);
@@ -447,7 +447,7 @@ bool GraphicsClass::Render()
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		triangleCount += m_Model->GetTtriangleCount();
 		m_RenderCount++;
-	}
+	}*/
 
 	m_Model3->GetBoundingBox(position, size);
 	if (1 || m_Frustum->CheckRectangle(position, size)) {
@@ -459,7 +459,7 @@ bool GraphicsClass::Render()
 	}
 
 
-	m_ModelPlane->GetBoundingBox(position, size);
+	/*m_ModelPlane->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane->Render(m_D3D->GetDeviceContext());
 		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
@@ -484,7 +484,7 @@ bool GraphicsClass::Render()
 		m_RenderCount++;
 	}
 
-	m_Bbox->Render(m_D3D, viewMatrix);
+	m_Bbox->Render(m_D3D, viewMatrix);*/
 
 
 	// render ui

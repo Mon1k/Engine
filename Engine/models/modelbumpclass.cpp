@@ -1,5 +1,17 @@
 #include "modelbumpclass.h"
 
+ModelBumpClass::ModelBumpClass()
+{
+	m_vertexBuffer = 0;
+	m_indexBuffer = 0;
+	m_Texture = 0;
+	m_TextureArray = 0;
+	m_model = 0;
+
+	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+}
+
 bool ModelBumpClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
 {
 	bool result;
@@ -342,4 +354,97 @@ bool ModelBumpClass::LoadModelDs(char* filename)
 	fin.close();
 
 	return true;
+}
+
+
+void ModelBumpClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(VertexType);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void ModelBumpClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
+{
+	size.x = m_Max.x - m_Min.x;
+	size.y = m_Max.y - m_Min.y;
+	size.z = m_Max.z - m_Min.z;
+
+	position.x = m_Min.x + size.x / 2;
+	position.y = m_Min.y + size.y / 2;
+	position.z = m_Min.z + size.z / 2;
+}
+
+void ModelBumpClass::SetPosition(D3DXVECTOR3 _position)
+{
+	D3DXVECTOR3 delta;
+	delta.x = _position.x - position.x;
+	delta.y = _position.y - position.y;
+	delta.z = _position.z - position.z;
+	position = _position;
+
+	m_Max.x += delta.x;
+	m_Max.y += delta.y;
+	m_Max.z += delta.z;
+	m_Min.x += delta.x;
+	m_Min.y += delta.y;
+	m_Min.z += delta.z;
+}
+
+void ModelBumpClass::SetScale(D3DXVECTOR3 _scale)
+{
+	D3DXVECTOR3 delta;
+	delta.x = _scale.x / scale.x;
+	delta.y = _scale.y / scale.y;
+	delta.z = _scale.z / scale.z;
+	scale = _scale;
+
+	m_Max.x *= delta.x;
+	m_Max.y *= delta.y;
+	m_Max.z *= delta.z;
+}
+
+D3DXMATRIX ModelBumpClass::GetWorldMatrix()
+{
+	D3DXVECTOR3 position = GetPosition();
+	D3DXVECTOR3 scale = GetScale();
+	D3DXMATRIX scaleWorld, positionWorld, worldMatrix;
+
+	m_D3D->GetWorldMatrix(worldMatrix);
+	scaleWorld = worldMatrix;
+	positionWorld = worldMatrix;
+	if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
+		D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
+	}
+	if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
+		D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
+	}
+	worldMatrix = scaleWorld * positionWorld;
+
+	return worldMatrix;
+}
+
+void ModelBumpClass::Render(ID3D11DeviceContext* deviceContext)
+{
+	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	RenderBuffers(deviceContext);
+
+	return;
+}
+
+int ModelBumpClass::GetIndexCount()
+{
+	return m_indexCount;
 }
