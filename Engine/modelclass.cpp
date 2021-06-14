@@ -41,6 +41,7 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 	if (!result) {
 		return false;
 	}
+	CalcMinMax();
 
 	if (texturesFilename.size() > 1) {
 		// Load the textures for this model.
@@ -78,13 +79,6 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	RenderBuffers(deviceContext);
-
-	return;
-}
-
-int ModelClass::GetIndexCount()
-{
-	return m_indexCount;
 }
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
@@ -122,30 +116,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
-
 	// Load the vertex array and index array with data.
 	for (i = 0; i < m_vertexCount; i++) {
-		if (m_model[i].x > m_Max.x) {
-			m_Max.x = m_model[i].x;
-		}
-		if (m_model[i].y > m_Max.y) {
-			m_Max.y = m_model[i].y;
-		}
-		if (m_model[i].z > m_Max.z) {
-			m_Max.z = m_model[i].z;
-		}
-		if (m_model[i].x < m_Min.x) {
-			m_Min.x = m_model[i].x;
-		}
-		if (m_model[i].y < m_Min.y) {
-			m_Min.y = m_model[i].y;
-		}
-		if (m_model[i].z < m_Min.z) {
-			m_Min.z = m_model[i].z;
-		}
-
 		vertices[i].position = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
 		vertices[i].texture = D3DXVECTOR2(m_model[i].tu, m_model[i].tv);
 		vertices[i].normal = D3DXVECTOR3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
@@ -199,6 +171,33 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indices = 0;
 
 	return true;
+}
+
+void ModelClass::CalcMinMax()
+{
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+
+	for (int i = 0; i < m_vertexCount; i++) {
+		if (m_model[i].x > m_Max.x) {
+			m_Max.x = m_model[i].x;
+		}
+		if (m_model[i].y > m_Max.y) {
+			m_Max.y = m_model[i].y;
+		}
+		if (m_model[i].z > m_Max.z) {
+			m_Max.z = m_model[i].z;
+		}
+		if (m_model[i].x < m_Min.x) {
+			m_Min.x = m_model[i].x;
+		}
+		if (m_model[i].y < m_Min.y) {
+			m_Min.y = m_model[i].y;
+		}
+		if (m_model[i].z < m_Min.z) {
+			m_Min.z = m_model[i].z;
+		}
+	}
 }
 
 bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename1, std::wstring filename2)

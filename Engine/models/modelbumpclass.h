@@ -50,19 +50,11 @@ public:
 	bool LoadModel(char*);
 	bool LoadModelDs(char*);
 
-	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
-	void SetPosition(D3DXVECTOR3);
-	void SetScale(D3DXVECTOR3);
-	D3DXMATRIX GetWorldMatrix();
-	int GetIndexCount();
+	int GetIndexCount() {
+		return m_indexCount;
+	}
 	int GetTtriangleCount() {
 		return m_vertexCount / 3;
-	}
-	D3DXVECTOR3 GetPosition() {
-		return position;
-	}
-	D3DXVECTOR3 GetScale() {
-		return scale;
 	}
 
 protected:
@@ -76,13 +68,8 @@ protected:
 	void RenderBuffers(ID3D11DeviceContext*);
 
 protected:
-	D3DClass* m_D3D;
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	int m_vertexCount, m_indexCount;
-	D3DXVECTOR3 m_Min, m_Max;
-
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 scale;
 
 	ModelType* m_model;
 };

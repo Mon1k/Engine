@@ -39,7 +39,9 @@ public:
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
-	int GetIndexCount();
+	int GetIndexCount() {
+		return m_indexCount;
+	}
 	int GetTtriangleCount() {
 		return m_vertexCount / 3;
 	}
@@ -63,6 +65,7 @@ public:
 	D3DXMATRIX GetWorldMatrix();
 
 protected:
+	void CalcMinMax();
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
@@ -73,11 +76,12 @@ protected:
 	void ReleaseTexture();
 
 protected:
-	D3DClass* m_D3D;
-	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
+	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	int m_vertexCount, m_indexCount;
+
+	D3DClass* m_D3D;
+
 	D3DXVECTOR3 m_Min, m_Max;
-	
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 scale;
 
