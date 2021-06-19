@@ -281,21 +281,6 @@ void ModelBumpClass::CalculateNormal(VectorType tangent, VectorType binormal, Ve
 	return;
 }
 
-
-bool ModelBumpClass::LoadModel(char* filename)
-{
-	std::string string(filename);
-
-	if (string.rfind(".ds") != std::string::npos) {
-		return LoadModelDs(filename);
-	}
-	else if (string.rfind(".obj") != std::string::npos) {
-		return LoadModelObj(filename);
-	}
-
-	return false;
-}
-
 bool ModelBumpClass::LoadModelDs(char* filename)
 {
 	ifstream fin;
@@ -323,8 +308,8 @@ bool ModelBumpClass::LoadModelDs(char* filename)
 	m_indexCount = m_vertexCount;
 
 	// Create the model using the vertex count that was read in.
-	this->m_model = new ModelType[m_vertexCount];
-	if (!this->m_model) {
+	m_model = new ModelType[m_vertexCount];
+	if (!m_model) {
 		return false;
 	}
 
@@ -338,9 +323,9 @@ bool ModelBumpClass::LoadModelDs(char* filename)
 
 	// Read in the vertex data.
 	for (i = 0; i < m_vertexCount; i++) {
-		fin >> this->m_model[i].x >> this->m_model[i].y >> this->m_model[i].z;
-		fin >> this->m_model[i].tu >> this->m_model[i].tv;
-		fin >> this->m_model[i].nx >> this->m_model[i].ny >> this->m_model[i].nz;
+		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
+		fin >> m_model[i].tu >> m_model[i].tv;
+		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
 	}
 
 	// Close the model file.
@@ -367,11 +352,4 @@ void ModelBumpClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
-
-void ModelBumpClass::Render(ID3D11DeviceContext* deviceContext)
-{
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
 }

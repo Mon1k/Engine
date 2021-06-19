@@ -39,10 +39,10 @@ public:
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
-	int GetIndexCount() {
+	virtual int GetIndexCount() {
 		return m_indexCount;
 	}
-	int GetTtriangleCount() {
+	virtual int GetTtriangleCount() {
 		return m_vertexCount / 3;
 	}
 	D3DXVECTOR3 GetPosition() {
@@ -56,8 +56,8 @@ public:
 	ID3D11ShaderResourceView** GetTextureArray(int);
 
 	bool LoadModel(char*);
-	bool LoadModelDs(char*);
-	bool LoadModelObj(char*);
+	virtual bool LoadModelDs(char*);
+	virtual bool LoadModelObj(char*);
 	void ReleaseModel();
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
 	void SetPosition(D3DXVECTOR3);
@@ -66,19 +66,22 @@ public:
 
 protected:
 	void CalcMinMax();
-	bool InitializeBuffers(ID3D11Device*);
+	virtual bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	virtual void RenderBuffers(ID3D11DeviceContext*);
 
 	bool LoadTexture(ID3D11Device*, std::wstring);
 	bool LoadTextures(ID3D11Device*, std::wstring, std::wstring);
 	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
 	void ReleaseTexture();
 
-protected:
+private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
-	int m_vertexCount, m_indexCount;
+	
+	ModelType* m_model;
 
+protected:
+	int m_vertexCount, m_indexCount;
 	D3DClass* m_D3D;
 
 	D3DXVECTOR3 m_Min, m_Max;
@@ -87,7 +90,6 @@ protected:
 
 	TextureClass* m_Texture;
 	TextureArrayClass* m_TextureArray;
-	ModelType* m_model;
 };
 
 #endif

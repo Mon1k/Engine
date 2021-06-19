@@ -44,18 +44,15 @@ private:
 public:
 	ModelBumpClass();
 
-	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
-	void Render(ID3D11DeviceContext*);
-
-	bool LoadModel(char*);
-	bool LoadModelDs(char*);
-
-	int GetIndexCount() {
+	virtual int GetIndexCount() {
 		return m_indexCount;
 	}
-	int GetTtriangleCount() {
+	virtual int GetTtriangleCount() {
 		return m_vertexCount / 3;
 	}
+
+	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	bool LoadModelDs(char*);
 
 protected:
 	bool InitializeBuffers(ID3D11Device*);
@@ -64,14 +61,14 @@ protected:
 	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
 	void CalculateNormal(VectorType, VectorType, VectorType&);
 
-protected:
 	void RenderBuffers(ID3D11DeviceContext*);
 
-protected:
+private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
-	int m_vertexCount, m_indexCount;
 
 	ModelType* m_model;
+protected:
+	int m_vertexCount, m_indexCount;
 };
 
 #endif

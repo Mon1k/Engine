@@ -75,12 +75,6 @@ void ModelClass::Shutdown()
 	return;
 }
 
-void ModelClass::Render(ID3D11DeviceContext* deviceContext)
-{
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
-}
-
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
 	return m_Texture->GetTexture();
@@ -608,6 +602,12 @@ void ModelClass::ShutdownBuffers()
 	return;
 }
 
+
+void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+{
+	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	RenderBuffers(deviceContext);
+}
 
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
