@@ -20,15 +20,6 @@ private:
 		D3DXVECTOR3 binormal;
 	};
 
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-		float tx, ty, tz;
-		float bx, by, bz;
-	};
-
 	struct TempVertexType
 	{
 		float x, y, z;
@@ -44,15 +35,7 @@ private:
 public:
 	ModelBumpClass();
 
-	virtual int GetIndexCount() {
-		return m_indexCount;
-	}
-	virtual int GetTtriangleCount() {
-		return m_vertexCount / 3;
-	}
-
 	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
-	bool LoadModelDs(char*);
 
 protected:
 	bool InitializeBuffers(ID3D11Device*);
@@ -65,10 +48,6 @@ protected:
 
 private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
-
-	ModelType* m_model;
-protected:
-	int m_vertexCount, m_indexCount;
 };
 
 #endif

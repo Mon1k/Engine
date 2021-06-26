@@ -25,6 +25,9 @@
     <Filter Include="models">
       <UniqueIdentifier>{55da235f-1bc4-4210-b9d3-fba4bba12e87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models\loader">
+      <UniqueIdentifier>{8a8a5202-0031-49ee-80e4-9d322b108db3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -126,6 +129,12 @@
     <ClCompile Include="models\modelbumpclass.cpp">
       <Filter>models</Filter>
     </ClCompile>
+    <ClCompile Include="models\loader\DsLoader.cpp">
+      <Filter>models\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="models\loader\ObjLoader.cpp">
+      <Filter>models\loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -226,6 +235,18 @@
     </ClInclude>
     <ClInclude Include="models\modelbumpclass.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\loader\AbstractLoader.h">
+      <Filter>models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="models\loader\DsLoader.h">
+      <Filter>models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="models\AbstractModel.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\loader\ObjLoader.h">
+      <Filter>models\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
