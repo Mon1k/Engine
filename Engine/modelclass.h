@@ -41,7 +41,7 @@ public:
 
 	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
 	void Shutdown();
-	void Render(ID3D11DeviceContext*);
+	void Render();
 
 	D3DXVECTOR3 GetPosition() {
 		return position;

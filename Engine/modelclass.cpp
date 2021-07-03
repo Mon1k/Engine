@@ -303,10 +303,10 @@ void ModelClass::ShutdownBuffers()
 }
 
 
-void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+void ModelClass::Render()
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
+	RenderBuffers(m_D3D->GetDeviceContext());
 }
 
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)

@@ -15,6 +15,9 @@ public:
     ModelType* m_model;
 
 public:
+    virtual void Render() {};
+    virtual void Shutdown() {};
+
     void setVertexCount(int vertexCount) {
         m_vertexCount = vertexCount;
         m_model = new ModelType[m_vertexCount];

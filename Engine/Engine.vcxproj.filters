@@ -135,6 +135,12 @@
     <ClCompile Include="models\loader\ObjLoader.cpp">
       <Filter>models\loader</Filter>
     </ClCompile>
+    <ClCompile Include="textures\specmapshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="models\ModelManager.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -248,6 +254,12 @@
     <ClInclude Include="models\loader\ObjLoader.h">
       <Filter>models\loader</Filter>
     </ClInclude>
+    <ClInclude Include="textures\specmapshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="models\ModelManager.h">
+      <Filter>models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -296,6 +308,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\bumpmap.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\specmap.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\specmap.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

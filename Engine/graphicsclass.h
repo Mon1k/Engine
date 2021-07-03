@@ -9,6 +9,7 @@
 #include "models/bbox.h"
 #include "textures/multitextureshaderclass.h"
 
+#include "textures/specmapshaderclass.h"
 #include "textures/bumpmapshaderclass.h"
 #include "textures/lightmapshaderclass.h"
 #include "textureshaderclass.h"
@@ -64,8 +65,10 @@ private:
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
 	ModelClass* m_ModelPlane3;
+	ModelClass* m_ModelPlane4;
 	BBox* m_Bbox;
 	
+	SpecMapShaderClass* m_SpecMapShader;
 	BumpMapShaderClass* m_BumpMapShader;
 	TextureShaderClass* m_TextureShader;
 	MultiTextureShaderClass* m_MultiTextureShader;

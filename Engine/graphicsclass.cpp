@@ -11,8 +11,10 @@ GraphicsClass::GraphicsClass()
 	m_ModelPlane = 0;
 	m_ModelPlane2 = 0;
 	m_ModelPlane3 = 0;
+	m_ModelPlane4 = 0;
 	m_Bbox = 0;
 	
+	m_SpecMapShader = 0;
 	m_BumpMapShader = 0;
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
@@ -82,9 +84,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light = new LightClass;
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(32.0f);
+	m_Light->SetSpecularPower(64.0f);
 
 	// Create the model object.
 	m_Model = new ModelClass;
@@ -122,7 +124,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_ModelPlane->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
-	m_ModelPlane->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
+	m_ModelPlane->SetPosition(D3DXVECTOR3(35.0f, 0.0f, -20.0f));
 	
 
 	m_ModelPlane2 = new ModelClass;
@@ -143,7 +145,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_ModelPlane3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
-	m_ModelPlane3->SetPosition(D3DXVECTOR3(35.0f, 0.0f, -20.0f));
+	m_ModelPlane3->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
+
+	m_ModelPlane4 = new ModelBumpClass;
+	std::vector<std::wstring> textures4 = { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" };
+	result = m_ModelPlane4->Initialize(m_D3D, "data/models/square.ds", textures4);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model plane 4 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane4->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+	m_ModelPlane4->SetPosition(D3DXVECTOR3(-5.0f, 0.0f, -20.0f));
 
 
 	// Create the multitexture shader object.
@@ -181,6 +193,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_BumpMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the specular map shader object.
+	m_SpecMapShader = new SpecMapShaderClass;
+	if (!m_SpecMapShader)
+	{
+		return false;
+	}
+
+	// Initialize the specular map shader object.
+	result = m_SpecMapShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the specular map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -259,13 +286,11 @@ void GraphicsClass::Shutdown()
 		m_Cursor = 0;
 	}
 
-	// Release the frustum object.
 	if (m_Frustum) {
 		delete m_Frustum;
 		m_Frustum = 0;
 	}
 
-	// Release the model list object.
 	if (m_ModelList) {
 		m_ModelList->Shutdown();
 		delete m_ModelList;
@@ -282,6 +307,13 @@ void GraphicsClass::Shutdown()
 	if (m_Light) {
 		delete m_Light;
 		m_Light = 0;
+	}
+
+	// Release the specular map shader object.
+	if (m_SpecMapShader) {
+		m_SpecMapShader->Shutdown();
+		delete m_SpecMapShader;
+		m_SpecMapShader = 0;
 	}
 
 	// Release the bump map shader object.
@@ -312,7 +344,6 @@ void GraphicsClass::Shutdown()
 		m_AlphaMapShader = 0;
 	}
 
-	// Release the model object.
 	if (m_ModelPlane) {
 		m_ModelPlane->Shutdown();
 		delete m_ModelPlane;
@@ -328,8 +359,12 @@ void GraphicsClass::Shutdown()
 		delete m_ModelPlane3;
 		m_ModelPlane3 = 0;
 	}
+	if (m_ModelPlane4) {
+		m_ModelPlane4->Shutdown();
+		delete m_ModelPlane4;
+		m_ModelPlane4 = 0;
+	}
 
-	// Release the light shader object.
 	if (m_LightShader) {
 		m_LightShader->Shutdown();
 		delete m_LightShader;
@@ -354,13 +389,11 @@ void GraphicsClass::Shutdown()
 		m_Model3 = 0;
 	}
 
-	// Release the camera object.
 	if (m_Camera) {
 		delete m_Camera;
 		m_Camera = 0;
 	}
 
-	// Release the D3D object.
 	if (m_D3D) {
 		m_D3D->Shutdown();
 		delete m_D3D;
@@ -420,7 +453,7 @@ bool GraphicsClass::Render()
 			D3DXMatrixTranslation(&worldMatrix, positionX, positionY, positionZ);
 
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-			m_Model2->Render(m_D3D->GetDeviceContext());
+			m_Model2->Render();
 
 			// Render the model using the light shader.
 			m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -440,8 +473,7 @@ bool GraphicsClass::Render()
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Model->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_Model->Render(m_D3D->GetDeviceContext());
-		// Render the model using the light shader.
+		m_Model->Render();
 		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
@@ -451,7 +483,7 @@ bool GraphicsClass::Render()
 
 	m_Model3->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_Model3->Render(m_D3D->GetDeviceContext());
+		m_Model3->Render();
 		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
 		triangleCount += m_Model3->GetTtriangleCount();
@@ -461,7 +493,7 @@ bool GraphicsClass::Render()
 
 	m_ModelPlane->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_ModelPlane->Render(m_D3D->GetDeviceContext());
+		m_ModelPlane->Render();
 		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
 		triangleCount += m_ModelPlane->GetTtriangleCount();
 		m_RenderCount++;
@@ -470,7 +502,7 @@ bool GraphicsClass::Render()
 
 	m_ModelPlane2->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_ModelPlane2->Render(m_D3D->GetDeviceContext());
+		m_ModelPlane2->Render();
 		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), m_ModelPlane2->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
 		triangleCount += m_ModelPlane2->GetTtriangleCount();
 		m_RenderCount++;
@@ -478,9 +510,19 @@ bool GraphicsClass::Render()
 
 	m_ModelPlane3->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_ModelPlane3->Render(m_D3D->GetDeviceContext());
+		m_ModelPlane3->Render();
 		m_AlphaMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane3->GetIndexCount(), m_ModelPlane3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane3->GetTextureArray());
 		triangleCount += m_ModelPlane3->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_ModelPlane4->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_ModelPlane4->Render();
+		m_SpecMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane4->GetIndexCount(), m_ModelPlane4->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_ModelPlane4->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		triangleCount += m_ModelPlane4->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
