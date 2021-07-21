@@ -103,6 +103,8 @@
     <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="models\ModelManager.cpp" />
     <ClCompile Include="positionclass.cpp" />
+    <ClCompile Include="render\2d\debugwindowclass.cpp" />
+    <ClCompile Include="render\rendertextureclass.cpp" />
     <ClCompile Include="sound\soundclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -143,6 +145,8 @@
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="models\ModelManager.h" />
     <ClInclude Include="positionclass.h" />
+    <ClInclude Include="render\2d\debugwindowclass.h" />
+    <ClInclude Include="render\rendertextureclass.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sound\soundclass.h" />
     <ClInclude Include="systemclass.h" />

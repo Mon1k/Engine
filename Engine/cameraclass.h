@@ -22,11 +22,17 @@ public:
 
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
+	D3DXMATRIX getBaseViewMatrix() {
+		return m_baseViewMatrix;
+	}
+	void setBaseViewMatrix() {
+		m_baseViewMatrix = m_viewMatrix;
+	}
 
 private:
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
-	D3DXMATRIX m_viewMatrix;
+	D3DXMATRIX m_baseViewMatrix, m_viewMatrix;
 };
 
 #endif

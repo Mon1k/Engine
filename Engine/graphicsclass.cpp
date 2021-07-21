@@ -21,6 +21,9 @@ GraphicsClass::GraphicsClass()
 	m_LightMapShader = 0;
 	m_AlphaMapShader = 0;
 
+	m_RenderTexture = 0;
+	m_DebugWindow = 0;
+
 	m_LightShader = 0;
 	m_Light = 0;
 	m_ModelList = 0;
@@ -63,6 +66,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPosition(0.0f, 0.0f, -40.0f);
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
+	m_Camera->setBaseViewMatrix();
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -87,6 +91,32 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(64.0f);
+
+	// Create the render to texture object.
+	m_RenderTexture = new RenderTextureClass;
+	if (!m_RenderTexture) {
+		return false;
+	}
+
+	// Initialize the render to texture object.
+	result = m_RenderTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
+	if (!result) {
+		return false;
+	}
+
+	// Create the debug window object.
+	m_DebugWindow = new DebugWindowClass;
+	if (!m_DebugWindow) {
+		return false;
+	}
+
+	// Initialize the debug window object.
+	result = m_DebugWindow->Initialize(m_D3D, screenWidth, screenHeight, 100, 100);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	// Create the model object.
 	m_Model = new ModelClass;
@@ -344,6 +374,20 @@ void GraphicsClass::Shutdown()
 		m_AlphaMapShader = 0;
 	}
 
+	// Release the debug window object.
+	if (m_DebugWindow) {
+		m_DebugWindow->Shutdown();
+		delete m_DebugWindow;
+		m_DebugWindow = 0;
+	}
+
+	// Release the render to texture object.
+	if (m_RenderTexture) {
+		m_RenderTexture->Shutdown();
+		delete m_RenderTexture;
+		m_RenderTexture = 0;
+	}
+
 	if (m_ModelPlane) {
 		m_ModelPlane->Shutdown();
 		delete m_ModelPlane;
@@ -412,16 +456,28 @@ bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool renderModel;
-	int modelCount, index, triangleCount;
+	int modelCount, index;
 	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR4 color;
 	D3DXVECTOR3 position, size;
+	bool result;
+
+	m_TriangleCount = 0;
+	m_RenderCount = 0;
+
+	// Generate the view matrix based on the camera's position.
+	m_Camera->Render();
+
+	// Render the entire scene to the texture first.
+	result = RenderToTexture();
+	if (!result) {
+		return false;
+	}
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
+	
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
@@ -429,11 +485,17 @@ bool GraphicsClass::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	triangleCount = 0;
-	m_RenderCount = 0;
-
 	// Construct the frustum.
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
+
+
+	//// render inside ////
+
+	// Render the scene as normal to the back buffer.
+	result = RenderScene();
+	if (!result) {
+		return false;
+	}
 
 	// Go through all the models and render them only if they can be seen by the camera view.
 	modelCount = m_ModelList->GetModelCount();
@@ -465,28 +527,18 @@ bool GraphicsClass::Render()
 
 			// Since this model was rendered then increase the count for this frame.
 			m_RenderCount++;
-			triangleCount += m_Model2->GetTtriangleCount();
+			m_TriangleCount += m_Model2->GetTtriangleCount();
 		}
 	}
 
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		m_Model->Render();
-		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-		triangleCount += m_Model->GetTtriangleCount();
-		m_RenderCount++;
-	}
-
 	m_Model3->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model3->Render();
 		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
-		triangleCount += m_Model3->GetTtriangleCount();
+		m_TriangleCount += m_Model3->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
@@ -495,7 +547,7 @@ bool GraphicsClass::Render()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane->Render();
 		m_MultiTextureShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane->GetIndexCount(), m_ModelPlane->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane->GetTextureArray());
-		triangleCount += m_ModelPlane->GetTtriangleCount();
+		m_TriangleCount += m_ModelPlane->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
@@ -504,7 +556,7 @@ bool GraphicsClass::Render()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane2->Render();
 		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), m_ModelPlane2->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
-		triangleCount += m_ModelPlane2->GetTtriangleCount();
+		m_TriangleCount += m_ModelPlane2->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
@@ -512,7 +564,7 @@ bool GraphicsClass::Render()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane3->Render();
 		m_AlphaMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane3->GetIndexCount(), m_ModelPlane3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane3->GetTextureArray());
-		triangleCount += m_ModelPlane3->GetTtriangleCount();
+		m_TriangleCount += m_ModelPlane3->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
@@ -522,16 +574,25 @@ bool GraphicsClass::Render()
 		m_SpecMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane4->GetIndexCount(), m_ModelPlane4->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_ModelPlane4->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor(),
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-		triangleCount += m_ModelPlane4->GetTtriangleCount();
+		m_TriangleCount += m_ModelPlane4->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
 	m_Bbox->Render(m_D3D, viewMatrix);
 
+	// Put the debug window vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_D3D->TurnZBufferOff();
+	m_D3D->GetWorldMatrix(worldMatrix);
+	m_D3D->GetOrthoMatrix(orthoMatrix);
+	m_DebugWindow->Render(10, 150);
+	m_TextureShader->Render(m_D3D->GetDeviceContext(), m_DebugWindow->GetIndexCount(), worldMatrix, m_Camera->getBaseViewMatrix(),
+		orthoMatrix, m_RenderTexture->GetShaderResourceView());
+	m_D3D->TurnZBufferOn();
+
 
 	// render ui
 	char string[128];
-	sprintf(string, "Render objects: %d, triangle: %d", m_RenderCount, triangleCount);
+	sprintf(string, "Render objects: %d, triangle: %d", m_RenderCount, m_TriangleCount);
 	m_Label2->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
 
 	m_Button->Render();
@@ -542,6 +603,51 @@ bool GraphicsClass::Render()
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
+
+	return true;
+}
+
+bool GraphicsClass::RenderToTexture()
+{
+	bool result;
+
+	// Set the render target to be the render to texture.
+	m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+
+	// Clear the render to texture.
+	m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Render the scene now and it will draw to the render to texture instead of the back buffer.
+	result = RenderScene();
+	if (!result) {
+		return false;
+	}
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	m_D3D->SetBackBufferRenderTarget();
+
+	return true;
+}
+
+bool GraphicsClass::RenderScene()
+{
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXVECTOR3 position, size;
+
+	// Get the world, view, and projection matrices from the camera and d3d objects.
+	m_D3D->GetWorldMatrix(worldMatrix);
+	m_Camera->GetViewMatrix(viewMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	m_Model->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_Model->Render();
+		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_TriangleCount += m_Model->GetTtriangleCount();
+		m_RenderCount++;
+	}
 
 	return true;
 }

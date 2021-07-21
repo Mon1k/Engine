@@ -28,6 +28,12 @@
     <Filter Include="models\loader">
       <UniqueIdentifier>{8a8a5202-0031-49ee-80e4-9d322b108db3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{eca0ba31-daf2-4dd4-849f-1c90ac2a98c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\2d">
+      <UniqueIdentifier>{34560bfe-fe85-4b07-a2a9-8a99efc69bab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -140,6 +146,12 @@
     </ClCompile>
     <ClCompile Include="models\ModelManager.cpp">
       <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="render\rendertextureclass.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\2d\debugwindowclass.cpp">
+      <Filter>render\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +271,12 @@
     </ClInclude>
     <ClInclude Include="models\ModelManager.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="render\rendertextureclass.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\2d\debugwindowclass.h">
+      <Filter>render\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

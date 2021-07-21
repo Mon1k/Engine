@@ -9,6 +9,9 @@
 #include "models/bbox.h"
 #include "textures/multitextureshaderclass.h"
 
+#include "render/rendertextureclass.h"
+#include "render/2d/debugwindowclass.h"
+
 #include "textures/specmapshaderclass.h"
 #include "textures/bumpmapshaderclass.h"
 #include "textures/lightmapshaderclass.h"
@@ -56,6 +59,10 @@ public:
 	};
 
 private:
+	bool RenderToTexture();
+	bool RenderScene();
+
+private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	
@@ -75,6 +82,9 @@ private:
 	LightMapShaderClass* m_LightMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
 
+	RenderTextureClass* m_RenderTexture;
+	DebugWindowClass* m_DebugWindow;
+
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	ModelListClass* m_ModelList;
@@ -82,6 +92,7 @@ private:
 	Label* m_Label2;
 
 	int m_RenderCount;
+	int m_TriangleCount;
 
 public:
 	Button* m_Button;
