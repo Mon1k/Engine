@@ -111,7 +111,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the debug window object.
-	result = m_DebugWindow->Initialize(m_D3D, screenWidth, screenHeight, 100, 100);
+	float divisor = screenWidth / (float)screenHeight;
+	result = m_DebugWindow->Initialize(m_D3D, screenWidth, screenHeight, 100, (int)(100 / divisor));
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
 		return false;
@@ -469,16 +470,12 @@ bool GraphicsClass::Render()
 	m_Camera->Render();
 
 	// Render the entire scene to the texture first.
-	result = RenderToTexture();
-	if (!result) {
-		return false;
-	}
+	RenderToTexture();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	
-
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
@@ -582,8 +579,6 @@ bool GraphicsClass::Render()
 
 	// Put the debug window vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_D3D->TurnZBufferOff();
-	m_D3D->GetWorldMatrix(worldMatrix);
-	m_D3D->GetOrthoMatrix(orthoMatrix);
 	m_DebugWindow->Render(10, 150);
 	m_TextureShader->Render(m_D3D->GetDeviceContext(), m_DebugWindow->GetIndexCount(), worldMatrix, m_Camera->getBaseViewMatrix(),
 		orthoMatrix, m_RenderTexture->GetShaderResourceView());
