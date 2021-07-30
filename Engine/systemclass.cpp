@@ -241,6 +241,9 @@ bool SystemClass::Frame()
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button2->onButtonPress(mouseX, mouseY)) {
 		done = true;
 	}
+	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Checkbox->onButtonPress(mouseX, mouseY)) {
+		m_Graphics->m_Checkbox->MarkedToogle();
+	}
 
 	// Get the current view point rotation.
 	rotation.y = m_Position->GetRotation();;

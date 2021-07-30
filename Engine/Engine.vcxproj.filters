@@ -153,6 +153,12 @@
     <ClCompile Include="render\2d\debugwindowclass.cpp">
       <Filter>render\2d</Filter>
     </ClCompile>
+    <ClCompile Include="fogshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Checkbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -278,6 +284,15 @@
     <ClInclude Include="render\2d\debugwindowclass.h">
       <Filter>render\2d</Filter>
     </ClInclude>
+    <ClInclude Include="fogshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\AbstractGUI.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\Checkbox.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -332,6 +347,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\specmap.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\fog.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\fog.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

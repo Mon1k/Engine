@@ -30,6 +30,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	// Initialize the location of the mouse on the screen.
 	m_mouseX = m_screenWidth / 2;
 	m_mouseY = m_screenHeight / 2;
+	for (int i = 0; i < 4; i++) {
+		m_PrevMouseState[i] = false;
+	}
 
 	// Initialize the main direct input interface.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
@@ -142,8 +145,15 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 BYTE InputClass::GetMouseButton()
 {
 	for (int i = 0; i < 4; i++) {
-		if (m_mouseState.rgbButtons[i]) {
+		if (m_mouseState.rgbButtons[i] && !m_PrevMouseState[i]) {
+			m_PrevMouseState[i] = true;
 			return i;
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		if (!m_mouseState.rgbButtons[i] && m_PrevMouseState[i]) {
+			m_PrevMouseState[i] = false;
 		}
 	}
 	

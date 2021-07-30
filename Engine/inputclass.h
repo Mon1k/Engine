@@ -38,6 +38,7 @@ private:
 	IDirectInputDevice8* m_mouse;
 
 	unsigned char m_keyboardState[256];
+	bool m_PrevMouseState[4];
 	DIMOUSESTATE m_mouseState;
 
 	int m_screenWidth, m_screenHeight;

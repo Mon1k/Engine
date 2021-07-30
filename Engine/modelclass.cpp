@@ -75,7 +75,11 @@ void ModelClass::Shutdown()
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
-	return m_Texture->GetTexture();
+	if (m_Texture) {
+		return m_Texture->GetTexture();
+	}
+
+	return m_TextureArray->GetTextureArray()[0];
 }
 
 ID3D11ShaderResourceView** ModelClass::GetTextureArray()

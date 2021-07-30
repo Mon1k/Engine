@@ -18,6 +18,7 @@
 #include "textureshaderclass.h"
 #include "alphamapshaderclass.h"
 #include "lightshaderclass.h"
+#include "fogshaderclass.h"
 
 #include "lightclass.h"
 #include "bitmapclass.h"
@@ -28,6 +29,7 @@
 #include "ui/button.h"
 #include "ui/label.h"
 #include "ui/cursor.h"
+#include "ui/Checkbox.h"
 
 
 const bool FULL_SCREEN = false;
@@ -81,6 +83,7 @@ private:
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
+	FogShaderClass* m_FogShader;
 
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;
@@ -98,6 +101,7 @@ public:
 	Button* m_Button;
 	Button* m_Button2;
 	Label* m_Label;
+	Checkbox* m_Checkbox;
 	Cursor* m_Cursor;
 };
 

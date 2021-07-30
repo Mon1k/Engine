@@ -85,6 +85,7 @@
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
+    <ClCompile Include="fogshaderclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="fpsclass.cpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="ui\button.cpp" />
+    <ClCompile Include="ui\Checkbox.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
     <ClCompile Include="ui\label.cpp" />
   </ItemGroup>
@@ -126,6 +128,7 @@
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
+    <ClInclude Include="fogshaderclass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
     <ClInclude Include="fpsclass.h" />
@@ -159,7 +162,9 @@
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="timerclass.h" />
+    <ClInclude Include="ui\AbstractGUI.h" />
     <ClInclude Include="ui\button.h" />
+    <ClInclude Include="ui\Checkbox.h" />
     <ClInclude Include="ui\cursor.h" />
     <ClInclude Include="ui\label.h" />
   </ItemGroup>
@@ -170,6 +175,8 @@
     <None Include="data\shaders\bumpmap.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
+    <None Include="data\shaders\fog.ps" />
+    <None Include="data\shaders\fog.vs" />
     <None Include="data\shaders\font.ps" />
     <None Include="data\shaders\font.vs" />
     <None Include="data\shaders\light.ps" />

@@ -20,6 +20,7 @@ GraphicsClass::GraphicsClass()
 	m_MultiTextureShader = 0;
 	m_LightMapShader = 0;
 	m_AlphaMapShader = 0;
+	m_FogShader = 0;
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
@@ -33,6 +34,7 @@ GraphicsClass::GraphicsClass()
 	m_Label2 = 0;
 	m_Button = 0;
 	m_Button2 = 0;
+	m_Checkbox = 0;
 	m_Cursor = 0;
 }
 
@@ -216,10 +218,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the bump map shader object.
 	m_BumpMapShader = new BumpMapShaderClass;
-	if (!m_BumpMapShader) {
-		return false;
-	}
-
 	// Initialize the bump map shader object.
 	result = m_BumpMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
@@ -229,11 +227,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the specular map shader object.
 	m_SpecMapShader = new SpecMapShaderClass;
-	if (!m_SpecMapShader)
-	{
-		return false;
-	}
-
 	// Initialize the specular map shader object.
 	result = m_SpecMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
@@ -241,6 +234,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the specular map shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Create the fog shader object.
+	m_FogShader = new FogShaderClass;
+	// Initialize the fog shader object.
+	result = m_FogShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 
 	// Create the model list object.
@@ -268,6 +271,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Button2 = new Button;
 	m_Button2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
 	m_Button2->Add("Exit", 10, 40, 1.0f, 0.3f, 0.3f);
+
+	m_Checkbox = new Checkbox;
+	m_Checkbox->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/checkbox.png", L"data/textures/ui/checkbox_marked.png", 18, 18, baseViewMatrix);
+	m_Checkbox->Add("Fog", 10, 70, 1.0f, 1.0f, 1.0f);
 
 	m_Label = new Label;
 	m_Label->Initialize(m_D3D, screenWidth, screenHeight, hwnd, 76, 28, baseViewMatrix);
@@ -317,6 +324,12 @@ void GraphicsClass::Shutdown()
 		m_Cursor = 0;
 	}
 
+	if (m_Checkbox) {
+		m_Checkbox->Shutdown();
+		delete m_Checkbox;
+		m_Checkbox = 0;
+	}
+
 	if (m_Frustum) {
 		delete m_Frustum;
 		m_Frustum = 0;
@@ -338,6 +351,14 @@ void GraphicsClass::Shutdown()
 	if (m_Light) {
 		delete m_Light;
 		m_Light = 0;
+	}
+
+	// Release the fog shader object.
+	if (m_FogShader)
+	{
+		m_FogShader->Shutdown();
+		delete m_FogShader;
+		m_FogShader = 0;
 	}
 
 	// Release the specular map shader object.
@@ -462,6 +483,17 @@ bool GraphicsClass::Render()
 	D3DXVECTOR4 color;
 	D3DXVECTOR3 position, size;
 	bool result;
+	float fogColor, fogStart, fogEnd;
+
+	fogColor = 0.0f;
+
+	if (m_Checkbox->getIsMarked()) {
+		// Set the color of the fog to grey.
+		fogColor = 0.5f;
+		// Set the start and end of the fog.
+		fogStart = 0.0f;
+		fogEnd = 50.0f;
+	}
 
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
@@ -473,7 +505,7 @@ bool GraphicsClass::Render()
 	RenderToTexture();
 
 	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
 
 	
 	// Get the world, view, and projection matrices from the camera and d3d objects.
@@ -489,10 +521,7 @@ bool GraphicsClass::Render()
 	//// render inside ////
 
 	// Render the scene as normal to the back buffer.
-	result = RenderScene();
-	if (!result) {
-		return false;
-	}
+	RenderScene();
 
 	// Go through all the models and render them only if they can be seen by the camera view.
 	modelCount = m_ModelList->GetModelCount();
@@ -515,9 +544,13 @@ bool GraphicsClass::Render()
 			m_Model2->Render();
 
 			// Render the model using the light shader.
-			m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), color,
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			if (m_Checkbox->getIsMarked()) {
+				m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
+			} else {
+				m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+					m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), color,
+					m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			}
 
 			// Reset to the original world matrix.
 			m_D3D->GetWorldMatrix(worldMatrix);
@@ -533,8 +566,7 @@ bool GraphicsClass::Render()
 	m_Model3->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model3->Render();
-		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
 		m_TriangleCount += m_Model3->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -587,14 +619,16 @@ bool GraphicsClass::Render()
 
 	// render ui
 	char string[128];
-	sprintf(string, "Render objects: %d, triangle: %d", m_RenderCount, m_TriangleCount);
+	sprintf(string, "Render objects: %d, triangles: %d", m_RenderCount, m_TriangleCount);
 	m_Label2->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
 
 	m_Button->Render();
 	m_Button2->Render();
 	m_Label->Render();
 	m_Label2->Render();
+	m_Checkbox->Render();
 	m_Cursor->Render();
+	
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();

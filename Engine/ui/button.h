@@ -17,7 +17,7 @@ public:
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Render();
-    bool Button::onButtonPress(int x, int y);
+    bool onButtonPress(int x, int y);
 
 private:
     D3DClass* m_D3D;
