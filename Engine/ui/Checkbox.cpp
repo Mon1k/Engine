@@ -138,6 +138,8 @@ bool Checkbox::Render()
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
+	// Turn on the alpha blending before rendering the text.
+	m_D3D->TurnOnAlphaBlending();
 
 	if (b_IsMarked) {
 		bitMapTemp = m_Bitmap_marked;
@@ -150,9 +152,6 @@ bool Checkbox::Render()
 	if (!result) {
 		return false;
 	}
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
 
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);

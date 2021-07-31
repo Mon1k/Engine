@@ -45,8 +45,8 @@ private:
 	PositionClass* m_Position;
 	SoundClass* m_Sound;
 
-	int screenWidth = 1300;// 1680;
-	int screenHeight = 768;// 1050;
+	int screenWidth = 1680;
+	int screenHeight = 1050;
 	bool done;
 };
 
