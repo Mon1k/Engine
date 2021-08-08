@@ -7,6 +7,10 @@ public:
     AbstractGui() {
         visible = true;
     };
+    void Shutdown() {};
+    bool Render() {
+        return true;
+    };
 
 public:
     bool visible;

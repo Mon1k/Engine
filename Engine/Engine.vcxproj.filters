@@ -159,6 +159,12 @@
     <ClCompile Include="ui\Checkbox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="clipplaneshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIManager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -293,6 +299,12 @@
     <ClInclude Include="ui\Checkbox.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="clipplaneshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIManager.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -353,6 +365,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\fog.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\clipplane.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\clipplane.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

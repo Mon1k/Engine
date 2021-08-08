@@ -3,6 +3,14 @@
 ModelManager::ModelManager()
 {
     models.clear();
+    m_D3D = 0;
+}
+
+bool ModelManager::Initialize(D3DClass* d3d)
+{
+    m_D3D = d3d;
+
+    return true;
 }
 
 bool ModelManager::Add(AbstractModel* model)

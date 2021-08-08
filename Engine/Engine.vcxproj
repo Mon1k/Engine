@@ -83,6 +83,7 @@
     <ClCompile Include="alphamapshaderclass.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
+    <ClCompile Include="clipplaneshaderclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="fogshaderclass.cpp" />
@@ -121,11 +122,13 @@
     <ClCompile Include="ui\Checkbox.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
     <ClCompile Include="ui\label.cpp" />
+    <ClCompile Include="ui\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="alphamapshaderclass.h" />
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
+    <ClInclude Include="clipplaneshaderclass.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="fogshaderclass.h" />
@@ -167,12 +170,15 @@
     <ClInclude Include="ui\Checkbox.h" />
     <ClInclude Include="ui\cursor.h" />
     <ClInclude Include="ui\label.h" />
+    <ClInclude Include="ui\UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps" />
     <None Include="data\shaders\alphamap.vs" />
     <None Include="data\shaders\bumpmap.ps" />
     <None Include="data\shaders\bumpmap.vs" />
+    <None Include="data\shaders\clipplane.ps" />
+    <None Include="data\shaders\clipplane.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
     <None Include="data\shaders\fog.ps" />

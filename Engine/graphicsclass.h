@@ -19,6 +19,7 @@
 #include "alphamapshaderclass.h"
 #include "lightshaderclass.h"
 #include "fogshaderclass.h"
+#include "clipplaneshaderclass.h"
 
 #include "lightclass.h"
 #include "bitmapclass.h"
@@ -84,6 +85,7 @@ private:
 	LightMapShaderClass* m_LightMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
 	FogShaderClass* m_FogShader;
+	ClipPlaneShaderClass* m_ClipPlaneShader;
 
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;

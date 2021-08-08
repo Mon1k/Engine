@@ -21,6 +21,7 @@ GraphicsClass::GraphicsClass()
 	m_LightMapShader = 0;
 	m_AlphaMapShader = 0;
 	m_FogShader = 0;
+	m_ClipPlaneShader = 0;
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
@@ -244,6 +245,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the clip plane shader object.
+	m_ClipPlaneShader = new ClipPlaneShaderClass;
+	// Initialize the clip plane shader object.
+	result = m_ClipPlaneShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 
 	// Create the model list object.
@@ -351,6 +361,15 @@ void GraphicsClass::Shutdown()
 	if (m_Light) {
 		delete m_Light;
 		m_Light = 0;
+	}
+
+
+
+	// Release the clip plane shader object.
+	if (m_ClipPlaneShader) {
+		m_ClipPlaneShader->Shutdown();
+		delete m_ClipPlaneShader;
+		m_ClipPlaneShader = 0;
 	}
 
 	// Release the fog shader object.
@@ -481,11 +500,13 @@ bool GraphicsClass::Render()
 	int modelCount, index;
 	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR4 color;
+	D3DXVECTOR4 clipPlane;
 	D3DXVECTOR3 position, size;
 	bool result;
 	float fogColor, fogStart, fogEnd;
 
 	fogColor = 0.0f;
+	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 
 	if (m_Checkbox->getIsMarked()) {
 		// Set the color of the fog to grey.
@@ -567,6 +588,8 @@ bool GraphicsClass::Render()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model3->Render();
 		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+		/*m_ClipPlaneShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix,
+			projectionMatrix, m_Model3->GetTexture(), clipPlane);*/
 		m_TriangleCount += m_Model3->GetTtriangleCount();
 		m_RenderCount++;
 	}

@@ -81,7 +81,7 @@ bool Checkbox::Add(char* text, int positionX, int positionY, float red, float gr
 	m_x = positionX;
 	m_y = positionY;
 
-	return m_Text->AddText(text, m_x + m_width / 4 + m_width, m_y + m_height / 3, red, green, blue);
+	return m_Text->AddText(text, m_x + m_width / 4 + m_width, m_y + m_height / 4, red, green, blue);
 }
 
 void Checkbox::Shutdown()
@@ -158,6 +158,7 @@ bool Checkbox::Render()
 	if (!result) {
 		return false;
 	}
+	
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
 
