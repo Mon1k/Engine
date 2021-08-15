@@ -5,6 +5,8 @@ cbuffer TranslationBuffer
 {
     float textureTranslationX;
     float textureTranslationY;
+    float texturePositionX;
+    float texturePositionY;
 };
 
 struct PixelInputType
@@ -19,5 +21,9 @@ float4 TranslatePixelShader(PixelInputType input) : SV_TARGET
     input.tex.x += textureTranslationX;
     input.tex.y += textureTranslationY;
 
-    return shaderTexture.Sample(SampleType, input.tex);
+    float2 tileSize = float2(1.0f / 8.0f, 1.0f / 6.0f);
+    float2 tileXY = float2(texturePositionX, texturePositionY);
+    float2 tex = input.tex * tileSize + tileXY * tileSize;
+
+    return shaderTexture.Sample(SampleType, tex);
 }

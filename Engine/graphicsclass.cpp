@@ -12,6 +12,7 @@ GraphicsClass::GraphicsClass()
 	m_ModelPlane2 = 0;
 	m_ModelPlane3 = 0;
 	m_ModelPlane4 = 0;
+	m_ModelPlane5 = 0;
 	m_Bbox = 0;
 	
 	m_SpecMapShader = 0;
@@ -22,6 +23,7 @@ GraphicsClass::GraphicsClass()
 	m_AlphaMapShader = 0;
 	m_FogShader = 0;
 	m_ClipPlaneShader = 0;
+	m_TranslateShader = 0;
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
@@ -191,6 +193,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane4->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	m_ModelPlane4->SetPosition(D3DXVECTOR3(-5.0f, 0.0f, -20.0f));
 
+	m_ModelPlane5 = new ModelBumpClass;
+	std::vector<std::wstring> textures5 = { L"data/textures/explosion.png" };
+	result = m_ModelPlane5->Initialize(m_D3D, "data/models/square.ds", textures5);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model plane 5 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+	m_ModelPlane5->SetPosition(D3DXVECTOR3(-15.0f, 0.0f, -20.0f));
+
 
 	// Create the multitexture shader object.
 	m_MultiTextureShader = new MultiTextureShaderClass;
@@ -253,6 +265,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Create the texture translation shader object.
+	m_TranslateShader = new TranslateShaderClass;
+	// Initialize the texture translation shader object.
+	result = m_TranslateShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the texture translation shader object.", L"Error", MB_OK);
+		return false;
+	}
+	m_TranslateShader->setMaxFrame(8.0f, 6.0f);
 
 
 
@@ -365,6 +387,13 @@ void GraphicsClass::Shutdown()
 
 
 
+	// Release the texture translation shader object.
+	if (m_TranslateShader) {
+		m_TranslateShader->Shutdown();
+		delete m_TranslateShader;
+		m_TranslateShader = 0;
+	}
+
 	// Release the clip plane shader object.
 	if (m_ClipPlaneShader) {
 		m_ClipPlaneShader->Shutdown();
@@ -449,6 +478,12 @@ void GraphicsClass::Shutdown()
 		delete m_ModelPlane4;
 		m_ModelPlane4 = 0;
 	}
+	if (m_ModelPlane5) {
+		m_ModelPlane5->Shutdown();
+		delete m_ModelPlane5;
+		m_ModelPlane5 = 0;
+	}
+
 
 	if (m_LightShader) {
 		m_LightShader->Shutdown();
@@ -504,9 +539,18 @@ bool GraphicsClass::Render()
 	D3DXVECTOR3 position, size;
 	bool result;
 	float fogColor, fogStart, fogEnd;
+	static float textureTranslation = 0.0f;
 
 	fogColor = 0.0f;
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
+
+	// Increment the texture translation position.
+	textureTranslation += 0.001f;
+	if (textureTranslation > 1.0f) {
+		textureTranslation -= 1.0f;
+		m_TranslateShader->incrementFrame();
+	}
+
 
 	if (m_Checkbox->getIsMarked()) {
 		// Set the color of the fog to grey.
@@ -627,6 +671,17 @@ bool GraphicsClass::Render()
 			m_ModelPlane4->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor(),
 			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 		m_TriangleCount += m_ModelPlane4->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_ModelPlane5->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_ModelPlane5->Render();
+		m_D3D->TurnOnAlphaBlending();
+		m_TranslateShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane5->GetIndexCount(), m_ModelPlane5->GetWorldMatrix(), viewMatrix,
+			projectionMatrix, m_ModelPlane5->GetTexture());
+		m_D3D->TurnOffAlphaBlending();
+		m_TriangleCount += m_ModelPlane5->GetTtriangleCount();
 		m_RenderCount++;
 	}
 

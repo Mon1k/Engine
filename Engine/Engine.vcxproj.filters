@@ -165,6 +165,9 @@
     <ClCompile Include="ui\UIManager.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="textures\translateshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -305,6 +308,9 @@
     <ClInclude Include="ui\UIManager.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="textures\translateshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -371,6 +377,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\clipplane.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\translate.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\translate.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
