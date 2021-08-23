@@ -545,7 +545,7 @@ bool GraphicsClass::Render()
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 
 	// Increment the texture translation position.
-	textureTranslation += 0.001f;
+	textureTranslation += 0.005f;
 	if (textureTranslation > 1.0f) {
 		textureTranslation -= 1.0f;
 		m_TranslateShader->incrementFrame();

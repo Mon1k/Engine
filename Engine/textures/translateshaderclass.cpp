@@ -393,15 +393,16 @@ void TranslateShaderClass::incrementFrame()
 	float stepY = 1.0f / maxYFrame;
 
 	currentXFrame += stepX;
-	currentXPosition += stepX;
+	currentXPosition++;
 	if (currentXFrame >= maxXFrame) {
 		currentXFrame = 0;
 		currentXPosition = 0;
 		currentYFrame += stepY;
-		currentYPosition += stepY;
+		currentYPosition++;
 		if (currentYFrame >= maxYFrame) {
 			currentYFrame = 0;
 			currentYPosition = 0;
+			
 		}
 	}
 }
