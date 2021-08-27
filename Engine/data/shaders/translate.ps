@@ -3,10 +3,12 @@ SamplerState SampleType;
 
 cbuffer TranslationBuffer
 {
-    float textureTranslationX;
-    float textureTranslationY;
-    float textureFrameX;
-    float textureFrameY;
+    float textureXTranslation;
+    float textureYTranslation;
+    int textureXFrame;
+    int textureYFrame;
+    int maxXFrame;
+    int maxYFrame;
 };
 
 struct PixelInputType
@@ -17,14 +19,10 @@ struct PixelInputType
 
 float4 TranslatePixelShader(PixelInputType input) : SV_TARGET
 {
-    // Translate the position where we sample the pixel from.
-   // input.tex.x += textureTranslationX;
-   // input.tex.y += textureTranslationY;
+    int tileFrame = textureXFrame + textureYFrame * maxXFrame;
 
-    int tileFrame = textureFrameX + textureFrameY * 8;
-
-    float2 tileSize = float2(1.0 / 8, 1.0 / 6);
-    float2 tileXY = float2(tileFrame % 8, tileFrame / 6);
+    float2 tileSize = float2(1.0 / maxXFrame, 1.0 / maxYFrame);
+    float2 tileXY = float2(textureXFrame, textureYFrame);
     float2 tex = input.tex * tileSize + tileXY * tileSize;
 
     return shaderTexture.Sample(SampleType, tex);

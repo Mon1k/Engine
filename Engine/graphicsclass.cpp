@@ -274,7 +274,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the texture translation shader object.", L"Error", MB_OK);
 		return false;
 	}
-	m_TranslateShader->setMaxFrame(8.0f, 6.0f);
+	m_TranslateShader->setMaxFrame(8, 6);
 
 
 
@@ -545,7 +545,7 @@ bool GraphicsClass::Render()
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 
 	// Increment the texture translation position.
-	textureTranslation += 0.005f;
+	textureTranslation += 0.05f;
 	if (textureTranslation > 1.0f) {
 		textureTranslation -= 1.0f;
 		m_TranslateShader->incrementFrame();

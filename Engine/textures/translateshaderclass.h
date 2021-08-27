@@ -21,8 +21,12 @@ private:
 	{
 		float translationX;
 		float translationY;
-		float positionX;
-		float positionY;
+		int frameX;
+		int frameY;
+		int maxXFrame;
+		int maxYFrame;
+		int padding1;
+		int padding2;
 	};
 
 public:
@@ -34,11 +38,11 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 	void incrementFrame();
-	void setFrame(float x, float y) {
+	void setFrame(int x, int y) {
 		currentXFrame = x;
 		currentYFrame = y;
 	};
-	void setMaxFrame(float x, float y) {
+	void setMaxFrame(int x, int y) {
 		maxXFrame = x;
 		maxYFrame = y;
 	};
@@ -61,8 +65,8 @@ private:
 	ID3D11Buffer* m_translateBuffer;
 
 	float currentXPosition, currentYPosition;
-	float currentXFrame, currentYFrame;
-	float maxXFrame, maxYFrame;
+	int currentXFrame, currentYFrame;
+	int maxXFrame, maxYFrame;
 };
 
 #endif

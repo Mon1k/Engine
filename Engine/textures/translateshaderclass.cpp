@@ -15,8 +15,8 @@ TranslateShaderClass::TranslateShaderClass()
 	currentYPosition = 0;
 	currentXFrame = 0;
 	currentYFrame = 0;
-	maxXFrame = 1.0f;
-	maxYFrame = 1.0f;
+	maxXFrame = 1;
+	maxYFrame = 1;
 }
 
 
@@ -333,10 +333,12 @@ bool TranslateShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContex
 	dataPtr2 = (TranslateBufferType*)mappedResource.pData;
 
 	// Copy the translation value into the texture translation constant buffer.
-	dataPtr2->translationX = currentXFrame;
-	dataPtr2->translationY = currentYFrame;
-	dataPtr2->positionX = currentXPosition;
-	dataPtr2->positionY = currentYPosition;
+	dataPtr2->translationX = currentXPosition;
+	dataPtr2->translationY = currentYPosition;
+	dataPtr2->frameX = currentXFrame;
+	dataPtr2->frameY = currentYFrame;
+	dataPtr2->maxXFrame = maxXFrame;
+	dataPtr2->maxYFrame = maxYFrame;
 
 	// Unlock the buffer.
 	deviceContext->Unmap(m_translateBuffer, 0);
@@ -392,17 +394,16 @@ void TranslateShaderClass::incrementFrame()
 	float stepX = 1.0f / maxXFrame;
 	float stepY = 1.0f / maxYFrame;
 
-	currentXFrame += stepX;
-	currentXPosition++;
+	currentXPosition += stepX;
+	currentXFrame++;
 	if (currentXFrame >= maxXFrame) {
 		currentXFrame = 0;
 		currentXPosition = 0;
-		currentYFrame += stepY;
-		currentYPosition++;
+		currentYPosition += stepY;
+		currentYFrame++;
 		if (currentYFrame >= maxYFrame) {
 			currentYFrame = 0;
 			currentYPosition = 0;
-			
 		}
 	}
 }
