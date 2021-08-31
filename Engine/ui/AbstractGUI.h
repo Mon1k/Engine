@@ -11,6 +11,12 @@ public:
     bool Render() {
         return true;
     };
+    void hide() {
+        visible = false;
+    };
+    void show() {
+        visible = true;
+    };
 
 public:
     bool visible;

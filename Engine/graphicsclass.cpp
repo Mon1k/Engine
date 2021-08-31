@@ -13,6 +13,7 @@ GraphicsClass::GraphicsClass()
 	m_ModelPlane3 = 0;
 	m_ModelPlane4 = 0;
 	m_ModelPlane5 = 0;
+	m_ModelPlane6 = 0;
 	m_Bbox = 0;
 	
 	m_SpecMapShader = 0;
@@ -24,6 +25,7 @@ GraphicsClass::GraphicsClass()
 	m_FogShader = 0;
 	m_ClipPlaneShader = 0;
 	m_TranslateShader = 0;
+	m_TransparentShader = 0;
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
@@ -183,7 +185,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
 	m_ModelPlane3->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
 
-	m_ModelPlane4 = new ModelBumpClass;
+	m_ModelPlane4 = new ModelClass;
 	std::vector<std::wstring> textures4 = { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" };
 	result = m_ModelPlane4->Initialize(m_D3D, "data/models/square.ds", textures4);
 	if (!result) {
@@ -193,7 +195,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane4->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	m_ModelPlane4->SetPosition(D3DXVECTOR3(-5.0f, 0.0f, -20.0f));
 
-	m_ModelPlane5 = new ModelBumpClass;
+	m_ModelPlane5 = new ModelClass;
 	std::vector<std::wstring> textures5 = { L"data/textures/explosion.png" };
 	result = m_ModelPlane5->Initialize(m_D3D, "data/models/square.ds", textures5);
 	if (!result) {
@@ -202,6 +204,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	m_ModelPlane5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	m_ModelPlane5->SetPosition(D3DXVECTOR3(-15.0f, 0.0f, -20.0f));
+
+	m_ModelPlane6 = new ModelClass;
+	std::vector<std::wstring> textures6 = { L"data/textures/stone01.dds" };
+	result = m_ModelPlane6->Initialize(m_D3D, "data/models/square.ds", textures6);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model plane 6 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+	m_ModelPlane6->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -30.0f));
 
 
 	// Create the multitexture shader object.
@@ -275,6 +287,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_TranslateShader->setMaxFrame(8, 6);
+
+	// Create the transparent shader object.
+	m_TransparentShader = new TransparentShaderClass;
+	// Initialize the transparent shader object.
+	result = m_TransparentShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
+		return false;
+	}
 
 
 
@@ -387,6 +408,13 @@ void GraphicsClass::Shutdown()
 
 
 
+	// Release the transparent shader object.
+	if (m_TransparentShader) {
+		m_TransparentShader->Shutdown();
+		delete m_TransparentShader;
+		m_TransparentShader = 0;
+	}
+
 	// Release the texture translation shader object.
 	if (m_TranslateShader) {
 		m_TranslateShader->Shutdown();
@@ -483,6 +511,11 @@ void GraphicsClass::Shutdown()
 		delete m_ModelPlane5;
 		m_ModelPlane5 = 0;
 	}
+	if (m_ModelPlane6) {
+		m_ModelPlane6->Shutdown();
+		delete m_ModelPlane6;
+		m_ModelPlane6 = 0;
+	}
 
 
 	if (m_LightShader) {
@@ -540,12 +573,14 @@ bool GraphicsClass::Render()
 	bool result;
 	float fogColor, fogStart, fogEnd;
 	static float textureTranslation = 0.0f;
+	float blendAmount;
 
+	blendAmount = 0.5f;
 	fogColor = 0.0f;
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 
 	// Increment the texture translation position.
-	textureTranslation += 0.05f;
+	textureTranslation += 0.02f;
 	if (textureTranslation > 1.0f) {
 		textureTranslation -= 1.0f;
 		m_TranslateShader->incrementFrame();
@@ -676,12 +711,22 @@ bool GraphicsClass::Render()
 
 	m_ModelPlane5->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		m_ModelPlane5->Render();
 		m_D3D->TurnOnAlphaBlending();
+		m_ModelPlane5->Render();
 		m_TranslateShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane5->GetIndexCount(), m_ModelPlane5->GetWorldMatrix(), viewMatrix,
 			projectionMatrix, m_ModelPlane5->GetTexture());
 		m_D3D->TurnOffAlphaBlending();
 		m_TriangleCount += m_ModelPlane5->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_ModelPlane6->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_D3D->TurnOnAlphaBlending();
+		m_ModelPlane6->Render();
+		m_TransparentShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane6->GetIndexCount(), m_ModelPlane6->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane6->GetTexture(), blendAmount);
+		m_D3D->TurnOffAlphaBlending();
+		m_TriangleCount += m_ModelPlane6->GetTtriangleCount();
 		m_RenderCount++;
 	}
 

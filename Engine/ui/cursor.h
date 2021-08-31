@@ -1,11 +1,13 @@
 #ifndef _CURSOR_H_
 #define _CURSOR_H_
 
+#include "AbstractGUI.h"
+
 #include "../d3dclass.h"
 #include "../textureshaderclass.h"
 #include "../bitmapclass.h"
 
-class Cursor
+class Cursor: public AbstractGui
 {
 public:
     Cursor();

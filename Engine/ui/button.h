@@ -1,12 +1,14 @@
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
 
+#include "AbstractGUI.h"
+
 #include "../d3dclass.h"
 #include "../textureshaderclass.h"
 #include "../bitmapclass.h"
 #include "../textclass.h"
 
-class Button
+class Button: public AbstractGui
 {
 public:
     Button();

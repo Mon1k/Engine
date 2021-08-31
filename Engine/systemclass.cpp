@@ -229,8 +229,14 @@ bool SystemClass::Frame()
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 	int mouseButton = m_Input->GetMouseButton();
+	int mouseButtonPress = m_Input->getMouseButtonPress();
 
-	m_Graphics->m_Cursor->Set(mouseX, mouseY);
+	if (mouseButtonPress == MOUSE_BUTTON2) {
+		m_Graphics->m_Cursor->Set(mouseX, mouseY);
+		m_Graphics->m_Cursor->show();
+	} else {
+		m_Graphics->m_Cursor->hide();
+	}
 	char mouseString[128];
 	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d, MouseButton: %u", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY, mouseButton);
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);

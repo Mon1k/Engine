@@ -26,6 +26,7 @@ public:
 	void GetMouseLocation(int&, int&);
 	bool IsKeyDown(unsigned int);
 	BYTE GetMouseButton();
+	BYTE getMouseButtonPress();
 
 private:
 	bool ReadKeyboard();

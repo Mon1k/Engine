@@ -118,6 +118,7 @@
     <ClCompile Include="textures\specmapshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="textures\translateshaderclass.cpp" />
+    <ClCompile Include="textures\transparentshaderclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="ui\button.cpp" />
     <ClCompile Include="ui\Checkbox.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="textures\translateshaderclass.h" />
+    <ClInclude Include="textures\transparentshaderclass.h" />
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="ui\AbstractGUI.h" />
     <ClInclude Include="ui\button.h" />
@@ -199,6 +201,8 @@
     <None Include="data\shaders\texture.vs" />
     <None Include="data\shaders\translate.ps" />
     <None Include="data\shaders\translate.vs" />
+    <None Include="data\shaders\transparent.ps" />
+    <None Include="data\shaders\transparent.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

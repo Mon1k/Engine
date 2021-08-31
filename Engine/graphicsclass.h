@@ -12,6 +12,7 @@
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
 
+#include "textures/transparentshaderclass.h"
 #include "textures/translateshaderclass.h"
 #include "textures/specmapshaderclass.h"
 #include "textures/bumpmapshaderclass.h"
@@ -78,6 +79,7 @@ private:
 	ModelClass* m_ModelPlane3;
 	ModelClass* m_ModelPlane4;
 	ModelClass* m_ModelPlane5;
+	ModelClass* m_ModelPlane6;
 	BBox* m_Bbox;
 	
 	SpecMapShaderClass* m_SpecMapShader;
@@ -89,6 +91,7 @@ private:
 	FogShaderClass* m_FogShader;
 	ClipPlaneShaderClass* m_ClipPlaneShader;
 	TranslateShaderClass* m_TranslateShader;
+	TransparentShaderClass* m_TransparentShader;
 
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;

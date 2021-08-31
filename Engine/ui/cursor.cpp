@@ -90,6 +90,10 @@ bool Cursor::Render()
 	bool result;
 	D3DXMATRIX worldMatrix, orthoMatrix;
 
+	if (!visible) {
+		return true;
+	}
+
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
