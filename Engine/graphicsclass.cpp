@@ -41,6 +41,12 @@ GraphicsClass::GraphicsClass()
 	m_Button2 = 0;
 	m_Checkbox = 0;
 	m_Cursor = 0;
+
+	int size = sizeof(m_Counters) / sizeof(m_Counters[0]);
+	for (int i = 0; i < size; i++) {
+		m_Counters[i] = 0;
+	}
+
 }
 
 
@@ -185,7 +191,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
 	m_ModelPlane3->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
 
-	m_ModelPlane4 = new ModelClass;
+	m_ModelPlane4 = new ModelBumpClass;
 	std::vector<std::wstring> textures4 = { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" };
 	result = m_ModelPlane4->Initialize(m_D3D, "data/models/square.ds", textures4);
 	if (!result) {
@@ -556,9 +562,15 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-bool GraphicsClass::Frame()
+void GraphicsClass::frame(TimerClass *timer)
 {
-	return true;
+	float time = timer->GetTime();
+	
+	m_Counters[0] += (long)time;
+	if (m_Counters[0] > 50) {
+		m_TranslateShader->incrementFrame();
+		m_Counters[0] = 0;
+	}
 }
 
 bool GraphicsClass::Render()
@@ -572,20 +584,11 @@ bool GraphicsClass::Render()
 	D3DXVECTOR3 position, size;
 	bool result;
 	float fogColor, fogStart, fogEnd;
-	static float textureTranslation = 0.0f;
 	float blendAmount;
 
 	blendAmount = 0.5f;
 	fogColor = 0.0f;
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
-
-	// Increment the texture translation position.
-	textureTranslation += 0.02f;
-	if (textureTranslation > 1.0f) {
-		textureTranslation -= 1.0f;
-		m_TranslateShader->incrementFrame();
-	}
-
 
 	if (m_Checkbox->getIsMarked()) {
 		// Set the color of the fog to grey.

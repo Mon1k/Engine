@@ -15,12 +15,16 @@ public:
 	void Frame();
 
 	float GetTime();
+	float getDifferenceTime() {
+		return m_differenceTime;
+	};
 
 private:
 	INT64 m_frequency;
 	float m_ticksPerMs;
 	INT64 m_startTime;
 	float m_frameTime;
+	float m_differenceTime;
 };
 
 #endif

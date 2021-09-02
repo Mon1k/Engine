@@ -28,6 +28,7 @@
 #include "textclass.h"
 #include "modellistclass.h"
 #include "frustumclass.h"
+#include "timerclass.h"
 
 #include "ui/button.h"
 #include "ui/label.h"
@@ -50,7 +51,7 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	void frame(TimerClass*);
 	bool Render();
 
 	D3DClass* getD3D() {
@@ -82,12 +83,12 @@ private:
 	ModelClass* m_ModelPlane6;
 	BBox* m_Bbox;
 	
-	SpecMapShaderClass* m_SpecMapShader;
-	BumpMapShaderClass* m_BumpMapShader;
 	TextureShaderClass* m_TextureShader;
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
+	BumpMapShaderClass* m_BumpMapShader;
+	SpecMapShaderClass* m_SpecMapShader;
 	FogShaderClass* m_FogShader;
 	ClipPlaneShaderClass* m_ClipPlaneShader;
 	TranslateShaderClass* m_TranslateShader;
@@ -104,6 +105,7 @@ private:
 
 	int m_RenderCount;
 	int m_TriangleCount;
+	long m_Counters[1];
 
 public:
 	Button* m_Button;
