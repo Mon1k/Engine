@@ -171,6 +171,9 @@
     <ClCompile Include="textures\transparentshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="textures\reflectionshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -317,6 +320,9 @@
     <ClInclude Include="textures\transparentshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="textures\reflectionshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -395,6 +401,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\transparent.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\reflection.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\reflection.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

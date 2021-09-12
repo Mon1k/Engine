@@ -22,6 +22,7 @@ public:
 
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
+	void setViewMatrix(D3DXMATRIX);
 	D3DXMATRIX getBaseViewMatrix() {
 		return m_baseViewMatrix;
 	}
@@ -29,10 +30,15 @@ public:
 		m_baseViewMatrix = m_viewMatrix;
 	}
 
+	void RenderReflection(float);
+	D3DXMATRIX GetReflectionViewMatrix();
+
 private:
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
+	
 	D3DXMATRIX m_baseViewMatrix, m_viewMatrix;
+	D3DXMATRIX m_reflectionViewMatrix;
 };
 
 #endif

@@ -115,6 +115,7 @@
     <ClCompile Include="textures\bumpmapshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
+    <ClCompile Include="textures\reflectionshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="textures\translateshaderclass.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="textures\bumpmapshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
+    <ClInclude Include="textures\reflectionshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="textures\translateshaderclass.h" />
@@ -195,6 +197,8 @@
     <None Include="data\shaders\lightmap.vs" />
     <None Include="data\shaders\multitexture.ps" />
     <None Include="data\shaders\multitexture.vs" />
+    <None Include="data\shaders\reflection.ps" />
+    <None Include="data\shaders\reflection.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
     <None Include="data\shaders\texture.ps" />

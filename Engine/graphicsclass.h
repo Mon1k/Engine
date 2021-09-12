@@ -12,6 +12,7 @@
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
 
+#include "textures/reflectionshaderclass.h"
 #include "textures/transparentshaderclass.h"
 #include "textures/translateshaderclass.h"
 #include "textures/specmapshaderclass.h"
@@ -66,6 +67,7 @@ public:
 
 private:
 	bool RenderToTexture();
+	bool RenderToTextureReflection();
 	bool RenderScene();
 
 private:
@@ -78,9 +80,10 @@ private:
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
 	ModelClass* m_ModelPlane3;
-	ModelClass* m_ModelPlane4;
+	ModelBumpClass* m_ModelPlane4;
 	ModelClass* m_ModelPlane5;
 	ModelClass* m_ModelPlane6;
+	ModelClass* m_ModelPlane7;
 	BBox* m_Bbox;
 	
 	TextureShaderClass* m_TextureShader;
@@ -93,9 +96,12 @@ private:
 	ClipPlaneShaderClass* m_ClipPlaneShader;
 	TranslateShaderClass* m_TranslateShader;
 	TransparentShaderClass* m_TransparentShader;
+	ReflectionShaderClass* m_ReflectionShader;
 
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;
+
+	RenderTextureClass* m_RenderTextureReflection;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
@@ -105,7 +111,7 @@ private:
 
 	int m_RenderCount;
 	int m_TriangleCount;
-	long m_Counters[1];
+	float m_Counters[1];
 
 public:
 	Button* m_Button;

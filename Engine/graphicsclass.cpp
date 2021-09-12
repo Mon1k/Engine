@@ -14,6 +14,7 @@ GraphicsClass::GraphicsClass()
 	m_ModelPlane4 = 0;
 	m_ModelPlane5 = 0;
 	m_ModelPlane6 = 0;
+	m_ModelPlane7 = 0;
 	m_Bbox = 0;
 	
 	m_SpecMapShader = 0;
@@ -26,9 +27,11 @@ GraphicsClass::GraphicsClass()
 	m_ClipPlaneShader = 0;
 	m_TranslateShader = 0;
 	m_TransparentShader = 0;
+	m_ReflectionShader = 0;
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
+	m_RenderTextureReflection = 0;
 
 	m_LightShader = 0;
 	m_Light = 0;
@@ -113,10 +116,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the render to texture object.
 	result = m_RenderTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
-	if (!result) {
-		return false;
-	}
-
 	// Create the debug window object.
 	m_DebugWindow = new DebugWindowClass;
 	if (!m_DebugWindow) {
@@ -130,6 +129,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Create the render to texture object.
+	m_RenderTextureReflection = new RenderTextureClass;
+	// Initialize the render to texture object.
+	result = m_RenderTextureReflection->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
+	if (!result) {
+		return false;
+	}
+
 
 
 	// Create the model object.
@@ -221,6 +229,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	m_ModelPlane6->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -30.0f));
 
+	m_ModelPlane7 = new ModelClass;
+	std::vector<std::wstring> textures7 = { L"data/textures/blue01.dds" };
+	result = m_ModelPlane7->Initialize(m_D3D, "data/models/floor.ds", textures7);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the model plane 7 object.", L"Error", MB_OK);
+		return false;
+	}
+	m_ModelPlane7->SetScale(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+	m_ModelPlane7->SetPosition(D3DXVECTOR3(0.0f, -5.0f, -30.0f));
+
+
 
 	// Create the multitexture shader object.
 	m_MultiTextureShader = new MultiTextureShaderClass;
@@ -300,6 +319,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_TransparentShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the reflection shader object.
+	m_ReflectionShader = new ReflectionShaderClass;
+	// Initialize the reflection shader object.
+	result = m_ReflectionShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -414,6 +442,13 @@ void GraphicsClass::Shutdown()
 
 
 
+	// Release the reflection shader object.
+	if (m_ReflectionShader) {
+		m_ReflectionShader->Shutdown();
+		delete m_ReflectionShader;
+		m_ReflectionShader = 0;
+	}
+
 	// Release the transparent shader object.
 	if (m_TransparentShader) {
 		m_TransparentShader->Shutdown();
@@ -484,13 +519,18 @@ void GraphicsClass::Shutdown()
 		delete m_DebugWindow;
 		m_DebugWindow = 0;
 	}
-
 	// Release the render to texture object.
 	if (m_RenderTexture) {
 		m_RenderTexture->Shutdown();
 		delete m_RenderTexture;
 		m_RenderTexture = 0;
 	}
+	if (m_RenderTextureReflection) {
+		m_RenderTextureReflection->Shutdown();
+		delete m_RenderTextureReflection;
+		m_RenderTextureReflection = 0;
+	}
+
 
 	if (m_ModelPlane) {
 		m_ModelPlane->Shutdown();
@@ -521,6 +561,11 @@ void GraphicsClass::Shutdown()
 		m_ModelPlane6->Shutdown();
 		delete m_ModelPlane6;
 		m_ModelPlane6 = 0;
+	}
+	if (m_ModelPlane7) {
+		m_ModelPlane7->Shutdown();
+		delete m_ModelPlane7;
+		m_ModelPlane7 = 0;
 	}
 
 
@@ -566,7 +611,7 @@ void GraphicsClass::frame(TimerClass *timer)
 {
 	float time = timer->GetTime();
 	
-	m_Counters[0] += (long)time;
+	m_Counters[0] += time;
 	if (m_Counters[0] > 50) {
 		m_TranslateShader->incrementFrame();
 		m_Counters[0] = 0;
@@ -575,7 +620,7 @@ void GraphicsClass::frame(TimerClass *timer)
 
 bool GraphicsClass::Render()
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, reflectionMatrix;
 	bool renderModel;
 	int modelCount, index;
 	float positionX, positionY, positionZ, radius;
@@ -606,6 +651,7 @@ bool GraphicsClass::Render()
 
 	// Render the entire scene to the texture first.
 	RenderToTexture();
+	RenderToTextureReflection();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
@@ -733,6 +779,19 @@ bool GraphicsClass::Render()
 		m_RenderCount++;
 	}
 
+	m_ModelPlane7->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		// Get the camera reflection view matrix.
+		reflectionMatrix = m_Camera->GetReflectionViewMatrix();
+
+		m_ModelPlane7->Render();
+		m_ReflectionShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane7->GetIndexCount(), m_ModelPlane7->GetWorldMatrix(), viewMatrix,
+			projectionMatrix, m_ModelPlane7->GetTexture(), m_RenderTextureReflection->GetShaderResourceView(),
+			reflectionMatrix);
+		m_TriangleCount += m_ModelPlane7->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
 	m_Bbox->Render(m_D3D, viewMatrix);
 
 	// Put the debug window vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -784,13 +843,46 @@ bool GraphicsClass::RenderToTexture()
 	return true;
 }
 
+bool GraphicsClass::RenderToTextureReflection()
+{
+	D3DXMATRIX viewMatrix, reflectionViewMatrix, projectionMatrix;
+	static float rotation = 0.0f;
+
+
+	// Set the render target to be the render to texture.
+	m_RenderTextureReflection->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+
+	// Clear the render to texture.
+	m_RenderTextureReflection->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Use the camera to calculate the reflection matrix.
+	m_Camera->RenderReflection(-10.0f);
+
+	// Get the camera reflection view matrix instead of the normal view matrix.
+	reflectionViewMatrix = m_Camera->GetReflectionViewMatrix();
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+		
+	m_D3D->TurnOnAlphaBlending();
+		m_ModelPlane5->Render();
+		m_TranslateShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane5->GetIndexCount(), m_ModelPlane5->GetWorldMatrix(), reflectionViewMatrix,
+			projectionMatrix, m_ModelPlane5->GetTexture());
+		m_D3D->TurnOffAlphaBlending();
+		m_TriangleCount += m_ModelPlane5->GetTtriangleCount();
+		m_RenderCount++;
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	m_D3D->SetBackBufferRenderTarget();
+
+
+	return true;
+}
+
 bool GraphicsClass::RenderScene()
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix;
 	D3DXVECTOR3 position, size;
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
-	m_D3D->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
