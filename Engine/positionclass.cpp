@@ -29,6 +29,11 @@ float PositionClass::GetRotation()
 	return m_rotationY;
 }
 
+void PositionClass::setRotation(float rotation)
+{
+	m_rotationY = rotation;
+}
+
 void PositionClass::TurnLeft(bool keydown)
 {
 	// If the key is pressed increase the speed at which the camera turns left.  If not slow down the turn speed.

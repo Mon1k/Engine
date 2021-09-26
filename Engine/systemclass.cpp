@@ -193,9 +193,13 @@ void SystemClass::Run()
 
 bool SystemClass::Frame()
 {
-	bool keyDown, result;
 	int mouseX, mouseY;
+	int lastMouseX, lastMouseY;
 	D3DXVECTOR3 position, rotation;
+	float mouseSensivity = 2.5f, cameraSensivity = 0.05f;
+
+	// last mouse coord
+	m_Input->GetMouseLocation(lastMouseX, lastMouseY);
 
 	// Update the system stats.
 	m_Timer->Frame();
@@ -205,32 +209,57 @@ bool SystemClass::Frame()
 	rotation = m_Graphics->getCamera()->GetRotation();
 
 	// Do the input frame processing.
-	result = m_Input->Frame();
-	if (!result) {
-		return false;
-	}
+	m_Input->Frame();
 
 	// Set the frame time for calculating the updated position.
 	m_Position->SetFrameTime(m_Timer->GetTime());
-
-	// Check if the left or right arrow key has been pressed, if so rotate the camera accordingly.
-	keyDown = m_Input->IsKeyDown(DIK_LEFTARROW);
-	m_Position->TurnLeft(keyDown);
-	keyDown = m_Input->IsKeyDown(DIK_RIGHTARROW);
-	m_Position->TurnRight(keyDown);
-
-	if (m_Input->IsKeyDown(DIK_UPARROW)) {
-		position.z += 0.01f * m_Timer->GetTime();
-	}
-	if (m_Input->IsKeyDown(DIK_DOWNARROW)) {
-		position.z -= 0.01f * m_Timer->GetTime();
-	}
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 	int mouseButton = m_Input->GetMouseButton();
 	int mouseButtonPress = m_Input->getMouseButtonPress();
 
+
+	// rotate camera by keyboard
+	m_Position->TurnLeft(m_Input->IsKeyDown(DIK_LEFTARROW));
+	m_Position->TurnRight(m_Input->IsKeyDown(DIK_RIGHTARROW));
+
+
+	// movement camera
+	if (m_Input->IsKeyDown(DIK_LSHIFT)) {
+		cameraSensivity *= 2;
+	}
+	
+	if (m_Input->IsKeyDown(DIK_UPARROW) || m_Input->IsKeyDown(DIK_W)) {
+		position.z += cameraSensivity * m_Timer->GetTime();
+	}
+	if (m_Input->IsKeyDown(DIK_DOWNARROW) || m_Input->IsKeyDown(DIK_S)) {
+		position.z -= cameraSensivity * m_Timer->GetTime();
+	}
+	if (m_Input->IsKeyDown(DIK_LEFTARROW) || m_Input->IsKeyDown(DIK_A)) {
+		position.x -= cameraSensivity * m_Timer->GetTime();
+	}
+	if (m_Input->IsKeyDown(DIK_RIGHTARROW) || m_Input->IsKeyDown(DIK_D)) {
+		position.x += cameraSensivity * m_Timer->GetTime();
+	}
+
+	// rotate camera by mouse
+	if (mouseButtonPress != MOUSE_BUTTON2) {
+		if (mouseX - lastMouseX > 0.0f) {
+			m_Position->setRotation(m_Position->GetRotation() + mouseSensivity * m_Timer->GetTime());
+		}
+		else if (lastMouseX - mouseX > 0.0f) {
+			m_Position->setRotation(m_Position->GetRotation() - mouseSensivity * m_Timer->GetTime());
+		}
+		if (mouseY - lastMouseY > 0.0f) {
+			rotation.x += mouseSensivity * m_Timer->GetTime();
+		}
+		else if (lastMouseY - mouseY > 0.0f) {
+			rotation.x -= mouseSensivity * m_Timer->GetTime();
+		}
+	}
+
+	// movement cursor
 	if (mouseButtonPress == MOUSE_BUTTON2) {
 		m_Graphics->m_Cursor->Set(mouseX, mouseY);
 		m_Graphics->m_Cursor->show();
@@ -242,6 +271,7 @@ bool SystemClass::Frame()
 	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d, MouseButton: %u", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY, mouseButton);
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
 
+	// ui events
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button->onButtonPress(mouseX, mouseY)) {
 		m_Sound->Play();
 	}
@@ -253,7 +283,7 @@ bool SystemClass::Frame()
 	}
 
 	// Get the current view point rotation.
-	rotation.y = m_Position->GetRotation();;
+	rotation.y = m_Position->GetRotation();
 	m_Graphics->getCamera()->SetRotation(rotation);
 	m_Graphics->getCamera()->SetPosition(position);
 
@@ -261,11 +291,8 @@ bool SystemClass::Frame()
 	m_Graphics->frame(m_Timer);
 
 	// Finally render the graphics to the screen.
-	result = m_Graphics->Render();
-	if (!result) {
-		return false;
-	}
-
+	m_Graphics->Render();
+	
 	return true;
 }
 

@@ -359,6 +359,9 @@ void ModelClass::SetPosition(D3DXVECTOR3 _position)
 	m_Min.z += delta.z;
 }
 
+/**
+* @todo - Неверно по Y масштабирует
+*/
 void ModelClass::SetScale(D3DXVECTOR3 _scale)
 {
 	D3DXVECTOR3 delta;

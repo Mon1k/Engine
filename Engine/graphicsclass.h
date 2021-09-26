@@ -12,6 +12,7 @@
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
 
+#include "textures/fadeshaderclass.h"
 #include "textures/reflectionshaderclass.h"
 #include "textures/transparentshaderclass.h"
 #include "textures/translateshaderclass.h"
@@ -66,9 +67,11 @@ public:
 	};
 
 private:
-	bool RenderToTexture();
-	bool RenderToTextureReflection();
-	bool RenderScene();
+	void RenderToTexture();
+	void RenderToTextureReflection();
+	void RenderToTextureFade();
+	void RenderScene();
+	void RenderUI();
 
 private:
 	D3DClass* m_D3D;
@@ -97,11 +100,21 @@ private:
 	TranslateShaderClass* m_TranslateShader;
 	TransparentShaderClass* m_TransparentShader;
 	ReflectionShaderClass* m_ReflectionShader;
+	FadeShaderClass* m_FadeShader;
 
+
+	// bitmap texture
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;
 
+	// reflection
 	RenderTextureClass* m_RenderTextureReflection;
+
+	// fade
+	RenderTextureClass* m_RenderTextureFade;
+	BitmapClass* m_BitmapFade;
+	float m_fadeInTime, m_accumulatedTime, m_fadePercentage;
+	bool m_fadeDone;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
@@ -109,9 +122,9 @@ private:
 	FrustumClass* m_Frustum;
 	Label* m_Label2;
 
-	int m_RenderCount;
-	int m_TriangleCount;
-	float m_Counters[1];
+	int m_RenderCount{};
+	int m_TriangleCount{};
+	float m_Counters[1]{};
 
 public:
 	Button* m_Button;

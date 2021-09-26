@@ -113,6 +113,7 @@
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="textures\bumpmapshaderclass.cpp" />
+    <ClCompile Include="textures\fadeshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="textures\bumpmapshaderclass.h" />
+    <ClInclude Include="textures\fadeshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
     <ClInclude Include="textures\reflectionshaderclass.h" />
@@ -187,6 +189,8 @@
     <None Include="data\shaders\clipplane.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
+    <None Include="data\shaders\fade.ps" />
+    <None Include="data\shaders\fade.vs" />
     <None Include="data\shaders\fog.ps" />
     <None Include="data\shaders\fog.vs" />
     <None Include="data\shaders\font.ps" />

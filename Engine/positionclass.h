@@ -12,6 +12,7 @@ public:
 
 	void SetFrameTime(float);
 	float GetRotation();
+	void setRotation(float);
 
 	void TurnLeft(bool);
 	void TurnRight(bool);
