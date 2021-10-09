@@ -177,6 +177,12 @@
     <ClCompile Include="textures\fadeshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="textures\watershaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\refractionshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -329,6 +335,12 @@
     <ClInclude Include="textures\fadeshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="textures\watershaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\refractionshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -419,6 +431,18 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\fade.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\water.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\water.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\refraction.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\refraction.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

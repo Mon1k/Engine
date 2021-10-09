@@ -12,6 +12,9 @@
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
 
+
+#include "textures/refractionshaderclass.h"
+#include "textures/watershaderclass.h"
 #include "textures/fadeshaderclass.h"
 #include "textures/reflectionshaderclass.h"
 #include "textures/transparentshaderclass.h"
@@ -70,6 +73,8 @@ private:
 	void RenderToTexture();
 	void RenderToTextureReflection();
 	void RenderToTextureFade();
+	void RenderRefractionToTextureWater();
+	void RenderReflectionToTextureWater();
 	void RenderScene();
 	void RenderUI();
 
@@ -102,6 +107,14 @@ private:
 	ReflectionShaderClass* m_ReflectionShader;
 	FadeShaderClass* m_FadeShader;
 
+	// water
+	ModelClass* m_GroundModel, * m_WallModel, * m_BathModel, * m_WaterModel;
+	LightClass* m_LightWater;
+	RenderTextureClass* m_RefractionTexture, * m_ReflectionTexture;
+	LightShaderClass* m_LightShaderWater;
+	RefractionShaderClass* m_RefractionShader;
+	WaterShaderClass* m_WaterShader;
+	float m_waterHeight, m_waterTranslation;
 
 	// bitmap texture
 	RenderTextureClass* m_RenderTexture;
@@ -124,7 +137,7 @@ private:
 
 	int m_RenderCount{};
 	int m_TriangleCount{};
-	float m_Counters[1]{};
+	float m_Counters[2]{};
 
 public:
 	Button* m_Button;

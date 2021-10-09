@@ -30,6 +30,18 @@ GraphicsClass::GraphicsClass()
 	m_ReflectionShader = 0;
 	m_FadeShader = 0;
 
+	// water
+	m_GroundModel = 0;
+	m_WallModel = 0;
+	m_BathModel = 0;
+	m_WaterModel = 0;
+	m_LightWater = 0;
+	m_RefractionTexture = 0;
+	m_ReflectionTexture = 0;
+	m_LightShaderWater = 0;
+	m_RefractionShader = 0;
+	m_WaterShader = 0;
+
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
 	m_RenderTextureReflection = 0;
@@ -242,6 +254,103 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 
+
+
+	//// water ////
+	// Create the ground model object.
+	m_GroundModel = new ModelClass;
+	std::vector<std::wstring> texturesGround = {L"data/textures/ground01.dds"};
+	result = m_GroundModel->Initialize(m_D3D, "data/models/ground.ds", texturesGround);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
+		return false;
+	}
+	m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
+
+	// Create the wall model object.
+	m_WallModel = new ModelClass;
+	std::vector<std::wstring> texturesWall = {L"data/textures/wall01.dds"};
+	result = m_WallModel->Initialize(m_D3D, "data/models/wall.ds", texturesWall);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the wall model object.", L"Error", MB_OK);
+		return false;
+	}
+	m_WallModel->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -30.0f));
+
+	// Create the bath model object.
+	m_BathModel = new ModelClass;
+	std::vector<std::wstring> texturesBath = {L"data/textures/marble01.dds"};
+	result = m_BathModel->Initialize(m_D3D, "data/models/bath.ds", texturesBath);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the bath model object.", L"Error", MB_OK);
+		return false;
+	}
+	m_BathModel->SetPosition(D3DXVECTOR3(-50.0f, -4.0f, -35.0f));
+
+	// Create the water model object.
+	m_WaterModel = new ModelClass;
+	std::vector<std::wstring> texturesWater = {L"data/textures/water01.dds"};
+	result = m_WaterModel->Initialize(m_D3D, "data/models/water.ds", texturesWater);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
+		return false;
+	}
+	m_WaterModel->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -35.0f));
+
+	// Create the light object.
+	m_LightWater = new LightClass;
+	m_LightWater->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_LightWater->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_LightWater->SetDirection(-50.0f, -20.0f, 0.5f);
+
+	// Create the refraction render to texture object.
+	m_RefractionTexture = new RenderTextureClass;
+	result = m_RefractionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK);
+		return false;
+	}
+	// Create the reflection render to texture object.
+	m_ReflectionTexture = new RenderTextureClass;
+	result = m_ReflectionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the light shader object.
+	m_LightShaderWater = new LightShaderClass;
+	result = m_LightShaderWater->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the refraction shader object.
+	m_RefractionShader = new RefractionShaderClass;
+	result = m_RefractionShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the refraction shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the water shader object.
+	m_WaterShader = new WaterShaderClass;
+	result = m_WaterShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result) {
+		MessageBox(hwnd, L"Could not initialize the water shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Set the height of the water.
+	m_waterHeight = 2.75f;
+	// Initialize the position of the water.
+	m_waterTranslation = 0.0f;
+	///////////////
+
+
+
+
 	// Create the multitexture shader object.
 	m_MultiTextureShader = new MultiTextureShaderClass;
 	result = m_MultiTextureShader->Initialize(m_D3D->GetDevice(), hwnd);
@@ -348,14 +457,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Set the fade in time to 3000 milliseconds.
+	// Set the fade in time to milliseconds.
 	m_fadeInTime = 5000.0f;
 	// Initialize the accumulated time to zero milliseconds.
 	m_accumulatedTime = 0;
 	// Initialize the fade percentage to zero at first so the scene is black.
 	m_fadePercentage = 0;
 	// Set the fading in effect to not done.
-	m_fadeDone = false;
+	m_fadeDone = true;
 	
 	// Create the fade shader object.
 	m_FadeShader = new FadeShaderClass;
@@ -417,6 +526,78 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
+	//// water ////
+	// Release the water shader object.
+	if (m_WaterShader) {
+		m_WaterShader->Shutdown();
+		delete m_WaterShader;
+		m_WaterShader = 0;
+	}
+
+	// Release the refraction shader object.
+	if (m_RefractionShader) {
+		m_RefractionShader->Shutdown();
+		delete m_RefractionShader;
+		m_RefractionShader = 0;
+	}
+
+	// Release the light shader object.
+	if (m_LightShaderWater) {
+		m_LightShaderWater->Shutdown();
+		delete m_LightShaderWater;
+		m_LightShaderWater = 0;
+	}
+
+	// Release the reflection render to texture object.
+	if (m_ReflectionTexture) {
+		m_ReflectionTexture->Shutdown();
+		delete m_ReflectionTexture;
+		m_ReflectionTexture = 0;
+	}
+
+	// Release the refraction render to texture object.
+	if (m_RefractionTexture) {
+		m_RefractionTexture->Shutdown();
+		delete m_RefractionTexture;
+		m_RefractionTexture = 0;
+	}
+
+	// Release the light object.
+	if (m_LightWater) {
+		delete m_LightWater;
+		m_LightWater = 0;
+	}
+
+	// Release the water model object.
+	if (m_WaterModel) {
+		m_WaterModel->Shutdown();
+		delete m_WaterModel;
+		m_WaterModel = 0;
+	}
+
+	// Release the bath model object.
+	if (m_BathModel) {
+		m_BathModel->Shutdown();
+		delete m_BathModel;
+		m_BathModel = 0;
+	}
+
+	// Release the wall model object.
+	if (m_WallModel) {
+		m_WallModel->Shutdown();
+		delete m_WallModel;
+		m_WallModel = 0;
+	}
+
+	// Release the ground model object.
+	if (m_GroundModel) {
+		m_GroundModel->Shutdown();
+		delete m_GroundModel;
+		m_GroundModel = 0;
+	}
+	///////////////
+
+
 	if (m_Button) {
 		m_Button->Shutdown();
 		delete m_Button;
@@ -671,10 +852,9 @@ void GraphicsClass::frame(TimerClass *timer)
 		m_Counters[0] = 0;
 	}
 
-
 	if (!m_fadeDone) {
 		// Update the accumulated time with the extra frame time addition.
-		m_accumulatedTime += timer->GetTime();
+		m_accumulatedTime += time;
 
 		// While the time goes on increase the fade in amount by the time that is passing each frame.
 		if (m_accumulatedTime < m_fadeInTime) {
@@ -683,12 +863,21 @@ void GraphicsClass::frame(TimerClass *timer)
 		} else {
 			// If the fade in time is complete then turn off the fade effect and render the scene normally.
 			m_fadeDone = true;
-
 			// Set the percentage to 100%.
 			m_fadePercentage = 1.0f;
 		}
 	}
 
+
+	// Update the position of the water to simulate motion.
+	m_Counters[1] += time;
+	if (m_Counters[1] > 50) {
+		m_Counters[1] = 0;
+		m_waterTranslation += 0.005f;
+		if (m_waterTranslation > 1.0f) {
+			m_waterTranslation -= 1.0f;
+		}
+	}
 }
 
 bool GraphicsClass::Render()
@@ -705,16 +894,18 @@ bool GraphicsClass::Render()
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
 
-	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
-
 	// Render the entire scene to the texture first.
 	RenderToTexture();
 	RenderToTextureReflection();
+	RenderRefractionToTextureWater();
+	RenderReflectionToTextureWater();
+
+
+	// Generate the view matrix based on the camera's position.
+	m_Camera->Render();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
-
 	
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
@@ -834,6 +1025,68 @@ void GraphicsClass::RenderToTextureFade()
 		m_RenderTexture->GetShaderResourceView(), m_fadePercentage);
 
 	m_D3D->TurnZBufferOn();
+}
+
+
+void GraphicsClass::RenderRefractionToTextureWater()
+{
+	D3DXVECTOR4 clipPlane;
+	D3DXMATRIX viewMatrix, projectionMatrix;
+
+	// Setup a clipping plane based on the height of the water to clip everything above it.
+	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_waterHeight + 0.1f);
+
+	// Set the render target to be the refraction render to texture.
+	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+
+	// Clear the refraction render to texture.
+	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Generate the view matrix based on the camera's position.
+	m_Camera->Render();
+
+	// Get the world, view, and projection matrices from the camera and d3d objects.
+	m_Camera->GetViewMatrix(viewMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	// Put the bath model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_BathModel->Render();
+	m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix,
+		projectionMatrix, m_BathModel->GetTexture(), m_Light->GetDirection(),
+		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), clipPlane);
+	m_TriangleCount += m_BathModel->GetTtriangleCount();
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	m_D3D->SetBackBufferRenderTarget();
+}
+
+
+void GraphicsClass::RenderReflectionToTextureWater()
+{
+	D3DXMATRIX reflectionViewMatrix, projectionMatrix;
+
+	// Set the render target to be the reflection render to texture.
+	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+
+	// Clear the reflection render to texture.
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Use the camera to render the reflection and create a reflection view matrix.
+	m_Camera->RenderReflection(m_waterHeight);
+
+	// Get the camera reflection view matrix instead of the normal view matrix.
+	reflectionViewMatrix = m_Camera->GetReflectionViewMatrix();
+
+	// Get the world and projection matrices from the d3d object.
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	m_WallModel->Render();
+	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
+		m_WallModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	m_D3D->SetBackBufferRenderTarget();
 }
 
 void GraphicsClass::RenderScene()
@@ -987,9 +1240,7 @@ void GraphicsClass::RenderScene()
 
 	m_ModelPlane7->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
-		// Get the camera reflection view matrix.
 		reflectionMatrix = m_Camera->GetReflectionViewMatrix();
-
 		m_ModelPlane7->Render();
 		m_ReflectionShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane7->GetIndexCount(), m_ModelPlane7->GetWorldMatrix(), viewMatrix,
 			projectionMatrix, m_ModelPlane7->GetTexture(), m_RenderTextureReflection->GetShaderResourceView(),
@@ -997,6 +1248,51 @@ void GraphicsClass::RenderScene()
 		m_TriangleCount += m_ModelPlane7->GetTtriangleCount();
 		m_RenderCount++;
 	}
+
+
+	//// water /////
+	m_GroundModel->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_GroundModel->Render();
+		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_GroundModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_TriangleCount += m_GroundModel->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_WallModel->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_WallModel->Render();
+		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_WallModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_TriangleCount += m_WallModel->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_BathModel->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		m_BathModel->Render();
+		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_BathModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_TriangleCount += m_BathModel->GetTtriangleCount();
+		m_RenderCount++;
+	}
+
+	m_WaterModel->GetBoundingBox(position, size);
+	if (m_Frustum->CheckRectangle(position, size)) {
+		reflectionMatrix = m_Camera->GetReflectionViewMatrix();
+		m_WaterModel->Render();
+		m_WaterShader->Render(m_D3D->GetDeviceContext(), m_WaterModel->GetIndexCount(), m_WaterModel->GetWorldMatrix(), viewMatrix,
+			projectionMatrix, reflectionMatrix, m_ReflectionTexture->GetShaderResourceView(),
+			m_RefractionTexture->GetShaderResourceView(), m_WaterModel->GetTexture(),
+			m_waterTranslation, 0.02f);
+		m_TriangleCount += m_WaterModel->GetTtriangleCount();
+		m_RenderCount++;
+	}
+	////////////////
 
 
 	m_Bbox->Render(m_D3D, viewMatrix);

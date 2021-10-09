@@ -134,7 +134,9 @@ void CameraClass::RenderReflection(float height)
 	position.z = m_positionZ;
 
 	// Calculate the rotation in radians.
-	radians = m_rotationY * 0.0174532925f;
+	//radians = m_rotationY * 0.0174532925f;
+	// else rotate reflection matrix with rotate camera and give artefact reflection
+	radians = 0.0f;
 
 	// Setup where the camera is looking.
 	lookAt.x = sinf(radians) + m_positionX;
