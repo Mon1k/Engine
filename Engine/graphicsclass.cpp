@@ -259,7 +259,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//// water ////
 	// Create the ground model object.
 	m_GroundModel = new ModelClass;
-	std::vector<std::wstring> texturesGround = {L"data/textures/ground01.dds"};
+	std::vector<std::wstring> texturesGround = {L"data/textures/grass_grass_0066_01.jpg"};
 	result = m_GroundModel->Initialize(m_D3D, "data/models/ground.ds", texturesGround);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
@@ -301,7 +301,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_LightWater = new LightClass;
 	m_LightWater->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_LightWater->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_LightWater->SetDirection(-50.0f, -20.0f, 0.5f);
+	m_LightWater->SetDirection(0.0f, -1.0f, 1.0f);
+	m_LightWater->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_LightWater->SetSpecularPower(32.0f);
 
 	// Create the refraction render to texture object.
 	m_RefractionTexture = new RenderTextureClass;
@@ -1032,9 +1034,10 @@ void GraphicsClass::RenderRefractionToTextureWater()
 {
 	D3DXVECTOR4 clipPlane;
 	D3DXMATRIX viewMatrix, projectionMatrix;
+	D3DXVECTOR3 position = m_WaterModel->GetPosition();
 
 	// Setup a clipping plane based on the height of the water to clip everything above it.
-	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_waterHeight + 0.1f);
+	clipPlane = D3DXVECTOR4(0.0f, position.y, 0.0f, m_waterHeight + 0.1f);
 
 	// Set the render target to be the refraction render to texture.
 	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
@@ -1052,8 +1055,8 @@ void GraphicsClass::RenderRefractionToTextureWater()
 	// Put the bath model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_BathModel->Render();
 	m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix,
-		projectionMatrix, m_BathModel->GetTexture(), m_Light->GetDirection(),
-		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), clipPlane);
+		projectionMatrix, m_BathModel->GetTexture(), m_LightWater->GetDirection(),
+		m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(), clipPlane);
 	m_TriangleCount += m_BathModel->GetTtriangleCount();
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -1082,8 +1085,8 @@ void GraphicsClass::RenderReflectionToTextureWater()
 
 	m_WallModel->Render();
 	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
-		m_WallModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_WallModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -1255,8 +1258,8 @@ void GraphicsClass::RenderScene()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_GroundModel->Render();
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_GroundModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			m_GroundModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
 		m_TriangleCount += m_GroundModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1265,8 +1268,8 @@ void GraphicsClass::RenderScene()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_WallModel->Render();
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_WallModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			m_WallModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
 		m_TriangleCount += m_WallModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1275,8 +1278,8 @@ void GraphicsClass::RenderScene()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_BathModel->Render();
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_BathModel->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			m_BathModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
 		m_TriangleCount += m_BathModel->GetTtriangleCount();
 		m_RenderCount++;
 	}

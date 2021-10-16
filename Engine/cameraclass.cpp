@@ -121,7 +121,6 @@ void CameraClass::RenderReflection(float height)
 	D3DXVECTOR3 up, position, lookAt;
 	float radians;
 
-
 	// Setup the vector that points upwards.
 	up.x = 0.0f;
 	up.y = 1.0f;
@@ -134,7 +133,7 @@ void CameraClass::RenderReflection(float height)
 	position.z = m_positionZ;
 
 	// Calculate the rotation in radians.
-	//radians = m_rotationY * 0.0174532925f;
+	radians = m_rotationY * 0.0174532925f;
 	// else rotate reflection matrix with rotate camera and give artefact reflection
 	radians = 0.0f;
 
@@ -145,8 +144,6 @@ void CameraClass::RenderReflection(float height)
 
 	// Create the view matrix from the three vectors.
 	D3DXMatrixLookAtLH(&m_reflectionViewMatrix, &position, &lookAt, &up);
-
-	return;
 }
 
 D3DXMATRIX CameraClass::GetReflectionViewMatrix()

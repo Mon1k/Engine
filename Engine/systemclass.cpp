@@ -242,6 +242,12 @@ bool SystemClass::Frame()
 	if (m_Input->IsKeyDown(DIK_RIGHTARROW) || m_Input->IsKeyDown(DIK_D)) {
 		position.x += cameraSensivity * m_Timer->GetTime();
 	}
+	if (m_Input->IsKeyDown(DIK_Z)) {
+		position.y += cameraSensivity * m_Timer->GetTime();
+	}
+	if (m_Input->IsKeyDown(DIK_X)) {
+		position.y -= cameraSensivity * m_Timer->GetTime();
+	}
 
 	// rotate camera by mouse
 	if (mouseButtonPress != MOUSE_BUTTON2) {
