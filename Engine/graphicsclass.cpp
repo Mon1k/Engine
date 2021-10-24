@@ -51,6 +51,9 @@ GraphicsClass::GraphicsClass()
 	m_ModelList = 0;
 	m_Frustum = 0;
 
+	m_Light1 = 0;
+	m_Light2 = 0;
+
 	m_Label = 0;
 	m_Label2 = 0;
 	m_Button = 0;
@@ -120,6 +123,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(64.0f);
+
+
+	m_Light1 = new LightClass;
+	m_Light1->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
+	m_Light1->SetPosition(35.0f, 0.0f, -20.0f);
+	m_Light1->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light2 = new LightClass;
+	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light2->SetPosition(-5.0f, 0.0f, -20.0f);
+
 
 	// Create the render to texture object.
 	m_RenderTexture = new RenderTextureClass;
@@ -265,7 +278,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
 		return false;
 	}
-	m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
+	//m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
+	m_GroundModel->SetPosition(D3DXVECTOR3(35.0f, -3.0f, -20.0f));
 
 	// Create the wall model object.
 	m_WallModel = new ModelClass;
@@ -658,6 +672,14 @@ void GraphicsClass::Shutdown()
 		delete m_Light;
 		m_Light = 0;
 	}
+	if (m_Light1) {
+		delete m_Light1;
+		m_Light1 = 0;
+	}
+	if (m_Light2) {
+		delete m_Light2;
+		m_Light2 = 0;
+	}
 
 
 	// Release the fade shader object.
@@ -897,10 +919,10 @@ bool GraphicsClass::Render()
 	m_RenderCount = 0;
 
 	// Render the entire scene to the texture first.
-	RenderToTexture();
-	RenderToTextureReflection();
-	RenderRefractionToTextureWater();
-	RenderReflectionToTextureWater();
+	//RenderToTexture();
+	//RenderToTextureReflection();
+	//RenderRefractionToTextureWater();
+	//RenderReflectionToTextureWater();
 
 
 	// Generate the view matrix based on the camera's position.
@@ -1086,7 +1108,7 @@ void GraphicsClass::RenderReflectionToTextureWater()
 	m_WallModel->Render();
 	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
 		m_WallModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
+		m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -1123,12 +1145,12 @@ void GraphicsClass::RenderScene()
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
 	// @todo - далее из менеджера объектов выбирать те что надо в текстуру нужную записать
-	m_Model->GetBoundingBox(position, size);
+	/*m_Model->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_Model->Render();
 		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Light->GetPosition());
 		m_TriangleCount += m_Model->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1160,7 +1182,7 @@ void GraphicsClass::RenderScene()
 			else {
 				m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 					m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), color,
-					m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+					m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Light->GetPosition());
 			}
 
 			// Reset to the original world matrix.
@@ -1179,10 +1201,10 @@ void GraphicsClass::RenderScene()
 		m_Model3->Render();
 		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
 		/*m_ClipPlaneShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix,
-			projectionMatrix, m_Model3->GetTexture(), clipPlane);*/
+			projectionMatrix, m_Model3->GetTexture(), clipPlane);*//*
 		m_TriangleCount += m_Model3->GetTtriangleCount();
 		m_RenderCount++;
-	}
+	}*/
 
 
 	m_ModelPlane->GetBoundingBox(position, size);
@@ -1194,7 +1216,7 @@ void GraphicsClass::RenderScene()
 	}
 
 
-	m_ModelPlane2->GetBoundingBox(position, size);
+	/*m_ModelPlane2->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane2->Render();
 		m_LightMapShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane2->GetIndexCount(), m_ModelPlane2->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane2->GetTextureArray());
@@ -1250,26 +1272,32 @@ void GraphicsClass::RenderScene()
 			reflectionMatrix);
 		m_TriangleCount += m_ModelPlane7->GetTtriangleCount();
 		m_RenderCount++;
-	}
+	}*/
 
 
 	//// water /////
 	m_GroundModel->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_GroundModel->Render();
-		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+		/*m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_GroundModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());*/
+
+
+		m_LightShader->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_GroundModel->GetTexture(), m_Light1->GetDirection(), m_Light1->GetAmbientColor(), m_Light1->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light1->GetSpecularColor(), m_Light1->GetSpecularPower(), m_Light1->GetPosition());
+
 		m_TriangleCount += m_GroundModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
 
-	m_WallModel->GetBoundingBox(position, size);
+	/*m_WallModel->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_WallModel->Render();
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_WallModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());
 		m_TriangleCount += m_WallModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1279,7 +1307,7 @@ void GraphicsClass::RenderScene()
 		m_BathModel->Render();
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_BathModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower());
+			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());
 		m_TriangleCount += m_BathModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1298,5 +1326,5 @@ void GraphicsClass::RenderScene()
 	////////////////
 
 
-	m_Bbox->Render(m_D3D, viewMatrix);
+	m_Bbox->Render(m_D3D, viewMatrix);*/
 }

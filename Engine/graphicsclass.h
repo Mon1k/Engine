@@ -135,6 +135,8 @@ private:
 	FrustumClass* m_Frustum;
 	Label* m_Label2;
 
+	LightClass* m_Light1, * m_Light2;
+
 	int m_RenderCount{};
 	int m_TriangleCount{};
 	float m_Counters[2]{};
