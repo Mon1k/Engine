@@ -9,8 +9,8 @@ cbuffer LightBuffer
     float specularPower;
     float4 specularColor;
     float3 lightPosition;
+    float padding;
 };
-
 
 struct PixelInputType
 {
@@ -20,7 +20,6 @@ struct PixelInputType
     float3 viewDirection : TEXCOORD1;
     float3 lightPosition : TEXCOORD2;
 };
-
 
 float4 LightPixelShader(PixelInputType input) : SV_TARGET
 {
@@ -47,17 +46,14 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
     if (lightDirection.y != 0.0f) {
         lightIntensity = saturate(dot(input.normal, lightDir));
     }
-    lightIntensity = saturate(dot(input.normal, lightDir));
     if (lightPosition.z != 0.0f) {
         lightIntensity = saturate(dot(input.normal, input.lightPosition));
     }
+    lightIntensity = saturate(dot(input.normal, input.lightPosition));
 
     if (lightIntensity > 0.0f) {
         // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
         color += (diffuseColor * lightIntensity);
-
-        // Saturate the ambient and diffuse color.
-        color = saturate(color);
 
         // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
         if (specularPower > 0.0f) {
@@ -67,6 +63,9 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
             specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
         }
     }
+
+    // Saturate the ambient and diffuse color.
+    color = saturate(color);
 
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
     color = color * textureColor;

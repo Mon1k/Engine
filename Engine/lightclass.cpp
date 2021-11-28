@@ -4,7 +4,7 @@ LightClass::LightClass()
 {
 	m_specularPower = 0.0f;
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_position = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
+	m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -81,11 +81,10 @@ float LightClass::GetSpecularPower()
 
 void LightClass::SetPosition(float x, float y, float z)
 {
-	m_position = D3DXVECTOR4(x, y, z, 1.0f);
-	return;
+	m_position = D3DXVECTOR3(x, y, z);
 }
 
-D3DXVECTOR4 LightClass::GetPosition()
+D3DXVECTOR3 LightClass::GetPosition()
 {
 	return m_position;
 }

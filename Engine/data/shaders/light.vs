@@ -9,16 +9,8 @@ cbuffer CameraBuffer
 {
     float3 cameraPosition;
     float padding;
-};
-
-cbuffer LightBuffer
-{
-    float4 ambientColor;
-    float4 diffuseColor;
-    float3 lightDirection;
-    float specularPower;
-    float4 specularColor;
     float3 lightPosition;
+    float padding2;
 };
 
 struct VertexInputType

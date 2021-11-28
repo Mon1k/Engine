@@ -126,9 +126,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 	m_Light1 = new LightClass;
-	m_Light1->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
-	m_Light1->SetPosition(35.0f, 0.0f, -20.0f);
-	m_Light1->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light1->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_Light1->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light1->SetPosition(35.0f, 1.0f, -20.0f);
 	m_Light2 = new LightClass;
 	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
 	m_Light2->SetPosition(-5.0f, 0.0f, -20.0f);
@@ -280,6 +280,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	//m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
 	m_GroundModel->SetPosition(D3DXVECTOR3(35.0f, -3.0f, -20.0f));
+	m_GroundModel->SetScale(D3DXVECTOR3(10.0f, 0.0f, 10.0f));
 
 	// Create the wall model object.
 	m_WallModel = new ModelClass;

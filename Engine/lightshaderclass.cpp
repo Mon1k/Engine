@@ -48,7 +48,7 @@ void LightShaderClass::Shutdown()
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor,
-	D3DXVECTOR4 diffuseColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, D3DXVECTOR4 lightPosition)
+	D3DXVECTOR4 diffuseColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, D3DXVECTOR3 lightPosition)
 {
 	bool result;
 
@@ -325,7 +325,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection,
 	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor,
-	float specularPower, D3DXVECTOR4 lightPosition)
+	float specularPower, D3DXVECTOR3 lightPosition)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -376,6 +376,8 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Copy the camera position into the constant buffer.
 	dataPtr3->cameraPosition = cameraPosition;
 	dataPtr3->padding = 0.0f;
+	dataPtr3->lightPosition = lightPosition;
+	dataPtr3->padding2 = 0.0f;
 
 	// Unlock the camera constant buffer.
 	deviceContext->Unmap(m_cameraBuffer, 0);
@@ -406,6 +408,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr2->specularColor = specularColor;
 	dataPtr2->specularPower = specularPower;
 	dataPtr2->lightPosition = lightPosition;
+	dataPtr2->padding = 0.0f;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

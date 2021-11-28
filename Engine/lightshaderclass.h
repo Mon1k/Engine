@@ -24,13 +24,16 @@ private:
 		D3DXVECTOR3 lightDirection;
 		float specularPower;
 		D3DXVECTOR4 specularColor;
-		D3DXVECTOR4 lightPosition;
+		D3DXVECTOR3 lightPosition;
+		float padding;
 	};
 
 	struct CameraBufferType
 	{
 		D3DXVECTOR3 cameraPosition;
 		float padding;
+		D3DXVECTOR3 lightPosition;
+		float padding2;
 	};
 
 public:
@@ -41,7 +44,7 @@ public:
 	bool Initialize(ID3D11Device*, HWND);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4,
-		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR4);
+		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR3);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
@@ -49,7 +52,7 @@ private:
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
 	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4,
-		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR4);
+		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR3);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
