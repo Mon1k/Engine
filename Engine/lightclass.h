@@ -22,7 +22,7 @@ public:
 	D3DXVECTOR3 GetDirection();
 	D3DXVECTOR4 GetSpecularColor();
 	float GetSpecularPower();
-	D3DXVECTOR3 GetPosition();
+	D3DXVECTOR4 GetPosition();
 
 private:
 	D3DXVECTOR4 m_ambientColor;
@@ -30,7 +30,7 @@ private:
 	D3DXVECTOR3 m_direction;
 	D3DXVECTOR4 m_specularColor;
 	float m_specularPower;
-	D3DXVECTOR3 m_position;
+	D3DXVECTOR4 m_position;
 };
 
 #endif

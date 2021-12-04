@@ -9,8 +9,7 @@ cbuffer CameraBuffer
 {
     float3 cameraPosition;
     float padding;
-    float3 lightPosition;
-    float padding2;
+    float4 lightPosition;
 };
 
 struct VertexInputType
@@ -56,8 +55,6 @@ PixelInputType LightVertexShader(VertexInputType input)
 
     // Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
     output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
-	
-    // Normalize the viewing direction vector.
     output.viewDirection = normalize(output.viewDirection);
 
     output.lightPosition.xyz = lightPosition.xyz - worldPosition.xyz;

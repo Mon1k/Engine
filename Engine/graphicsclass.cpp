@@ -126,12 +126,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 	m_Light1 = new LightClass;
-	m_Light1->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	m_Light1->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light1->SetPosition(35.0f, 1.0f, -20.0f);
+	m_Light1->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	m_Light1->SetDiffuseColor(1.0f, 0.9f, 0.9f, 1.0f);
+	m_Light1->SetPosition(1.0f, 2.0f, 1.0f);
 	m_Light2 = new LightClass;
 	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
-	m_Light2->SetPosition(-5.0f, 0.0f, -20.0f);
+	m_Light2->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	m_Light2->SetPosition(-3.0f, 2.0f, 0.0f);
 
 
 	// Create the render to texture object.
@@ -273,14 +274,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create the ground model object.
 	m_GroundModel = new ModelClass;
 	std::vector<std::wstring> texturesGround = {L"data/textures/grass_grass_0066_01.jpg"};
-	result = m_GroundModel->Initialize(m_D3D, "data/models/ground.ds", texturesGround);
+	//result = m_GroundModel->Initialize(m_D3D, "data/models/ground.ds", texturesGround);
+	result = m_GroundModel->Initialize(m_D3D, "data/models/plane01.ds", texturesGround);
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
 		return false;
 	}
 	//m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
-	m_GroundModel->SetPosition(D3DXVECTOR3(35.0f, -3.0f, -20.0f));
-	m_GroundModel->SetScale(D3DXVECTOR3(10.0f, 0.0f, 10.0f));
+	//m_GroundModel->SetPosition(D3DXVECTOR3(35.0f, -3.0f, -20.0f));
+	m_GroundModel->SetScale(D3DXVECTOR3(10.0f, 1.0f, 10.0f));
 
 	// Create the wall model object.
 	m_WallModel = new ModelClass;
