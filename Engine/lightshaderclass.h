@@ -9,6 +9,9 @@ using namespace std;
 
 class LightShaderClass
 {
+public:
+	static const int NUM_LIGHTS = 1;
+
 private:
 	struct MatrixBufferType
 	{
@@ -17,7 +20,7 @@ private:
 		D3DXMATRIX projection;
 	};
 
-	struct LightBufferType
+	struct PointLight
 	{
 		D3DXVECTOR4 ambientColor;
 		D3DXVECTOR4 diffuseColor;
@@ -26,11 +29,16 @@ private:
 		D3DXVECTOR4 specularColor;
 	};
 
+	struct LightBufferType
+	{
+		PointLight light[NUM_LIGHTS];
+	};
+
 	struct CameraBufferType
 	{
 		D3DXVECTOR3 cameraPosition;
 		float padding;
-		D3DXVECTOR4 lightPosition;
+		D3DXVECTOR4 lightPosition[NUM_LIGHTS];
 	};
 
 public:

@@ -376,7 +376,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Copy the camera position into the constant buffer.
 	dataPtr3->cameraPosition = cameraPosition;
 	dataPtr3->padding = 0.0f;
-	dataPtr3->lightPosition = lightPosition;
+	dataPtr3->lightPosition[0] = lightPosition;
 
 	// Unlock the camera constant buffer.
 	deviceContext->Unmap(m_cameraBuffer, 0);
@@ -401,11 +401,13 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	dataPtr2->ambientColor = ambientColor;
-	dataPtr2->diffuseColor = diffuseColor;
-	dataPtr2->lightDirection = lightDirection;
-	dataPtr2->specularPower = specularPower;
-	dataPtr2->specularColor = specularColor;
+	PointLight light[NUM_LIGHTS];
+	light[0].ambientColor = ambientColor;
+	light[0].diffuseColor = diffuseColor;
+	light[0].lightDirection = lightDirection;
+	light[0].specularPower = specularPower;
+	light[0].specularColor = specularColor;
+	dataPtr2->light[0] = light[0];
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

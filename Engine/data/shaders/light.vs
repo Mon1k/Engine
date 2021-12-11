@@ -1,3 +1,5 @@
+#define NUM_LIGHTS 1
+
 cbuffer MatrixBuffer
 {
     matrix worldMatrix;
@@ -9,7 +11,7 @@ cbuffer CameraBuffer
 {
     float3 cameraPosition;
     float padding;
-    float4 lightPosition;
+    float4 lightPosition[NUM_LIGHTS];
 };
 
 struct VertexInputType
@@ -25,7 +27,7 @@ struct PixelInputType
     float2 tex : TEXCOORD0;
     float3 normal : NORMAL;
     float3 viewDirection : TEXCOORD1;
-    float3 lightPosition : TEXCOORD2;
+    float3 lightPosition[NUM_LIGHTS] : TEXCOORD2;
 };
 
 PixelInputType LightVertexShader(VertexInputType input)
@@ -57,8 +59,10 @@ PixelInputType LightVertexShader(VertexInputType input)
     output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
     output.viewDirection = normalize(output.viewDirection);
 
-    output.lightPosition.xyz = lightPosition.xyz - worldPosition.xyz;
-    output.lightPosition = normalize(output.lightPosition);
+    for (int i = 0; i < NUM_LIGHTS; i++) {
+        output.lightPosition[i].xyz = lightPosition[i].xyz - worldPosition.xyz;
+        output.lightPosition[i] = normalize(output.lightPosition[i]);
+    }
 
     return output;
 }
