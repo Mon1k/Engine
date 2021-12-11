@@ -130,9 +130,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light1->SetDiffuseColor(1.0f, 0.9f, 0.9f, 1.0f);
 	m_Light1->SetPosition(1.0f, 2.0f, 1.0f);
 	m_Light2 = new LightClass;
-	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light2->SetDiffuseColor(1.0f, 0.5f, 0.0f, 1.0f);
 	m_Light2->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
-	m_Light2->SetPosition(-3.0f, 2.0f, 0.0f);
+	m_Light2->SetPosition(-25.0f, 2.0f, 0.0f);
 
 
 	// Create the render to texture object.
@@ -1109,9 +1109,9 @@ void GraphicsClass::RenderReflectionToTextureWater()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	m_WallModel->Render();
+	std::vector<LightClass*> lights = { m_LightWater };
 	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
-		m_WallModel->GetTexture(), m_LightWater->GetDirection(), m_LightWater->GetAmbientColor(), m_LightWater->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());
+		m_WallModel->GetTexture(), m_Camera->GetPosition(), lights);
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -1287,9 +1287,9 @@ void GraphicsClass::RenderScene()
 			m_Camera->GetPosition(), m_LightWater->GetSpecularColor(), m_LightWater->GetSpecularPower(), m_LightWater->GetPosition());*/
 
 
+		std::vector<LightClass*> lights = { m_Light1, m_Light2 };
 		m_LightShader->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_GroundModel->GetTexture(), m_Light1->GetDirection(), m_Light1->GetAmbientColor(), m_Light1->GetDiffuseColor(),
-			m_Camera->GetPosition(), m_Light1->GetSpecularColor(), m_Light1->GetSpecularPower(), m_Light1->GetPosition());
+			m_GroundModel->GetTexture(), m_Camera->GetPosition(), lights);
 
 		m_TriangleCount += m_GroundModel->GetTtriangleCount();
 		m_RenderCount++;
