@@ -13,7 +13,7 @@ using namespace std;
 class LightShaderClass
 {
 public:
-	static const int NUM_LIGHTS = 2;
+	static const int NUM_LIGHTS = 4;
 
 private:
 	struct MatrixBufferType

@@ -32,6 +32,8 @@ void ModelManager::Render()
 {
     int size = models.size();
     for (int i = 0; i < size; i++) {
-        models[i]->Render();
+        if (models[i]->isVisible()) {
+            models[i]->Render();
+        }
     }
 }

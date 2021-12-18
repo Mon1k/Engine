@@ -34,9 +34,13 @@ public:
     int GetTtriangleCount() {
         return m_vertexCount / 3;
     }
+    bool isVisible() {
+        return visible;
+    }
 
 protected:
     int m_vertexCount, m_indexCount;
+    bool visible = true;
 };
 
 #endif

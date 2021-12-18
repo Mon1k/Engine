@@ -1,4 +1,4 @@
-#define NUM_LIGHTS 2
+#define NUM_LIGHTS 4
 
 Texture2D shaderTexture;
 SamplerState SampleType;
@@ -46,7 +46,7 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 
     // Calculate the amount of light on this pixel.
     for (int i = 0; i < NUM_LIGHTS; i++) {
-        if (light[i].lightDirection.y != 0.0f) {
+        if (light[i].lightDirection.z != 0.0f) {
             // Invert the light direction for calculations.
             lightDir[i] = -light[i].lightDirection;
 
