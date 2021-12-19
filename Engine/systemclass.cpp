@@ -278,12 +278,12 @@ bool SystemClass::Frame()
 	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
 
 	// ui events
-	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button->onButtonPress(mouseX, mouseY)) {
+	/*if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button->onButtonPress(mouseX, mouseY)) {
 		m_Sound->Play();
 	}
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button2->onButtonPress(mouseX, mouseY)) {
 		done = true;
-	}
+	}*/
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Checkbox->onButtonPress(mouseX, mouseY)) {
 		m_Graphics->m_Checkbox->MarkedToogle();
 	}

@@ -38,7 +38,9 @@ void UIManager::Render()
 
     int size = elements.size();
     for (int i = 0; i < size; i++) {
-        elements[i]->Render();
+        if (elements[i]->isVisible()) {
+            elements[i]->Render();
+        }
     }
 
     // Turn off alpha blending after rendering the text.
@@ -46,4 +48,14 @@ void UIManager::Render()
 
     // Turn the Z buffer back on now that all 2D rendering has completed.
     m_D3D->TurnZBufferOn();
+}
+
+void UIManager::onPressUi(int x, int y)
+{
+    int size = elements.size();
+    for (int i = 0; i < size; i++) {
+        if (elements[i]->isVisible()) {
+            elements[i]->onPress(x, y);
+        }
+    }
 }

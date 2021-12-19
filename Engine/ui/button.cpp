@@ -7,11 +7,6 @@ Button::Button()
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
-
-	m_width = 0;
-	m_height = 0;
-	m_x = 0;
-	m_y = 0;
 }
 
 
@@ -104,23 +99,10 @@ void Button::Shutdown()
 	}
 }
 
-bool Button::onButtonPress(int x, int y)
-{
-	if (x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height) {
-		return true;
-	}
-
-	return false;
-}
-
 bool Button::Render()
 {
 	bool result;
 	D3DXMATRIX worldMatrix, orthoMatrix;
-
-	if (!visible) {
-		return true;
-	}
 
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);

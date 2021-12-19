@@ -4,6 +4,8 @@
 
 #include "d3dclass.h"
 #include "cameraclass.h"
+#include "ui/UIManager.h"
+
 #include "modelclass.h"
 #include "models/modelbumpclass.h"
 #include "models/bbox.h"
@@ -69,6 +71,11 @@ public:
 		return m_Camera;
 	};
 
+	UIManager* getUiManager()
+	{
+		return m_uiManager;
+	}
+
 private:
 	void RenderToTexture();
 	void RenderToTextureReflection();
@@ -81,7 +88,15 @@ private:
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	
+
+	UIManager* m_uiManager;
+
+
+
+
+
+
+	//////
 	ModelClass* m_Model;
 	ModelClass* m_Model2;
 	ModelBumpClass* m_Model3;

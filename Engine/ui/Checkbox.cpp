@@ -128,10 +128,6 @@ bool Checkbox::Render()
 	D3DXMATRIX worldMatrix, orthoMatrix;
 	BitmapClass* bitMapTemp;
 
-	if (!visible) {
-		return true;
-	}
-
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 

@@ -5,6 +5,10 @@ GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
+	m_uiManager = 0;
+
+
+	////
 	m_Model = 0;
 	m_Model2 = 0;
 	m_Model3 = 0;
@@ -99,6 +103,29 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 	m_Camera->setBaseViewMatrix();
+
+
+	m_uiManager = new UIManager;
+	m_uiManager->Initialize(m_D3D);
+
+	// load ui
+	Button* button = new Button;
+	button->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
+	button->Add("New", 10, 10, 1.0f, 1.0f, 1.0f);
+	m_uiManager->Add(button);
+
+	Button* button2 = new Button;
+	button2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
+	button2->Add("Exit", 10, 40, 1.0f, 0.3f, 0.3f);
+	m_uiManager->Add(button2);
+	////
+
+
+
+
+
+
+	/////////
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -514,14 +541,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create the frustum object.
 	m_Frustum = new FrustumClass;
 
-	m_Button = new Button;
-	m_Button->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	m_Button->Add("New", 10, 10, 1.0f, 1.0f, 1.0f);
-
-	m_Button2 = new Button;
-	m_Button2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	m_Button2->Add("Exit", 10, 40, 1.0f, 0.3f, 0.3f);
-
 	m_Checkbox = new Checkbox;
 	m_Checkbox->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/checkbox.png", L"data/textures/ui/checkbox_marked.png", 18, 18, baseViewMatrix);
 	m_Checkbox->Add("Fog", 10, 70, 1.0f, 1.0f, 1.0f);
@@ -615,6 +634,11 @@ void GraphicsClass::Shutdown()
 	}
 	///////////////
 
+	if (m_uiManager) {
+		m_uiManager->Shutdown();
+		delete m_uiManager;
+		m_uiManager = 0;
+	}
 
 	if (m_Button) {
 		m_Button->Shutdown();
@@ -968,8 +992,10 @@ void GraphicsClass::RenderUI()
 	sprintf(string, "Render objects: %d, triangles: %d", m_RenderCount, m_TriangleCount);
 	m_Label2->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
 
-	m_Button->Render();
-	m_Button2->Render();
+	m_uiManager->Render();
+
+	//m_Button->Render();
+	//m_Button2->Render();
 	m_Label->Render();
 	m_Label2->Render();
 	m_Checkbox->Render();

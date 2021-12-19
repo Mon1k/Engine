@@ -5,22 +5,38 @@ class AbstractGui
 {
 public:
     AbstractGui() {
-        visible = true;
+        m_visible = true;
+
+        m_width = 0;
+        m_height = 0;
+        m_x = 0;
+        m_y = 0;
     };
-    void Shutdown() {};
-    bool Render() {
-        return true;
-    };
+    virtual void Shutdown() = 0;
+    virtual bool Render() = 0;
     void hide() {
-        visible = false;
+        m_visible = false;
     };
     void show() {
-        visible = true;
+        m_visible = true;
     };
+    bool isVisible() {
+        return m_visible;
+    }
+
+    bool onPress(int x, int y)
+    {
+        if (x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height) {
+            return true;
+        }
+
+        return false;
+    }
 
 public:
-    bool visible;
+    bool m_visible;
 
+    int m_width, m_height, m_x, m_y;
 };
 
 #endif

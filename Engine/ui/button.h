@@ -19,7 +19,6 @@ public:
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Render();
-    bool onButtonPress(int x, int y);
 
 private:
     D3DClass* m_D3D;
@@ -27,8 +26,6 @@ private:
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
     TextClass* m_Text;
-
-    int m_width, m_height, m_x, m_y;
 };
 
 #endif

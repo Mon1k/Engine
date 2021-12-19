@@ -16,6 +16,8 @@ public:
     void Render();
     void Shutdown();
 
+    void onPressUi(int x, int y);
+
 private:
     std::vector<AbstractGui*> elements;
 
