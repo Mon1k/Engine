@@ -36,9 +36,9 @@ bool Cursor::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 	}
 
 	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -53,7 +53,7 @@ bool Cursor::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 	m_height = bitmapHeight;
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 }

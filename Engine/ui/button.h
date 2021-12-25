@@ -3,7 +3,6 @@
 
 #include "AbstractGUI.h"
 
-#include "../d3dclass.h"
 #include "../textureshaderclass.h"
 #include "../bitmapclass.h"
 #include "../textclass.h"
@@ -15,14 +14,14 @@ public:
     Button(const Button&);
     ~Button();
 
-    bool Initialize(D3DClass*, int, int, HWND, WCHAR*, int, int, D3DXMATRIX);
+    bool Initialize(int, int, WCHAR*, int, int);
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
+    bool Add(char*, int, int);
+    bool setText(char*);
     bool Render();
 
 private:
-    D3DClass* m_D3D;
-
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
     TextClass* m_Text;

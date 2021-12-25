@@ -88,7 +88,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	bool result;
 	D3DXMATRIX baseViewMatrix;
 
-
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
@@ -106,30 +105,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 	m_uiManager = new UIManager;
-	m_uiManager->Initialize(m_D3D);
-
-	// load ui
-	Button* button = new Button;
-	button->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	button->Add("New", 10, 10, 1.0f, 1.0f, 1.0f);
-	m_uiManager->Add(button);
-
-	Button* button2 = new Button;
-	button2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/button.png", 76, 28, baseViewMatrix);
-	button2->Add("Exit", 10, 40, 1.0f, 0.3f, 0.3f);
-	m_uiManager->Add(button2);
-	////
-
-
-
-
+	m_uiManager->Initialize(m_D3D, baseViewMatrix);
 
 
 	/////////
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
 		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
@@ -544,6 +527,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Checkbox = new Checkbox;
 	m_Checkbox->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/checkbox.png", L"data/textures/ui/checkbox_marked.png", 18, 18, baseViewMatrix);
 	m_Checkbox->Add("Fog", 10, 70, 1.0f, 1.0f, 1.0f);
+	m_Checkbox->m_baseViewMatrix = baseViewMatrix;
 
 	m_Label = new Label;
 	m_Label->Initialize(m_D3D, screenWidth, screenHeight, hwnd, 76, 28, baseViewMatrix);
@@ -994,8 +978,6 @@ void GraphicsClass::RenderUI()
 
 	m_uiManager->Render();
 
-	//m_Button->Render();
-	//m_Button2->Render();
 	m_Label->Render();
 	m_Label2->Render();
 	m_Checkbox->Render();

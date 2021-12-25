@@ -18,17 +18,13 @@ TextClass::~TextClass()
 {
 }
 
-bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd, int screenWidth, int screenHeight,
-	D3DXMATRIX baseViewMatrix)
+bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int screenWidth, int screenHeight)
 {
 	bool result;
 
 	// Store the screen width and height.
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
-
-	// Store the base view matrix.
-	m_baseViewMatrix = baseViewMatrix;
 
 	m_device = device;
 	m_deviceContext = deviceContext;
@@ -42,7 +38,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	// Initialize the font object.
 	result = m_Font->Initialize(device, "data/fontdata.txt", L"data/font.dds");
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the font object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the font object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -53,9 +49,9 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize the font shader object.
-	result = m_FontShader->Initialize(device, hwnd);
+	result = m_FontShader->Initialize(device);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the font shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the font shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -103,12 +99,12 @@ void TextClass::Shutdown()
 	return;
 }
 
-bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix, D3DXMATRIX viewMatrix)
 {
 	bool result;
 
 	// Draw the first sentence.
-	result = RenderSentence(deviceContext, m_sentence, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence, worldMatrix, orthoMatrix, viewMatrix);
 	if (!result) {
 		return false;
 	}
@@ -298,13 +294,11 @@ void TextClass::ReleaseSentence(SentenceType** sentence)
 	return;
 }
 
-bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType* sentence, D3DXMATRIX worldMatrix,
-	D3DXMATRIX orthoMatrix)
+bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType* sentence, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix, D3DXMATRIX viewMatrix)
 {
 	unsigned int stride, offset;
 	D3DXVECTOR4 pixelColor;
 	bool result;
-
 
 	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType);
@@ -323,7 +317,7 @@ bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType*
 	pixelColor = D3DXVECTOR4(sentence->red, sentence->green, sentence->blue, 1.0f);
 
 	// Render the text using the font shader.
-	result = m_FontShader->Render(deviceContext, sentence->indexCount, worldMatrix, m_baseViewMatrix, orthoMatrix, m_Font->GetTexture(),
+	result = m_FontShader->Render(deviceContext, sentence->indexCount, worldMatrix, viewMatrix, orthoMatrix, m_Font->GetTexture(),
 		pixelColor);
 	if (!result) {
 		false;

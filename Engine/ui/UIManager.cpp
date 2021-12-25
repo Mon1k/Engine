@@ -6,9 +6,10 @@ UIManager::UIManager()
     m_D3D = 0;
 }
 
-bool UIManager::Initialize(D3DClass* d3d)
+bool UIManager::Initialize(D3DClass* d3d, D3DXMATRIX baseViewMatrix)
 {
     m_D3D = d3d;
+    m_baseViewMatrix = baseViewMatrix;
 
     return true;
 }
@@ -16,6 +17,8 @@ bool UIManager::Initialize(D3DClass* d3d)
 bool UIManager::Add(AbstractGui* ui)
 {
     elements.push_back(ui);
+    ui->m_D3D = m_D3D;
+    ui->m_baseViewMatrix = m_baseViewMatrix;
 
     return true;
 }
@@ -50,12 +53,23 @@ void UIManager::Render()
     m_D3D->TurnZBufferOn();
 }
 
-void UIManager::onPressUi(int x, int y)
+void UIManager::onMouseClick(int x, int y, int button)
 {
     int size = elements.size();
     for (int i = 0; i < size; i++) {
-        if (elements[i]->isVisible()) {
-            elements[i]->onPress(x, y);
+        if (elements[i]->isVisible() && elements[i]->onPress(x, y)) {
+
         }
+    }
+}
+
+void UIManager::EventProccesor(InputClass* input)
+{
+    int mouseX, mouseY;
+    int mouseButton = input->GetMouseButton();
+
+    if (mouseButton >= 0) {
+        input->GetMouseLocation(mouseX, mouseY);
+        onMouseClick(mouseX, mouseY, mouseButton);
     }
 }

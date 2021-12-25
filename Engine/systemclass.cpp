@@ -21,7 +21,7 @@ SystemClass::~SystemClass()
 {
 }
 
-bool SystemClass::Initialize()
+bool SystemClass::init()
 {
 	int screenWidth, screenHeight;
 	bool result;
@@ -102,7 +102,7 @@ bool SystemClass::Initialize()
 	return true;
 }
 
-void SystemClass::Shutdown()
+void SystemClass::shutdown()
 {
 	// Release the position object.
 	if (m_Position) {
@@ -150,7 +150,7 @@ void SystemClass::Shutdown()
 }
 
 
-void SystemClass::Run()
+void SystemClass::run()
 {
 	MSG msg;
 	bool result;
@@ -186,8 +186,6 @@ void SystemClass::Run()
 		}
 
 	}
-
-	return;
 }
 
 
@@ -283,10 +281,10 @@ bool SystemClass::Frame()
 	}
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button2->onButtonPress(mouseX, mouseY)) {
 		done = true;
-	}*/
+	}
 	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Checkbox->onButtonPress(mouseX, mouseY)) {
 		m_Graphics->m_Checkbox->MarkedToogle();
-	}
+	}*/
 
 	// Get the current view point rotation.
 	rotation.y = m_Position->GetRotation();

@@ -1,6 +1,8 @@
 #ifndef _ABSTRACTGUI_H_
 #define _ABSTRACTGUI_H_
 
+#include "../d3dclass.h"
+
 class AbstractGui
 {
 public:
@@ -16,10 +18,10 @@ public:
     virtual bool Render() = 0;
     void hide() {
         m_visible = false;
-    };
+    }
     void show() {
         m_visible = true;
-    };
+    }
     bool isVisible() {
         return m_visible;
     }
@@ -34,6 +36,8 @@ public:
     }
 
 public:
+    D3DClass* m_D3D;
+    D3DXMATRIX m_baseViewMatrix;
     bool m_visible;
 
     int m_width, m_height, m_x, m_y;

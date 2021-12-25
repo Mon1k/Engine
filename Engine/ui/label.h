@@ -1,10 +1,12 @@
 #ifndef _LABEL_H_
 #define _LABEL_H_
 
+#include "AbstractGUI.h"
+
 #include "../d3dclass.h"
 #include "../textclass.h"
 
-class Label
+class Label: public AbstractGui
 {
 public:
     Label();
@@ -18,7 +20,6 @@ public:
 
 private:
     D3DClass* m_D3D;
-
     TextClass* m_Text;
 
     int m_width, m_height, m_x, m_y;

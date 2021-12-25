@@ -71,8 +71,7 @@ public:
 		return m_Camera;
 	};
 
-	UIManager* getUiManager()
-	{
+	UIManager* getUiManager() {
 		return m_uiManager;
 	}
 

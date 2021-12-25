@@ -35,9 +35,9 @@ bool Checkbox::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND
 	}
 
 	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -48,9 +48,9 @@ bool Checkbox::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND
 	}
 
 	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -65,12 +65,12 @@ bool Checkbox::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND
 	// Initialize the bitmap object.
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 	result = m_Bitmap_marked->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilenameMarked, m_width, m_height);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bitmap marked object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap marked object.", L"Error", MB_OK);
 		return false;
 	}
 }
@@ -144,13 +144,13 @@ bool Checkbox::Render()
 	}
 	bitMapTemp->Render(m_D3D->GetDeviceContext(), m_x, m_y);
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitMapTemp->GetIndexCount(), worldMatrix, m_Text->GetViewMartix(), orthoMatrix, bitMapTemp->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitMapTemp->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, bitMapTemp->GetTexture());
 	if (!result) {
 		return false;
 	}
 
 	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;
 	}

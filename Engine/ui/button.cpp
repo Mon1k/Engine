@@ -18,11 +18,9 @@ Button::~Button()
 {
 }
 
-bool Button::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND hwnd, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight, D3DXMATRIX baseViewMatrix)
+bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
-
-	m_D3D = d3d;
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -31,9 +29,9 @@ bool Button::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 	}
 
 	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -44,9 +42,9 @@ bool Button::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 	}
 
 	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -61,7 +59,7 @@ bool Button::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 	m_height = bitmapHeight;
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 }
@@ -73,6 +71,16 @@ bool Button::Add(char* text, int positionX, int positionY, float red, float gree
 	m_y = positionY;
 
 	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, red, green, blue);
+}
+
+bool Button::Add(char* text, int positionX, int positionY)
+{
+	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
+}
+
+bool Button::setText(char* text)
+{
+	return Add(text, m_x, m_y);
 }
 
 void Button::Shutdown()
@@ -108,28 +116,28 @@ bool Button::Render()
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
+	//m_D3D->TurnZBufferOff();
 
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_Text->GetViewMartix(), orthoMatrix, m_Bitmap->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	if (!result) {
 		return false;
 	}
 
 	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
+	//m_D3D->TurnOnAlphaBlending();
 
 	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;
 	}
 	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
+	//m_D3D->TurnOffAlphaBlending();
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
+	//m_D3D->TurnZBufferOn();
 
 	return true;
 }

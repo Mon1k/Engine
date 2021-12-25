@@ -21,19 +21,28 @@ public:
 	SystemClass(const SystemClass&);
 	~SystemClass();
 
-	bool Initialize();
-	void Shutdown();
-	void Run();
+	virtual bool init();
+	void shutdown();
+	void run();
+	GraphicsClass* getGraphic() {
+		return m_Graphics;
+	};
+	InputClass* getInput() {
+		return m_Input;
+	};
+
 
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	bool Frame();
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 	void createScreenshot();
 
-private:
+protected:
+	virtual bool Frame();
+
+protected:
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
@@ -45,9 +54,11 @@ private:
 	PositionClass* m_Position;
 	SoundClass* m_Sound;
 
+	bool done;
+
+public:
 	int screenWidth = 1680;
 	int screenHeight = 1050;
-	bool done;
 };
 
 
