@@ -16,7 +16,7 @@ public:
 
     bool Initialize(D3DClass*, int, int, HWND, WCHAR*, int, int, D3DXMATRIX);
     void Shutdown();
-    bool Set(int, int);
+    bool set(int, int);
     bool Render();
 
 private:

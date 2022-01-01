@@ -40,7 +40,7 @@ private:
 	void createScreenshot();
 
 protected:
-	virtual bool Frame();
+	virtual bool frame();
 
 protected:
 	LPCWSTR m_applicationName;

@@ -59,7 +59,7 @@ bool Cursor::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND h
 }
 
 
-bool Cursor::Set(int positionX, int positionY)
+bool Cursor::set(int positionX, int positionY)
 {
 	m_x = positionX;
 	m_y = positionY;

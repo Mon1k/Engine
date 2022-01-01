@@ -1,20 +1,14 @@
-#include "Checkbox.h"
+#include "checkbox.h"
 
 
 Checkbox::Checkbox()
 {
-	m_D3D = 0;
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Bitmap_marked = 0;
 	m_Text = 0;
 
 	b_IsMarked = false;
-
-	m_width = 0;
-	m_height = 0;
-	m_x = 0;
-	m_y = 0;
 }
 
 
@@ -22,11 +16,9 @@ Checkbox::~Checkbox()
 {
 }
 
-bool Checkbox::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND hwnd, WCHAR* textureFilename, WCHAR* textureFilenameMarked, int bitmapWidth, int bitmapHeight, D3DXMATRIX baseViewMatrix)
+bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename, WCHAR* textureFilenameMarked, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
-
-	m_D3D = d3d;
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -84,6 +76,11 @@ bool Checkbox::Add(char* text, int positionX, int positionY, float red, float gr
 	return m_Text->AddText(text, m_x + m_width / 4 + m_width, m_y + m_height / 4, red, green, blue);
 }
 
+bool Checkbox::Add(char* text, int positionX, int positionY)
+{
+	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
+}
+
 void Checkbox::Shutdown()
 {
 	// Release the text object.
@@ -113,15 +110,6 @@ void Checkbox::Shutdown()
 	}
 }
 
-bool Checkbox::onButtonPress(int x, int y)
-{
-	if (x >= m_x && x <= m_x + m_width && y >= m_y && y <= m_y + m_height) {
-		return true;
-	}
-
-	return false;
-}
-
 bool Checkbox::Render()
 {
 	bool result;
@@ -130,12 +118,6 @@ bool Checkbox::Render()
 
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
-
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
 
 	if (b_IsMarked) {
 		bitMapTemp = m_Bitmap_marked;
@@ -155,11 +137,5 @@ bool Checkbox::Render()
 		return false;
 	}
 	
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
-
 	return true;
 }

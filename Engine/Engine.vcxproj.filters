@@ -156,7 +156,7 @@
     <ClCompile Include="fogshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui\Checkbox.cpp">
+    <ClCompile Include="ui\checkbox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="clipplaneshaderclass.cpp">
@@ -314,7 +314,7 @@
     <ClInclude Include="ui\AbstractGUI.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="ui\Checkbox.h">
+    <ClInclude Include="ui\checkbox.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="clipplaneshaderclass.h">

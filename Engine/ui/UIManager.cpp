@@ -2,7 +2,7 @@
 
 UIManager::UIManager()
 {
-    elements.clear();
+    m_elements.clear();
     m_D3D = 0;
 }
 
@@ -16,18 +16,18 @@ bool UIManager::Initialize(D3DClass* d3d, D3DXMATRIX baseViewMatrix)
 
 bool UIManager::Add(AbstractGui* ui)
 {
-    elements.push_back(ui);
     ui->m_D3D = m_D3D;
     ui->m_baseViewMatrix = m_baseViewMatrix;
+    m_elements.push_back(ui);
 
     return true;
 }
 
 void UIManager::Shutdown()
 {
-    int size = elements.size();
+    int size = m_elements.size();
     for (int i = 0; i < size; i++) {
-        elements[i]->Shutdown();
+        m_elements[i]->Shutdown();
     }
 }
 
@@ -39,10 +39,10 @@ void UIManager::Render()
     // Turn on the alpha blending before rendering the text.
     m_D3D->TurnOnAlphaBlending();
 
-    int size = elements.size();
+    int size = m_elements.size();
     for (int i = 0; i < size; i++) {
-        if (elements[i]->isVisible()) {
-            elements[i]->Render();
+        if (m_elements[i]->isVisible()) {
+            m_elements[i]->Render();
         }
     }
 
@@ -55,10 +55,11 @@ void UIManager::Render()
 
 void UIManager::onMouseClick(int x, int y, int button)
 {
-    int size = elements.size();
+    int size = m_elements.size();
     for (int i = 0; i < size; i++) {
-        if (elements[i]->isVisible() && elements[i]->onPress(x, y)) {
-
+        if (m_elements[i]->isVisible() && m_elements[i]->isIntersect(x, y) && button == MOUSE_BUTTON1) {
+            m_elements[i]->onPress(x, y, button);
+            m_events.push_back(m_elements[i]);
         }
     }
 }
@@ -66,7 +67,9 @@ void UIManager::onMouseClick(int x, int y, int button)
 void UIManager::EventProccesor(InputClass* input)
 {
     int mouseX, mouseY;
-    int mouseButton = input->GetMouseButton();
+    int mouseButton = input->getMouseButton();
+
+    m_events.clear();
 
     if (mouseButton >= 0) {
         input->GetMouseLocation(mouseX, mouseY);

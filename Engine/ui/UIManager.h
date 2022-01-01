@@ -18,10 +18,31 @@ public:
     void Render();
     void Shutdown();
 
+    std::vector<AbstractGui*> getElements()
+    {
+        return this->m_elements;
+    };
+    std::vector<AbstractGui*> getEvents()
+    {
+        return this->m_events;
+    };
+    AbstractGui* getById(int id)
+    {
+        int size = m_elements.size();
+        for (int i = 0; i < size; i++) {
+            if (m_elements[i]->getId() == id) {
+                return m_elements[i];
+            }
+        }
+
+        return NULL;
+    }
+
     void onMouseClick(int x, int y, int button);
 
 private:
-    std::vector<AbstractGui*> elements;
+    std::vector<AbstractGui*> m_elements;
+    std::vector<AbstractGui*> m_events;
 
     D3DClass* m_D3D;
     D3DXMATRIX m_baseViewMatrix;

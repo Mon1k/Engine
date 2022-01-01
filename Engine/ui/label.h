@@ -3,7 +3,6 @@
 
 #include "AbstractGUI.h"
 
-#include "../d3dclass.h"
 #include "../textclass.h"
 
 class Label: public AbstractGui
@@ -13,16 +12,14 @@ public:
     Label(const Label&);
     ~Label();
 
-    bool Initialize(D3DClass*, int, int, HWND, int, int, D3DXMATRIX);
+    bool Initialize(int, int, int, int);
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
+    bool Add(char*, int, int);
     bool Render();
 
 private:
-    D3DClass* m_D3D;
     TextClass* m_Text;
-
-    int m_width, m_height, m_x, m_y;
 };
 
 #endif

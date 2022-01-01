@@ -3,7 +3,6 @@
 
 Button::Button()
 {
-	m_D3D = 0;
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
@@ -115,9 +114,6 @@ bool Button::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	// Turn off the Z buffer to begin all 2D rendering.
-	//m_D3D->TurnZBufferOff();
-
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
 	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
@@ -125,19 +121,11 @@ bool Button::Render()
 		return false;
 	}
 
-	// Turn on the alpha blending before rendering the text.
-	//m_D3D->TurnOnAlphaBlending();
-
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;
 	}
-	// Turn off alpha blending after rendering the text.
-	//m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	//m_D3D->TurnZBufferOn();
 
 	return true;
 }

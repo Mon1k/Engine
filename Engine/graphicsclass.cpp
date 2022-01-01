@@ -524,22 +524,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create the frustum object.
 	m_Frustum = new FrustumClass;
 
-	m_Checkbox = new Checkbox;
-	m_Checkbox->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/checkbox.png", L"data/textures/ui/checkbox_marked.png", 18, 18, baseViewMatrix);
-	m_Checkbox->Add("Fog", 10, 70, 1.0f, 1.0f, 1.0f);
-	m_Checkbox->m_baseViewMatrix = baseViewMatrix;
-
-	m_Label = new Label;
-	m_Label->Initialize(m_D3D, screenWidth, screenHeight, hwnd, 76, 28, baseViewMatrix);
-	m_Label->Add("Hello World", 10, 100, 1.0f, 0.3f, 0.3f);
-
-	m_Label2 = new Label;
-	m_Label2->Initialize(m_D3D, screenWidth, screenHeight, hwnd, 76, 28, baseViewMatrix);
-	m_Label2->Add("", 10, 130, 1.0f, 0.3f, 0.3f);
-
 	m_Cursor = new Cursor;
 	m_Cursor->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/cursor.png", 32, 32, baseViewMatrix);
-	m_Cursor->Set(screenWidth / 2, screenHeight / 2);
+	m_Cursor->set(screenWidth / 2, screenHeight / 2);
 
 	return true;
 }
@@ -920,8 +907,8 @@ bool GraphicsClass::Render()
 	float fogColor;
 	
 	fogColor = 0.0f;
-	if (m_Checkbox->getIsMarked()) {
-		// Set the color of the fog to grey.
+	Checkbox* checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(3));
+	if (checkbox->getIsMarked()) {
 		fogColor = 0.5f;
 	}
 
@@ -971,16 +958,7 @@ bool GraphicsClass::Render()
 
 void GraphicsClass::RenderUI()
 {
-	char string[128];
-
-	sprintf(string, "Render objects: %d, triangles: %d", m_RenderCount, m_TriangleCount);
-	m_Label2->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
-
 	m_uiManager->Render();
-
-	m_Label->Render();
-	m_Label2->Render();
-	m_Checkbox->Render();
 	m_Cursor->Render();
 }
 
@@ -1139,7 +1117,8 @@ void GraphicsClass::RenderScene()
 	blendAmount = 0.5f;
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 	
-	if (m_Checkbox->getIsMarked()) {
+	Checkbox* checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(3));
+	if (checkbox->getIsMarked()) {
 		// Set the start and end of the fog.
 		fogStart = 0.0f;
 		fogEnd = 50.0f;
@@ -1186,7 +1165,7 @@ void GraphicsClass::RenderScene()
 			m_Model2->Render();
 
 			// Render the model using the light shader.
-			if (m_Checkbox->getIsMarked()) {
+			if (checkbox->getIsMarked()) {
 				m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
 			} else {
 				std::vector<LightClass*> lights = { m_Light };

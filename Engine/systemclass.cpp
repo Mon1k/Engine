@@ -153,7 +153,6 @@ void SystemClass::shutdown()
 void SystemClass::run()
 {
 	MSG msg;
-	bool result;
 
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
@@ -171,10 +170,10 @@ void SystemClass::run()
 		if(msg.message == WM_QUIT) {
 			done = true;
 		} else {
-			// Otherwise do the frame processing.
-			result = Frame();
-			if (!result) {
+			if (!frame()) {
 				done = true;
+			} else {
+				m_Graphics->Render();
 			}
 		}
 
@@ -189,12 +188,12 @@ void SystemClass::run()
 }
 
 
-bool SystemClass::Frame()
+bool SystemClass::frame()
 {
 	int mouseX, mouseY;
 	int lastMouseX, lastMouseY;
 	D3DXVECTOR3 position, rotation;
-	float mouseSensivity = 2.5f, cameraSensivity = 0.05f;
+	float mouseSensivity = 1.5f, cameraSensivity = 0.05f;
 
 	// last mouse coord
 	m_Input->GetMouseLocation(lastMouseX, lastMouseY);
@@ -202,19 +201,16 @@ bool SystemClass::Frame()
 	// Update the system stats.
 	m_Timer->Frame();
 	m_Fps->Frame();
+	m_Input->Frame();
 
 	position = m_Graphics->getCamera()->GetPosition();
 	rotation = m_Graphics->getCamera()->GetRotation();
-
-	// Do the input frame processing.
-	m_Input->Frame();
 
 	// Set the frame time for calculating the updated position.
 	m_Position->SetFrameTime(m_Timer->GetTime());
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
-	int mouseButton = m_Input->GetMouseButton();
 	int mouseButtonPress = m_Input->getMouseButtonPress();
 
 
@@ -265,37 +261,21 @@ bool SystemClass::Frame()
 
 	// movement cursor
 	if (mouseButtonPress == MOUSE_BUTTON2) {
-		m_Graphics->m_Cursor->Set(mouseX, mouseY);
+		m_Graphics->m_Cursor->set(mouseX, mouseY);
 		m_Graphics->m_Cursor->show();
 	} else {
 		m_Graphics->m_Cursor->hide();
 	}
 
-	char mouseString[128];
-	sprintf(mouseString, "Fps: %d, Cpu: %3.2f%%, MouseX: %d, MouseY: %d, MouseButton: %u", m_Fps->GetFps(), m_Fps->GetCpuPercentage(), mouseX, mouseY, mouseButton);
-	m_Graphics->m_Label->Add(mouseString, 10, 100, 1.0f, 1.0f, 0.5f);
-
-	// ui events
-	/*if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button->onButtonPress(mouseX, mouseY)) {
-		m_Sound->Play();
-	}
-	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Button2->onButtonPress(mouseX, mouseY)) {
-		done = true;
-	}
-	if (mouseButton == MOUSE_BUTTON1 && m_Graphics->m_Checkbox->onButtonPress(mouseX, mouseY)) {
-		m_Graphics->m_Checkbox->MarkedToogle();
-	}*/
-
+	// frame ui
+	m_Graphics->getUiManager()->EventProccesor(m_Input);
+	
 	// Get the current view point rotation.
 	rotation.y = m_Position->GetRotation();
 	m_Graphics->getCamera()->SetRotation(rotation);
 	m_Graphics->getCamera()->SetPosition(position);
 
-	// Do the frame processing for the graphics object.
 	m_Graphics->frame(m_Timer);
-
-	// Finally render the graphics to the screen.
-	m_Graphics->Render();
 	
 	return true;
 }

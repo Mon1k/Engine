@@ -64,8 +64,12 @@ public:
 	D3DClass* getD3D() {
 		return m_D3D;
 	};
-	int GetRenderCount() {
+	int getRenderCount() {
 		return m_RenderCount;
+	};
+	int getTriangleCount()
+	{
+		return m_TriangleCount;
 	};
 	CameraClass* getCamera() {
 		return m_Camera;

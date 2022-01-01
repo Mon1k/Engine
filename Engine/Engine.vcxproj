@@ -125,7 +125,7 @@
     <ClCompile Include="textures\watershaderclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
     <ClCompile Include="ui\button.cpp" />
-    <ClCompile Include="ui\Checkbox.cpp" />
+    <ClCompile Include="ui\checkbox.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
     <ClCompile Include="ui\label.cpp" />
     <ClCompile Include="ui\UIManager.cpp" />
@@ -179,7 +179,7 @@
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="ui\AbstractGUI.h" />
     <ClInclude Include="ui\button.h" />
-    <ClInclude Include="ui\Checkbox.h" />
+    <ClInclude Include="ui\checkbox.h" />
     <ClInclude Include="ui\cursor.h" />
     <ClInclude Include="ui\label.h" />
     <ClInclude Include="ui\UIManager.h" />

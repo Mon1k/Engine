@@ -3,13 +3,7 @@
 
 Label::Label()
 {
-	m_D3D = 0;
 	m_Text = 0;
-
-	m_width = 0;
-	m_height = 0;
-	m_x = 0;
-	m_y = 0;
 }
 
 
@@ -21,11 +15,9 @@ Label::~Label()
 {
 }
 
-bool Label::Initialize(D3DClass* d3d, int screenWidth, int screenHeight, HWND hwnd, int bitmapWidth, int bitmapHeight, D3DXMATRIX baseViewMatrix)
+bool Label::Initialize(int screenWidth, int screenHeight, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
-
-	m_D3D = d3d;
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -50,6 +42,11 @@ bool Label::Add(char* text, int positionX, int positionY, float red, float green
 	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, red, green, blue);
 }
 
+bool Label::Add(char* text, int positionX, int positionY)
+{
+	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
+}
+
 void Label::Shutdown()
 {
 	// Release the text object.
@@ -68,22 +65,11 @@ bool Label::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;
 	}
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
 
 	return true;
 }

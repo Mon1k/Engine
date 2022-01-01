@@ -112,8 +112,6 @@ void InputClass::Shutdown()
 		m_directInput->Release();
 		m_directInput = 0;
 	}
-
-	return;
 }
 
 bool InputClass::IsKeyDown(unsigned int key)
@@ -139,14 +137,18 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
 	mouseX = m_mouseX;
 	mouseY = m_mouseY;
-	return;
 }
 
-BYTE InputClass::GetMouseButton()
+int InputClass::getMouseButton()
 {
+	if (m_mouseButton >= 0) {
+		return m_mouseButton;
+	}
+
 	for (int i = 0; i < 4; i++) {
 		if (m_mouseState.rgbButtons[i] && !m_PrevMouseState[i]) {
 			m_PrevMouseState[i] = true;
+			m_mouseButton = i;
 			return i;
 		}
 	}
@@ -160,7 +162,7 @@ BYTE InputClass::GetMouseButton()
 	return -1;
 }
 
-BYTE InputClass::getMouseButtonPress()
+int InputClass::getMouseButtonPress()
 {
 	for (int i = 0; i < 4; i++) {
 		if (m_mouseState.rgbButtons[i]) {
@@ -249,5 +251,5 @@ void InputClass::ProcessInput()
 		m_mouseY = m_screenHeight; 
 	}
 
-	return;
+	m_mouseButton = -1;
 }

@@ -25,8 +25,8 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(int&, int&);
 	bool IsKeyDown(unsigned int);
-	BYTE GetMouseButton();
-	BYTE getMouseButtonPress();
+	int getMouseButton();
+	int getMouseButtonPress();
 
 private:
 	bool ReadKeyboard();
@@ -44,6 +44,7 @@ private:
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
+	int m_mouseButton;
 };
 
 #endif
