@@ -3,6 +3,7 @@
 #include "ui/button.h"
 #include "ui/checkbox.h"
 #include "ui/label.h"
+#include "ui/cursor.h"
 
 
 class App: public SystemClass
@@ -54,6 +55,12 @@ public:
 		label2->Initialize(screenWidth, screenHeight, 76, 28);
 		label2->Add("", 10, 130, 1.0f, 0.3f, 0.3f);
 		label2->setId(5);
+
+		Cursor* cursor = new Cursor;
+		m_uiManager->Add(cursor);
+		cursor->Initialize(screenWidth, screenHeight, L"data/textures/ui/cursor.png", 32, 32);
+		cursor->set(screenWidth / 2, screenHeight / 2);
+		cursor->setId(6);
 	}
 
 	void loadScene()
@@ -104,6 +111,15 @@ protected:
 				char string[128];
 				sprintf(string, "Render objects: %d, triangles: %d", m_Graphics->getRenderCount(), m_Graphics->getTriangleCount());
 				label->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
+			}
+			if (elements[i]->getId() == 6) {
+				Cursor* cursor = dynamic_cast<Cursor*>(elements[i]);
+				if (mouseButtonPress == MOUSE_BUTTON2) {
+					cursor->set(mouseX, mouseY);
+					cursor->show();
+				} else {
+					cursor->hide();
+				}
 			}
 		}
 	}

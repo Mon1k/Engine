@@ -223,7 +223,6 @@ bool SystemClass::frame()
 	if (m_Input->IsKeyDown(DIK_LSHIFT)) {
 		cameraSensivity *= 2;
 	}
-	
 	if (m_Input->IsKeyDown(DIK_UPARROW) || m_Input->IsKeyDown(DIK_W)) {
 		position.z += cameraSensivity * m_Timer->GetTime();
 	}
@@ -258,23 +257,15 @@ bool SystemClass::frame()
 			rotation.x -= mouseSensivity * m_Timer->GetTime();
 		}
 	}
-
-	// movement cursor
-	if (mouseButtonPress == MOUSE_BUTTON2) {
-		m_Graphics->m_Cursor->set(mouseX, mouseY);
-		m_Graphics->m_Cursor->show();
-	} else {
-		m_Graphics->m_Cursor->hide();
-	}
-
-	// frame ui
-	m_Graphics->getUiManager()->EventProccesor(m_Input);
 	
 	// Get the current view point rotation.
 	rotation.y = m_Position->GetRotation();
 	m_Graphics->getCamera()->SetRotation(rotation);
 	m_Graphics->getCamera()->SetPosition(position);
 
+	// frame ui
+	m_Graphics->getUiManager()->EventProccesor(m_Input);
+	// frame graphic
 	m_Graphics->frame(m_Timer);
 	
 	return true;

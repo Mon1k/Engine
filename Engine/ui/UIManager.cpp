@@ -57,7 +57,7 @@ void UIManager::onMouseClick(int x, int y, int button)
 {
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
-        if (m_elements[i]->isVisible() && m_elements[i]->isIntersect(x, y) && button == MOUSE_BUTTON1) {
+        if (m_elements[i]->isVisible() && m_elements[i]->isIntersect(x, y)) {
             m_elements[i]->onPress(x, y, button);
             m_events.push_back(m_elements[i]);
         }

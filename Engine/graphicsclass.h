@@ -37,12 +37,6 @@
 #include "frustumclass.h"
 #include "timerclass.h"
 
-#include "ui/button.h"
-#include "ui/label.h"
-#include "ui/cursor.h"
-#include "ui/Checkbox.h"
-
-
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
@@ -151,20 +145,12 @@ private:
 	LightClass* m_Light;
 	ModelListClass* m_ModelList;
 	FrustumClass* m_Frustum;
-	Label* m_Label2;
 
 	LightClass* m_Light1, * m_Light2;
 
 	int m_RenderCount{};
 	int m_TriangleCount{};
 	float m_Counters[2]{};
-
-public:
-	Button* m_Button;
-	Button* m_Button2;
-	Label* m_Label;
-	Checkbox* m_Checkbox;
-	Cursor* m_Cursor;
 };
 
 #endif

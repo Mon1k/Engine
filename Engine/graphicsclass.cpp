@@ -1,4 +1,5 @@
 #include "graphicsclass.h"
+#include "ui/checkbox.h"
 
 
 GraphicsClass::GraphicsClass()
@@ -58,13 +59,6 @@ GraphicsClass::GraphicsClass()
 	m_Light1 = 0;
 	m_Light2 = 0;
 
-	m_Label = 0;
-	m_Label2 = 0;
-	m_Button = 0;
-	m_Button2 = 0;
-	m_Checkbox = 0;
-	m_Cursor = 0;
-
 	int size = sizeof(m_Counters) / sizeof(m_Counters[0]);
 	for (int i = 0; i < size; i++) {
 		m_Counters[i] = 0;
@@ -92,7 +86,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_D3D = new D3DClass;
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -114,7 +108,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_TextureShader = new TextureShaderClass;
 	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -122,7 +116,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_LightShader = new LightShaderClass;
 	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -163,7 +157,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	float divisor = screenWidth / (float)screenHeight;
 	result = m_DebugWindow->Initialize(m_D3D, screenWidth, screenHeight, 100, (int)(100 / divisor));
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the debug window object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the debug window object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -182,7 +176,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
 	result = m_Model->Initialize(m_D3D, "data/models/midpoly_town_house_01.obj", textures1);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model 1 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model 1 object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -190,7 +184,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures1_1 = { L"data/textures/seafloor.dds" };
 	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", textures1_1);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model 2 object", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model 2 object", L"Error", MB_OK);
 		return false;
 	}
 
@@ -198,7 +192,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures1_2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
 	result = m_Model3->Initialize(m_D3D, "data/models/cube.ds", textures1_2);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model 3 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model 3 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_Model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -209,7 +203,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds" };
 	result = m_ModelPlane->Initialize(m_D3D, "data/models/square.ds", textures2);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane object", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane object", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
@@ -220,7 +214,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures2_1 = { L"data/textures/stone01.dds", L"data/textures/light01.dds" };
 	result = m_ModelPlane2->Initialize(m_D3D, "data/models/square.ds", textures2_1);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane 2 object", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane 2 object", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane2->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
@@ -230,7 +224,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelPlane3 = new ModelClass;
 	result = m_ModelPlane3->Initialize(m_D3D, "data/models/square.ds", textures3);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model model plane 3 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model model plane 3 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
@@ -240,7 +234,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures4 = { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" };
 	result = m_ModelPlane4->Initialize(m_D3D, "data/models/square.ds", textures4);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane 4 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane 4 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane4->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -250,7 +244,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures5 = { L"data/textures/explosion.png" };
 	result = m_ModelPlane5->Initialize(m_D3D, "data/models/square.ds", textures5);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane 5 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane 5 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -260,7 +254,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures6 = { L"data/textures/stone01.dds" };
 	result = m_ModelPlane6->Initialize(m_D3D, "data/models/square.ds", textures6);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane 6 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane 6 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -270,7 +264,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> textures7 = { L"data/textures/blue01.dds" };
 	result = m_ModelPlane7->Initialize(m_D3D, "data/models/floor.ds", textures7);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model plane 7 object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model plane 7 object.", L"Error", MB_OK);
 		return false;
 	}
 	m_ModelPlane7->SetScale(D3DXVECTOR3(10.0f, 1.0f, 10.0f));
@@ -287,7 +281,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//result = m_GroundModel->Initialize(m_D3D, "data/models/ground.ds", texturesGround);
 	result = m_GroundModel->Initialize(m_D3D, "data/models/plane01.ds", texturesGround);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the ground model object.", L"Error", MB_OK);
 		return false;
 	}
 	m_GroundModel->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
@@ -298,7 +292,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> texturesWall = {L"data/textures/wall01.dds"};
 	result = m_WallModel->Initialize(m_D3D, "data/models/wall.ds", texturesWall);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the wall model object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the wall model object.", L"Error", MB_OK);
 		return false;
 	}
 	m_WallModel->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -30.0f));
@@ -308,7 +302,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> texturesBath = {L"data/textures/marble01.dds"};
 	result = m_BathModel->Initialize(m_D3D, "data/models/bath.ds", texturesBath);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bath model object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bath model object.", L"Error", MB_OK);
 		return false;
 	}
 	m_BathModel->SetPosition(D3DXVECTOR3(-50.0f, -4.0f, -35.0f));
@@ -318,7 +312,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	std::vector<std::wstring> texturesWater = {L"data/textures/water01.dds"};
 	result = m_WaterModel->Initialize(m_D3D, "data/models/water.ds", texturesWater);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the water model object.", L"Error", MB_OK);
 		return false;
 	}
 	m_WaterModel->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -35.0f));
@@ -335,14 +329,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_RefractionTexture = new RenderTextureClass;
 	result = m_RefractionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK);
 		return false;
 	}
 	// Create the reflection render to texture object.
 	m_ReflectionTexture = new RenderTextureClass;
 	result = m_ReflectionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -350,7 +344,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_LightShaderWater = new LightShaderClass;
 	result = m_LightShaderWater->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -358,7 +352,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_RefractionShader = new RefractionShaderClass;
 	result = m_RefractionShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the refraction shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the refraction shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -366,7 +360,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_WaterShader = new WaterShaderClass;
 	result = m_WaterShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the water shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the water shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -383,7 +377,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_MultiTextureShader = new MultiTextureShaderClass;
 	result = m_MultiTextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
 		return false;
 	}
 
@@ -391,7 +385,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_LightMapShader = new LightMapShaderClass;
 	result = m_LightMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the light map shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the light map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -400,7 +394,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_AlphaMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -409,7 +403,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the bump map shader object.
 	result = m_BumpMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -419,7 +413,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_SpecMapShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the specular map shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the specular map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -428,7 +422,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the fog shader object.
 	result = m_FogShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the fog shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -437,7 +431,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the clip plane shader object.
 	result = m_ClipPlaneShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -446,7 +440,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the texture translation shader object.
 	result = m_TranslateShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the texture translation shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the texture translation shader object.", L"Error", MB_OK);
 		return false;
 	}
 	m_TranslateShader->setMaxFrame(8, 6);
@@ -456,7 +450,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the transparent shader object.
 	result = m_TransparentShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -465,7 +459,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the reflection shader object.
 	result = m_ReflectionShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -481,7 +475,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the bitmap object.
 	result = m_BitmapFade->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"data/textures/stone01.dds", screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -499,7 +493,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the fade shader object.
 	result = m_FadeShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the fade shader object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the fade shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -510,7 +504,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_ModelList = new ModelListClass;
 	result = m_ModelList->Initialize(25);
 	if (!result) {
-		MessageBox(hwnd, L"Could not initialize the model list object.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the model list object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -523,10 +517,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the frustum object.
 	m_Frustum = new FrustumClass;
-
-	m_Cursor = new Cursor;
-	m_Cursor->Initialize(m_D3D, screenWidth, screenHeight, hwnd, L"data/textures/ui/cursor.png", 32, 32, baseViewMatrix);
-	m_Cursor->set(screenWidth / 2, screenHeight / 2);
 
 	return true;
 }
@@ -609,42 +599,6 @@ void GraphicsClass::Shutdown()
 		m_uiManager->Shutdown();
 		delete m_uiManager;
 		m_uiManager = 0;
-	}
-
-	if (m_Button) {
-		m_Button->Shutdown();
-		delete m_Button;
-		m_Button = 0;
-	}
-
-	if (m_Button2) {
-		m_Button2->Shutdown();
-		delete m_Button2;
-		m_Button2 = 0;
-	}
-
-	if (m_Label) {
-		m_Label->Shutdown();
-		delete m_Label;
-		m_Label = 0;
-	}
-
-	if (m_Label2) {
-		m_Label2->Shutdown();
-		delete m_Label2;
-		m_Label2 = 0;
-	}
-
-	if (m_Cursor) {
-		m_Cursor->Shutdown();
-		delete m_Cursor;
-		m_Cursor = 0;
-	}
-
-	if (m_Checkbox) {
-		m_Checkbox->Shutdown();
-		delete m_Checkbox;
-		m_Checkbox = 0;
 	}
 
 	if (m_Frustum) {
@@ -959,7 +913,6 @@ bool GraphicsClass::Render()
 void GraphicsClass::RenderUI()
 {
 	m_uiManager->Render();
-	m_Cursor->Render();
 }
 
 void GraphicsClass::RenderToTexture()
@@ -1270,8 +1223,6 @@ void GraphicsClass::RenderScene()
 		/*std::vector<LightClass*> lights = { m_LightWater };
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_GroundModel->GetTexture(), m_Camera->GetPosition(), lights);*/
-
-	
 		std::vector<LightClass*> lights = { m_Light1, m_Light2 };
 		m_LightShader->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_GroundModel->GetTexture(), m_Camera->GetPosition(), lights);
