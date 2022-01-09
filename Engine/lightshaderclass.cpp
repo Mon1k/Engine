@@ -24,12 +24,12 @@ LightShaderClass::~LightShaderClass()
 }
 
 
-bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool LightShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"data/shaders/light.vs", L"data/shaders/light.ps");
+	result = InitializeShader(device, L"data/shaders/light.vs", L"data/shaders/light.ps");
 	if (!result) {
 		return false;
 	}
@@ -47,14 +47,9 @@ void LightShaderClass::Shutdown()
 }
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 cameraPosition, std::vector<LightClass*> lights)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
-
-	this->lights.clear();
-	for (int i = 0; i < lights.size(); i++) {
-		this->lights.push_back(lights[i]);
-	}
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, cameraPosition);
@@ -68,8 +63,15 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 	return true;
 }
 
+void LightShaderClass::addLights(std::vector<LightClass*> lights)
+{
+	this->lights.clear();
+	for (int i = 0; i < lights.size(); i++) {
+		this->lights.push_back(lights[i]);
+	}
+}
 
-bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool LightShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -95,11 +97,11 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was nothing in the error message then it simply could not find the shader file itself.
 		else {
-			MessageBox(hwnd, vsFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -111,11 +113,11 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+			OutputShaderErrorMessage(errorMessage, psFilename);
 		}
 		// If there was nothing in the error message then it simply could not find the file itself.
 		else {
-			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -290,7 +292,7 @@ void LightShaderClass::ShutdownShader()
 	return;
 }
 
-void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
@@ -319,7 +321,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 	errorMessage = 0;
 
 	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.log for message.", shaderFilename, MB_OK);
+	MessageBox(NULL, L"Error compiling shader.  Check shader-error.log for message.", shaderFilename, MB_OK);
 
 	return;
 }
@@ -440,6 +442,4 @@ void LightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }

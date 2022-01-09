@@ -77,10 +77,8 @@ void FrustumClass::ConstructFrustum(float screenDepth, D3DXMATRIX projectionMatr
 
 bool FrustumClass::CheckPoint(float x, float y, float z)
 {
-	int i;
-
 	// Check if the point is inside all six planes of the view frustum.
-	for (i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) {
 		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3(x, y, z)) < 0.0f) {
 			return false;
 		}
@@ -115,11 +113,8 @@ bool FrustumClass::CheckRectangle(D3DXVECTOR3 position, D3DXVECTOR3 size)
 
 bool FrustumClass::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
 {
-	int i;
-
-
 	// Check if any of the 6 planes of the rectangle are inside the view frustum.
-	for (i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) {
 		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - xSize), (yCenter - ySize), (zCenter - zSize))) >= 0.0f) {
 			continue;
 		}

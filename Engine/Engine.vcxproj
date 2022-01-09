@@ -160,6 +160,7 @@
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="shaders\AbstractShader.h" />
     <ClInclude Include="sound\soundclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />

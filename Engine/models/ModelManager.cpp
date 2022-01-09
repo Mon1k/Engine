@@ -2,7 +2,7 @@
 
 ModelManager::ModelManager()
 {
-    models.clear();
+    m_models.clear();
     m_D3D = 0;
 }
 
@@ -15,25 +15,34 @@ bool ModelManager::Initialize(D3DClass* d3d)
 
 bool ModelManager::Add(AbstractModel* model)
 {
-    models.push_back(model);
+    m_models.push_back(model);
 
     return true;
 }
 
 void ModelManager::Shutdown()
 {
-    int size = models.size();
+    int size = m_models.size();
     for (int i = 0; i < size; i++) {
-        models[i]->Shutdown();
+        m_models[i]->Shutdown();
     }
 }
 
-void ModelManager::Render()
+void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
 {
-    int size = models.size();
+    m_RenderCount = 0;
+    m_TriangleCount = 0;
+
+    int size = m_models.size();
     for (int i = 0; i < size; i++) {
-        if (models[i]->isVisible()) {
-            models[i]->Render();
+        if (m_models[i]->isVisible()) {
+            D3DXVECTOR3 position, size;
+            m_models[i]->GetBoundingBox(position, size);
+            if (frustum->CheckRectangle(position, size)) {
+                m_models[i]->Render(camera);
+                m_TriangleCount += m_models[i]->GetTtriangleCount();
+                m_RenderCount++;
+            }
         }
     }
 }

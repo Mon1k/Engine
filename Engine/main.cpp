@@ -1,10 +1,15 @@
 #include "systemclass.h"
+
 #include "ui/UIManager.h"
 #include "ui/button.h"
 #include "ui/checkbox.h"
 #include "ui/label.h"
 #include "ui/cursor.h"
 
+#include "models/ModelManager.h"
+#include "modelclass.h"
+#include "lightshaderclass.h"
+#include "lightclass.h"
 
 class App: public SystemClass
 {
@@ -31,7 +36,6 @@ public:
 		button->Add("New", 10, 10);
 		button->setId(1);
 		
-
 		Button* button2 = new Button;
 		m_uiManager->Add(button2);
 		button2->Initialize(screenWidth, screenHeight, L"data/textures/ui/button.png", 76, 28);
@@ -65,6 +69,35 @@ public:
 
 	void loadScene()
 	{
+		bool result;
+		m_modelManager = m_Graphics->getModelManager();
+
+		ModelClass* model = new ModelClass;
+		std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
+		result = model->Initialize(m_Graphics->getD3D(), "data/models/midpoly_town_house_01.obj", textures1);
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 1 object.", L"Error", MB_OK);
+			return;
+		}
+
+		LightShaderClass* lightShader = new LightShaderClass;
+		result = lightShader->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		LightClass* light = new LightClass;
+		light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light->SetDirection(0.0f, 0.0f, 1.0f);
+		light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light->SetSpecularPower(64.0f);
+
+		std::vector<LightClass*> lights = { light };
+		lightShader->addLights(lights);
+		model->addShader(lightShader);
+		m_modelManager->Add(model);
 	}
 
 protected:
@@ -109,7 +142,7 @@ protected:
 			if (elements[i]->getId() == 5) {
 				Label* label = dynamic_cast<Label*>(elements[i]);
 				char string[128];
-				sprintf(string, "Render objects: %d, triangles: %d", m_Graphics->getRenderCount(), m_Graphics->getTriangleCount());
+				sprintf(string, "Render objects: %d, triangles: %d", m_modelManager->getRenderCount(), m_modelManager->getTriangleCount());
 				label->Add(string, 10, 130, 1.0f, 1.0f, 0.5f);
 			}
 			if (elements[i]->getId() == 6) {
@@ -131,6 +164,7 @@ protected:
 
 private:
 	UIManager* m_uiManager;
+	ModelManager* m_modelManager;
 };
 
 

@@ -11,7 +11,6 @@
 using namespace std;
 
 #include "models/AbstractModel.h"
-#include "d3dclass.h"
 #include "textureclass.h"
 #include "textures/texturearrayclass.h"
 
@@ -41,6 +40,7 @@ public:
 
 	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
 	void Shutdown();
+	void Render(CameraClass*);
 	void Render();
 
 	D3DXVECTOR3 GetPosition() {
@@ -89,8 +89,6 @@ private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	
 protected:
-	D3DClass* m_D3D;
-
 	D3DXVECTOR3 m_Min, m_Max;
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 scale;

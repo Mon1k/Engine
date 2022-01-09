@@ -66,12 +66,11 @@ void UIManager::onMouseClick(int x, int y, int button)
 
 void UIManager::EventProccesor(InputClass* input)
 {
-    int mouseX, mouseY;
     int mouseButton = input->getMouseButton();
 
     m_events.clear();
-
     if (mouseButton >= 0) {
+        int mouseX, mouseY;
         input->GetMouseLocation(mouseX, mouseY);
         onMouseClick(mouseX, mouseY, mouseButton);
     }

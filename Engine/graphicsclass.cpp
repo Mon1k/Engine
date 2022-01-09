@@ -7,6 +7,7 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_Camera = 0;
 	m_uiManager = 0;
+	m_modelManager = 0;
 
 
 	////
@@ -101,6 +102,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_uiManager = new UIManager;
 	m_uiManager->Initialize(m_D3D, baseViewMatrix);
 
+	m_modelManager = new ModelManager;
+	m_modelManager->Initialize(m_D3D);
+
 
 	/////////
 
@@ -114,7 +118,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
-	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_LightShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
@@ -342,7 +346,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the light shader object.
 	m_LightShaderWater = new LightShaderClass;
-	result = m_LightShaderWater->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_LightShaderWater->Initialize(m_D3D->GetDevice());
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
@@ -599,6 +603,12 @@ void GraphicsClass::Shutdown()
 		m_uiManager->Shutdown();
 		delete m_uiManager;
 		m_uiManager = 0;
+	}
+
+	if (m_modelManager) {
+		m_modelManager->Shutdown();
+		delete m_modelManager;
+		m_modelManager = 0;
 	}
 
 	if (m_Frustum) {
@@ -1048,8 +1058,9 @@ void GraphicsClass::RenderReflectionToTextureWater()
 
 	m_WallModel->Render();
 	std::vector<LightClass*> lights = { m_LightWater };
+	m_LightShaderWater->addLights(lights);
 	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
-		m_WallModel->GetTexture(), m_Camera->GetPosition(), lights);
+		m_WallModel->GetTexture(), m_Camera->GetPosition());
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -1086,16 +1097,9 @@ void GraphicsClass::RenderScene()
 	// Construct the frustum.
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
-	// @todo - далее из менеджера объектов выбирать те что надо в текстуру нужную записать
-	m_Model->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		m_Model->Render();
-		std::vector<LightClass*> lights = { m_Light };
-		m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), m_Model->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_Model->GetTexture(), m_Camera->GetPosition(), lights);
-		m_TriangleCount += m_Model->GetTtriangleCount();
-		m_RenderCount++;
-	}
+	m_modelManager->Render(m_Camera, m_Frustum);
+	/////
+
 
 	// Go through all the models and render them only if they can be seen by the camera view.
 	modelCount = m_ModelList->GetModelCount();
@@ -1122,8 +1126,9 @@ void GraphicsClass::RenderScene()
 				m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
 			} else {
 				std::vector<LightClass*> lights = { m_Light };
+				m_LightShader->addLights(lights);
 				m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-					m_Model2->GetTexture(), m_Camera->GetPosition(), lights);
+					m_Model2->GetTexture(), m_Camera->GetPosition());
 			}
 
 			// Reset to the original world matrix.
@@ -1224,8 +1229,9 @@ void GraphicsClass::RenderScene()
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
 			m_GroundModel->GetTexture(), m_Camera->GetPosition(), lights);*/
 		std::vector<LightClass*> lights = { m_Light1, m_Light2 };
-		m_LightShader->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_GroundModel->GetTexture(), m_Camera->GetPosition(), lights);
+		m_LightShaderWater->addLights(lights);
+		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
+			m_GroundModel->GetTexture(), m_Camera->GetPosition());
 
 		m_TriangleCount += m_GroundModel->GetTtriangleCount();
 		m_RenderCount++;
@@ -1235,8 +1241,9 @@ void GraphicsClass::RenderScene()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_WallModel->Render();
 		std::vector<LightClass*> lights = { m_LightWater };
+		m_LightShaderWater->addLights(lights);
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_WallModel->GetTexture(), m_Camera->GetPosition(), lights);
+			m_WallModel->GetTexture(), m_Camera->GetPosition());
 		m_TriangleCount += m_WallModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1245,8 +1252,9 @@ void GraphicsClass::RenderScene()
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_BathModel->Render();
 		std::vector<LightClass*> lights = { m_LightWater };
+		m_LightShaderWater->addLights(lights);
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_BathModel->GetTexture(), m_Camera->GetPosition(), lights);
+			m_BathModel->GetTexture(), m_Camera->GetPosition());
 		m_TriangleCount += m_BathModel->GetTtriangleCount();
 		m_RenderCount++;
 	}

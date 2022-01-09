@@ -5,6 +5,7 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "ui/UIManager.h"
+#include "models/ModelManager.h"
 
 #include "modelclass.h"
 #include "models/modelbumpclass.h"
@@ -58,19 +59,16 @@ public:
 	D3DClass* getD3D() {
 		return m_D3D;
 	};
-	int getRenderCount() {
-		return m_RenderCount;
-	};
-	int getTriangleCount()
-	{
-		return m_TriangleCount;
-	};
 	CameraClass* getCamera() {
 		return m_Camera;
 	};
 
 	UIManager* getUiManager() {
 		return m_uiManager;
+	}
+	ModelManager* getModelManager()
+	{
+		return m_modelManager;
 	}
 
 private:
@@ -87,8 +85,7 @@ private:
 	CameraClass* m_Camera;
 
 	UIManager* m_uiManager;
-
-
+	ModelManager* m_modelManager;
 
 
 

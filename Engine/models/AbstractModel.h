@@ -1,6 +1,10 @@
 #ifndef _ABSTRACTMODEL_H_
 #define _ABSTRACTMODEL_H_
 
+#include "../d3dclass.h"
+#include "../shaders/AbstractShader.h"
+#include "../cameraclass.h"
+
 class AbstractModel
 {
 public:
@@ -15,8 +19,9 @@ public:
     ModelType* m_model;
 
 public:
-    virtual void Render() {};
-    virtual void Shutdown() {};
+    virtual void Render(CameraClass* = 0) = 0;
+    virtual void Shutdown() = 0;
+    virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&) = 0;
 
     void setVertexCount(int vertexCount) {
         m_vertexCount = vertexCount;
@@ -37,10 +42,17 @@ public:
     bool isVisible() {
         return visible;
     }
+    void addShader(AbstractShader* shader)
+    {
+        m_shader = shader;
+    }
 
 protected:
     int m_vertexCount, m_indexCount;
     bool visible = true;
+
+    D3DClass* m_D3D;
+    AbstractShader* m_shader;
 };
 
 #endif

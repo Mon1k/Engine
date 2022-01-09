@@ -34,6 +34,9 @@
     <Filter Include="render\2d">
       <UniqueIdentifier>{34560bfe-fe85-4b07-a2a9-8a99efc69bab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{a1a725dd-504a-43d4-80fe-9ff607b0cf8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="textures\refractionshaderclass.h">
       <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\AbstractShader.h">
+      <Filter>shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

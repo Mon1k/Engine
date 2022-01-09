@@ -8,6 +8,7 @@ ModelClass::ModelClass()
 	m_Texture = 0;
 	m_TextureArray = 0;
 	m_model = 0;
+	m_shader = 0;
 
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
@@ -61,16 +62,9 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 
 void ModelClass::Shutdown()
 {
-	// Release the model texture.
 	ReleaseTexture();
-
-	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
-
-	// Release the model data.
 	ReleaseModel();
-
-	return;
 }
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
@@ -281,6 +275,12 @@ void ModelClass::ReleaseTexture()
 
 void ModelClass::ReleaseModel()
 {
+	if (m_shader) {
+		m_shader->Shutdown();
+		delete m_shader;
+		m_shader = 0;
+	}
+
 	if (m_model) {
 		delete[] m_model;
 		m_model = 0;
@@ -307,9 +307,23 @@ void ModelClass::ShutdownBuffers()
 }
 
 
+void ModelClass::Render(CameraClass* camera)
+{
+	D3DXMATRIX viewMatrix, projectionMatrix;
+
+	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	RenderBuffers(m_D3D->GetDeviceContext());
+
+	if (m_shader) {
+		camera->GetViewMatrix(viewMatrix);
+		m_D3D->GetProjectionMatrix(projectionMatrix);
+		m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix,
+			GetTexture(), camera->GetPosition());
+	}
+}
+
 void ModelClass::Render()
 {
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	RenderBuffers(m_D3D->GetDeviceContext());
 }
 
