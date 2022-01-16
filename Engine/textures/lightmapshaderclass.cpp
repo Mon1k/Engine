@@ -21,12 +21,12 @@ LightMapShaderClass::~LightMapShaderClass()
 }
 
 
-bool LightMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool LightMapShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 	
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"data/shaders/lightmap.vs", L"data/shaders/lightmap.ps");
+	result = InitializeShader(device, L"data/shaders/lightmap.vs", L"data/shaders/lightmap.ps");
 	if (!result) {
 		return false;
 	}
@@ -45,7 +45,7 @@ void LightMapShaderClass::Shutdown()
 
 
 bool LightMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
@@ -63,7 +63,7 @@ bool LightMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCo
 }
 
 
-bool LightMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool LightMapShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -86,11 +86,11 @@ bool LightMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else {
-			MessageBox(hwnd, vsFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -102,11 +102,11 @@ bool LightMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+			OutputShaderErrorMessage(errorMessage, psFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the file itself.
 		else {
-			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -220,56 +220,8 @@ void LightMapShaderClass::ShutdownShader()
 		m_layout = 0;
 	}
 
-	// Release the pixel shader.
-	if (m_pixelShader) {
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-	// Release the vertex shader.
-	if (m_vertexShader) {
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	return;
+	AbstractShader::Shutdown();
 }
-
-
-void LightMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
-{
-	char* compileErrors;
-	unsigned long bufferSize, i;
-	ofstream fout;
-
-
-	// Get a pointer to the error message text buffer.
-	compileErrors = (char*)(errorMessage->GetBufferPointer());
-
-	// Get the length of the message.
-	bufferSize = errorMessage->GetBufferSize();
-
-	// Open a file to write the error message to.
-	fout.open("shader-error.log");
-
-	// Write out the error message.
-	for (i = 0; i < bufferSize; i++) {
-		fout << compileErrors[i];
-	}
-
-	// Close the file.
-	fout.close();
-
-	// Release the error message.
-	errorMessage->Release();
-	errorMessage = 0;
-
-	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", shaderFilename, MB_OK);
-
-	return;
-}
-
 
 bool LightMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
@@ -330,6 +282,4 @@ void LightMapShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int i
 
 	// Render the triangles.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }

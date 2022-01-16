@@ -65,9 +65,9 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 
 void LightShaderClass::addLights(std::vector<LightClass*> lights)
 {
-	this->lights.clear();
+	this->m_lights.clear();
 	for (int i = 0; i < lights.size(); i++) {
-		this->lights.push_back(lights[i]);
+		this->m_lights.push_back(lights[i]);
 	}
 }
 
@@ -277,53 +277,7 @@ void LightShaderClass::ShutdownShader()
 		m_layout = 0;
 	}
 
-	// Release the pixel shader.
-	if (m_pixelShader) {
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-	// Release the vertex shader.
-	if (m_vertexShader) {
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	return;
-}
-
-void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
-{
-	char* compileErrors;
-	unsigned long bufferSize, i;
-	ofstream fout;
-
-
-	// Get a pointer to the error message text buffer.
-	compileErrors = (char*)(errorMessage->GetBufferPointer());
-
-	// Get the length of the message.
-	bufferSize = errorMessage->GetBufferSize();
-
-	// Open a file to write the error message to.
-	fout.open("shader-error.log");
-
-	// Write out the error message.
-	for (i = 0; i < bufferSize; i++) {
-		fout << compileErrors[i];
-	}
-
-	// Close the file.
-	fout.close();
-
-	// Release the error message.
-	errorMessage->Release();
-	errorMessage = 0;
-
-	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(NULL, L"Error compiling shader.  Check shader-error.log for message.", shaderFilename, MB_OK);
-
-	return;
+	AbstractShader::Shutdown();
 }
 
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
@@ -378,8 +332,8 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Copy the camera position into the constant buffer.
 	dataPtr3->cameraPosition = cameraPosition;
 	dataPtr3->padding = 0.0f;
-	for (int i = 0; i < this->lights.size(); i++) {
-		dataPtr3->lightPosition[i] = this->lights[i]->GetPosition();
+	for (int i = 0; i < this->m_lights.size(); i++) {
+		dataPtr3->lightPosition[i] = this->m_lights[i]->GetPosition();
 	}
 
 	// Unlock the camera constant buffer.
@@ -406,12 +360,12 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 
 	// Copy the lighting variables into the constant buffer.
 	PointLight light[NUM_LIGHTS];
-	for (int i = 0; i < this->lights.size(); i++) {
-		light[i].ambientColor = this->lights[i]->GetAmbientColor();
-		light[i].diffuseColor = this->lights[i]->GetDiffuseColor();
-		light[i].lightDirection = this->lights[i]->GetDirection();
-		light[i].specularPower= this->lights[i]->GetSpecularPower();
-		light[i].specularColor= this->lights[i]->GetSpecularColor();
+	for (int i = 0; i < this->m_lights.size(); i++) {
+		light[i].ambientColor = this->m_lights[i]->GetAmbientColor();
+		light[i].diffuseColor = this->m_lights[i]->GetDiffuseColor();
+		light[i].lightDirection = this->m_lights[i]->GetDirection();
+		light[i].specularPower= this->m_lights[i]->GetSpecularPower();
+		light[i].specularColor= this->m_lights[i]->GetSpecularColor();
 		dataPtr2->light[i] = light[i];
 	}
 

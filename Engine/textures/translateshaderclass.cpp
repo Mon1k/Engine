@@ -30,12 +30,12 @@ TranslateShaderClass::~TranslateShaderClass()
 }
 
 
-bool TranslateShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool TranslateShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"./data/shaders/translate.vs", L"./data/shaders/translate.ps");
+	result = InitializeShader(device, L"./data/shaders/translate.vs", L"./data/shaders/translate.ps");
 	if (!result) {
 		return false;
 	}
@@ -48,12 +48,10 @@ void TranslateShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
-
-	return;
 }
 
 
-bool TranslateShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool TranslateShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -77,11 +75,11 @@ bool TranslateShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCH
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else {
-			MessageBox(hwnd, vsFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -93,11 +91,11 @@ bool TranslateShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCH
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+			OutputShaderErrorMessage(errorMessage, psFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the file itself.
 		else {
-			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -231,59 +229,12 @@ void TranslateShaderClass::ShutdownShader()
 		m_layout = 0;
 	}
 
-	// Release the pixel shader.
-	if (m_pixelShader) {
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-	// Release the vertex shader.
-	if (m_vertexShader) {
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	return;
-}
-
-
-void TranslateShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
-{
-	char* compileErrors;
-	unsigned long bufferSize, i;
-	ofstream fout;
-
-
-	// Get a pointer to the error message text buffer.
-	compileErrors = (char*)(errorMessage->GetBufferPointer());
-
-	// Get the length of the message.
-	bufferSize = errorMessage->GetBufferSize();
-
-	// Open a file to write the error message to.
-	fout.open("shader-error.txt");
-
-	// Write out the error message.
-	for (i = 0; i < bufferSize; i++) {
-		fout << compileErrors[i];
-	}
-
-	// Close the file.
-	fout.close();
-
-	// Release the error message.
-	errorMessage->Release();
-	errorMessage = 0;
-
-	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", shaderFilename, MB_OK);
-
-	return;
+	AbstractShader::Shutdown();
 }
 
 
 bool TranslateShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -321,7 +272,7 @@ bool TranslateShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContex
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 1, &textureArray[0]);
 
 	// Lock the texture translation constant buffer so it can be written to.
 	result = deviceContext->Map(m_translateBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -367,18 +318,15 @@ void TranslateShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int 
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }
 
 bool TranslateShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
-
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray);
 	if (!result) {
 		return false;
 	}

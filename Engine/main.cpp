@@ -12,6 +12,12 @@
 #include "lightclass.h"
 #include "lightshaderclass.h"
 #include "textures/bumpmapshaderclass.h"
+#include "textures/multitextureshaderclass.h"
+#include "textures/lightmapshaderclass.h"
+#include "alphamapshaderclass.h"
+#include "textures/specmapshaderclass.h"
+#include "textures/transparentshaderclass.h"
+#include "textures/translateshaderclass.h"
 
 class App: public SystemClass
 {
@@ -20,6 +26,11 @@ public:
 	{
 		if (!SystemClass::init()) {
 			return false;
+		}
+
+		int size = sizeof(m_Counters) / sizeof(m_Counters[0]);
+		for (int i = 0; i < size; i++) {
+			m_Counters[i] = 0;
 		}
 
 		loadUI();
@@ -74,10 +85,17 @@ public:
 		bool result;
 		m_modelManager = m_Graphics->getModelManager();
 
+
+		LightClass* light = new LightClass;
+		light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light->SetDirection(0.0f, 0.0f, 1.0f);
+		light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light->SetSpecularPower(64.0f);
+
 		////
 		ModelClass* model = new ModelClass;
-		std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
-		result = model->Initialize(m_Graphics->getD3D(), "data/models/midpoly_town_house_01.obj", textures1);
+		result = model->Initialize(m_Graphics->getD3D(), "data/models/midpoly_town_house_01.obj", { L"data/textures/T_brightwood_basecolor.png" });
 		if (!result) {
 			MessageBox(NULL, L"Could not initialize the model 1 object.", L"Error", MB_OK);
 			return;
@@ -90,23 +108,14 @@ public:
 			return;
 		}
 
-		LightClass* light = new LightClass;
-		light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-		light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		light->SetDirection(0.0f, 0.0f, 1.0f);
-		light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-		light->SetSpecularPower(64.0f);
-
-		std::vector<LightClass*> lights = { light };
-		shader->addLights(lights);
+		shader->addLights({ light });
 		model->addShader(shader);
 		m_modelManager->Add(model);
 
 
 		////
 		ModelBumpClass* model2 = new ModelBumpClass;
-		std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
-		result = model2->Initialize(m_Graphics->getD3D(), "data/models/cube.ds", textures2);
+		result = model2->Initialize(m_Graphics->getD3D(), "data/models/cube.ds", { L"data/textures/stone01.dds", L"data/textures/bump01.dds" });
 		if (!result) {
 			MessageBox(NULL, L"Could not initialize the model 2 object.", L"Error", MB_OK);
 			return;
@@ -121,14 +130,137 @@ public:
 			return;
 		}
 
-		LightClass* light2 = new LightClass;
-		light2->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-		light2->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		light2->SetDirection(0.0f, 0.0f, 1.0f);
-		std::vector<LightClass*> lights2 = { light2 };
-		shader2->addLights(lights2);
+		shader2->addLights({ light });
 		model2->addShader(shader2);
 		m_modelManager->Add(model2);
+
+
+		////
+		ModelClass* model3 = new ModelClass;
+		result = model3->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds", L"data/textures/dirt01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 3 object", L"Error", MB_OK);
+			return;
+		}
+		model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+		model3->SetPosition(D3DXVECTOR3(35.0f, 0.0f, -20.0f));
+
+		MultiTextureShaderClass* shader3 = new MultiTextureShaderClass;
+		result = shader3->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the multitexture shader object", L"Error", MB_OK);
+			return;
+		}
+
+		model3->addShader(shader3);
+		m_modelManager->Add(model3);
+
+
+		////
+		ModelClass* model4 = new ModelClass;
+		result = model4->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds", L"data/textures/light01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 4 object", L"Error", MB_OK);
+			return;
+		}
+		model4->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+		model4->SetPosition(D3DXVECTOR3(25.0f, 0.0f, -20.0f));
+
+		LightMapShaderClass* shader4 = new LightMapShaderClass;
+		result = shader4->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the light map shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		model4->addShader(shader4);
+		m_modelManager->Add(model4);
+
+
+		////
+		ModelClass* model5 = new ModelClass;
+		result = model5->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds", L"data/textures/dirt01.dds", L"data/textures/alpha01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model model 5 object.", L"Error", MB_OK);
+			return;
+		}
+		model5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
+		model5->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -20.0f));
+
+		AlphaMapShaderClass* shader5 = new AlphaMapShaderClass;
+		result = shader5->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		model5->addShader(shader5);
+		m_modelManager->Add(model5);
+
+		
+		////
+		ModelBumpClass* model6 = new ModelBumpClass;
+		result = model6->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model model 6 object.", L"Error", MB_OK);
+			return;
+		}
+		model6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+		model6->SetPosition(D3DXVECTOR3(-5.0f, 0.0f, -20.0f));
+
+		SpecMapShaderClass* shader6 = new SpecMapShaderClass;
+		result = shader6->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the specular map shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		shader6->addLights({ light });
+		model6->addShader(shader6);
+		m_modelManager->Add(model6);
+
+
+		////
+		ModelClass* model7 = new ModelClass;
+		result = model7->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/explosion.png" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model model 7 object.", L"Error", MB_OK);
+			return;
+		}
+		model7->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+		model7->SetPosition(D3DXVECTOR3(-15.0f, 0.0f, -20.0f));
+
+		TranslateShaderClass* shader7 = new TranslateShaderClass;
+		result = shader7->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the translate shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		model7->addShader(shader7);
+		model7->setId(7);
+		m_modelManager->Add(model7);
+
+
+		////
+		ModelClass* model8 = new ModelClass;
+		result = model8->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model model 8 object.", L"Error", MB_OK);
+			return;
+		}
+		model8->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+		model8->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -30.0f));
+
+		TransparentShaderClass* shader8 = new TransparentShaderClass;
+		result = shader8->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		model8->addShader(shader8);
+		m_modelManager->Add(model8);
 	}
 
 protected:
@@ -190,12 +322,21 @@ protected:
 
 	void frameScene()
 	{
+		float time = m_Timer->GetTime();
 
+		m_Counters[0] += time;
+		if (m_Counters[0] > 50) {
+			AbstractModel* model = m_modelManager->getById(7);
+			TranslateShaderClass* shader = dynamic_cast<TranslateShaderClass*>(model->getShader());
+			shader->incrementFrame();
+			m_Counters[0] = 0;
+		}
 	}
 
 private:
 	UIManager* m_uiManager;
 	ModelManager* m_modelManager;
+	float m_Counters[2]{};
 };
 
 

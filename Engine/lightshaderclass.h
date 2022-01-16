@@ -58,7 +58,6 @@ public:
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
-	void OutputShaderErrorMessage(ID3D10Blob*, WCHAR*);
 
 	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3);
 	void RenderShader(ID3D11DeviceContext*, int);
@@ -71,7 +70,7 @@ private:
 	ID3D11Buffer* m_cameraBuffer;
 	ID3D11Buffer* m_lightBuffer;
 
-	std::vector<LightClass*> lights;
+	std::vector<LightClass*> m_lights;
 };
 
 #endif

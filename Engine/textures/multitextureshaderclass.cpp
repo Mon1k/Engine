@@ -3,8 +3,6 @@
 
 MultiTextureShaderClass::MultiTextureShaderClass()
 {
-	m_vertexShader = 0;
-	m_pixelShader = 0;
 	m_layout = 0;
 	m_matrixBuffer = 0;
 	m_sampleState = 0;
@@ -21,12 +19,12 @@ MultiTextureShaderClass::~MultiTextureShaderClass()
 }
 
 
-bool MultiTextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool MultiTextureShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"data/shaders/multitexture.vs", L"data/shaders/multitexture.ps");
+	result = InitializeShader(device, L"data/shaders/multitexture.vs", L"data/shaders/multitexture.ps");
 	if (!result) {
 		return false;
 	}
@@ -38,12 +36,10 @@ void MultiTextureShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
-
-	return;
 }
 
 bool MultiTextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
@@ -59,7 +55,7 @@ bool MultiTextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int ind
 	return true;
 }
 
-bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -82,11 +78,11 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else {
-			MessageBox(hwnd, vsFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -98,11 +94,11 @@ bool MultiTextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, 
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+			OutputShaderErrorMessage(errorMessage, psFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the file itself.
 		else {
-			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
+			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -215,53 +211,7 @@ void MultiTextureShaderClass::ShutdownShader()
 		m_layout = 0;
 	}
 
-	// Release the pixel shader.
-	if (m_pixelShader) {
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-	// Release the vertex shader.
-	if (m_vertexShader) {
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	return;
-}
-
-void MultiTextureShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
-{
-	char* compileErrors;
-	unsigned long bufferSize, i;
-	ofstream fout;
-
-
-	// Get a pointer to the error message text buffer.
-	compileErrors = (char*)(errorMessage->GetBufferPointer());
-
-	// Get the length of the message.
-	bufferSize = errorMessage->GetBufferSize();
-
-	// Open a file to write the error message to.
-	fout.open("shader-error.log");
-
-	// Write out the error message.
-	for (i = 0; i < bufferSize; i++) {
-		fout << compileErrors[i];
-	}
-
-	// Close the file.
-	fout.close();
-
-	// Release the error message.
-	errorMessage->Release();
-	errorMessage = 0;
-
-	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.log for message.", shaderFilename, MB_OK);
-
-	return;
+	AbstractShader::Shutdown();
 }
 
 bool MultiTextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
@@ -281,8 +231,7 @@ bool MultiTextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceCon
 
 	// Lock the matrix constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -323,6 +272,4 @@ void MultiTextureShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, i
 
 	// Render the triangles.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }

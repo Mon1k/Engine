@@ -26,6 +26,17 @@ public:
     {
         return m_TriangleCount;
     };
+    AbstractModel* getById(int id)
+    {
+        int size = m_models.size();
+        for (int i = 0; i < size; i++) {
+            if (m_models[i]->getId() == id) {
+                return m_models[i];
+            }
+        }
+
+        return NULL;
+    }
 
 private:
     std::vector<AbstractModel *> m_models;

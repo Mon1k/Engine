@@ -19,6 +19,11 @@ public:
     ModelType* m_model;
 
 public:
+    AbstractModel()
+    {
+        m_id = 0;
+    }
+
     virtual void Render(CameraClass* = 0) = 0;
     virtual void Shutdown() = 0;
     virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&) = 0;
@@ -46,6 +51,19 @@ public:
     {
         m_shader = shader;
     }
+    AbstractShader* getShader()
+    {
+        return m_shader;
+    }
+
+    void setId(int id)
+    {
+        m_id = id;
+    };
+    int getId()
+    {
+        return m_id;
+    };
 
 protected:
     int m_vertexCount, m_indexCount;
@@ -53,6 +71,9 @@ protected:
 
     D3DClass* m_D3D;
     AbstractShader* m_shader;
+
+private:
+    int m_id;
 };
 
 #endif

@@ -10,11 +10,9 @@
 #include "modelclass.h"
 #include "models/modelbumpclass.h"
 #include "models/bbox.h"
-#include "textures/multitextureshaderclass.h"
 
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
-
 
 #include "textures/refractionshaderclass.h"
 #include "textures/watershaderclass.h"
@@ -22,10 +20,7 @@
 #include "textures/reflectionshaderclass.h"
 #include "textures/transparentshaderclass.h"
 #include "textures/translateshaderclass.h"
-#include "textures/specmapshaderclass.h"
-#include "textures/lightmapshaderclass.h"
 #include "textureshaderclass.h"
-#include "alphamapshaderclass.h"
 #include "lightshaderclass.h"
 #include "fogshaderclass.h"
 #include "clipplaneshaderclass.h"
@@ -91,20 +86,12 @@ private:
 
 	//////
 	ModelClass* m_Model2;
-	ModelClass* m_ModelPlane;
-	ModelClass* m_ModelPlane2;
-	ModelClass* m_ModelPlane3;
-	ModelBumpClass* m_ModelPlane4;
 	ModelClass* m_ModelPlane5;
 	ModelClass* m_ModelPlane6;
 	ModelClass* m_ModelPlane7;
 	BBox* m_Bbox;
 	
 	TextureShaderClass* m_TextureShader;
-	MultiTextureShaderClass* m_MultiTextureShader;
-	LightMapShaderClass* m_LightMapShader;
-	AlphaMapShaderClass* m_AlphaMapShader;
-	SpecMapShaderClass* m_SpecMapShader;
 	FogShaderClass* m_FogShader;
 	ClipPlaneShaderClass* m_ClipPlaneShader;
 	TranslateShaderClass* m_TranslateShader;
