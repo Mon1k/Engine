@@ -20,13 +20,13 @@ BumpMapShaderClass::~BumpMapShaderClass()
 {
 }
 
-bool BumpMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool BumpMapShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"data/shaders/bumpmap.vs", L"data/shaders/bumpmap.ps");
+	result = InitializeShader(device, L"data/shaders/bumpmap.vs", L"data/shaders/bumpmap.ps");
 	if (!result) {
 		return false;
 	}
@@ -43,15 +43,13 @@ void BumpMapShaderClass::Shutdown()
 }
 
 bool BumpMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 lightDirection,
-	D3DXVECTOR4 diffuseColor)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray, lightDirection,
-		diffuseColor);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray);
 	if (!result) {
 		return false;
 	}
@@ -62,7 +60,7 @@ bool BumpMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCou
 	return true;
 }
 
-bool BumpMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool BumpMapShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -87,11 +85,11 @@ bool BumpMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else {
-			MessageBox(hwnd, vsFilename, L"Missing bump vertex shader file", MB_OK);
+			MessageBox(NULL, vsFilename, L"Missing bump vertex shader file", MB_OK);
 		}
 
 		return false;
@@ -104,12 +102,12 @@ bool BumpMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage)
 		{
-			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+			OutputShaderErrorMessage(errorMessage, psFilename);
 		}
 		// If there was  nothing in the error message then it simply could not find the file itself.
 		else
 		{
-			MessageBox(hwnd, psFilename, L"Missing bump pixel shader file", MB_OK);
+			MessageBox(NULL, psFilename, L"Missing bump pixel shader file", MB_OK);
 		}
 
 		return false;
@@ -282,7 +280,7 @@ void BumpMapShaderClass::ShutdownShader()
 	return;
 }
 
-void BumpMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void BumpMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
@@ -311,15 +309,22 @@ void BumpMapShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND
 	errorMessage = 0;
 
 	// Pop a message up on the screen to notify the user to check the text file for compile errors.
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", shaderFilename, MB_OK);
+	MessageBox(NULL, L"Error compiling shader.  Check shader-error.txt for message.", shaderFilename, MB_OK);
 
 	return;
 }
 
+void BumpMapShaderClass::addLights(std::vector<LightClass*> lights)
+{
+	this->m_lights.clear();
+	for (int i = 0; i < lights.size(); i++) {
+		this->m_lights.push_back(lights[i]);
+	}
+}
+
 bool BumpMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
-	ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 lightDirection,
-	D3DXVECTOR4 diffuseColor)
+	ID3D11ShaderResourceView** textureArray)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -370,8 +375,8 @@ bool BumpMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	dataPtr2->diffuseColor = diffuseColor;
-	dataPtr2->lightDirection = lightDirection;
+	dataPtr2->diffuseColor = m_lights[0]->GetDiffuseColor();
+	dataPtr2->lightDirection = m_lights[0]->GetDirection();
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -399,6 +404,4 @@ void BumpMapShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int in
 
 	// Render the triangles.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-
-	return;
 }

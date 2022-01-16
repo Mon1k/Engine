@@ -18,18 +18,12 @@ TextureArrayClass::~TextureArrayClass()
 {
 }
 
-bool TextureArrayClass::Initialize(ID3D11Device* device, WCHAR* filename1, WCHAR* filename2)
+bool TextureArrayClass::Initialize(ID3D11Device* device, WCHAR* filename1)
 {
 	HRESULT result;
 
 	// Load the first texture in.
 	result = D3DX11CreateShaderResourceViewFromFile(device, filename1, NULL, NULL, &m_textures[0], NULL);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Load the second texture in.
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename2, NULL, NULL, &m_textures[1], NULL);
 	if (FAILED(result)) {
 		return false;
 	}

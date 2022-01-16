@@ -5,7 +5,6 @@ ModelClass::ModelClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
-	m_Texture = 0;
 	m_TextureArray = 0;
 	m_model = 0;
 	m_shader = 0;
@@ -49,7 +48,7 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 			return false;
 		}
 	} else if (texturesFilename[0].size() > 0) {
-		result = LoadTexture(m_D3D->GetDevice(), texturesFilename[0]);
+		result = LoadTextures(m_D3D->GetDevice(), texturesFilename[0]);
 		if (!result) {
 			return false;
 		}
@@ -69,10 +68,6 @@ void ModelClass::Shutdown()
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
-	if (m_Texture) {
-		return m_Texture->GetTexture();
-	}
-
 	return m_TextureArray->GetTextureArray()[0];
 }
 
@@ -190,7 +185,7 @@ void ModelClass::CalcMinMax()
 	}
 }
 
-bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename1, std::wstring filename2)
+bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename)
 {
 	bool result;
 
@@ -201,7 +196,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename1, std:
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, &filename1[0], &filename2[0]);
+	result = m_TextureArray->Initialize(device, &filename[0]);
 	if (!result) {
 		return false;
 	}
@@ -220,14 +215,14 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstrin
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, &filenames[0][0], &filenames[1][0]);
+	result = m_TextureArray->Initialize(device, &filenames[0][0]);
 	if (!result) {
 		return false;
 	}
 
 	int size = filenames.size();
-	if (size > 2) {
-		for (int i = 2; i < size; i++) {
+	if (size > 1) {
+		for (int i = 1; i < size; i++) {
 			m_TextureArray->AddTexture(device, &filenames[i][0], i);
 		}
 	}
@@ -235,34 +230,8 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstrin
 	return true;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device* device, std::wstring filename)
-{
-	bool result;
-
-	// Create the texture object.
-	m_Texture = new TextureClass;
-	if (!m_Texture) {
-		return false;
-	}
-
-	// Initialize the texture object.
-	result = m_Texture->Initialize(device, &filename[0]);
-	if (!result) {
-		return false;
-	}
-
-	return true;
-}
-
 void ModelClass::ReleaseTexture()
 {
-	// Release the texture object.
-	if (m_Texture) {
-		m_Texture->Shutdown();
-		delete m_Texture;
-		m_Texture = 0;
-	}
-
 	// Release the texture array object.
 	if (m_TextureArray) {
 		m_TextureArray->Shutdown();
@@ -318,7 +287,7 @@ void ModelClass::Render(CameraClass* camera)
 		camera->GetViewMatrix(viewMatrix);
 		m_D3D->GetProjectionMatrix(projectionMatrix);
 		m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix,
-			GetTexture(), camera->GetPosition());
+			GetTextureArray(), camera->GetPosition());
 	}
 }
 

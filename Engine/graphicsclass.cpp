@@ -11,9 +11,7 @@ GraphicsClass::GraphicsClass()
 
 
 	////
-	m_Model = 0;
 	m_Model2 = 0;
-	m_Model3 = 0;
 	m_ModelPlane = 0;
 	m_ModelPlane2 = 0;
 	m_ModelPlane3 = 0;
@@ -24,7 +22,6 @@ GraphicsClass::GraphicsClass()
 	m_Bbox = 0;
 	
 	m_SpecMapShader = 0;
-	m_BumpMapShader = 0;
 	m_TextureShader = 0;
 	m_MultiTextureShader = 0;
 	m_LightMapShader = 0;
@@ -176,14 +173,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 
 	// Create the model object.
-	m_Model = new ModelClass;
-	std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
-	result = m_Model->Initialize(m_D3D, "data/models/midpoly_town_house_01.obj", textures1);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model 1 object.", L"Error", MB_OK);
-		return false;
-	}
-
 	m_Model2 = new ModelClass;
 	std::vector<std::wstring> textures1_1 = { L"data/textures/seafloor.dds" };
 	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", textures1_1);
@@ -191,17 +180,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(NULL, L"Could not initialize the model 2 object", L"Error", MB_OK);
 		return false;
 	}
-
-	m_Model3 = new ModelBumpClass;
-	std::vector<std::wstring> textures1_2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
-	result = m_Model3->Initialize(m_D3D, "data/models/cube.ds", textures1_2);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model 3 object.", L"Error", MB_OK);
-		return false;
-	}
-	m_Model3->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
-	m_Model3->SetPosition(D3DXVECTOR3(5.0f, 0.0f, -20.0f));
-	
 
 	m_ModelPlane = new ModelClass;
 	std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/dirt01.dds" };
@@ -399,15 +377,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result)
 	{
 		MessageBox(NULL, L"Could not initialize the alpha map shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the bump map shader object.
-	m_BumpMapShader = new BumpMapShaderClass;
-	// Initialize the bump map shader object.
-	result = m_BumpMapShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -705,13 +674,6 @@ void GraphicsClass::Shutdown()
 		m_SpecMapShader = 0;
 	}
 
-	// Release the bump map shader object.
-	if (m_BumpMapShader) {
-		m_BumpMapShader->Shutdown();
-		delete m_BumpMapShader;
-		m_BumpMapShader = 0;
-	}
-
 	// Release the light map shader object.
 	if (m_LightMapShader) {
 		m_LightMapShader->Shutdown();
@@ -799,18 +761,6 @@ void GraphicsClass::Shutdown()
 		m_TextureShader->Shutdown();
 		delete m_TextureShader;
 		m_TextureShader = 0;
-	}
-
-	if (m_Model) {
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
-	}
-
-	if (m_Model3) {
-		m_Model3->Shutdown();
-		delete m_Model3;
-		m_Model3 = 0;
 	}
 
 	if (m_Camera) {
@@ -1060,7 +1010,7 @@ void GraphicsClass::RenderReflectionToTextureWater()
 	std::vector<LightClass*> lights = { m_LightWater };
 	m_LightShaderWater->addLights(lights);
 	m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
-		m_WallModel->GetTexture(), m_Camera->GetPosition());
+		m_WallModel->GetTextureArray(), m_Camera->GetPosition());
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -1128,7 +1078,7 @@ void GraphicsClass::RenderScene()
 				std::vector<LightClass*> lights = { m_Light };
 				m_LightShader->addLights(lights);
 				m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-					m_Model2->GetTexture(), m_Camera->GetPosition());
+					m_Model2->GetTextureArray(), m_Camera->GetPosition());
 			}
 
 			// Reset to the original world matrix.
@@ -1140,19 +1090,6 @@ void GraphicsClass::RenderScene()
 		}
 	}
 
-
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model3->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		m_Model3->Render();
-		m_BumpMapShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix, projectionMatrix, m_Model3->GetTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
-		/*m_ClipPlaneShader->Render(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), m_Model3->GetWorldMatrix(), viewMatrix,
-			projectionMatrix, m_Model3->GetTexture(), clipPlane);*/
-		m_TriangleCount += m_Model3->GetTtriangleCount();
-		m_RenderCount++;
-	}
-
-
 	m_ModelPlane->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
 		m_ModelPlane->Render();
@@ -1160,7 +1097,6 @@ void GraphicsClass::RenderScene()
 		m_TriangleCount += m_ModelPlane->GetTtriangleCount();
 		m_RenderCount++;
 	}
-
 
 	m_ModelPlane2->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
@@ -1231,7 +1167,7 @@ void GraphicsClass::RenderScene()
 		std::vector<LightClass*> lights = { m_Light1, m_Light2 };
 		m_LightShaderWater->addLights(lights);
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), m_GroundModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_GroundModel->GetTexture(), m_Camera->GetPosition());
+			m_GroundModel->GetTextureArray(), m_Camera->GetPosition());
 
 		m_TriangleCount += m_GroundModel->GetTtriangleCount();
 		m_RenderCount++;
@@ -1243,7 +1179,7 @@ void GraphicsClass::RenderScene()
 		std::vector<LightClass*> lights = { m_LightWater };
 		m_LightShaderWater->addLights(lights);
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), m_WallModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_WallModel->GetTexture(), m_Camera->GetPosition());
+			m_WallModel->GetTextureArray(), m_Camera->GetPosition());
 		m_TriangleCount += m_WallModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
@@ -1254,7 +1190,7 @@ void GraphicsClass::RenderScene()
 		std::vector<LightClass*> lights = { m_LightWater };
 		m_LightShaderWater->addLights(lights);
 		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), m_BathModel->GetWorldMatrix(), viewMatrix, projectionMatrix,
-			m_BathModel->GetTexture(), m_Camera->GetPosition());
+			m_BathModel->GetTextureArray(), m_Camera->GetPosition());
 		m_TriangleCount += m_BathModel->GetTtriangleCount();
 		m_RenderCount++;
 	}

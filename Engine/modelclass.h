@@ -80,8 +80,7 @@ protected:
 	void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
 
-	bool LoadTexture(ID3D11Device*, std::wstring);
-	bool LoadTextures(ID3D11Device*, std::wstring, std::wstring);
+	bool LoadTextures(ID3D11Device*, std::wstring);
 	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
 	void ReleaseTexture();
 
@@ -93,7 +92,6 @@ protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 scale;
 
-	TextureClass* m_Texture; // @todo remove
 	TextureArrayClass* m_TextureArray;
 };
 

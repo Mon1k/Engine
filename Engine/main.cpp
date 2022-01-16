@@ -8,8 +8,10 @@
 
 #include "models/ModelManager.h"
 #include "modelclass.h"
-#include "lightshaderclass.h"
+#include "models/modelbumpclass.h"
 #include "lightclass.h"
+#include "lightshaderclass.h"
+#include "textures/bumpmapshaderclass.h"
 
 class App: public SystemClass
 {
@@ -72,6 +74,7 @@ public:
 		bool result;
 		m_modelManager = m_Graphics->getModelManager();
 
+		////
 		ModelClass* model = new ModelClass;
 		std::vector<std::wstring> textures1 = { L"data/textures/T_brightwood_basecolor.png" };
 		result = model->Initialize(m_Graphics->getD3D(), "data/models/midpoly_town_house_01.obj", textures1);
@@ -80,8 +83,8 @@ public:
 			return;
 		}
 
-		LightShaderClass* lightShader = new LightShaderClass;
-		result = lightShader->Initialize(m_Graphics->getD3D()->GetDevice());
+		LightShaderClass* shader = new LightShaderClass;
+		result = shader->Initialize(m_Graphics->getD3D()->GetDevice());
 		if (!result) {
 			MessageBox(NULL, L"Could not initialize the light shader object.", L"Error", MB_OK);
 			return;
@@ -95,9 +98,37 @@ public:
 		light->SetSpecularPower(64.0f);
 
 		std::vector<LightClass*> lights = { light };
-		lightShader->addLights(lights);
-		model->addShader(lightShader);
+		shader->addLights(lights);
+		model->addShader(shader);
 		m_modelManager->Add(model);
+
+
+		////
+		ModelBumpClass* model2 = new ModelBumpClass;
+		std::vector<std::wstring> textures2 = { L"data/textures/stone01.dds", L"data/textures/bump01.dds" };
+		result = model2->Initialize(m_Graphics->getD3D(), "data/models/cube.ds", textures2);
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 2 object.", L"Error", MB_OK);
+			return;
+		}
+		model2->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+		model2->SetPosition(D3DXVECTOR3(5.0f, 0.0f, -20.0f));
+
+		BumpMapShaderClass* shader2 = new BumpMapShaderClass;
+		result = shader2->Initialize(m_Graphics->getD3D()->GetDevice());
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
+			return;
+		}
+
+		LightClass* light2 = new LightClass;
+		light2->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		light2->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light2->SetDirection(0.0f, 0.0f, 1.0f);
+		std::vector<LightClass*> lights2 = { light2 };
+		shader2->addLights(lights2);
+		model2->addShader(shader2);
+		m_modelManager->Add(model2);
 	}
 
 protected:

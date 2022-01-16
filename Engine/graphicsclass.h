@@ -23,7 +23,6 @@
 #include "textures/transparentshaderclass.h"
 #include "textures/translateshaderclass.h"
 #include "textures/specmapshaderclass.h"
-#include "textures/bumpmapshaderclass.h"
 #include "textures/lightmapshaderclass.h"
 #include "textureshaderclass.h"
 #include "alphamapshaderclass.h"
@@ -91,9 +90,7 @@ private:
 
 
 	//////
-	ModelClass* m_Model;
 	ModelClass* m_Model2;
-	ModelBumpClass* m_Model3;
 	ModelClass* m_ModelPlane;
 	ModelClass* m_ModelPlane2;
 	ModelClass* m_ModelPlane3;
@@ -107,7 +104,6 @@ private:
 	MultiTextureShaderClass* m_MultiTextureShader;
 	LightMapShaderClass* m_LightMapShader;
 	AlphaMapShaderClass* m_AlphaMapShader;
-	BumpMapShaderClass* m_BumpMapShader;
 	SpecMapShaderClass* m_SpecMapShader;
 	FogShaderClass* m_FogShader;
 	ClipPlaneShaderClass* m_ClipPlaneShader;

@@ -4,7 +4,6 @@ ModelBumpClass::ModelBumpClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
-	m_Texture = 0;
 	m_TextureArray = 0;
 	m_model = 0;
 
