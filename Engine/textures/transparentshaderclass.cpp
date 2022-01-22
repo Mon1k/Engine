@@ -45,19 +45,22 @@ void TransparentShaderClass::Shutdown()
 }
 
 bool TransparentShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 cameraPosition)
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
+	m_D3D->TurnOnAlphaBlending();
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray);
 	if (!result) {
 		return false;
 	}
 
 	// Now render the prepared buffers with the shader.
 	RenderShader(deviceContext, indexCount);
+
+	m_D3D->TurnOffAlphaBlending();
 
 	return true;
 }
@@ -245,7 +248,7 @@ void TransparentShaderClass::ShutdownShader()
 }
 
 bool TransparentShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -283,7 +286,7 @@ bool TransparentShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceCont
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 1, &textureArray[0]);
 
 	// Lock the transparent constant buffer so it can be written to.
 	result = deviceContext->Map(m_transparentBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

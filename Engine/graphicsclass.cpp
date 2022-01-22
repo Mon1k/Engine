@@ -11,17 +11,10 @@ GraphicsClass::GraphicsClass()
 
 
 	////
-	m_Model2 = 0;
-	m_ModelPlane5 = 0;
-	m_ModelPlane6 = 0;
 	m_ModelPlane7 = 0;
-	m_Bbox = 0;
 	
 	m_TextureShader = 0;
 	m_FogShader = 0;
-	m_ClipPlaneShader = 0;
-	m_TranslateShader = 0;
-	m_TransparentShader = 0;
 	m_ReflectionShader = 0;
 	m_FadeShader = 0;
 
@@ -43,7 +36,6 @@ GraphicsClass::GraphicsClass()
 
 	m_LightShader = 0;
 	m_Light = 0;
-	m_ModelList = 0;
 	m_Frustum = 0;
 
 	m_Light1 = 0;
@@ -162,36 +154,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-
-
-	// Create the model object.
-	m_Model2 = new ModelClass;
-	std::vector<std::wstring> textures1_1 = { L"data/textures/seafloor.dds" };
-	result = m_Model2->Initialize(m_D3D, "data/models/cube.ds", textures1_1);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model 2 object", L"Error", MB_OK);
-		return false;
-	}
-
-	m_ModelPlane5 = new ModelClass;
-	std::vector<std::wstring> textures5 = { L"data/textures/explosion.png" };
-	result = m_ModelPlane5->Initialize(m_D3D, "data/models/square.ds", textures5);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model plane 5 object.", L"Error", MB_OK);
-		return false;
-	}
-	m_ModelPlane5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
-	m_ModelPlane5->SetPosition(D3DXVECTOR3(-15.0f, 0.0f, -20.0f));
-
-	m_ModelPlane6 = new ModelClass;
-	std::vector<std::wstring> textures6 = { L"data/textures/stone01.dds" };
-	result = m_ModelPlane6->Initialize(m_D3D, "data/models/square.ds", textures6);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model plane 6 object.", L"Error", MB_OK);
-		return false;
-	}
-	m_ModelPlane6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
-	m_ModelPlane6->SetPosition(D3DXVECTOR3(15.0f, 0.0f, -30.0f));
 
 	m_ModelPlane7 = new ModelClass;
 	std::vector<std::wstring> textures7 = { L"data/textures/blue01.dds" };
@@ -313,34 +275,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the clip plane shader object.
-	m_ClipPlaneShader = new ClipPlaneShaderClass;
-	// Initialize the clip plane shader object.
-	result = m_ClipPlaneShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the texture translation shader object.
-	m_TranslateShader = new TranslateShaderClass;
-	// Initialize the texture translation shader object.
-	result = m_TranslateShader->Initialize(m_D3D->GetDevice());
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the texture translation shader object.", L"Error", MB_OK);
-		return false;
-	}
-	m_TranslateShader->setMaxFrame(8, 6);
-
-	// Create the transparent shader object.
-	m_TransparentShader = new TransparentShaderClass;
-	// Initialize the transparent shader object.
-	result = m_TransparentShader->Initialize(m_D3D->GetDevice());
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
-		return false;
-	}
-
 	// Create the reflection shader object.
 	m_ReflectionShader = new ReflectionShaderClass;
 	// Initialize the reflection shader object.
@@ -384,22 +318,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-
-
-
-	// Create the model list object.
-	m_ModelList = new ModelListClass;
-	result = m_ModelList->Initialize(25);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model list object.", L"Error", MB_OK);
-		return false;
-	}
-
-
-	D3DXVECTOR3 position, size;
-	m_Model2->GetBoundingBox(position, size);
-	m_Bbox = new BBox;
-	m_Bbox->CreateBox(m_D3D->GetDevice(), hwnd, position, size);
 
 
 	// Create the frustum object.
@@ -499,18 +417,6 @@ void GraphicsClass::Shutdown()
 		m_Frustum = 0;
 	}
 
-	if (m_ModelList) {
-		m_ModelList->Shutdown();
-		delete m_ModelList;
-		m_ModelList = 0;
-	}
-
-	if (m_Bbox) {
-		m_Bbox->Shutdown();
-		delete m_Bbox;
-		m_Bbox = 0;
-	}
-
 	// Release the light object.
 	if (m_Light) {
 		delete m_Light;
@@ -552,26 +458,6 @@ void GraphicsClass::Shutdown()
 		m_ReflectionShader = 0;
 	}
 
-	// Release the transparent shader object.
-	if (m_TransparentShader) {
-		m_TransparentShader->Shutdown();
-		delete m_TransparentShader;
-		m_TransparentShader = 0;
-	}
-
-	// Release the texture translation shader object.
-	if (m_TranslateShader) {
-		m_TranslateShader->Shutdown();
-		delete m_TranslateShader;
-		m_TranslateShader = 0;
-	}
-
-	// Release the clip plane shader object.
-	if (m_ClipPlaneShader) {
-		m_ClipPlaneShader->Shutdown();
-		delete m_ClipPlaneShader;
-		m_ClipPlaneShader = 0;
-	}
 
 	// Release the fog shader object.
 	if (m_FogShader)
@@ -600,16 +486,6 @@ void GraphicsClass::Shutdown()
 	}
 
 
-	if (m_ModelPlane5) {
-		m_ModelPlane5->Shutdown();
-		delete m_ModelPlane5;
-		m_ModelPlane5 = 0;
-	}
-	if (m_ModelPlane6) {
-		m_ModelPlane6->Shutdown();
-		delete m_ModelPlane6;
-		m_ModelPlane6 = 0;
-	}
 	if (m_ModelPlane7) {
 		m_ModelPlane7->Shutdown();
 		delete m_ModelPlane7;
@@ -639,20 +515,12 @@ void GraphicsClass::Shutdown()
 		delete m_D3D;
 		m_D3D = 0;
 	}
-
-	return;
 }
 
 void GraphicsClass::frame(TimerClass *timer)
 {
 	float time = timer->GetTime();
 	
-	m_Counters[0] += time;
-	if (m_Counters[0] > 50) {
-		m_TranslateShader->incrementFrame();
-		m_Counters[0] = 0;
-	}
-
 	if (!m_fadeDone) {
 		// Update the accumulated time with the extra frame time addition.
 		m_accumulatedTime += time;
@@ -773,14 +641,8 @@ void GraphicsClass::RenderToTextureReflection()
 	reflectionViewMatrix = m_Camera->GetReflectionViewMatrix();
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 		
-	// @todo - далее из менеджера объектов выбирать те что надо отразить
-	m_D3D->TurnOnAlphaBlending();
-	m_ModelPlane5->Render();
-	m_TranslateShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane5->GetIndexCount(), m_ModelPlane5->GetWorldMatrix(), reflectionViewMatrix,
-		projectionMatrix, m_ModelPlane5->GetTextureArray(), m_Camera->GetPosition());
-	m_D3D->TurnOffAlphaBlending();
-	m_TriangleCount += m_ModelPlane5->GetTtriangleCount();
-	m_RenderCount++;
+	ModelClass* model = dynamic_cast<ModelClass*>(m_modelManager->getById(6));
+	model->Render();
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -886,15 +748,13 @@ void GraphicsClass::RenderScene()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, reflectionMatrix;
 	bool renderModel;
-	int modelCount, index;
+	int index;
 	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR3 position, size;
 	D3DXVECTOR4 color;
 	D3DXVECTOR4 clipPlane;
-	float blendAmount;
 	float fogStart, fogEnd;
 
-	blendAmount = 0.5f;
 	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
 	
 	Checkbox* checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(3));
@@ -917,65 +777,7 @@ void GraphicsClass::RenderScene()
 	/////
 
 
-	// Go through all the models and render them only if they can be seen by the camera view.
-	modelCount = m_ModelList->GetModelCount();
-	for (index = 0; index < modelCount; index++) {
-		// Get the position and color of the sphere model at this index.
-		m_ModelList->GetData(index, positionX, positionY, positionZ, color);
-
-		// Set the radius of the sphere to 1.0 since this is already known.
-		radius = 1.0f;
-
-		// Check if the sphere model is in the view frustum.
-		renderModel = m_Frustum->CheckSphere(positionX, positionY, positionZ, radius);
-
-		// If it can be seen then render it, if not skip this model and check the next sphere.
-		if (renderModel) {
-			// Move the model to the location it should be rendered at.
-			D3DXMatrixTranslation(&worldMatrix, positionX, positionY, positionZ);
-
-			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-			m_Model2->Render();
-
-			// Render the model using the light shader.
-			if (checkbox->getIsMarked()) {
-				m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
-			} else {
-				std::vector<LightClass*> lights = { m_Light };
-				m_LightShader->addLights(lights);
-				m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-					m_Model2->GetTextureArray(), m_Camera->GetPosition());
-			}
-
-			// Reset to the original world matrix.
-			m_D3D->GetWorldMatrix(worldMatrix);
-
-			// Since this model was rendered then increase the count for this frame.
-			m_RenderCount++;
-			m_TriangleCount += m_Model2->GetTtriangleCount();
-		}
-	}
-
-	/*m_ModelPlane5->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		m_D3D->TurnOnAlphaBlending();
-		m_ModelPlane5->Render();
-		m_TranslateShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane5->GetIndexCount(), m_ModelPlane5->GetWorldMatrix(), viewMatrix,
-			projectionMatrix, m_ModelPlane5->GetTexture());
-		m_D3D->TurnOffAlphaBlending();
-		m_TriangleCount += m_ModelPlane5->GetTtriangleCount();
-		m_RenderCount++;
-	}*/
-
-	/*m_ModelPlane6->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		m_D3D->TurnOnAlphaBlending();
-		m_ModelPlane6->Render();
-		m_TransparentShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane6->GetIndexCount(), m_ModelPlane6->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ModelPlane6->GetTexture(), blendAmount);
-		m_D3D->TurnOffAlphaBlending();
-		m_TriangleCount += m_ModelPlane6->GetTtriangleCount();
-		m_RenderCount++;
-	}*/
+	// m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
 
 	m_ModelPlane7->GetBoundingBox(position, size);
 	if (m_Frustum->CheckRectangle(position, size)) {
@@ -1039,7 +841,4 @@ void GraphicsClass::RenderScene()
 		m_RenderCount++;
 	}
 	////////////////
-
-
-	m_Bbox->Render(m_D3D, viewMatrix);
 }

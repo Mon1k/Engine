@@ -4,15 +4,16 @@
 
 #include "../d3dclass.h"
 
+#include "AbstractModel.h"
 #include "modelcolor.h"
 #include "../colorshaderclass.h"
 
-class BBox
+class BBox: public AbstractModel
 {
 public:
     BBox();
-    void CreateBox(ID3D11Device* device, HWND hwnd, D3DXVECTOR3 position, D3DXVECTOR3 size);
-    void Render(D3DClass*, D3DXMATRIX);
+    void CreateBox(D3DClass* d3d, D3DXVECTOR3 position, D3DXVECTOR3 size);
+    void Render(CameraClass*);
     void Shutdown();
     void SetColor(D3DXVECTOR4 color) {
         this->color = color;
@@ -20,7 +21,6 @@ public:
 
 private:
     ModelColorClass* m_ModelColor[12];
-    ColorShaderClass* m_ColorShader;
     D3DXVECTOR4 color;
 };
 

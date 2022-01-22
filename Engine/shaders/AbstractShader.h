@@ -5,6 +5,9 @@
 #include <d3dx10math.h>
 #include <d3dx11async.h>
 #include <fstream>
+using namespace std;
+
+#include "../d3dclass.h"
 
 class AbstractShader
 {
@@ -25,7 +28,16 @@ public:
 		}
 	};
 
+	void setD3D(D3DClass* D3D)
+	{
+		m_D3D = D3D;
+	}
+
 	virtual bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3)
+	{
+		return true;
+	};
+	virtual bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX)
 	{
 		return true;
 	};
@@ -65,6 +77,8 @@ public:
 protected:
 	ID3D11VertexShader* m_vertexShader;
 	ID3D11PixelShader* m_pixelShader;
+
+	D3DClass* m_D3D;
 };
 
 #endif

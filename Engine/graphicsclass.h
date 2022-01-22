@@ -8,8 +8,6 @@
 #include "models/ModelManager.h"
 
 #include "modelclass.h"
-#include "models/modelbumpclass.h"
-#include "models/bbox.h"
 
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
@@ -18,17 +16,13 @@
 #include "textures/watershaderclass.h"
 #include "textures/fadeshaderclass.h"
 #include "textures/reflectionshaderclass.h"
-#include "textures/transparentshaderclass.h"
-#include "textures/translateshaderclass.h"
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
 #include "fogshaderclass.h"
-#include "clipplaneshaderclass.h"
 
 #include "lightclass.h"
 #include "bitmapclass.h"
 #include "textclass.h"
-#include "modellistclass.h"
 #include "frustumclass.h"
 #include "timerclass.h"
 
@@ -85,17 +79,10 @@ private:
 
 
 	//////
-	ModelClass* m_Model2;
-	ModelClass* m_ModelPlane5;
-	ModelClass* m_ModelPlane6;
 	ModelClass* m_ModelPlane7;
-	BBox* m_Bbox;
 	
 	TextureShaderClass* m_TextureShader;
 	FogShaderClass* m_FogShader;
-	ClipPlaneShaderClass* m_ClipPlaneShader;
-	TranslateShaderClass* m_TranslateShader;
-	TransparentShaderClass* m_TransparentShader;
 	ReflectionShaderClass* m_ReflectionShader;
 	FadeShaderClass* m_FadeShader;
 
@@ -123,7 +110,6 @@ private:
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
-	ModelListClass* m_ModelList;
 	FrustumClass* m_Frustum;
 
 	LightClass* m_Light1, * m_Light2;

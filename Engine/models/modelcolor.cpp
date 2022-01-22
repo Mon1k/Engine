@@ -36,8 +36,6 @@ void ModelColorClass::Shutdown()
 {
 	// Release the vertex and index buffers.
 	ShutdownBuffers();
-
-	return;
 }
 
 void ModelColorClass::Render(ID3D11DeviceContext* deviceContext)
@@ -153,8 +151,6 @@ void ModelColorClass::ShutdownBuffers()
 		m_vertexBuffer->Release();
 		m_vertexBuffer = 0;
 	}
-
-	return;
 }
 
 void ModelColorClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
@@ -175,6 +171,4 @@ void ModelColorClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-	return;
 }

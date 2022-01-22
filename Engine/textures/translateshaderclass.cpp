@@ -325,6 +325,8 @@ bool TranslateShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexC
 {
 	bool result;
 
+	m_D3D->TurnOnAlphaBlending();
+
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray);
 	if (!result) {
@@ -333,6 +335,8 @@ bool TranslateShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexC
 
 	// Now render the prepared buffers with the shader.
 	RenderShader(deviceContext, indexCount);
+
+	m_D3D->TurnOffAlphaBlending();
 
 	return true;
 }

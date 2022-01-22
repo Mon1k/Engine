@@ -544,8 +544,6 @@ void D3DClass::TurnOnAlphaBlending()
 
 	// Turn on the alpha blending.
 	m_deviceContext->OMSetBlendState(m_alphaEnableBlendingState, blendFactor, 0xffffffff);
-
-	return;
 }
 
 void D3DClass::TurnOffAlphaBlending()
@@ -560,8 +558,6 @@ void D3DClass::TurnOffAlphaBlending()
 
 	// Turn off the alpha blending.
 	m_deviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
-
-	return;
 }
 
 ID3D11DepthStencilView* D3DClass::GetDepthStencilView()

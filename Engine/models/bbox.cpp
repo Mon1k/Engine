@@ -5,8 +5,11 @@ BBox::BBox()
     color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 }
 
-void BBox::CreateBox(ID3D11Device* device, HWND hwnd, D3DXVECTOR3 position, D3DXVECTOR3 size)
+void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 position, D3DXVECTOR3 size)
 {
+    ID3D11Device* device = d3d->GetDevice();
+    m_D3D = d3d;
+
     m_ModelColor[0] = new ModelColorClass;
     m_ModelColor[0]->SetPoint(D3DXVECTOR3(position.x - size.x, position.y - size.y, position.z - size.z), D3DXVECTOR3(position.x + size.x, position.y - size.y, position.z - size.z));
     m_ModelColor[0]->SetColor(color);
@@ -70,8 +73,9 @@ void BBox::CreateBox(ID3D11Device* device, HWND hwnd, D3DXVECTOR3 position, D3DX
     m_ModelColor[11]->Initialize(device);
 
 
-    m_ColorShader = new ColorShaderClass;
-    m_ColorShader->Initialize(device, hwnd);
+    ColorShaderClass* shader = new ColorShaderClass;
+    shader->Initialize(device);
+    addShader(shader);
 }
 
 void BBox::Shutdown()
@@ -83,23 +87,18 @@ void BBox::Shutdown()
             m_ModelColor[i] = 0;
         }
     }
-
-    if (m_ColorShader) {
-        m_ColorShader->Shutdown();
-        delete m_ColorShader;
-        m_ColorShader = 0;
-    }
 }
 
-void BBox::Render(D3DClass* m_D3D, D3DXMATRIX viewMatrix)
+void BBox::Render(CameraClass* camera)
 {
-    D3DXMATRIX worldMatrix, projectionMatrix;
+    D3DXMATRIX worldMatrix, projectionMatrix, viewMatrix;
 
+    camera->GetViewMatrix(viewMatrix);
     m_D3D->GetWorldMatrix(worldMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
     for (int i = 0; i < 12; i++) {
         m_ModelColor[i]->Render(m_D3D->GetDeviceContext());
-        m_ColorShader->Render(m_D3D->GetDeviceContext(), 2, worldMatrix, viewMatrix, projectionMatrix);
+        m_shader->Render(m_D3D->GetDeviceContext(), 2, worldMatrix, viewMatrix, projectionMatrix);
     }
 }

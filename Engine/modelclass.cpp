@@ -271,8 +271,6 @@ void ModelClass::ShutdownBuffers()
 		m_vertexBuffer->Release();
 		m_vertexBuffer = 0;
 	}
-
-	return;
 }
 
 
@@ -282,7 +280,7 @@ void ModelClass::Render(CameraClass* camera)
 
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	RenderBuffers(m_D3D->GetDeviceContext());
-
+	
 	if (m_shader) {
 		camera->GetViewMatrix(viewMatrix);
 		m_D3D->GetProjectionMatrix(projectionMatrix);

@@ -22,11 +22,15 @@ public:
     AbstractModel()
     {
         m_id = 0;
+        m_vertexCount = 0;
+        m_indexCount = 0;
     }
 
     virtual void Render(CameraClass* = 0) = 0;
     virtual void Shutdown() = 0;
-    virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&) = 0;
+    virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&)
+    {
+    };
 
     void setVertexCount(int vertexCount) {
         m_vertexCount = vertexCount;
@@ -50,6 +54,7 @@ public:
     void addShader(AbstractShader* shader)
     {
         m_shader = shader;
+        m_shader->setD3D(m_D3D);
     }
     AbstractShader* getShader()
     {

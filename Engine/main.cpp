@@ -9,7 +9,10 @@
 #include "models/ModelManager.h"
 #include "modelclass.h"
 #include "models/modelbumpclass.h"
+#include "models/bbox.h"
+
 #include "lightclass.h"
+
 #include "lightshaderclass.h"
 #include "textures/bumpmapshaderclass.h"
 #include "textures/multitextureshaderclass.h"
@@ -217,6 +220,7 @@ public:
 
 		shader6->addLights({ light });
 		model6->addShader(shader6);
+		model6->setId(6);
 		m_modelManager->Add(model6);
 
 
@@ -236,6 +240,7 @@ public:
 			MessageBox(NULL, L"Could not initialize the translate shader object.", L"Error", MB_OK);
 			return;
 		}
+		shader7->setMaxFrame(8, 6);
 
 		model7->addShader(shader7);
 		model7->setId(7);
@@ -261,6 +266,14 @@ public:
 
 		model8->addShader(shader8);
 		m_modelManager->Add(model8);
+
+
+		////
+		D3DXVECTOR3 position, size;
+		model8->GetBoundingBox(position, size);
+		BBox* bbox = new BBox;
+		bbox->CreateBox(m_Graphics->getD3D(), position, size);
+		m_modelManager->Add(bbox);
 	}
 
 protected:
