@@ -11,12 +11,7 @@ GraphicsClass::GraphicsClass()
 
 
 	////
-	m_ModelPlane7 = 0;
-	
 	m_TextureShader = 0;
-	m_FogShader = 0;
-	m_ReflectionShader = 0;
-	m_FadeShader = 0;
 
 	// water
 	m_GroundModel = 0;
@@ -32,7 +27,6 @@ GraphicsClass::GraphicsClass()
 
 	m_RenderTexture = 0;
 	m_DebugWindow = 0;
-	m_RenderTextureReflection = 0;
 
 	m_LightShader = 0;
 	m_Light = 0;
@@ -146,28 +140,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the render to texture object.
-	m_RenderTextureReflection = new RenderTextureClass;
-	// Initialize the render to texture object.
-	result = m_RenderTextureReflection->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
-	if (!result) {
-		return false;
-	}
-
-
-	m_ModelPlane7 = new ModelClass;
-	std::vector<std::wstring> textures7 = { L"data/textures/blue01.dds" };
-	result = m_ModelPlane7->Initialize(m_D3D, "data/models/floor.ds", textures7);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the model plane 7 object.", L"Error", MB_OK);
-		return false;
-	}
-	m_ModelPlane7->SetScale(D3DXVECTOR3(10.0f, 1.0f, 10.0f));
-	m_ModelPlane7->SetPosition(D3DXVECTOR3(-10.0f, -5.0f, -25.0f));
-
-
-
-
 
 	//// water ////
 	// Create the ground model object.
@@ -264,60 +236,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the position of the water.
 	m_waterTranslation = 0.0f;
 	///////////////
-
-
-	// Create the fog shader object.
-	m_FogShader = new FogShaderClass;
-	// Initialize the fog shader object.
-	result = m_FogShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the fog shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the reflection shader object.
-	m_ReflectionShader = new ReflectionShaderClass;
-	// Initialize the reflection shader object.
-	result = m_ReflectionShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the reflection shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-
-
-	m_RenderTextureFade = new RenderTextureClass;
-	// Initialize the render to texture object.
-	result = m_RenderTextureFade->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight);
-	m_BitmapFade = new BitmapClass;
-	if (!m_BitmapFade) {
-		return false;
-	}
-	// Initialize the bitmap object.
-	result = m_BitmapFade->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"data/textures/stone01.dds", screenWidth, screenHeight);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Set the fade in time to milliseconds.
-	m_fadeInTime = 5000.0f;
-	// Initialize the accumulated time to zero milliseconds.
-	m_accumulatedTime = 0;
-	// Initialize the fade percentage to zero at first so the scene is black.
-	m_fadePercentage = 0;
-	// Set the fading in effect to not done.
-	m_fadeDone = true;
-	
-	// Create the fade shader object.
-	m_FadeShader = new FadeShaderClass;
-	// Initialize the fade shader object.
-	result = m_FadeShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result) {
-		MessageBox(NULL, L"Could not initialize the fade shader object.", L"Error", MB_OK);
-		return false;
-	}
-
 
 
 	// Create the frustum object.
@@ -432,41 +350,6 @@ void GraphicsClass::Shutdown()
 	}
 
 
-	// Release the fade shader object.
-	if (m_FadeShader) {
-		m_FadeShader->Shutdown();
-		delete m_FadeShader;
-		m_FadeShader = 0;
-	}
-	if (m_BitmapFade) {
-		m_BitmapFade->Shutdown();
-		delete m_BitmapFade;
-		m_BitmapFade = 0;
-	}
-	if (m_RenderTextureFade) {
-		m_RenderTextureFade->Shutdown();
-		delete m_RenderTextureFade;
-		m_RenderTextureFade = 0;
-	}
-
-
-
-	// Release the reflection shader object.
-	if (m_ReflectionShader) {
-		m_ReflectionShader->Shutdown();
-		delete m_ReflectionShader;
-		m_ReflectionShader = 0;
-	}
-
-
-	// Release the fog shader object.
-	if (m_FogShader)
-	{
-		m_FogShader->Shutdown();
-		delete m_FogShader;
-		m_FogShader = 0;
-	}
-
 	// Release the debug window object.
 	if (m_DebugWindow) {
 		m_DebugWindow->Shutdown();
@@ -479,19 +362,6 @@ void GraphicsClass::Shutdown()
 		delete m_RenderTexture;
 		m_RenderTexture = 0;
 	}
-	if (m_RenderTextureReflection) {
-		m_RenderTextureReflection->Shutdown();
-		delete m_RenderTextureReflection;
-		m_RenderTextureReflection = 0;
-	}
-
-
-	if (m_ModelPlane7) {
-		m_ModelPlane7->Shutdown();
-		delete m_ModelPlane7;
-		m_ModelPlane7 = 0;
-	}
-
 
 	if (m_LightShader) {
 		m_LightShader->Shutdown();
@@ -521,23 +391,6 @@ void GraphicsClass::frame(TimerClass *timer)
 {
 	float time = timer->GetTime();
 	
-	if (!m_fadeDone) {
-		// Update the accumulated time with the extra frame time addition.
-		m_accumulatedTime += time;
-
-		// While the time goes on increase the fade in amount by the time that is passing each frame.
-		if (m_accumulatedTime < m_fadeInTime) {
-			// Calculate the percentage that the screen should be faded in based on the accumulated time.
-			m_fadePercentage = m_accumulatedTime / m_fadeInTime;
-		} else {
-			// If the fade in time is complete then turn off the fade effect and render the scene normally.
-			m_fadeDone = true;
-			// Set the percentage to 100%.
-			m_fadePercentage = 1.0f;
-		}
-	}
-
-
 	// Update the position of the water to simulate motion.
 	m_Counters[1] += time;
 	if (m_Counters[1] > 50) {
@@ -552,20 +405,15 @@ void GraphicsClass::frame(TimerClass *timer)
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, orthoMatrix;
-	float fogColor;
-	
-	fogColor = 0.0f;
-	Checkbox* checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(3));
-	if (checkbox->getIsMarked()) {
-		fogColor = 0.5f;
-	}
+	float fogColor = 0.0f;
 
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
 
+	m_modelManager->PreRender(m_Camera, m_Frustum);
+
 	// Render the entire scene to the texture first.
 	RenderToTexture();
-	RenderToTextureReflection();
 	RenderRefractionToTextureWater();
 	RenderReflectionToTextureWater();
 
@@ -582,12 +430,7 @@ bool GraphicsClass::Render()
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	//// render inside ////
-	// Render the scene as normal to the back buffer.
-	if (m_fadeDone) {
-		RenderScene();
-	} else {
-		RenderToTextureFade();
-	}
+	RenderScene();
 
 	// Put the debug window vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_D3D->TurnZBufferOff();
@@ -623,63 +466,6 @@ void GraphicsClass::RenderToTexture()
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
 }
-
-void GraphicsClass::RenderToTextureReflection()
-{
-	D3DXMATRIX reflectionViewMatrix, projectionMatrix;
-
-	// Set the render target to be the render to texture.
-	m_RenderTextureReflection->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
-
-	// Clear the render to texture.
-	m_RenderTextureReflection->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Use the camera to calculate the reflection matrix.
-	m_Camera->RenderReflection(-5.0f);
-
-	// Get the camera reflection view matrix instead of the normal view matrix.
-	reflectionViewMatrix = m_Camera->GetReflectionViewMatrix();
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-		
-	ModelClass* model = dynamic_cast<ModelClass*>(m_modelManager->getById(6));
-	model->Render();
-
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
-	m_D3D->SetBackBufferRenderTarget();
-}
-
-void GraphicsClass::RenderToTextureFade()
-{
-	D3DXMATRIX worldMatrix, viewMatrix, orthoMatrix;
-
-	m_D3D->GetWorldMatrix(worldMatrix);
-	m_Camera->GetViewMatrix(viewMatrix);
-	m_D3D->GetOrthoMatrix(orthoMatrix);
-
-	// Set the render target to be the render to texture.
-	m_RenderTextureFade->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
-
-	// Clear the render to texture.
-	m_RenderTextureFade->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.9f, 0.9f, 0.9f, 0.0f);
-
-	// Render the scene now and it will draw to the render to texture instead of the back buffer.
-	RenderScene();
-
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
-	m_D3D->SetBackBufferRenderTarget();
-
-	m_D3D->TurnZBufferOff();
-
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_BitmapFade->Render(m_D3D->GetDeviceContext(), 0, 0);
-
-	// Render the bitmap using the fade shader.
-	m_FadeShader->Render(m_D3D->GetDeviceContext(), m_BitmapFade->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix,
-		m_RenderTexture->GetShaderResourceView(), m_fadePercentage);
-
-	m_D3D->TurnZBufferOn();
-}
-
 
 void GraphicsClass::RenderRefractionToTextureWater()
 {
@@ -747,22 +533,8 @@ void GraphicsClass::RenderReflectionToTextureWater()
 void GraphicsClass::RenderScene()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, reflectionMatrix;
-	bool renderModel;
-	int index;
-	float positionX, positionY, positionZ, radius;
 	D3DXVECTOR3 position, size;
-	D3DXVECTOR4 color;
-	D3DXVECTOR4 clipPlane;
-	float fogStart, fogEnd;
 
-	clipPlane = D3DXVECTOR4(1.0f, 0.0f, 0.0f, -5.0f);
-	
-	Checkbox* checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(3));
-	if (checkbox->getIsMarked()) {
-		// Set the start and end of the fog.
-		fogStart = 0.0f;
-		fogEnd = 50.0f;
-	}
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
@@ -775,20 +547,6 @@ void GraphicsClass::RenderScene()
 
 	m_modelManager->Render(m_Camera, m_Frustum);
 	/////
-
-
-	// m_FogShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), fogStart, fogEnd);
-
-	m_ModelPlane7->GetBoundingBox(position, size);
-	if (m_Frustum->CheckRectangle(position, size)) {
-		reflectionMatrix = m_Camera->GetReflectionViewMatrix();
-		m_ModelPlane7->Render();
-		m_ReflectionShader->Render(m_D3D->GetDeviceContext(), m_ModelPlane7->GetIndexCount(), m_ModelPlane7->GetWorldMatrix(), viewMatrix,
-			projectionMatrix, m_ModelPlane7->GetTexture(), m_RenderTextureReflection->GetShaderResourceView(),
-			reflectionMatrix);
-		m_TriangleCount += m_ModelPlane7->GetTtriangleCount();
-		m_RenderCount++;
-	}
 
 
 	//// water /////
@@ -840,5 +598,4 @@ void GraphicsClass::RenderScene()
 		m_TriangleCount += m_WaterModel->GetTtriangleCount();
 		m_RenderCount++;
 	}
-	////////////////
 }

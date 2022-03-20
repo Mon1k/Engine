@@ -14,11 +14,9 @@
 
 #include "textures/refractionshaderclass.h"
 #include "textures/watershaderclass.h"
-#include "textures/fadeshaderclass.h"
 #include "textures/reflectionshaderclass.h"
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
-#include "fogshaderclass.h"
 
 #include "lightclass.h"
 #include "bitmapclass.h"
@@ -61,8 +59,6 @@ public:
 
 private:
 	void RenderToTexture();
-	void RenderToTextureReflection();
-	void RenderToTextureFade();
 	void RenderRefractionToTextureWater();
 	void RenderReflectionToTextureWater();
 	void RenderScene();
@@ -79,12 +75,7 @@ private:
 
 
 	//////
-	ModelClass* m_ModelPlane7;
-	
 	TextureShaderClass* m_TextureShader;
-	FogShaderClass* m_FogShader;
-	ReflectionShaderClass* m_ReflectionShader;
-	FadeShaderClass* m_FadeShader;
 
 	// water
 	ModelClass* m_GroundModel, * m_WallModel, * m_BathModel, * m_WaterModel;
@@ -98,15 +89,6 @@ private:
 	// bitmap texture
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;
-
-	// reflection
-	RenderTextureClass* m_RenderTextureReflection;
-
-	// fade
-	RenderTextureClass* m_RenderTextureFade;
-	BitmapClass* m_BitmapFade;
-	float m_fadeInTime, m_accumulatedTime, m_fadePercentage;
-	bool m_fadeDone;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;

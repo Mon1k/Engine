@@ -38,9 +38,9 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
-	void Shutdown();
-	void Render(CameraClass*);
+	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	virtual void Shutdown();
+	virtual void Render(CameraClass*);
 	void Render();
 
 	D3DXVECTOR3 GetPosition() {

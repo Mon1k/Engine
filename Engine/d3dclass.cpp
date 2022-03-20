@@ -55,6 +55,9 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Store the vsync setting.
 	m_vsync_enabled = vsync;
 
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+
 	// Create a DirectX graphics interface factory.
 	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result)) {
@@ -436,8 +439,6 @@ void D3DClass::Shutdown()
 		m_swapChain->Release();
 		m_swapChain = 0;
 	}
-
-	return;
 }
 
 
@@ -456,8 +457,6 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
     
 	// Clear the depth buffer.
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	return;
 }
 
 

@@ -88,16 +88,12 @@ void RenderTextureClass::Shutdown()
 		m_renderTargetTexture->Release();
 		m_renderTargetTexture = 0;
 	}
-
-	return;
 }
 
 void RenderTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView)
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, depthStencilView);
-
-	return;
 }
 
 void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView,

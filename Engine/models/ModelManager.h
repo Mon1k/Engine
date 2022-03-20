@@ -15,6 +15,7 @@ public:
     ModelManager();
     bool Initialize(D3DClass*);
     bool Add(AbstractModel* model);
+    void PreRender(CameraClass*, FrustumClass*);
     void Render(CameraClass*, FrustumClass*);
     void Shutdown();
 

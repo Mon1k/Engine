@@ -10,6 +10,7 @@
 #include "modelclass.h"
 #include "models/modelbumpclass.h"
 #include "models/bbox.h"
+#include "models/Reflection.h"
 
 #include "lightclass.h"
 
@@ -266,6 +267,27 @@ public:
 
 		model8->addShader(shader8);
 		m_modelManager->Add(model8);
+
+
+		//// reflection
+		Reflection* model9 = new Reflection;
+		result = model9->Initialize(m_Graphics->getD3D(), "data/models/floor.ds", { L"data/textures/blue01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model plane 9 object.", L"Error", MB_OK);
+			return;
+		}
+		model9->SetScale(D3DXVECTOR3(10.0f, 1.0f, 10.0f));
+		model9->SetPosition(D3DXVECTOR3(-10.0f, -5.0f, -25.0f));
+		model9->addTarget(model8);
+
+		ReflectionShaderClass* shader9 = new ReflectionShaderClass;
+		shader9->Initialize(m_Graphics->getD3D()->GetDevice());
+
+		model9->addShader(shader9);
+		m_modelManager->Add(model9);
+
+
+		//// water
 
 
 		////

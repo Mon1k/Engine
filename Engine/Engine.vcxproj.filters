@@ -186,6 +186,9 @@
     <ClCompile Include="textures\refractionshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="models\Reflection.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -346,6 +349,9 @@
     </ClInclude>
     <ClInclude Include="shaders\AbstractShader.h">
       <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="models\Reflection.h">
+      <Filter>models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,9 @@ public:
     }
 
     virtual void Render(CameraClass* = 0) = 0;
+    virtual void PreRender(CameraClass*)
+    {
+    };
     virtual void Shutdown() = 0;
     virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&)
     {
