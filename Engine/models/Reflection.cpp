@@ -7,8 +7,8 @@ bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 		return false;
 	}
 
-	m_RenderTextureReflection = new RenderTextureClass;
-	if (!m_RenderTextureReflection->Initialize(m_D3D->GetDevice(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight())) {
+	m_ReflectionTexture = new RenderTextureClass;
+	if (!m_ReflectionTexture->Initialize(m_D3D->GetDevice(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight())) {
 		return false;
 	}
 
@@ -19,22 +19,20 @@ bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 
 void Reflection::PreRender(CameraClass* camera)
 {
-	RenderToTexture(camera);
+	if (m_modelsTarget.size() != 0) {
+		RenderToTexture(camera);
+	}
 }
 
 void Reflection::RenderToTexture(CameraClass* camera)
 {
 	D3DXMATRIX reflectionViewMatrix, projectionMatrix;
 
-	if (m_modelsTarget.size() == 0) {
-		return;
-	}
-
 	// Set the render target to be the render to texture.
-	m_RenderTextureReflection->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
 
 	// Clear the render to texture.
-	m_RenderTextureReflection->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Use the camera to calculate the reflection matrix.
 	camera->RenderReflection(-5.0f);
@@ -56,8 +54,7 @@ void Reflection::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, reflectionMatrix;
 
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(m_D3D->GetDeviceContext());
+	ModelClass::Render();
 
 	if (m_shader) {
 		reflectionMatrix = camera->GetReflectionViewMatrix();
@@ -66,6 +63,17 @@ void Reflection::Render(CameraClass* camera)
 
 		ReflectionShaderClass* shader = dynamic_cast<ReflectionShaderClass*>(m_shader);
 		shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix,
-			projectionMatrix, GetTextureArray()[0], m_RenderTextureReflection->GetShaderResourceView(), reflectionMatrix);
+			projectionMatrix, GetTextureArray()[0], m_ReflectionTexture->GetShaderResourceView(), reflectionMatrix);
 	}
+}
+
+void Reflection::Shutdown()
+{
+	if (m_ReflectionTexture) {
+		m_ReflectionTexture->Shutdown();
+		delete m_ReflectionTexture;
+		m_ReflectionTexture = 0;
+	}
+
+	ModelClass::Shutdown();
 }

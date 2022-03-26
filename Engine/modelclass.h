@@ -41,7 +41,7 @@ public:
 	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
-	void Render();
+	virtual void Render();
 
 	D3DXVECTOR3 GetPosition() {
 		return position;

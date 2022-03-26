@@ -7,7 +7,9 @@
 #include <fstream>
 using namespace std;
 
-class WaterShaderClass
+#include "../shaders/AbstractShader.h"
+
+class WaterShaderClass: public AbstractShader
 {
 private:
 	struct MatrixBufferType
@@ -32,7 +34,7 @@ public:
     WaterShaderClass(const WaterShaderClass&);
     ~WaterShaderClass();
 
-    bool Initialize(ID3D11Device*, HWND);
+    bool Initialize(ID3D11Device*);
     void Shutdown();
     bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX,
                 D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
@@ -40,9 +42,8 @@ public:
                 float);
 
 private:
-    bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
+    bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
     void ShutdownShader();
-    void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
     bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX,
                                 D3DXMATRIX, D3DXMATRIX,
@@ -52,8 +53,6 @@ private:
     void RenderShader(ID3D11DeviceContext*, int);
 
 private:
-    ID3D11VertexShader* m_vertexShader;
-    ID3D11PixelShader* m_pixelShader;
     ID3D11InputLayout* m_layout;
     ID3D11SamplerState* m_sampleState;
     ID3D11Buffer* m_matrixBuffer;

@@ -105,6 +105,7 @@
     <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="models\ModelManager.cpp" />
     <ClCompile Include="models\Reflection.cpp" />
+    <ClCompile Include="models\WaterNode.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="render\2d\debugwindowclass.cpp" />
     <ClCompile Include="render\rendertextureclass.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="models\ModelManager.h" />
     <ClInclude Include="models\Reflection.h" />
+    <ClInclude Include="models\WaterNode.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />

@@ -12,9 +12,6 @@
 #include "render/rendertextureclass.h"
 #include "render/2d/debugwindowclass.h"
 
-#include "textures/refractionshaderclass.h"
-#include "textures/watershaderclass.h"
-#include "textures/reflectionshaderclass.h"
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
 
@@ -59,10 +56,7 @@ public:
 
 private:
 	void RenderToTexture();
-	void RenderRefractionToTextureWater();
-	void RenderReflectionToTextureWater();
 	void RenderScene();
-	void RenderUI();
 
 private:
 	D3DClass* m_D3D;
@@ -77,15 +71,6 @@ private:
 	//////
 	TextureShaderClass* m_TextureShader;
 
-	// water
-	ModelClass* m_GroundModel, * m_WallModel, * m_BathModel, * m_WaterModel;
-	LightClass* m_LightWater;
-	RenderTextureClass* m_RefractionTexture, * m_ReflectionTexture;
-	LightShaderClass* m_LightShaderWater;
-	RefractionShaderClass* m_RefractionShader;
-	WaterShaderClass* m_WaterShader;
-	float m_waterHeight, m_waterTranslation;
-
 	// bitmap texture
 	RenderTextureClass* m_RenderTexture;
 	DebugWindowClass* m_DebugWindow;
@@ -94,11 +79,8 @@ private:
 	LightClass* m_Light;
 	FrustumClass* m_Frustum;
 
-	LightClass* m_Light1, * m_Light2;
-
-	int m_RenderCount{};
-	int m_TriangleCount{};
-	float m_Counters[2]{};
+	int m_RenderCount;
+	int m_TriangleCount;
 };
 
 #endif

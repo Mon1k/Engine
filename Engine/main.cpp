@@ -11,6 +11,7 @@
 #include "models/modelbumpclass.h"
 #include "models/bbox.h"
 #include "models/Reflection.h"
+#include "models/WaterNode.h"
 
 #include "lightclass.h"
 
@@ -37,6 +38,10 @@ public:
 			m_Counters[i] = 0;
 		}
 
+
+		m_modelManager = m_Graphics->getModelManager();
+		m_uiManager = m_Graphics->getUiManager();
+
 		loadUI();
 		loadScene();
 
@@ -45,8 +50,6 @@ public:
 
 	void loadUI()
 	{
-		m_uiManager = m_Graphics->getUiManager();
-
 		Button* button = new Button;
 		m_uiManager->Add(button);
 		button->Initialize(screenWidth, screenHeight, L"data/textures/ui/button.png", 76, 28);
@@ -87,15 +90,31 @@ public:
 	void loadScene()
 	{
 		bool result;
-		m_modelManager = m_Graphics->getModelManager();
 
-
+		// direction light
 		LightClass* light = new LightClass;
 		light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 		light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 		light->SetDirection(0.0f, 0.0f, 1.0f);
 		light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		light->SetSpecularPower(64.0f);
+
+		// point light
+		LightClass* light1 = new LightClass;
+		light1->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+		light1->SetDiffuseColor(1.0f, 0.9f, 0.9f, 1.0f);
+		light1->SetPosition(-30.0f, 1.0f, -22.0f);
+		LightClass* light2 = new LightClass;
+		light2->SetDiffuseColor(1.0f, 0.5f, 0.0f, 1.0f);
+		light2->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+		light2->SetPosition(-53.0f, 2.0f, -35.0f);
+
+		LightClass* light3 = new LightClass;
+		light3->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		light3->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light3->SetDirection(0.0f, -1.0f, 1.0f);
+		light3->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+		light3->SetSpecularPower(32.0f);
 
 		////
 		ModelClass* model = new ModelClass;
@@ -185,7 +204,7 @@ public:
 		ModelClass* model5 = new ModelClass;
 		result = model5->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds", L"data/textures/dirt01.dds", L"data/textures/alpha01.dds" });
 		if (!result) {
-			MessageBox(NULL, L"Could not initialize the model model 5 object.", L"Error", MB_OK);
+			MessageBox(NULL, L"Could not initialize the model 5 object.", L"Error", MB_OK);
 			return;
 		}
 		model5->SetScale(D3DXVECTOR3(5.0f, 5.0f, 1.0f));
@@ -206,7 +225,7 @@ public:
 		ModelBumpClass* model6 = new ModelBumpClass;
 		result = model6->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone02.dds", L"data/textures/bump02.dds", L"data/textures/spec02.dds" });
 		if (!result) {
-			MessageBox(NULL, L"Could not initialize the model model 6 object.", L"Error", MB_OK);
+			MessageBox(NULL, L"Could not initialize the model 6 object.", L"Error", MB_OK);
 			return;
 		}
 		model6->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -229,7 +248,7 @@ public:
 		ModelClass* model7 = new ModelClass;
 		result = model7->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/explosion.png" });
 		if (!result) {
-			MessageBox(NULL, L"Could not initialize the model model 7 object.", L"Error", MB_OK);
+			MessageBox(NULL, L"Could not initialize the model 7 object.", L"Error", MB_OK);
 			return;
 		}
 		model7->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -252,7 +271,7 @@ public:
 		ModelClass* model8 = new ModelClass;
 		result = model8->Initialize(m_Graphics->getD3D(), "data/models/square.ds", { L"data/textures/stone01.dds" });
 		if (!result) {
-			MessageBox(NULL, L"Could not initialize the model model 8 object.", L"Error", MB_OK);
+			MessageBox(NULL, L"Could not initialize the model 8 object.", L"Error", MB_OK);
 			return;
 		}
 		model8->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
@@ -273,7 +292,7 @@ public:
 		Reflection* model9 = new Reflection;
 		result = model9->Initialize(m_Graphics->getD3D(), "data/models/floor.ds", { L"data/textures/blue01.dds" });
 		if (!result) {
-			MessageBox(NULL, L"Could not initialize the model plane 9 object.", L"Error", MB_OK);
+			MessageBox(NULL, L"Could not initialize the model 9 object.", L"Error", MB_OK);
 			return;
 		}
 		model9->SetScale(D3DXVECTOR3(10.0f, 1.0f, 10.0f));
@@ -288,6 +307,67 @@ public:
 
 
 		//// water
+		ModelClass* model10 = new ModelClass;
+		result = model10->Initialize(m_Graphics->getD3D(), "data/models/plane01.ds", { L"data/textures/grass_grass_0066_01.jpg" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the  model 10 object.", L"Error", MB_OK);
+			return;
+		}
+		model10->SetPosition(D3DXVECTOR3(-50.0f, -4.9f, -35.0f));
+		model10->SetScale(D3DXVECTOR3(5.0f, 1.0f, 5.0f));
+
+		LightShaderClass* shader10 = new LightShaderClass;
+		shader10->Initialize(m_Graphics->getD3D()->GetDevice());
+		shader10->addLights({ light1, light2 });
+
+		model10->addShader(shader10);
+		m_modelManager->Add(model10);
+
+
+		ModelClass* model11 = new ModelClass;
+		result = model11->Initialize(m_Graphics->getD3D(), "data/models/wall.ds", { L"data/textures/wall01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 11 object.", L"Error", MB_OK);
+			return;
+		}
+		model11->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -30.0f));
+
+		LightShaderClass* shader11 = new LightShaderClass;
+		shader11->Initialize(m_Graphics->getD3D()->GetDevice());
+		shader11->addLights({ light3 });
+
+		model11->addShader(shader11);
+		m_modelManager->Add(model11);
+
+
+		ModelClass* model12 = new ModelClass;
+		result = model12->Initialize(m_Graphics->getD3D(), "data/models/bath.ds", { L"data/textures/marble01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 12 object.", L"Error", MB_OK);
+			return;
+		}
+		model12->SetPosition(D3DXVECTOR3(-50.0f, -4.0f, -35.0f));
+
+		LightShaderClass* shader12 = new LightShaderClass;
+		shader12->Initialize(m_Graphics->getD3D()->GetDevice());
+		shader12->addLights({ light3 });
+
+		model12->addShader(shader12);
+		m_modelManager->Add(model12);
+
+
+		WaterNode* model13 = new WaterNode;
+		result = model13->Initialize(m_Graphics->getD3D(), "data/models/water.ds", { L"data/textures/water01.dds" });
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 13 object.", L"Error", MB_OK);
+			return;
+		}
+		model13->SetPosition(D3DXVECTOR3(-50.0f, -3.0f, -35.0f));
+		model13->setId(13);
+		model13->addTarget(model11);
+		model13->addRefractionTarget(model12);
+
+		m_modelManager->Add(model13);
 
 
 		////
@@ -296,6 +376,8 @@ public:
 		BBox* bbox = new BBox;
 		bbox->CreateBox(m_Graphics->getD3D(), position, size);
 		m_modelManager->Add(bbox);
+
+		//// debug window
 	}
 
 protected:
@@ -362,9 +444,20 @@ protected:
 		m_Counters[0] += time;
 		if (m_Counters[0] > 50) {
 			AbstractModel* model = m_modelManager->getById(7);
-			TranslateShaderClass* shader = dynamic_cast<TranslateShaderClass*>(model->getShader());
-			shader->incrementFrame();
+			if (model) {
+				TranslateShaderClass* shader = dynamic_cast<TranslateShaderClass*>(model->getShader());
+				shader->incrementFrame();
+			}
 			m_Counters[0] = 0;
+		}
+
+		m_Counters[1] += time;
+		if (m_Counters[1] > 50) {
+			WaterNode* model = dynamic_cast<WaterNode*>(m_modelManager->getById(13));
+			if (model) {
+				model->incrementTranslation();
+			}
+			m_Counters[1] = 0;
 		}
 	}
 

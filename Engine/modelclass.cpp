@@ -238,8 +238,6 @@ void ModelClass::ReleaseTexture()
 		delete m_TextureArray;
 		m_TextureArray = 0;
 	}
-
-	return;
 }
 
 void ModelClass::ReleaseModel()
@@ -254,8 +252,6 @@ void ModelClass::ReleaseModel()
 		delete[] m_model;
 		m_model = 0;
 	}
-
-	return;
 }
 
 void ModelClass::ShutdownBuffers()

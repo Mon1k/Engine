@@ -241,19 +241,7 @@ void ReflectionShaderClass::ShutdownShader()
 		m_layout = 0;
 	}
 
-	// Release the pixel shader.
-	if (m_pixelShader) {
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-	// Release the vertex shader.
-	if (m_vertexShader) {
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	return;
+	AbstractShader::Shutdown();
 }
 
 bool ReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,

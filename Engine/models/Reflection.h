@@ -12,13 +12,14 @@ public:
 	virtual void PreRender(CameraClass*);
 	virtual void Render(CameraClass*);
 	void RenderToTexture(CameraClass*);
+	void Shutdown();
 	void addTarget(AbstractModel* target)
 	{
 		m_modelsTarget.push_back(target);
 	}
 
-private:
-	RenderTextureClass* m_RenderTextureReflection;
+protected:
+	RenderTextureClass* m_ReflectionTexture;
 	std::vector<AbstractModel*> m_modelsTarget;
 };
 
