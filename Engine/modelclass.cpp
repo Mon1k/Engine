@@ -1,7 +1,7 @@
 #include "modelclass.h"
 
 
-ModelClass::ModelClass()
+ModelClass::ModelClass(): AbstractModel()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;

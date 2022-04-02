@@ -33,10 +33,14 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
     int size = m_models.size();
     for (int i = 0; i < size; i++) {
         if (m_models[i]->isVisible()) {
-            D3DXVECTOR3 position, size;
-            m_models[i]->GetBoundingBox(position, size);
-            if (frustum->CheckRectangle(position, size)) {
+            if (m_models[i]->GetIndexCount() == 0) {
                 m_models[i]->PreRender(camera);
+            } else {
+                D3DXVECTOR3 position, size;
+                m_models[i]->GetBoundingBox(position, size);
+                if (frustum->CheckRectangle(position, size)) {
+                    m_models[i]->PreRender(camera);
+                }
             }
         }
     }
@@ -50,12 +54,16 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
     int size = m_models.size();
     for (int i = 0; i < size; i++) {
         if (m_models[i]->isVisible()) {
-            D3DXVECTOR3 position, size;
-            m_models[i]->GetBoundingBox(position, size);
-            if (frustum->CheckRectangle(position, size)) {
+            if (m_models[i]->GetIndexCount() == 0) {
                 m_models[i]->Render(camera);
-                m_TriangleCount += m_models[i]->GetTtriangleCount();
-                m_RenderCount++;
+            } else {
+                D3DXVECTOR3 position, size;
+                m_models[i]->GetBoundingBox(position, size);
+                if (frustum->CheckRectangle(position, size)) {
+                    m_models[i]->Render(camera);
+                    m_TriangleCount += m_models[i]->GetTtriangleCount();
+                    m_RenderCount++;
+                }
             }
         }
     }

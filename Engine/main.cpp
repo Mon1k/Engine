@@ -12,6 +12,7 @@
 #include "models/bbox.h"
 #include "models/Reflection.h"
 #include "models/WaterNode.h"
+#include "models/2d/DebugWindow.h"
 
 #include "lightclass.h"
 
@@ -371,13 +372,24 @@ public:
 
 
 		////
+		DebugWindow* model14 = new DebugWindow;
+		result = model14->Initialize(m_Graphics->getD3D(), 100);
+		if (!result) {
+			MessageBox(NULL, L"Could not initialize the model 14 object.", L"Error", MB_OK);
+			return;
+		}
+		model14->setPosition(10, 150);
+		model14->addTarget(model);
+
+		m_modelManager->Add(model14);
+
+
+		////
 		D3DXVECTOR3 position, size;
 		model8->GetBoundingBox(position, size);
 		BBox* bbox = new BBox;
 		bbox->CreateBox(m_Graphics->getD3D(), position, size);
 		m_modelManager->Add(bbox);
-
-		//// debug window
 	}
 
 protected:

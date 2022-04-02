@@ -37,6 +37,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{a1a725dd-504a-43d4-80fe-9ff607b0cf8d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models\2d">
+      <UniqueIdentifier>{974859c9-1762-4ed1-aec1-28f4bc25b6e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -191,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="models\WaterNode.cpp">
       <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="models\2d\DebugWindow.cpp">
+      <Filter>models\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -358,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="models\WaterNode.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\2d\DebugWindow.h">
+      <Filter>models\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

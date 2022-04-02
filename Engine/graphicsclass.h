@@ -7,17 +7,6 @@
 #include "ui/UIManager.h"
 #include "models/ModelManager.h"
 
-#include "modelclass.h"
-
-#include "render/rendertextureclass.h"
-#include "render/2d/debugwindowclass.h"
-
-#include "textureshaderclass.h"
-#include "lightshaderclass.h"
-
-#include "lightclass.h"
-#include "bitmapclass.h"
-#include "textclass.h"
 #include "frustumclass.h"
 #include "timerclass.h"
 
@@ -55,29 +44,12 @@ public:
 	}
 
 private:
-	void RenderToTexture();
-	void RenderScene();
-
-private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
+	FrustumClass* m_Frustum;
 
 	UIManager* m_uiManager;
 	ModelManager* m_modelManager;
-
-
-
-
-	//////
-	TextureShaderClass* m_TextureShader;
-
-	// bitmap texture
-	RenderTextureClass* m_RenderTexture;
-	DebugWindowClass* m_DebugWindow;
-
-	LightShaderClass* m_LightShader;
-	LightClass* m_Light;
-	FrustumClass* m_Frustum;
 
 	int m_RenderCount;
 	int m_TriangleCount;
