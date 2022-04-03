@@ -57,9 +57,6 @@
     <ClCompile Include="inputclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="modelclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
