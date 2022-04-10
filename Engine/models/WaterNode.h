@@ -27,6 +27,10 @@ public:
 			m_waterTranslation -= 1.0f;
 		}
 	}
+	void setWaterHeight(float height)
+	{
+		m_waterHeight = height;
+	}
 
 protected:
 	RenderTextureClass* m_RefractionTexture;
