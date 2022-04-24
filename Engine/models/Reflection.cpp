@@ -35,7 +35,7 @@ void Reflection::RenderToTexture(CameraClass* camera)
 	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Use the camera to calculate the reflection matrix.
-	camera->RenderReflection(-5.0f);
+	camera->RenderReflection(position.y);
 
 	// Get the camera reflection view matrix instead of the normal view matrix.
 	reflectionViewMatrix = camera->GetReflectionViewMatrix();

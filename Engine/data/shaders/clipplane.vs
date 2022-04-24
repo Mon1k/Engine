@@ -21,7 +21,7 @@ struct PixelInputType
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD0;
-     float clip : SV_ClipDistance0;
+    float clip : SV_ClipDistance0;
 };
 
 PixelInputType ClipPlaneVertexShader(VertexInputType input)

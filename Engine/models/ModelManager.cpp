@@ -39,7 +39,7 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
                 D3DXVECTOR3 position, size;
                 m_models[i]->GetBoundingBox(position, size);
                 if (frustum->CheckRectangle(position, size)) {
-                    m_models[i]->PreRender(camera, frustum);
+                    m_models[i]->PreRender(camera);
                 }
             }
         }
