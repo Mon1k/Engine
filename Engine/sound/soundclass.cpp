@@ -4,8 +4,11 @@ SoundClass::SoundClass()
 {
 	m_DirectSound = 0;
 	m_primaryBuffer = 0;
-	m_secondaryBuffer1 = 0;
 	m_Volume = DSBVOLUME_MAX;
+	m_listener = 0;
+	m_secondaryBuffer1 = 0;
+	m_secondary3DBuffer1 = 0;
+	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -40,12 +43,10 @@ bool SoundClass::Initialize(HWND hwnd, char* soundFilename)
 void SoundClass::Shutdown()
 {
 	// Release the secondary buffer.
-	ShutdownWaveFile(&m_secondaryBuffer1);
+	ShutdownWaveFile(&m_secondaryBuffer1, &m_secondary3DBuffer1);
 
 	// Shutdown the Direct Sound API.
 	ShutdownDirectSound();
-
-	return;
 }
 
 bool SoundClass::InitializeDirectSound(HWND hwnd)
@@ -69,7 +70,7 @@ bool SoundClass::InitializeDirectSound(HWND hwnd)
 
 	// Setup the primary buffer description.
 	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
+	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
 	bufferDesc.dwBufferBytes = 0;
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = NULL;
@@ -97,11 +98,26 @@ bool SoundClass::InitializeDirectSound(HWND hwnd)
 		return false;
 	}
 
+	// Obtain a listener interface.
+	result = m_primaryBuffer->QueryInterface(IID_IDirectSound3DListener8, (LPVOID*)&m_listener);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// Set the initial position of the listener to be in the middle of the scene.
+	m_listener->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+
 	return true;
 }
 
 void SoundClass::ShutdownDirectSound()
 {
+	// Release the listener interface.
+	if (m_listener) {
+		m_listener->Release();
+		m_listener = 0;
+	}
+
 	// Release the primary sound buffer pointer.
 	if (m_primaryBuffer) {
 		m_primaryBuffer->Release();
@@ -113,8 +129,6 @@ void SoundClass::ShutdownDirectSound()
 		m_DirectSound->Release();
 		m_DirectSound = 0;
 	}
-
-	return;
 }
 
 bool SoundClass::Load(char* filename)
@@ -122,13 +136,13 @@ bool SoundClass::Load(char* filename)
 	std::string string(filename);
 
 	if (string.rfind(".wav") != std::string::npos) {
-		return LoadWaveFile(filename, &m_secondaryBuffer1);
+		return LoadWaveFile(filename, &m_secondaryBuffer1, &m_secondary3DBuffer1);
 	}
 	
 	return false;
 }
 
-bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)
+bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer, IDirectSound3DBuffer8** secondary3DBuffer)
 {
 	int error;
 	FILE* filePtr;
@@ -178,7 +192,7 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	}
 
 	// Check that the wave file was recorded in stereo format.
-	if (waveFileHeader.numChannels != 2) {
+	if (waveFileHeader.numChannels != 1) {
 		return false;
 	}
 
@@ -189,27 +203,27 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 
 	// Ensure that the wave file was recorded in 16 bit format.
 	if (waveFileHeader.bitsPerSample != 16) {
-		//return false;
+		return false;
 	}
 
 	// Check for the data chunk header.
 	if ((waveFileHeader.dataChunkId[0] != 'd') || (waveFileHeader.dataChunkId[1] != 'a') ||
 		(waveFileHeader.dataChunkId[2] != 't') || (waveFileHeader.dataChunkId[3] != 'a')) {
-		return false;
+		//return false;
 	}
 
 	// Set the wave format of secondary buffer that this wave file will be loaded onto.
 	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
 	waveFormat.nSamplesPerSec = 44100;
 	waveFormat.wBitsPerSample = 16;
-	waveFormat.nChannels = 2;
+	waveFormat.nChannels = 1;
 	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
 	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
 	waveFormat.cbSize = 0;
 
 	// Set the buffer description of the secondary sound buffer that the wave file will be loaded onto.
 	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
 	bufferDesc.dwBufferBytes = waveFileHeader.dataSize;
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = &waveFormat;
@@ -271,11 +285,24 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	delete[] waveData;
 	waveData = 0;
 
+	// Get the 3D interface to the secondary sound buffer.
+	result = (*secondaryBuffer)->QueryInterface(IID_IDirectSound3DBuffer8, (void**)&*secondary3DBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	return true;
 }
 
-void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
+void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer, IDirectSound3DBuffer8** secondary3DBuffer)
 {
+	// Release the 3D interface to the secondary sound buffer.
+	if (*secondary3DBuffer)
+	{
+		(*secondary3DBuffer)->Release();
+		*secondary3DBuffer = 0;
+	}
+
 	// Release the secondary sound buffer.
 	if (*secondaryBuffer) {
 		(*secondaryBuffer)->Release();
@@ -301,6 +328,9 @@ bool SoundClass::Play()
 		return false;
 	}
 
+	// Set the 3D position of the sound.
+	m_secondary3DBuffer1->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+
 	// Play the contents of the secondary sound buffer.
 	result = m_secondaryBuffer1->Play(0, 0, 0);
 	if (FAILED(result)) {
@@ -308,4 +338,20 @@ bool SoundClass::Play()
 	}
 
 	return true;
+}
+
+void SoundClass::setPositionListener(D3DXVECTOR3 position)
+{
+	m_listener->SetPosition(position.x, position.y, position.z, DS3D_IMMEDIATE);
+}
+
+bool SoundClass::isPlaying()
+{
+	DWORD status = 0;
+
+	if (m_secondaryBuffer1->GetStatus(&status) != DS_OK) {
+		return false;
+	}
+
+	return (status & DSBSTATUS_PLAYING) != 0;
 }
