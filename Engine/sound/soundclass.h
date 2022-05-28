@@ -12,9 +12,11 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "../resources/AbstractResource.h"
+
 using namespace std;
 
-class SoundClass
+class SoundClass: public AbstractResource
 {
 private:
 	struct WaveHeaderType
@@ -48,6 +50,9 @@ public:
 	void setVolume(int volume) {
 		m_Volume = volume;
 	}
+	void set3D(bool is3D) {
+		b_is3D = is3D;
+	}
 	void setPositionListener(D3DXVECTOR3);
 	bool isPlaying();
 
@@ -68,6 +73,7 @@ private:
 	IDirectSound3DBuffer8* m_secondary3DBuffer1;
 
 	int m_Volume;
+	bool b_is3D;
 	D3DXVECTOR3 m_Position;
 };
 

@@ -9,8 +9,8 @@
 #include "graphicsclass.h"
 #include "fpsclass.h"
 #include "timerclass.h"
-#include "sound/soundclass.h"
 #include "positionclass.h"
+#include "resources/ResourceManager.h"
 
 class SystemClass
 {
@@ -50,7 +50,7 @@ protected:
 	FpsClass* m_Fps;
 	TimerClass* m_Timer;
 	PositionClass* m_Position;
-	SoundClass* m_Sound;
+	ResourceManager* m_ResourceManager;
 
 	bool done;
 

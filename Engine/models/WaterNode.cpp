@@ -77,7 +77,9 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 
 void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 {
-	D3DXMATRIX reflectionViewMatrix, projectionMatrix;
+	D3DXMATRIX reflectionViewMatrix, projectionMatrix, viewMatrix;
+
+	camera->GetViewMatrix(viewMatrix);
 
 	// Set the render target to be the reflection render to texture.
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
@@ -89,7 +91,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	camera->RenderReflection(m_waterHeight);
 
 	// Get the camera reflection view matrix instead of the normal view matrix.
-	reflectionViewMatrix = camera->GetReflectionViewMatrix();
+	m_ReflectionMatrix = camera->GetReflectionViewMatrix();
 
 	// Get the world and projection matrices from the d3d object.
 	m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -101,26 +103,26 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 		m_LightShaderWater->addLights({ shader->getLight(0) });
 
 		model->Render();
-		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), reflectionViewMatrix, projectionMatrix,
+		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), m_ReflectionMatrix, projectionMatrix,
 			model->GetTextureArray(), camera->GetPosition());
 	}
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
+	camera->setViewMatrix(viewMatrix);
 }
 
 void WaterNode::Render(CameraClass* camera)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, reflectionMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix;
 
-	reflectionMatrix = camera->GetReflectionViewMatrix();
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	ModelClass::Render();
 
 	m_WaterShader->Render(m_D3D->GetDeviceContext(), this->GetIndexCount(), this->GetWorldMatrix(), viewMatrix,
-		projectionMatrix, reflectionMatrix, m_ReflectionTexture->GetShaderResourceView(),
+		projectionMatrix, m_ReflectionMatrix, m_ReflectionTexture->GetShaderResourceView(),
 		m_RefractionTexture->GetShaderResourceView(), this->GetTexture(),
 		m_waterTranslation, m_reflectRefractScale);
 }

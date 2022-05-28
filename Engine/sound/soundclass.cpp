@@ -8,6 +8,7 @@ SoundClass::SoundClass()
 	m_listener = 0;
 	m_secondaryBuffer1 = 0;
 	m_secondary3DBuffer1 = 0;
+	b_is3D = false;
 	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
@@ -192,7 +193,10 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	}
 
 	// Check that the wave file was recorded in stereo format.
-	if (waveFileHeader.numChannels != 1) {
+	if (b_is3D && waveFileHeader.numChannels != 1) {
+		return false;
+	}
+	if (!b_is3D && waveFileHeader.numChannels != 2) {
 		return false;
 	}
 
@@ -216,14 +220,23 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
 	waveFormat.nSamplesPerSec = 44100;
 	waveFormat.wBitsPerSample = 16;
-	waveFormat.nChannels = 1;
+	if (b_is3D) {
+		waveFormat.nChannels = 1;
+	} else {
+		waveFormat.nChannels = 2;
+	}
 	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
 	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
 	waveFormat.cbSize = 0;
 
 	// Set the buffer description of the secondary sound buffer that the wave file will be loaded onto.
 	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
+	if (b_is3D) {
+		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
+	}
+	else {
+		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+	}
 	bufferDesc.dwBufferBytes = waveFileHeader.dataSize;
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = &waveFormat;
@@ -286,9 +299,11 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	waveData = 0;
 
 	// Get the 3D interface to the secondary sound buffer.
-	result = (*secondaryBuffer)->QueryInterface(IID_IDirectSound3DBuffer8, (void**)&*secondary3DBuffer);
-	if (FAILED(result)) {
-		return false;
+	if (b_is3D) {
+		result = (*secondaryBuffer)->QueryInterface(IID_IDirectSound3DBuffer8, (void**)&*secondary3DBuffer);
+		if (FAILED(result)) {
+			return false;
+		}
 	}
 
 	return true;
@@ -329,7 +344,9 @@ bool SoundClass::Play()
 	}
 
 	// Set the 3D position of the sound.
-	m_secondary3DBuffer1->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+	if (b_is3D) {
+		m_secondary3DBuffer1->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+	}
 
 	// Play the contents of the secondary sound buffer.
 	result = m_secondaryBuffer1->Play(0, 0, 0);

@@ -26,7 +26,9 @@ void Reflection::PreRender(CameraClass* camera)
 
 void Reflection::RenderToTexture(CameraClass* camera)
 {
-	D3DXMATRIX reflectionViewMatrix, projectionMatrix;
+	D3DXMATRIX reflectionViewMatrix, projectionMatrix, viewMatrix;
+
+	camera->GetViewMatrix(viewMatrix);
 
 	// Set the render target to be the render to texture.
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
@@ -38,8 +40,8 @@ void Reflection::RenderToTexture(CameraClass* camera)
 	camera->RenderReflection(position.y);
 
 	// Get the camera reflection view matrix instead of the normal view matrix.
-	reflectionViewMatrix = camera->GetReflectionViewMatrix();
-	camera->setViewMatrix(reflectionViewMatrix);
+	m_ReflectionMatrix = camera->GetReflectionViewMatrix();
+	camera->setViewMatrix(m_ReflectionMatrix);
 
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
@@ -48,22 +50,22 @@ void Reflection::RenderToTexture(CameraClass* camera)
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
+	camera->setViewMatrix(viewMatrix);
 }
 
 void Reflection::Render(CameraClass* camera)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, reflectionMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix;
 
 	ModelClass::Render();
 
 	if (m_shader) {
-		reflectionMatrix = camera->GetReflectionViewMatrix();
 		camera->GetViewMatrix(viewMatrix);
 		m_D3D->GetProjectionMatrix(projectionMatrix);
 
 		ReflectionShaderClass* shader = dynamic_cast<ReflectionShaderClass*>(m_shader);
 		shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix,
-			projectionMatrix, GetTextureArray()[0], m_ReflectionTexture->GetShaderResourceView(), reflectionMatrix);
+			projectionMatrix, GetTextureArray()[0], m_ReflectionTexture->GetShaderResourceView(), m_ReflectionMatrix);
 	}
 }
 

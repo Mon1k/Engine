@@ -109,6 +109,7 @@
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="render\2d\debugwindowclass.cpp" />
     <ClCompile Include="render\rendertextureclass.cpp" />
+    <ClCompile Include="resources\ResourceManager.cpp" />
     <ClCompile Include="sound\soundclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -165,6 +166,8 @@
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="resources\AbstractResource.h" />
+    <ClInclude Include="resources\ResourceManager.h" />
     <ClInclude Include="shaders\AbstractShader.h" />
     <ClInclude Include="sound\soundclass.h" />
     <ClInclude Include="systemclass.h" />

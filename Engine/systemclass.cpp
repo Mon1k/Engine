@@ -9,7 +9,7 @@ SystemClass::SystemClass()
 	m_Fps = 0;
 	m_Timer = 0;
 	m_Position = 0;
-	m_Sound = 0;
+	m_ResourceManager = 0;
 }
 
 
@@ -80,16 +80,8 @@ bool SystemClass::init()
 		return false;
 	}
 
-	// Create the sound object.
-	m_Sound = new SoundClass;
-	if (!m_Sound) {
-		return false;
-	}
-
-	// Initialize the sound object.
-	result = m_Sound->Initialize(m_hwnd, "data/music/The Fields of Ard Skellig.wav");
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+	m_ResourceManager = new ResourceManager;
+	if (!m_ResourceManager) {
 		return false;
 	}
 
@@ -110,11 +102,10 @@ void SystemClass::shutdown()
 		m_Position = 0;
 	}
 
-	// Release the sound object.
-	if (m_Sound) {
-		m_Sound->Shutdown();
-		delete m_Sound;
-		m_Sound = 0;
+	if (m_ResourceManager) {
+		m_ResourceManager->Shutdown();
+		delete m_ResourceManager;
+		m_ResourceManager = 0;
 	}
 
 	// Release the timer object.
@@ -145,8 +136,6 @@ void SystemClass::shutdown()
 
 	// Shutdown the window.
 	ShutdownWindows();
-	
-	return;
 }
 
 

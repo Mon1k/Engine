@@ -40,6 +40,9 @@
     <Filter Include="models\2d">
       <UniqueIdentifier>{974859c9-1762-4ed1-aec1-28f4bc25b6e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{7141daad-4e64-461c-8d26-1cd44fd66df0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -194,6 +197,9 @@
     </ClCompile>
     <ClCompile Include="models\2d\DebugWindow.cpp">
       <Filter>models\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="resources\ResourceManager.cpp">
+      <Filter>resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -364,6 +370,12 @@
     </ClInclude>
     <ClInclude Include="models\2d\DebugWindow.h">
       <Filter>models\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\AbstractResource.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\ResourceManager.h">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

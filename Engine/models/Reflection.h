@@ -20,6 +20,7 @@ public:
 
 protected:
 	RenderTextureClass* m_ReflectionTexture;
+	D3DXMATRIX m_ReflectionMatrix;
 	std::vector<AbstractModel*> m_modelsTarget;
 };
 

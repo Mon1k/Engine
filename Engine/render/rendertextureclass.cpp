@@ -112,8 +112,6 @@ void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext, I
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	return;
 }
 
 ID3D11ShaderResourceView* RenderTextureClass::GetShaderResourceView()
