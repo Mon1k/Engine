@@ -1,11 +1,12 @@
 #ifndef _ABSTRACTMODEL_H_
 #define _ABSTRACTMODEL_H_
 
+#include "../AbstractNode.h"
 #include "../d3dclass.h"
 #include "../shaders/AbstractShader.h"
 #include "../cameraclass.h"
 
-class AbstractModel
+class AbstractModel : public AbstractNode
 {
 public:
     struct ModelType
@@ -21,7 +22,6 @@ public:
 public:
     AbstractModel()
     {
-        m_id = 0;
         m_vertexCount = 0;
         m_indexCount = 0;
     }
@@ -64,24 +64,12 @@ public:
         return m_shader;
     }
 
-    void setId(int id)
-    {
-        m_id = id;
-    };
-    int getId()
-    {
-        return m_id;
-    };
-
 protected:
     int m_vertexCount, m_indexCount;
     bool visible = true;
 
     D3DClass* m_D3D;
     AbstractShader* m_shader;
-
-private:
-    int m_id;
 };
 
 #endif

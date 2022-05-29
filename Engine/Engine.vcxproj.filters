@@ -377,6 +377,9 @@
     <ClInclude Include="resources\ResourceManager.h">
       <Filter>resources</Filter>
     </ClInclude>
+    <ClInclude Include="AbstractNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">

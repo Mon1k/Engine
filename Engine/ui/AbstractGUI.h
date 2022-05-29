@@ -1,9 +1,10 @@
 #ifndef _ABSTRACTGUI_H_
 #define _ABSTRACTGUI_H_
 
+#include "../AbstractNode.h"
 #include "../d3dclass.h"
 
-class AbstractGui
+class AbstractGui: public AbstractNode
 {
 public:
     AbstractGui() {
@@ -13,8 +14,6 @@ public:
         m_height = 0;
         m_x = 0;
         m_y = 0;
-
-        m_id = 0;
     };
     virtual void Shutdown() = 0;
     virtual bool Render() = 0;
@@ -27,14 +26,6 @@ public:
     bool isVisible() {
         return m_visible;
     }
-    void setId(int id)
-    {
-        m_id = id;
-    };
-    int getId()
-    {
-        return m_id;
-    };
 
     virtual void onPress(int x, int y, int button)
     {
@@ -54,9 +45,6 @@ public:
     bool m_visible;
 
     int m_width, m_height, m_x, m_y;
-
-private:
-    int m_id;
 };
 
 #endif

@@ -134,6 +134,7 @@
     <ClCompile Include="ui\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractNode.h" />
     <ClInclude Include="alphamapshaderclass.h" />
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />

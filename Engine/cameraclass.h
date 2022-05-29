@@ -29,6 +29,9 @@ public:
 	void setBaseViewMatrix() {
 		m_baseViewMatrix = m_viewMatrix;
 	}
+	D3DXMATRIX getViewMatrix() {
+		return m_viewMatrix;
+	}
 
 	void RenderReflection(float);
 	D3DXMATRIX GetReflectionViewMatrix();
