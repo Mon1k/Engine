@@ -50,6 +50,7 @@ public:
 		return scale;
 	}
 	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
 	ID3D11ShaderResourceView** GetTextureArray(int);
 

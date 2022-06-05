@@ -201,6 +201,12 @@
     <ClCompile Include="resources\ResourceManager.cpp">
       <Filter>resources</Filter>
     </ClCompile>
+    <ClCompile Include="models\Glass.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\glassshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -380,6 +386,12 @@
     <ClInclude Include="AbstractNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="models\Glass.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\glassshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -482,6 +494,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\refraction.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\glass.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\glass.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

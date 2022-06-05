@@ -99,6 +99,7 @@
     <ClCompile Include="modellistclass.cpp" />
     <ClCompile Include="models\2d\DebugWindow.cpp" />
     <ClCompile Include="models\bbox.cpp" />
+    <ClCompile Include="models\Glass.cpp" />
     <ClCompile Include="models\loader\DsLoader.cpp" />
     <ClCompile Include="models\loader\ObjLoader.cpp" />
     <ClCompile Include="models\modelbumpclass.cpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="textures\bumpmapshaderclass.cpp" />
     <ClCompile Include="textures\fadeshaderclass.cpp" />
+    <ClCompile Include="textures\glassshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
@@ -155,6 +157,7 @@
     <ClInclude Include="models\2d\DebugWindow.h" />
     <ClInclude Include="models\AbstractModel.h" />
     <ClInclude Include="models\bbox.h" />
+    <ClInclude Include="models\Glass.h" />
     <ClInclude Include="models\loader\AbstractLoader.h" />
     <ClInclude Include="models\loader\DsLoader.h" />
     <ClInclude Include="models\loader\ObjLoader.h" />
@@ -177,6 +180,7 @@
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="textures\bumpmapshaderclass.h" />
     <ClInclude Include="textures\fadeshaderclass.h" />
+    <ClInclude Include="textures\glassshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
     <ClInclude Include="textures\reflectionshaderclass.h" />
@@ -209,6 +213,8 @@
     <None Include="data\shaders\fog.vs" />
     <None Include="data\shaders\font.ps" />
     <None Include="data\shaders\font.vs" />
+    <None Include="data\shaders\glass.ps" />
+    <None Include="data\shaders\glass.vs" />
     <None Include="data\shaders\light.ps" />
     <None Include="data\shaders\light.vs" />
     <None Include="data\shaders\lightmap.ps" />
