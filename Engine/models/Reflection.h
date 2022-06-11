@@ -4,8 +4,9 @@
 #include "../modelclass.h"
 #include "../render/rendertextureclass.h"
 #include "../textures/reflectionshaderclass.h"
+#include "AbstractTarget.h"
 
-class Reflection: public ModelClass
+class Reflection: public ModelClass, public AbstractTarget
 {
 public:
 	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
@@ -13,15 +14,10 @@ public:
 	virtual void Render(CameraClass*);
 	void RenderToTexture(CameraClass*);
 	void Shutdown();
-	void addTarget(AbstractModel* target)
-	{
-		m_modelsTarget.push_back(target);
-	}
 
 protected:
 	RenderTextureClass* m_ReflectionTexture;
 	D3DXMATRIX m_ReflectionMatrix;
-	std::vector<AbstractModel*> m_modelsTarget;
 };
 
 #endif

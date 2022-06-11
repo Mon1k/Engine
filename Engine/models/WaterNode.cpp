@@ -99,12 +99,8 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
 		ModelClass* model = dynamic_cast<ModelClass*>(m_modelsTarget[i]);
-		LightShaderClass* shader = dynamic_cast<LightShaderClass*>(model->getShader());
-		m_LightShaderWater->addLights({ shader->getLight(0) });
-
-		model->Render();
-		m_LightShaderWater->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), m_ReflectionMatrix, projectionMatrix,
-			model->GetTextureArray(), camera->GetPosition());
+		camera->setViewMatrix(m_ReflectionMatrix);
+		model->Render(camera);
 	}
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.

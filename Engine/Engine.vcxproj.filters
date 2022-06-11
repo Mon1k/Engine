@@ -207,6 +207,12 @@
     <ClCompile Include="textures\glassshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="models\Fire.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\fireshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -392,6 +398,15 @@
     <ClInclude Include="textures\glassshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="models\AbstractTarget.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\Fire.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\fireshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -500,6 +515,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\glass.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\fire.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\fire.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

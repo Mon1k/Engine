@@ -18,7 +18,7 @@ bool Glass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std:
 		return false;
 	}
 
-	m_modelsTarget.clear();
+	clearTargets();
 
 	m_refractionScale = 0.01f;
 

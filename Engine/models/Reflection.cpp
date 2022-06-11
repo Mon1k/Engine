@@ -12,7 +12,7 @@ bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 		return false;
 	}
 
-	m_modelsTarget.clear();
+	clearTargets();
 
 	return true;
 }
