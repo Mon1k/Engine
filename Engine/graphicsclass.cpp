@@ -90,7 +90,7 @@ void GraphicsClass::frame(TimerClass *timer)
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
-	float fogColor = 0.0f;
+	D3DXVECTOR3 background = D3DXVECTOR3(0.0f, 0.8f, 1.0f);
 
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
@@ -101,7 +101,7 @@ bool GraphicsClass::Render()
 	m_Camera->Render();
 
 	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
+	m_D3D->BeginScene(background.x, background.y, background.z, 1.0f);
 	
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetProjectionMatrix(projectionMatrix);

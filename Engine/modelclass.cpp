@@ -11,6 +11,7 @@ ModelClass::ModelClass(): AbstractModel()
 
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -359,20 +360,24 @@ void ModelClass::SetScale(D3DXVECTOR3 _scale)
 
 D3DXMATRIX ModelClass::GetWorldMatrix()
 {
-	D3DXVECTOR3 position = GetPosition();
-	D3DXVECTOR3 scale = GetScale();
-	D3DXMATRIX scaleWorld, positionWorld, worldMatrix;
+	D3DXMATRIX scaleMatrix, translationMatrix, rotateMatrix, worldMatrix;
 
 	m_D3D->GetWorldMatrix(worldMatrix);
-	scaleWorld = worldMatrix;
-	positionWorld = worldMatrix;
+
+	if (m_rotation.y != 0.0f) {
+		D3DXMatrixRotationY(&rotateMatrix, m_rotation.y);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
+	}
+
+	if (scale.x != 1.0f || scale.y != 1.0f || scale.z != 1.0f) {
+		D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
+	}
+	
 	if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {
-		D3DXMatrixTranslation(&positionWorld, position.x, position.y, position.z);
+		D3DXMatrixTranslation(&translationMatrix, position.x, position.y, position.z);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translationMatrix);
 	}
-	if (position.x != 1.0f || position.y != 1.0f || position.z != 1.0f) {
-		D3DXMatrixScaling(&scaleWorld, scale.x, scale.y, scale.z);
-	}
-	worldMatrix = scaleWorld * positionWorld;
 
 	return worldMatrix;
 }

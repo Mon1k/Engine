@@ -200,8 +200,6 @@ void ModelBumpClass::CalculateModelVectors()
 		m_model[index - 3].by = binormal.y;
 		m_model[index - 3].bz = binormal.z;
 	}
-
-	return;
 }
 
 void ModelBumpClass::CalculateTangentBinormal(TempVertexType vertex1, TempVertexType vertex2, TempVertexType vertex3,
@@ -276,8 +274,6 @@ void ModelBumpClass::CalculateNormal(VectorType tangent, VectorType binormal, Ve
 	normal.x = normal.x / length;
 	normal.y = normal.y / length;
 	normal.z = normal.z / length;
-
-	return;
 }
 
 void ModelBumpClass::RenderBuffers(ID3D11DeviceContext* deviceContext)

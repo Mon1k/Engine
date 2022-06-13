@@ -58,7 +58,7 @@ public:
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
 	void SetPosition(D3DXVECTOR3);
 	void SetScale(D3DXVECTOR3);
-	D3DXMATRIX GetWorldMatrix();
+	virtual D3DXMATRIX GetWorldMatrix();
 
 	bool LoadModel(char* filename) {
 		std::string string(filename);
@@ -92,6 +92,7 @@ protected:
 	D3DXVECTOR3 m_Min, m_Max;
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 scale;
+	D3DXVECTOR3 m_rotation;
 
 	TextureArrayClass* m_TextureArray;
 };

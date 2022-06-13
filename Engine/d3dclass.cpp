@@ -500,7 +500,6 @@ void D3DClass::GetWorldMatrix(D3DXMATRIX& worldMatrix)
 	worldMatrix = m_worldMatrix;
 }
 
-
 void D3DClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {
 	orthoMatrix = m_orthoMatrix;

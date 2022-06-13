@@ -41,10 +41,10 @@ void Reflection::RenderToTexture(CameraClass* camera)
 
 	// Get the camera reflection view matrix instead of the normal view matrix.
 	m_ReflectionMatrix = camera->GetReflectionViewMatrix();
-	camera->setViewMatrix(m_ReflectionMatrix);
 
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
+		camera->setViewMatrix(m_ReflectionMatrix);
 		m_modelsTarget[i]->Render(camera);
 	}
 
