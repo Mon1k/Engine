@@ -8,8 +8,9 @@
 #include <fstream>
 using namespace std;
 
+#include "./shaders/AbstractShader.h"
 
-class TextureShaderClass
+class TextureShaderClass: public AbstractShader
 {
 private:
 	struct MatrixBufferType
@@ -27,18 +28,16 @@ public:
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3);
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
-	void OutputShaderErrorMessage(ID3D10Blob*, WCHAR*);
 
 	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
-	ID3D11VertexShader* m_vertexShader;
-	ID3D11PixelShader* m_pixelShader;
 	ID3D11InputLayout* m_layout;
 	ID3D11Buffer* m_matrixBuffer;
 

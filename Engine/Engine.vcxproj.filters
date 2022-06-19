@@ -43,6 +43,9 @@
     <Filter Include="resources">
       <UniqueIdentifier>{7141daad-4e64-461c-8d26-1cd44fd66df0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{eaa53e64-f90c-41f8-ae40-73aab7eedb1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -212,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="textures\fireshaderclass.cpp">
       <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="models\Billboard.cpp">
+      <Filter>models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +412,12 @@
     </ClInclude>
     <ClInclude Include="textures\fireshaderclass.h">
       <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="tool\random.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="models\Billboard.h">
+      <Filter>models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

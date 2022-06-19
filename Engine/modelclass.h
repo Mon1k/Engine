@@ -74,6 +74,10 @@ public:
 
 		return false;
 	}
+	void setAlpha(bool alpha)
+	{
+		m_isAlpha = alpha;
+	}
 
 protected:
 	void CalcMinMax();
@@ -93,6 +97,7 @@ protected:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 scale;
 	D3DXVECTOR3 m_rotation;
+	bool m_isAlpha;
 
 	TextureArrayClass* m_TextureArray;
 };

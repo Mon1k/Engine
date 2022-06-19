@@ -8,6 +8,7 @@ ModelClass::ModelClass(): AbstractModel()
 	m_TextureArray = 0;
 	m_model = 0;
 	m_shader = 0;
+	m_isAlpha = false;
 
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
@@ -286,8 +287,17 @@ void ModelClass::Render(CameraClass* camera)
 	if (m_shader) {
 		camera->GetViewMatrix(viewMatrix);
 		m_D3D->GetProjectionMatrix(projectionMatrix);
+
+		if (m_isAlpha) {
+			m_D3D->TurnOnAlphaBlending();
+		}
+
 		m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix,
 			GetTextureArray(), camera->GetPosition());
+
+		if (m_isAlpha) {
+			m_D3D->TurnOffAlphaBlending();
+		}
 	}
 }
 
@@ -364,14 +374,14 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 
 	m_D3D->GetWorldMatrix(worldMatrix);
 
-	if (m_rotation.y != 0.0f) {
-		D3DXMatrixRotationY(&rotateMatrix, m_rotation.y);
-		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
-	}
-
 	if (scale.x != 1.0f || scale.y != 1.0f || scale.z != 1.0f) {
 		D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
 		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
+	}
+
+	if (m_rotation.y != 0.0f) {
+		D3DXMatrixRotationY(&rotateMatrix, m_rotation.y);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
 	}
 	
 	if (position.x != 0.0f || position.y != 0.0f || position.z != 0.0f) {

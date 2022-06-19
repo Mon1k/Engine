@@ -99,6 +99,7 @@
     <ClCompile Include="modellistclass.cpp" />
     <ClCompile Include="models\2d\DebugWindow.cpp" />
     <ClCompile Include="models\bbox.cpp" />
+    <ClCompile Include="models\Billboard.cpp" />
     <ClCompile Include="models\Fire.cpp" />
     <ClCompile Include="models\Glass.cpp" />
     <ClCompile Include="models\loader\DsLoader.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="models\AbstractModel.h" />
     <ClInclude Include="models\AbstractTarget.h" />
     <ClInclude Include="models\bbox.h" />
+    <ClInclude Include="models\Billboard.h" />
     <ClInclude Include="models\Fire.h" />
     <ClInclude Include="models\Glass.h" />
     <ClInclude Include="models\loader\AbstractLoader.h" />
@@ -196,6 +198,7 @@
     <ClInclude Include="textures\transparentshaderclass.h" />
     <ClInclude Include="textures\watershaderclass.h" />
     <ClInclude Include="timerclass.h" />
+    <ClInclude Include="tool\random.h" />
     <ClInclude Include="ui\AbstractGUI.h" />
     <ClInclude Include="ui\button.h" />
     <ClInclude Include="ui\checkbox.h" />

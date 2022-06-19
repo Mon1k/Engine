@@ -35,8 +35,6 @@ void TextureClass::Shutdown()
 		m_texture->Release();
 		m_texture = 0;
 	}
-
-	return;
 }
 
 ID3D11ShaderResourceView* TextureClass::GetTexture()
