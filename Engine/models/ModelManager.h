@@ -1,7 +1,9 @@
 #ifndef _MODELMANAGER_H_
 #define _MODELMANAGER_H_
 
+#include <cmath>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 #include "AbstractModel.h"

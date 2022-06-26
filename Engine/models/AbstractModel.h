@@ -64,9 +64,29 @@ public:
         return m_shader;
     }
 
+    D3DXVECTOR3 GetPosition() {
+        return position;
+    }
+    D3DXVECTOR3 GetScale() {
+        return scale;
+    }
+
+    void setAlpha(bool alpha)
+    {
+        m_isAlpha = alpha;
+    }
+    bool getAlpha() {
+        return m_isAlpha;
+    }
+
 protected:
     int m_vertexCount, m_indexCount;
     bool visible = true;
+    bool m_isAlpha = false;
+
+    D3DXVECTOR3 position;
+    D3DXVECTOR3 scale;
+    D3DXVECTOR3 m_rotation;
 
     D3DClass* m_D3D;
     AbstractShader* m_shader;

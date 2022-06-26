@@ -43,12 +43,6 @@ public:
 	virtual void Render(CameraClass*);
 	virtual void Render();
 
-	D3DXVECTOR3 GetPosition() {
-		return position;
-	}
-	D3DXVECTOR3 GetScale() {
-		return scale;
-	}
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
@@ -74,11 +68,7 @@ public:
 
 		return false;
 	}
-	void setAlpha(bool alpha)
-	{
-		m_isAlpha = alpha;
-	}
-
+	
 protected:
 	void CalcMinMax();
 	virtual bool InitializeBuffers(ID3D11Device*);
@@ -94,10 +84,6 @@ private:
 	
 protected:
 	D3DXVECTOR3 m_Min, m_Max;
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 scale;
-	D3DXVECTOR3 m_rotation;
-	bool m_isAlpha;
 
 	TextureArrayClass* m_TextureArray;
 };
