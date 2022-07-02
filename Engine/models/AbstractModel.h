@@ -70,6 +70,9 @@ public:
     D3DXVECTOR3 GetScale() {
         return scale;
     }
+    D3DXVECTOR3 getRotation() {
+        return m_rotation;
+    }
 
     void setAlpha(bool alpha)
     {

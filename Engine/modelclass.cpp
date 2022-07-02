@@ -379,8 +379,18 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
 	}
 
+	if (m_rotation.x != 0.0f) {
+		D3DXMatrixRotationX(&rotateMatrix, m_rotation.x);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
+	}
+
 	if (m_rotation.y != 0.0f) {
 		D3DXMatrixRotationY(&rotateMatrix, m_rotation.y);
+		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
+	}
+
+	if (m_rotation.z != 0.0f) {
+		D3DXMatrixRotationZ(&rotateMatrix, m_rotation.z);
 		D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix);
 	}
 	

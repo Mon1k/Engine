@@ -83,7 +83,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
             float zModelLeft = modelLeft->GetPosition().z;
             float zModelRight = modelRight->GetPosition().z;
             return abs(zCamera - zModelLeft) > abs(zCamera - zModelRight);
-            });
+        });
         for (int i = 0; i < size; i++) {
             modelsAlpha[i]->Render(camera);
         }
