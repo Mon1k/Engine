@@ -100,6 +100,7 @@
     <ClCompile Include="models\2d\DebugWindow.cpp" />
     <ClCompile Include="models\bbox.cpp" />
     <ClCompile Include="models\Billboard.cpp" />
+    <ClCompile Include="models\Blur.cpp" />
     <ClCompile Include="models\Fire.cpp" />
     <ClCompile Include="models\Glass.cpp" />
     <ClCompile Include="models\loader\DsLoader.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="models\AbstractTarget.h" />
     <ClInclude Include="models\bbox.h" />
     <ClInclude Include="models\Billboard.h" />
+    <ClInclude Include="models\Blur.h" />
     <ClInclude Include="models\Fire.h" />
     <ClInclude Include="models\Glass.h" />
     <ClInclude Include="models\loader\AbstractLoader.h" />
@@ -209,6 +211,8 @@
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps" />
     <None Include="data\shaders\alphamap.vs" />
+    <None Include="data\shaders\blur.ps" />
+    <None Include="data\shaders\blur.vs" />
     <None Include="data\shaders\bumpmap.ps" />
     <None Include="data\shaders\bumpmap.vs" />
     <None Include="data\shaders\clipplane.ps" />

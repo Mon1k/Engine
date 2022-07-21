@@ -219,6 +219,9 @@
     <ClCompile Include="models\Billboard.cpp">
       <Filter>models</Filter>
     </ClCompile>
+    <ClCompile Include="models\Blur.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -419,6 +422,9 @@
     <ClInclude Include="models\Billboard.h">
       <Filter>models</Filter>
     </ClInclude>
+    <ClInclude Include="models\Blur.h">
+      <Filter>models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -533,6 +539,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\fire.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\blur.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\blur.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

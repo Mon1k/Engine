@@ -37,9 +37,12 @@ public:
 
 	void GetVideoCardInfo(char*, int&);
 
+	void ResetViewport();
+	D3D11_VIEWPORT getViewPort() {
+		return m_viewport;
+	}
 	void TurnZBufferOn();
 	void TurnZBufferOff();
-
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
 
@@ -61,6 +64,7 @@ private:
 	char m_videoCardDescription[128];
 	int screenWidth, screenHeight;
 
+	D3D11_VIEWPORT m_viewport;
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;

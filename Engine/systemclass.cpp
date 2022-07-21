@@ -386,8 +386,6 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	GetWindowRect(m_hwnd, &rc);
 	ClipCursor(&rc);
 	ShowCursor(false);
-
-	return;
 }
 
 
@@ -411,8 +409,6 @@ void SystemClass::ShutdownWindows()
 
 	// Release the pointer to this class.
 	ApplicationHandle = NULL;
-
-	return;
 }
 
 

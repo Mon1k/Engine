@@ -95,8 +95,6 @@ void TextClass::Shutdown()
 		delete m_Font;
 		m_Font = 0;
 	}
-
-	return;
 }
 
 bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix, D3DXMATRIX viewMatrix)
@@ -290,8 +288,6 @@ void TextClass::ReleaseSentence(SentenceType** sentence)
 		delete* sentence;
 		*sentence = 0;
 	}
-
-	return;
 }
 
 bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType* sentence, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix, D3DXMATRIX viewMatrix)

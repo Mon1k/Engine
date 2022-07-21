@@ -105,6 +105,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
+
 	camera->setViewMatrix(viewMatrix);
 }
 
