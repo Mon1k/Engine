@@ -1,5 +1,5 @@
-#ifndef _HORIZONTALBLURSHADERCLASS_H_
-#define _HORIZONTALBLURSHADERCLASS_H_
+#ifndef _BLURSHADERCLASS_H_
+#define _BLURSHADERCLASS_H_
 
 #include <d3d11.h>
 #include <d3dx10math.h>
@@ -9,7 +9,7 @@ using namespace std;
 
 #include "../shaders/AbstractShader.h"
 
-class HorizontalBlurShaderClass: public AbstractShader
+class BlurShaderClass: public AbstractShader
 {
 private:
 	struct MatrixBufferType
@@ -22,23 +22,24 @@ private:
 	struct ScreenSizeBufferType
 	{
 		float screenWidth;
-		D3DXVECTOR3 padding;
+		float screenHeight;
+		D3DXVECTOR2 padding;
 	};
 
 public:
-	HorizontalBlurShaderClass();
-	HorizontalBlurShaderClass(const HorizontalBlurShaderClass&);
-	~HorizontalBlurShaderClass();
+	BlurShaderClass();
+	BlurShaderClass(const BlurShaderClass&);
+	~BlurShaderClass();
 
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float, float);
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float);
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float, float);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:

@@ -8,7 +8,8 @@ cbuffer MatrixBuffer
 cbuffer ScreenSizeBuffer
 {
     float screenWidth;
-    float3 padding;
+    float screenHeight;
+    float2 padding;
 };
 
 struct VertexInputType
@@ -35,7 +36,7 @@ struct PixelInputType
 PixelInputType HorizontalBlurVertexShader(VertexInputType input)
 {
     PixelInputType output;
-    float texelSize;
+    float texelSizeWidth, texelSizeHeight;
 
 
     // Change the position vector to be 4 units for proper matrix calculations.
@@ -50,18 +51,19 @@ PixelInputType HorizontalBlurVertexShader(VertexInputType input)
     output.tex = input.tex;
 
     // Determine the floating point size of a texel for a screen with this specific width.
-    texelSize = 1.0f / screenWidth;
+    texelSizeWidth = 1.0f / screenWidth;
+    texelSizeHeight = 1.0f / screenHeight;
 
       // Create UV coordinates for the pixel and its four horizontal neighbors on either side.
-    output.texCoord1 = input.tex + float2(texelSize * -4.0f, 0.0f);
-    output.texCoord2 = input.tex + float2(texelSize * -3.0f, 0.0f);
-    output.texCoord3 = input.tex + float2(texelSize * -2.0f, 0.0f);
-    output.texCoord4 = input.tex + float2(texelSize * -1.0f, 0.0f);
-    output.texCoord5 = input.tex + float2(texelSize *  0.0f, 0.0f);
-    output.texCoord6 = input.tex + float2(texelSize *  1.0f, 0.0f);
-    output.texCoord7 = input.tex + float2(texelSize *  2.0f, 0.0f);
-    output.texCoord8 = input.tex + float2(texelSize *  3.0f, 0.0f);
-    output.texCoord9 = input.tex + float2(texelSize *  4.0f, 0.0f);
+    output.texCoord1 = input.tex + float2(texelSizeWidth * -4.0f, texelSizeHeight * -4.0f);
+    output.texCoord2 = input.tex + float2(texelSizeWidth * -3.0f, texelSizeHeight * -3.0f);
+    output.texCoord3 = input.tex + float2(texelSizeWidth * -2.0f, texelSizeHeight * -2.0f);
+    output.texCoord4 = input.tex + float2(texelSizeWidth * -1.0f, texelSizeHeight * -1.0f);
+    output.texCoord5 = input.tex + float2(texelSizeWidth *  0.0f, texelSizeHeight *  0.0f);
+    output.texCoord6 = input.tex + float2(texelSizeWidth *  1.0f, texelSizeHeight *  1.0f);
+    output.texCoord7 = input.tex + float2(texelSizeWidth *  2.0f, texelSizeHeight *  2.0f);
+    output.texCoord8 = input.tex + float2(texelSizeWidth *  3.0f, texelSizeHeight *  3.0f);
+    output.texCoord9 = input.tex + float2(texelSizeWidth *  4.0f, texelSizeHeight *  4.0f);
 
     return output;
 }

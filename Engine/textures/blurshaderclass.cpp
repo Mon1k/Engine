@@ -1,7 +1,7 @@
-#include "horizontalblurshaderclass.h"
+#include "BlurShaderClass.h"
 
 
-HorizontalBlurShaderClass::HorizontalBlurShaderClass()
+BlurShaderClass::BlurShaderClass()
 {
 	m_vertexShader = 0;
 	m_pixelShader = 0;
@@ -12,17 +12,17 @@ HorizontalBlurShaderClass::HorizontalBlurShaderClass()
 }
 
 
-HorizontalBlurShaderClass::HorizontalBlurShaderClass(const HorizontalBlurShaderClass& other)
+BlurShaderClass::BlurShaderClass(const BlurShaderClass& other)
 {
 }
 
 
-HorizontalBlurShaderClass::~HorizontalBlurShaderClass()
+BlurShaderClass::~BlurShaderClass()
 {
 }
 
 
-bool HorizontalBlurShaderClass::Initialize(ID3D11Device* device)
+bool BlurShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
@@ -36,20 +36,20 @@ bool HorizontalBlurShaderClass::Initialize(ID3D11Device* device)
 }
 
 
-void HorizontalBlurShaderClass::Shutdown()
+void BlurShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
 }
 
-bool HorizontalBlurShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, float screenWidth)
+bool BlurShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, float screenWidth, float screenHeight)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, screenWidth);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, screenWidth, screenHeight);
 	if (!result) {
 		return false;
 	}
@@ -60,7 +60,7 @@ bool HorizontalBlurShaderClass::Render(ID3D11DeviceContext* deviceContext, int i
 	return true;
 }
 
-bool HorizontalBlurShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
+bool BlurShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -210,7 +210,7 @@ bool HorizontalBlurShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vs
 }
 
 
-void HorizontalBlurShaderClass::ShutdownShader()
+void BlurShaderClass::ShutdownShader()
 {
 	// Release the screen size constant buffer.
 	if (m_screenSizeBuffer) {
@@ -240,8 +240,8 @@ void HorizontalBlurShaderClass::ShutdownShader()
 }
 
 
-bool HorizontalBlurShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, float screenWidth)
+bool BlurShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, float screenWidth, float screenHeight)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -289,7 +289,8 @@ bool HorizontalBlurShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceC
 
 	// Copy the data into the constant buffer.
 	dataPtr2->screenWidth = screenWidth;
-	dataPtr2->padding = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	dataPtr2->screenHeight = screenHeight;
+	dataPtr2->padding = D3DXVECTOR2(0.0f, 0.0f);
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_screenSizeBuffer, 0);
@@ -307,7 +308,7 @@ bool HorizontalBlurShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceC
 }
 
 
-void HorizontalBlurShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void BlurShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);

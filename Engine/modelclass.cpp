@@ -43,16 +43,19 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 	}
 	CalcMinMax();
 
-	if (texturesFilename.size() > 1) {
-		// Load the textures for this model.
-		result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
-		if (!result) {
-			return false;
+	if (!texturesFilename.empty()) {
+		if (texturesFilename.size() > 1) {
+			// Load the textures for this model.
+			result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
+			if (!result) {
+				return false;
+			}
 		}
-	} else if (texturesFilename[0].size() > 0) {
-		result = LoadTextures(m_D3D->GetDevice(), texturesFilename[0]);
-		if (!result) {
-			return false;
+		else if (texturesFilename[0].size() > 0) {
+			result = LoadTextures(m_D3D->GetDevice(), texturesFilename[0]);
+			if (!result) {
+				return false;
+			}
 		}
 	}
 
@@ -281,8 +284,7 @@ void ModelClass::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
 
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(m_D3D->GetDeviceContext());
+	Render();
 	
 	if (m_shader) {
 		camera->GetViewMatrix(viewMatrix);

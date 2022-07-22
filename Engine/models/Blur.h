@@ -3,7 +3,7 @@
 
 #include "../modelclass.h"
 #include "../render/rendertextureclass.h"
-#include "../textures/horizontalblurshaderclass.h"
+#include "../textures/blurshaderclass.h"
 #include "../textureshaderclass.h"
 #include "AbstractTarget.h"
 
@@ -14,17 +14,12 @@ public:
 	virtual void PreRender(CameraClass*);
 	virtual void Render(CameraClass*);
 	void RenderToTexture(CameraClass*);
-	void RenderToTextureBlur(CameraClass*);
-	void RenderToTextureBig(CameraClass*);
 	void Shutdown();
 
 protected:
 	RenderTextureClass* m_RenderToTexture;
-	RenderTextureClass* m_RenderToTextureBlur;
-	RenderTextureClass* m_RenderToTextureBig;
 
-	TextureShaderClass* m_TextureShaderClass;
-	D3DXMATRIX m_WorldMatrix;
+	BlurShaderClass* m_BlurShaderClass;
 };
 
 #endif
