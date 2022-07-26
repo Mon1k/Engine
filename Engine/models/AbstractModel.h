@@ -44,6 +44,10 @@ public:
         m_indexCount = indexCount;
     }
 
+    int getVertexCount() {
+        return m_vertexCount;
+    }
+
     int GetIndexCount() {
         return m_indexCount;
     }
