@@ -79,10 +79,8 @@ protected:
 	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
 	void ReleaseTexture();
 
-private:
-	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
-	
 protected:
+	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	D3DXVECTOR3 m_Min, m_Max;
 
 	TextureArrayClass* m_TextureArray;
