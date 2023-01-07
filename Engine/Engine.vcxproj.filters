@@ -222,6 +222,9 @@
     <ClCompile Include="models\Blur.cpp">
       <Filter>models</Filter>
     </ClCompile>
+    <ClCompile Include="models\2d\particlesystemclass.cpp">
+      <Filter>models\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="models\Blur.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\2d\particlesystemclass.h">
+      <Filter>models\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

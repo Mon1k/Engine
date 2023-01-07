@@ -98,6 +98,7 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="modellistclass.cpp" />
     <ClCompile Include="models\2d\DebugWindow.cpp" />
+    <ClCompile Include="models\2d\particlesystemclass.cpp" />
     <ClCompile Include="models\bbox.cpp" />
     <ClCompile Include="models\Billboard.cpp" />
     <ClCompile Include="models\Blur.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="modellistclass.h" />
     <ClInclude Include="models\2d\DebugWindow.h" />
+    <ClInclude Include="models\2d\particlesystemclass.h" />
     <ClInclude Include="models\AbstractModel.h" />
     <ClInclude Include="models\AbstractTarget.h" />
     <ClInclude Include="models\bbox.h" />

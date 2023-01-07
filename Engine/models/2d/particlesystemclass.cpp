@@ -32,7 +32,7 @@ bool ParticleSystemClass::Initialize(std::wstring textureFilename)
 	// Create the buffers that will be used to render the particles with.
 	if (!InitializeBuffers()) {
 		return false;
-	}
+	}1;
 
 	return true;
 }
