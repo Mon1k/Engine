@@ -5,6 +5,7 @@
 #include <d3dx10math.h>
 
 #include "../../modelclass.h"
+#include "../../textures/particleshaderclass.h"
 
 class ParticleSystemClass : public ModelClass
 {
@@ -29,9 +30,11 @@ public:
 	ParticleSystemClass(const ParticleSystemClass&);
 	~ParticleSystemClass();
 
-	bool Initialize(std::wstring);
+	bool Initialize(D3DClass*, std::wstring);
 	void Shutdown();
 	bool Frame(float);
+	virtual void RenderBuffers(ID3D11DeviceContext*);
+	virtual void Render(CameraClass*);
 
 private:
 	bool InitializeParticleSystem();

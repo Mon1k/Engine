@@ -225,6 +225,9 @@
     <ClCompile Include="models\2d\particlesystemclass.cpp">
       <Filter>models\2d</Filter>
     </ClCompile>
+    <ClCompile Include="textures\particleshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -431,6 +434,9 @@
     <ClInclude Include="models\2d\particlesystemclass.h">
       <Filter>models\2d</Filter>
     </ClInclude>
+    <ClInclude Include="textures\particleshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -551,6 +557,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\blur.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\particle.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\particle.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

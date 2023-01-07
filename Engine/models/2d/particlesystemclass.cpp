@@ -2,7 +2,10 @@
 
 ParticleSystemClass::ParticleSystemClass()
 {
-	
+	m_particleList = 0;
+	m_vertices = 0;
+	m_vertexBuffer = 0;
+	m_indexBuffer = 0;
 }
 
 
@@ -15,10 +18,9 @@ ParticleSystemClass::~ParticleSystemClass()
 {
 }
 
-bool ParticleSystemClass::Initialize(std::wstring textureFilename)
+bool ParticleSystemClass::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
 {
-	m_particleList = 0;
-	m_vertices = 0;
+	m_D3D = d3dClass;
 
 	if (!LoadTextures(m_D3D->GetDevice(), textureFilename)) {
 		return false;
@@ -32,7 +34,7 @@ bool ParticleSystemClass::Initialize(std::wstring textureFilename)
 	// Create the buffers that will be used to render the particles with.
 	if (!InitializeBuffers()) {
 		return false;
-	}1;
+	}
 
 	return true;
 }
@@ -64,6 +66,46 @@ bool ParticleSystemClass::Frame(float frameTime)
 	}
 
 	return true;
+}
+
+void ParticleSystemClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(VertexType);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void ParticleSystemClass::Render(CameraClass* camera)
+{
+	D3DXMATRIX viewMatrix, projectionMatrix;
+
+	RenderBuffers(m_D3D->GetDeviceContext());
+
+	camera->GetViewMatrix(viewMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	if (m_isAlpha) {
+		m_D3D->TurnOnAlphaBlending();
+	}
+
+	ParticleShaderClass* shader = dynamic_cast<ParticleShaderClass*>(m_shader);
+	shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix, GetTexture());
+
+	if (m_isAlpha) {
+		m_D3D->TurnOffAlphaBlending();
+	}
 }
 
 bool ParticleSystemClass::InitializeParticleSystem()

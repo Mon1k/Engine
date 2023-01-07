@@ -126,6 +126,7 @@
     <ClCompile Include="textures\glassshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
+    <ClCompile Include="textures\particleshaderclass.cpp" />
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
     <ClCompile Include="textures\refractionshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="textures\glassshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
+    <ClInclude Include="textures\particleshaderclass.h" />
     <ClInclude Include="textures\reflectionshaderclass.h" />
     <ClInclude Include="textures\refractionshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
@@ -237,6 +239,8 @@
     <None Include="data\shaders\lightmap.vs" />
     <None Include="data\shaders\multitexture.ps" />
     <None Include="data\shaders\multitexture.vs" />
+    <None Include="data\shaders\particle.ps" />
+    <None Include="data\shaders\particle.vs" />
     <None Include="data\shaders\reflection.ps" />
     <None Include="data\shaders\reflection.vs" />
     <None Include="data\shaders\refraction.ps" />

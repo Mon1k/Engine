@@ -1,7 +1,6 @@
 #ifndef _MODELCLASS_H_
 #define _MODELCLASS_H_
 
-
 #include <d3d11.h>
 #include <d3dx10math.h>
 

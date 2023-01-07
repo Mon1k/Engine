@@ -32,16 +32,18 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 
 	m_D3D = d3dClass;
 
-	if (!LoadModel(modelFilename)) {
-		return false;
-	}
+	if (strlen(modelFilename) > 0) {
+		if (!LoadModel(modelFilename)) {
+			return false;
+		}
 
-	// Initialize the vertex and index buffers.
-	result = InitializeBuffers(m_D3D->GetDevice());
-	if (!result) {
-		return false;
+		// Initialize the vertex and index buffers.
+		result = InitializeBuffers(m_D3D->GetDevice());
+		if (!result) {
+			return false;
+		}
+		CalcMinMax();
 	}
-	CalcMinMax();
 
 	if (!texturesFilename.empty()) {
 		if (texturesFilename.size() > 1) {
