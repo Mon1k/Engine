@@ -1,5 +1,5 @@
-#ifndef _PARTICLESYSTEMCLASS_H_
-#define _PARTICLESYSTEMCLASS_H_
+#ifndef _WATERFALL_H_
+#define _WATERFALL_H_
 
 #include <d3d11.h>
 #include <d3dx10math.h>
@@ -7,7 +7,7 @@
 #include "../../modelclass.h"
 #include "../../textures/particleshaderclass.h"
 
-class ParticleSystemClass : public ModelClass
+class Waterfall : public ModelClass
 {
 private:	
 	struct ParticleType
@@ -26,9 +26,9 @@ private:
 	};
 
 public:
-	ParticleSystemClass();
-	ParticleSystemClass(const ParticleSystemClass&);
-	~ParticleSystemClass();
+	Waterfall();
+	Waterfall(const Waterfall&);
+	~Waterfall();
 
 	bool Initialize(D3DClass*, std::wstring);
 	void Shutdown();
@@ -36,11 +36,21 @@ public:
 	virtual void RenderBuffers(ID3D11DeviceContext*);
 	virtual void Render(CameraClass*);
 
-private:
+	void setDeviation(D3DXVECTOR3 deviation) {
+		m_particleDeviationX = deviation.x;
+		m_particleDeviationY = deviation.y;
+		m_particleDeviationZ = deviation.z;
+	}
+	void setColor(D3DXVECTOR3 color) {
+		m_color = color;
+	};
+
+protected:
 	bool InitializeParticleSystem();
 	void ShutdownParticleSystem();
 
 	bool InitializeBuffers();
+	void CalcMinMax();
 
 	void EmitParticles(float);
 	void UpdateParticles(float);
@@ -53,6 +63,7 @@ private:
 	float m_particleVelocity, m_particleVelocityVariation;
 	float m_particleSize, m_particlesPerSecond;
 	int m_maxParticles;
+	D3DXVECTOR3 m_color;
 
 	int m_currentParticleCount;
 	float m_accumulatedTime;

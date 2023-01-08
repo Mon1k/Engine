@@ -56,7 +56,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
     int size = m_models.size();
     for (int i = 0; i < size; i++) {
         if (m_models[i]->isVisible()) {
-            if (1 || m_models[i]->GetIndexCount() == 0) {
+            if (m_models[i]->GetIndexCount() == 0) {
                 m_models[i]->Render(camera);
             } else {
                 D3DXVECTOR3 position, size;

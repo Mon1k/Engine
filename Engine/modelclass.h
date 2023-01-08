@@ -69,9 +69,9 @@ public:
 	}
 	
 protected:
-	void CalcMinMax();
+	virtual void CalcMinMax();
 	virtual bool InitializeBuffers(ID3D11Device*);
-	void ShutdownBuffers();
+	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
 
 	bool LoadTextures(ID3D11Device*, std::wstring);

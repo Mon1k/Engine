@@ -1,6 +1,6 @@
-#include "particlesystemclass.h"
+#include "Waterfall.h"
 
-ParticleSystemClass::ParticleSystemClass()
+Waterfall::Waterfall()
 {
 	m_particleList = 0;
 	m_vertices = 0;
@@ -9,16 +9,16 @@ ParticleSystemClass::ParticleSystemClass()
 }
 
 
-ParticleSystemClass::ParticleSystemClass(const ParticleSystemClass& other)
+Waterfall::Waterfall(const Waterfall& other)
 {
 }
 
 
-ParticleSystemClass::~ParticleSystemClass()
+Waterfall::~Waterfall()
 {
 }
 
-bool ParticleSystemClass::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
+bool Waterfall::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
 {
 	m_D3D = d3dClass;
 
@@ -39,14 +39,14 @@ bool ParticleSystemClass::Initialize(D3DClass* d3dClass, std::wstring textureFil
 	return true;
 }
 
-void ParticleSystemClass::Shutdown()
+void Waterfall::Shutdown()
 {
 	ShutdownParticleSystem();
 
 	ModelClass::Shutdown();
 }
 
-bool ParticleSystemClass::Frame(float frameTime)
+bool Waterfall::Frame(float frameTime)
 {
 	bool result;
 
@@ -68,7 +68,7 @@ bool ParticleSystemClass::Frame(float frameTime)
 	return true;
 }
 
-void ParticleSystemClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void Waterfall::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -87,11 +87,9 @@ void ParticleSystemClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void ParticleSystemClass::Render(CameraClass* camera)
+void Waterfall::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
-
-	RenderBuffers(m_D3D->GetDeviceContext());
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -99,6 +97,8 @@ void ParticleSystemClass::Render(CameraClass* camera)
 	if (m_isAlpha) {
 		m_D3D->TurnOnAlphaBlending();
 	}
+
+	RenderBuffers(m_D3D->GetDeviceContext());
 
 	ParticleShaderClass* shader = dynamic_cast<ParticleShaderClass*>(m_shader);
 	shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix, GetTexture());
@@ -108,7 +108,7 @@ void ParticleSystemClass::Render(CameraClass* camera)
 	}
 }
 
-bool ParticleSystemClass::InitializeParticleSystem()
+bool Waterfall::InitializeParticleSystem()
 {
 	int i;
 
@@ -147,10 +147,12 @@ bool ParticleSystemClass::InitializeParticleSystem()
 	// Clear the initial accumulated time for the particle per second emission rate.
 	m_accumulatedTime = 0.0f;
 
+	m_color = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	return true;
 }
 
-void ParticleSystemClass::ShutdownParticleSystem()
+void Waterfall::ShutdownParticleSystem()
 {
 	// Release the particle list.
 	if (m_particleList) {
@@ -159,7 +161,7 @@ void ParticleSystemClass::ShutdownParticleSystem()
 	}
 }
 
-bool ParticleSystemClass::InitializeBuffers()
+bool Waterfall::InitializeBuffers()
 {
 	unsigned long* indices;
 	int i;
@@ -239,8 +241,7 @@ bool ParticleSystemClass::InitializeBuffers()
 	return true;
 }
 
-
-void ParticleSystemClass::EmitParticles(float frameTime)
+void Waterfall::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
 	float positionX, positionY, positionZ, velocity, red, green, blue;
@@ -265,15 +266,15 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 		m_currentParticleCount++;
 
 		// Now generate the randomized particle properties.
-		positionX = (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationX;
-		positionY = (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationY;
-		positionZ = (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationZ;
+		positionX = position.x + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationX;
+		positionY = position.y + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationY;
+		positionZ = position.z + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationZ;
 
 		velocity = m_particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
 
-		red = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
-		green = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
-		blue = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+		red = m_color.x ? m_color.x : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+		green = m_color.y ? m_color.y : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+		blue = m_color.z ? m_color.z : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 
 		// Now since the particles need to be rendered from back to front for blending we have to sort the particle array.
 		// We will sort using Z depth so we need to find where in the list the particle should be inserted.
@@ -314,9 +315,11 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 		m_particleList[index].velocity = velocity;
 		m_particleList[index].active = true;
 	}
+
+	CalcMinMax();
 }
 
-void ParticleSystemClass::UpdateParticles(float frameTime)
+void Waterfall::UpdateParticles(float frameTime)
 {
 	int i;
 
@@ -326,7 +329,7 @@ void ParticleSystemClass::UpdateParticles(float frameTime)
 	}
 }
 
-void ParticleSystemClass::KillParticles()
+void Waterfall::KillParticles()
 {
 	int i, j;
 
@@ -352,7 +355,7 @@ void ParticleSystemClass::KillParticles()
 	}
 }
 
-bool ParticleSystemClass::UpdateBuffers()
+bool Waterfall::UpdateBuffers()
 {
 	int index, i;
 	HRESULT result;
@@ -420,4 +423,35 @@ bool ParticleSystemClass::UpdateBuffers()
 	m_D3D->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
 
 	return true;
+}
+
+void Waterfall::CalcMinMax()
+{
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+
+	for (int i = 0; i < m_maxParticles; i++) {
+		if (!m_particleList[i].active) {
+			continue;
+		}
+
+		if (m_particleList[i].positionX > m_Max.x) {
+			m_Max.x = m_particleList[i].positionX;
+		}
+		if (m_particleList[i].positionY > m_Max.y) {
+			m_Max.y = m_particleList[i].positionY;
+		}
+		if (m_particleList[i].positionZ > m_Max.z) {
+			m_Max.z = m_particleList[i].positionZ;
+		}
+		if (m_particleList[i].positionX < m_Min.x) {
+			m_Min.x = m_particleList[i].positionX;
+		}
+		if (m_particleList[i].positionY < m_Min.y) {
+			m_Min.y = m_particleList[i].positionY;
+		}
+		if (m_particleList[i].positionZ < m_Min.z) {
+			m_Min.z = m_particleList[i].positionZ;
+		}
+	}
 }

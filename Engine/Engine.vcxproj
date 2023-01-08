@@ -98,7 +98,6 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="modellistclass.cpp" />
     <ClCompile Include="models\2d\DebugWindow.cpp" />
-    <ClCompile Include="models\2d\particlesystemclass.cpp" />
     <ClCompile Include="models\bbox.cpp" />
     <ClCompile Include="models\Billboard.cpp" />
     <ClCompile Include="models\Blur.cpp" />
@@ -109,6 +108,7 @@
     <ClCompile Include="models\modelbumpclass.cpp" />
     <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="models\ModelManager.cpp" />
+    <ClCompile Include="models\particles\Waterfall.cpp" />
     <ClCompile Include="models\Reflection.cpp" />
     <ClCompile Include="models\WaterNode.cpp" />
     <ClCompile Include="positionclass.cpp" />
@@ -161,7 +161,6 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="modellistclass.h" />
     <ClInclude Include="models\2d\DebugWindow.h" />
-    <ClInclude Include="models\2d\particlesystemclass.h" />
     <ClInclude Include="models\AbstractModel.h" />
     <ClInclude Include="models\AbstractTarget.h" />
     <ClInclude Include="models\bbox.h" />
@@ -175,6 +174,7 @@
     <ClInclude Include="models\modelbumpclass.h" />
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="models\ModelManager.h" />
+    <ClInclude Include="models\particles\Waterfall.h" />
     <ClInclude Include="models\Reflection.h" />
     <ClInclude Include="models\WaterNode.h" />
     <ClInclude Include="positionclass.h" />
