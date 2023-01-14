@@ -108,6 +108,7 @@
     <ClCompile Include="models\modelbumpclass.cpp" />
     <ClCompile Include="models\modelcolor.cpp" />
     <ClCompile Include="models\ModelManager.cpp" />
+    <ClCompile Include="models\particles\Fountain.cpp" />
     <ClCompile Include="models\particles\Waterfall.cpp" />
     <ClCompile Include="models\Reflection.cpp" />
     <ClCompile Include="models\WaterNode.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="models\modelbumpclass.h" />
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="models\ModelManager.h" />
+    <ClInclude Include="models\particles\Fountain.h" />
     <ClInclude Include="models\particles\Waterfall.h" />
     <ClInclude Include="models\Reflection.h" />
     <ClInclude Include="models\WaterNode.h" />

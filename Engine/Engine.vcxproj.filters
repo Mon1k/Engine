@@ -231,6 +231,9 @@
     <ClCompile Include="models\particles\Waterfall.cpp">
       <Filter>models\particles</Filter>
     </ClCompile>
+    <ClCompile Include="models\particles\Fountain.cpp">
+      <Filter>models\particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -438,6 +441,9 @@
       <Filter>textures</Filter>
     </ClInclude>
     <ClInclude Include="models\particles\Waterfall.h">
+      <Filter>models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="models\particles\Fountain.h">
       <Filter>models\particles</Filter>
     </ClInclude>
   </ItemGroup>

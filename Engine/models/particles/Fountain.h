@@ -1,5 +1,5 @@
-#ifndef _WATERFALL_H_
-#define _WATERFALL_H_
+#ifndef _FOUNTAIN_H_
+#define _FOUNTAIN_H_
 
 #include <d3d11.h>
 #include <d3dx10math.h>
@@ -7,9 +7,9 @@
 #include "../../modelclass.h"
 #include "../../textures/particleshaderclass.h"
 
-class Waterfall : public ModelClass
+class Fountain : public ModelClass
 {
-private:	
+private:
 	struct ParticleType
 	{
 		float positionX, positionY, positionZ;
@@ -26,9 +26,9 @@ private:
 	};
 
 public:
-	Waterfall();
-	Waterfall(const Waterfall&);
-	~Waterfall();
+	Fountain();
+	Fountain(const Fountain&);
+	~Fountain();
 
 	bool Initialize(D3DClass*, std::wstring);
 	void Shutdown();

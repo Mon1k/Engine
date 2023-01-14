@@ -1,6 +1,6 @@
-#include "Waterfall.h"
+#include "Fountain.h"
 
-Waterfall::Waterfall()
+Fountain::Fountain()
 {
 	m_particleList = 0;
 	m_vertices = 0;
@@ -9,16 +9,16 @@ Waterfall::Waterfall()
 }
 
 
-Waterfall::Waterfall(const Waterfall& other)
+Fountain::Fountain(const Fountain& other)
 {
 }
 
 
-Waterfall::~Waterfall()
+Fountain::~Fountain()
 {
 }
 
-bool Waterfall::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
+bool Fountain::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
 {
 	m_D3D = d3dClass;
 
@@ -39,14 +39,14 @@ bool Waterfall::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
 	return true;
 }
 
-void Waterfall::Shutdown()
+void Fountain::Shutdown()
 {
 	ShutdownParticleSystem();
 
 	ModelClass::Shutdown();
 }
 
-bool Waterfall::Frame(float frameTime)
+bool Fountain::Frame(float frameTime)
 {
 	bool result;
 
@@ -68,7 +68,7 @@ bool Waterfall::Frame(float frameTime)
 	return true;
 }
 
-void Waterfall::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void Fountain::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -87,7 +87,7 @@ void Waterfall::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void Waterfall::Render(CameraClass* camera)
+void Fountain::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
 
@@ -108,7 +108,7 @@ void Waterfall::Render(CameraClass* camera)
 	}
 }
 
-bool Waterfall::InitializeParticleSystem()
+bool Fountain::InitializeParticleSystem()
 {
 	int i;
 
@@ -129,7 +129,7 @@ bool Waterfall::InitializeParticleSystem()
 
 	// Set the maximum number of particles allowed in the particle system.
 	setMaxParticles(5000);
-	
+
 	// Initialize the current particle count to zero since none are emitted yet.
 	m_currentParticleCount = 0;
 
@@ -141,7 +141,7 @@ bool Waterfall::InitializeParticleSystem()
 	return true;
 }
 
-void Waterfall::setMaxParticles(int maxParticles)
+void Fountain::setMaxParticles(int maxParticles)
 {
 	m_maxParticles = maxParticles;
 
@@ -152,7 +152,7 @@ void Waterfall::setMaxParticles(int maxParticles)
 	}
 }
 
-void Waterfall::ShutdownParticleSystem()
+void Fountain::ShutdownParticleSystem()
 {
 	// Release the particle list.
 	if (m_particleList) {
@@ -161,7 +161,7 @@ void Waterfall::ShutdownParticleSystem()
 	}
 }
 
-bool Waterfall::InitializeBuffers()
+bool Fountain::InitializeBuffers()
 {
 	unsigned long* indices;
 	int i;
@@ -241,7 +241,7 @@ bool Waterfall::InitializeBuffers()
 	return true;
 }
 
-void Waterfall::EmitParticles(float frameTime)
+void Fountain::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
 	float positionX, positionY, positionZ, velocity, red, green, blue;
@@ -283,7 +283,8 @@ void Waterfall::EmitParticles(float frameTime)
 		while (!found) {
 			if ((m_particleList[index].active == false) || (m_particleList[index].positionZ < positionZ)) {
 				found = true;
-			} else {
+			}
+			else {
 				index++;
 			}
 		}
@@ -319,7 +320,7 @@ void Waterfall::EmitParticles(float frameTime)
 	CalcMinMax();
 }
 
-void Waterfall::UpdateParticles(float frameTime)
+void Fountain::UpdateParticles(float frameTime)
 {
 	int i;
 
@@ -329,7 +330,7 @@ void Waterfall::UpdateParticles(float frameTime)
 	}
 }
 
-void Waterfall::KillParticles()
+void Fountain::KillParticles()
 {
 	int i, j;
 
@@ -355,7 +356,7 @@ void Waterfall::KillParticles()
 	}
 }
 
-bool Waterfall::UpdateBuffers()
+bool Fountain::UpdateBuffers()
 {
 	int index, i;
 	HRESULT result;
@@ -425,7 +426,7 @@ bool Waterfall::UpdateBuffers()
 	return true;
 }
 
-void Waterfall::CalcMinMax()
+void Fountain::CalcMinMax()
 {
 	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
