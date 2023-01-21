@@ -6,6 +6,7 @@
 
 #include "../../modelclass.h"
 #include "../../textures/particleshaderclass.h"
+#include "../../tool/random.h"
 
 class Fountain : public ModelClass
 {
@@ -14,7 +15,8 @@ private:
 	{
 		float positionX, positionY, positionZ;
 		float red, green, blue;
-		float velocity;
+		D3DXVECTOR3 velocity;
+		D3DXVECTOR3 direction;
 		bool active;
 	};
 
@@ -49,6 +51,18 @@ public:
 	void setParticlesPerSecond(float timeout) {
 		m_particlesPerSecond = timeout;
 	};
+	void setParticlesSize(float size) {
+		m_particleSize = size;
+	};
+	void setMaxPosition(D3DXVECTOR3 position) {
+		m_maxPosition = position;
+	};
+	void setMinPosition(D3DXVECTOR3 position) {
+		m_minPosition = position;
+	};
+	void setVelocity(D3DXVECTOR3 velocity) {
+		m_particleVelocity = velocity;
+	};
 
 protected:
 	bool InitializeParticleSystem();
@@ -65,9 +79,12 @@ protected:
 
 private:
 	float m_particleDeviationX, m_particleDeviationY, m_particleDeviationZ;
-	float m_particleVelocity, m_particleVelocityVariation;
+	float m_particleVelocityVariation;
 	float m_particleSize, m_particlesPerSecond;
 	int m_maxParticles;
+	D3DXVECTOR3 m_maxPosition;
+	D3DXVECTOR3 m_minPosition;
+	D3DXVECTOR3 m_particleVelocity;
 	D3DXVECTOR3 m_color;
 
 	int m_currentParticleCount;

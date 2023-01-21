@@ -8,6 +8,7 @@ ParticleShaderClass::ParticleShaderClass()
 	m_layout = 0;
 	m_matrixBuffer = 0;
 	m_sampleState = 0;
+	m_blend = 0.5f;
 }
 
 
@@ -70,6 +71,7 @@ bool ParticleShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilena
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_BUFFER_DESC transparentBufferDesc;
 
 
 	// Initialize the pointers this function will use to null.
@@ -198,12 +200,31 @@ bool ParticleShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilena
 		return false;
 	}
 
+	// Setup the description of the transparent dynamic constant buffer that is in the pixel shader.
+	transparentBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	transparentBufferDesc.ByteWidth = sizeof(TransparentBufferType);
+	transparentBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	transparentBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	transparentBufferDesc.MiscFlags = 0;
+	transparentBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
+	result = device->CreateBuffer(&transparentBufferDesc, NULL, &m_transparentBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	return true;
 }
 
 
 void ParticleShaderClass::ShutdownShader()
 {
+	if (m_transparentBuffer) {
+		m_transparentBuffer->Release();
+		m_transparentBuffer = 0;
+	}
+
 	// Release the sampler state.
 	if (m_sampleState)
 	{
@@ -234,6 +255,7 @@ bool ParticleShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;
+	TransparentBufferType* dataPtr2;
 	unsigned int bufferNumber;
 
 
@@ -267,6 +289,27 @@ bool ParticleShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
+
+	// Lock the transparent constant buffer so it can be written to.
+	result = deviceContext->Map(m_transparentBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// Get a pointer to the data in the transparent constant buffer.
+	dataPtr2 = (TransparentBufferType*)mappedResource.pData;
+
+	// Copy the blend amount value into the transparent constant buffer.
+	dataPtr2->blendAmount = this->m_blend;
+
+	// Unlock the buffer.
+	deviceContext->Unmap(m_transparentBuffer, 0);
+
+	// Set the position of the transparent constant buffer in the pixel shader.
+	bufferNumber = 0;
+
+	// Now set the texture translation constant buffer in the pixel shader with the updated values.
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_transparentBuffer);
 
 	return true;
 }

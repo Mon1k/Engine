@@ -110,15 +110,13 @@ void Fountain::Render(CameraClass* camera)
 
 bool Fountain::InitializeParticleSystem()
 {
-	int i;
-
 	// Set the random deviation of where the particles can be located when emitted.
 	m_particleDeviationX = 0.5f;
 	m_particleDeviationY = 0.1f;
 	m_particleDeviationZ = 2.0f;
 
 	// Set the speed and speed variation of particles.
-	m_particleVelocity = 1.0f;
+	m_particleVelocity = D3DXVECTOR3(0.2f, 2.0f, 0.2f);
 	m_particleVelocityVariation = 0.2f;
 
 	// Set the physical size of the particles.
@@ -135,6 +133,9 @@ bool Fountain::InitializeParticleSystem()
 
 	// Clear the initial accumulated time for the particle per second emission rate.
 	m_accumulatedTime = 0.0f;
+
+	m_maxPosition = D3DXVECTOR3(0.0f, 10.0f, 0.0f);
+	m_minPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	m_color = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
@@ -244,7 +245,8 @@ bool Fountain::InitializeBuffers()
 void Fountain::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
-	float positionX, positionY, positionZ, velocity, red, green, blue;
+	float positionX, positionY, positionZ, red, green, blue;
+	D3DXVECTOR3 velocity, direction;
 	int index, i, j;
 
 
@@ -261,8 +263,7 @@ void Fountain::EmitParticles(float frameTime)
 	}
 
 	// If there are particles to emit then emit one per frame.
-	if ((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1)))
-	{
+	if ((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1))) {
 		m_currentParticleCount++;
 
 		// Now generate the randomized particle properties.
@@ -270,7 +271,17 @@ void Fountain::EmitParticles(float frameTime)
 		positionY = position.y + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationY;
 		positionZ = position.z + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationZ;
 
-		velocity = m_particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
+		direction = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		if (Random::randDouble(-1.0f, 1.0f) < 0.0f) {
+			direction.x *= -1;
+		}
+		if (Random::randDouble(-1.0f, 1.0f) < 0.0f) {
+			direction.z *= -1;
+		}
+
+		velocity.x = m_particleVelocity.x + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
+		velocity.y = m_particleVelocity.y + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
+		velocity.z = m_particleVelocity.z + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
 
 		red = m_color.x ? m_color.x : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 		green = m_color.y ? m_color.y : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
@@ -283,8 +294,7 @@ void Fountain::EmitParticles(float frameTime)
 		while (!found) {
 			if ((m_particleList[index].active == false) || (m_particleList[index].positionZ < positionZ)) {
 				found = true;
-			}
-			else {
+			} else {
 				index++;
 			}
 		}
@@ -301,6 +311,7 @@ void Fountain::EmitParticles(float frameTime)
 			m_particleList[i].green = m_particleList[j].green;
 			m_particleList[i].blue = m_particleList[j].blue;
 			m_particleList[i].velocity = m_particleList[j].velocity;
+			m_particleList[i].direction = m_particleList[j].direction;
 			m_particleList[i].active = m_particleList[j].active;
 			i--;
 			j--;
@@ -314,6 +325,7 @@ void Fountain::EmitParticles(float frameTime)
 		m_particleList[index].green = green;
 		m_particleList[index].blue = blue;
 		m_particleList[index].velocity = velocity;
+		m_particleList[index].direction = direction;
 		m_particleList[index].active = true;
 	}
 
@@ -326,7 +338,12 @@ void Fountain::UpdateParticles(float frameTime)
 
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for (i = 0; i < m_currentParticleCount; i++) {
-		m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity * frameTime * 0.001f);
+		if (m_particleList[i].positionY > m_maxPosition.y) {
+			m_particleList[i].direction.y *= -1;
+		}
+		m_particleList[i].positionX += (m_particleList[i].direction.x * m_particleList[i].velocity.x) * frameTime * 0.001f;
+		m_particleList[i].positionY += (m_particleList[i].direction.y * m_particleList[i].velocity.y) * frameTime * 0.001f;
+		m_particleList[i].positionZ += (m_particleList[i].direction.z * m_particleList[i].velocity.z) * frameTime * 0.001f;
 	}
 }
 
@@ -337,7 +354,7 @@ void Fountain::KillParticles()
 
 	// Kill all the particles that have gone below a certain height range.
 	for (i = 0; i < m_maxParticles; i++) {
-		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f)) {
+		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < m_minPosition.y)) {
 			m_particleList[i].active = false;
 			m_currentParticleCount--;
 
@@ -350,6 +367,7 @@ void Fountain::KillParticles()
 				m_particleList[j].green = m_particleList[j + 1].green;
 				m_particleList[j].blue = m_particleList[j + 1].blue;
 				m_particleList[j].velocity = m_particleList[j + 1].velocity;
+				m_particleList[j].direction = m_particleList[j + 1].direction;
 				m_particleList[j].active = m_particleList[j + 1].active;
 			}
 		}

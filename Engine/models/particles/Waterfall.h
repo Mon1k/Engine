@@ -49,6 +49,9 @@ public:
 	void setParticlesPerSecond(float timeout) {
 		m_particlesPerSecond = timeout;
 	};
+	void setParticlesSize(float size) {
+		m_particleSize = size;
+	};
 
 protected:
 	bool InitializeParticleSystem();

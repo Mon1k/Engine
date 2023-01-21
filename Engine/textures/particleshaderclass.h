@@ -19,6 +19,12 @@ private:
 		D3DXMATRIX projection;
 	};
 
+	struct TransparentBufferType
+	{
+		float blendAmount;
+		D3DXVECTOR3 padding;
+	};
+
 public:
 	ParticleShaderClass();
 	ParticleShaderClass(const ParticleShaderClass&);
@@ -27,6 +33,11 @@ public:
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+
+	void setBlend(float blend)
+	{
+		this->m_blend = blend;
+	}
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
@@ -39,6 +50,9 @@ private:
 	ID3D11InputLayout* m_layout;
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11SamplerState* m_sampleState;
+
+	ID3D11Buffer* m_transparentBuffer;
+	float m_blend;
 };
 
 #endif
