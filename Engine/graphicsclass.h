@@ -6,6 +6,7 @@
 #include "cameraclass.h"
 #include "ui/UIManager.h"
 #include "models/ModelManager.h"
+#include "models/particles/ParticleManager.h"
 
 #include "frustumclass.h"
 #include "timerclass.h"
@@ -37,11 +38,15 @@ public:
 
 	UIManager* getUiManager() {
 		return m_uiManager;
-	}
-	ModelManager* getModelManager()
-	{
+	};
+
+	ModelManager* getModelManager() {
 		return m_modelManager;
-	}
+	};
+
+	ParticleManager* getParticleManager() {
+		return m_particleManager;
+	};
 
 private:
 	D3DClass* m_D3D;
@@ -50,6 +55,7 @@ private:
 
 	UIManager* m_uiManager;
 	ModelManager* m_modelManager;
+	ParticleManager* m_particleManager;
 
 	int m_RenderCount;
 	int m_TriangleCount;

@@ -39,87 +39,18 @@ bool Waterfall::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
 	return true;
 }
 
-void Waterfall::Shutdown()
-{
-	ShutdownParticleSystem();
-
-	ModelClass::Shutdown();
-}
-
-bool Waterfall::Frame(float frameTime)
-{
-	bool result;
-
-	// Release old particles.
-	KillParticles();
-
-	// Emit new particles.
-	EmitParticles(frameTime);
-
-	// Update the position of the particles.
-	UpdateParticles(frameTime);
-
-	// Update the dynamic vertex buffer with the new position of each particle.
-	result = UpdateBuffers();
-	if (!result) {
-		return false;
-	}
-
-	return true;
-}
-
-void Waterfall::RenderBuffers(ID3D11DeviceContext* deviceContext)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-	// Set vertex buffer stride and offset.
-	stride = sizeof(VertexType);
-	offset = 0;
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
-void Waterfall::Render(CameraClass* camera)
-{
-	D3DXMATRIX viewMatrix, projectionMatrix;
-
-	camera->GetViewMatrix(viewMatrix);
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-
-	if (m_isAlpha) {
-		m_D3D->TurnOnAlphaBlending();
-	}
-
-	RenderBuffers(m_D3D->GetDeviceContext());
-
-	ParticleShaderClass* shader = dynamic_cast<ParticleShaderClass*>(m_shader);
-	shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix, GetTexture());
-
-	if (m_isAlpha) {
-		m_D3D->TurnOffAlphaBlending();
-	}
-}
-
 bool Waterfall::InitializeParticleSystem()
 {
-	int i;
-
 	// Set the random deviation of where the particles can be located when emitted.
 	m_particleDeviationX = 0.5f;
 	m_particleDeviationY = 0.1f;
 	m_particleDeviationZ = 2.0f;
 
 	// Set the speed and speed variation of particles.
-	m_particleVelocity = 1.0f;
+	m_particleVelocity = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	m_particleVelocityVariation = 0.2f;
+
+	m_minPosition = D3DXVECTOR3(0.0f, -3.0f, 0.0f);
 
 	// Set the physical size of the particles.
 	m_particleSize = 0.2f;
@@ -141,110 +72,11 @@ bool Waterfall::InitializeParticleSystem()
 	return true;
 }
 
-void Waterfall::setMaxParticles(int maxParticles)
-{
-	m_maxParticles = maxParticles;
-
-	m_particleList = new ParticleType[m_maxParticles];
-
-	for (int i = 0; i < m_maxParticles; i++) {
-		m_particleList[i].active = false;
-	}
-}
-
-void Waterfall::ShutdownParticleSystem()
-{
-	// Release the particle list.
-	if (m_particleList) {
-		delete[] m_particleList;
-		m_particleList = 0;
-	}
-}
-
-bool Waterfall::InitializeBuffers()
-{
-	unsigned long* indices;
-	int i;
-	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, indexData;
-	HRESULT result;
-
-
-	// Set the maximum number of vertices in the vertex array.
-	m_vertexCount = m_maxParticles * 6;
-
-	// Set the maximum number of indices in the index array.
-	m_indexCount = m_vertexCount;
-
-	// Create the vertex array for the particles that will be rendered.
-	m_vertices = new VertexType[m_vertexCount];
-	if (!m_vertices) {
-		return false;
-	}
-
-	// Create the index array.
-	indices = new unsigned long[m_indexCount];
-	if (!indices) {
-		return false;
-	}
-
-	// Initialize vertex array to zeros at first.
-	memset(m_vertices, 0, (sizeof(VertexType) * m_vertexCount));
-
-	// Initialize the index array.
-	for (i = 0; i < m_indexCount; i++) {
-		indices[i] = i;
-	}
-
-	// Set up the description of the dynamic vertex buffer.
-	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the vertex data.
-	vertexData.pSysMem = m_vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	// Now finally create the vertex buffer.
-	result = m_D3D->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Set up the description of the static index buffer.
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the index data.
-	indexData.pSysMem = indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	// Create the index buffer.
-	result = m_D3D->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Release the index array since it is no longer needed.
-	delete[] indices;
-	indices = 0;
-
-	return true;
-}
-
 void Waterfall::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
-	float positionX, positionY, positionZ, velocity, red, green, blue;
+	float positionX, positionY, positionZ, red, green, blue;
+	D3DXVECTOR3 velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int index, i, j;
 
 
@@ -270,7 +102,7 @@ void Waterfall::EmitParticles(float frameTime)
 		positionY = position.y + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationY;
 		positionZ = position.z + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleDeviationZ;
 
-		velocity = m_particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
+		velocity.y = m_particleVelocity.y + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
 
 		red = m_color.x ? m_color.x : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 		green = m_color.y ? m_color.y : (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
@@ -321,11 +153,9 @@ void Waterfall::EmitParticles(float frameTime)
 
 void Waterfall::UpdateParticles(float frameTime)
 {
-	int i;
-
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
-	for (i = 0; i < m_currentParticleCount; i++) {
-		m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity * frameTime * 0.001f);
+	for (int i = 0; i < m_currentParticleCount; i++) {
+		m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity.y * frameTime * 0.001f);
 	}
 }
 
@@ -333,10 +163,9 @@ void Waterfall::KillParticles()
 {
 	int i, j;
 
-
 	// Kill all the particles that have gone below a certain height range.
 	for (i = 0; i < m_maxParticles; i++) {
-		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f)) {
+		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < m_minPosition.y)) {
 			m_particleList[i].active = false;
 			m_currentParticleCount--;
 
@@ -351,107 +180,6 @@ void Waterfall::KillParticles()
 				m_particleList[j].velocity = m_particleList[j + 1].velocity;
 				m_particleList[j].active = m_particleList[j + 1].active;
 			}
-		}
-	}
-}
-
-bool Waterfall::UpdateBuffers()
-{
-	int index, i;
-	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	VertexType* verticesPtr;
-
-
-	// Initialize vertex array to zeros at first.
-	memset(m_vertices, 0, (sizeof(VertexType) * m_vertexCount));
-
-	// Now build the vertex array from the particle list array.  Each particle is a quad made out of two triangles.
-	index = 0;
-
-	for (i = 0; i < m_currentParticleCount; i++) {
-		// Bottom left.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(0.0f, 1.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-
-		// Top left.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(0.0f, 0.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-
-		// Bottom right.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(1.0f, 1.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-
-		// Bottom right.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(1.0f, 1.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-
-		// Top left.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(0.0f, 0.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-
-		// Top right.
-		m_vertices[index].position = D3DXVECTOR3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionZ);
-		m_vertices[index].texture = D3DXVECTOR2(1.0f, 0.0f);
-		m_vertices[index].color = D3DXVECTOR4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
-		index++;
-	}
-
-	// Lock the vertex buffer.
-	result = m_D3D->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Get a pointer to the data in the vertex buffer.
-	verticesPtr = (VertexType*)mappedResource.pData;
-
-	// Copy the data into the vertex buffer.
-	memcpy(verticesPtr, (void*)m_vertices, (sizeof(VertexType) * m_vertexCount));
-
-	// Unlock the vertex buffer.
-	m_D3D->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
-
-	return true;
-}
-
-void Waterfall::CalcMinMax()
-{
-	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
-
-	for (int i = 0; i < m_maxParticles; i++) {
-		if (!m_particleList[i].active) {
-			continue;
-		}
-
-		if (m_particleList[i].positionX > m_Max.x) {
-			m_Max.x = m_particleList[i].positionX;
-		}
-		if (m_particleList[i].positionY > m_Max.y) {
-			m_Max.y = m_particleList[i].positionY;
-		}
-		if (m_particleList[i].positionZ > m_Max.z) {
-			m_Max.z = m_particleList[i].positionZ;
-		}
-		if (m_particleList[i].positionX < m_Min.x) {
-			m_Min.x = m_particleList[i].positionX;
-		}
-		if (m_particleList[i].positionY < m_Min.y) {
-			m_Min.y = m_particleList[i].positionY;
-		}
-		if (m_particleList[i].positionZ < m_Min.z) {
-			m_Min.z = m_particleList[i].positionZ;
 		}
 	}
 }

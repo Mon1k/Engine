@@ -7,6 +7,7 @@ GraphicsClass::GraphicsClass()
 	m_Frustum = 0;
 	m_uiManager = 0;
 	m_modelManager = 0;
+	m_particleManager = 0;
 }
 
 
@@ -48,6 +49,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_modelManager = new ModelManager;
 	m_modelManager->Initialize(m_D3D);
 
+	m_particleManager = new ParticleManager;
+	m_particleManager->Initialize(m_D3D);
+
 	return true;
 }
 
@@ -64,6 +68,12 @@ void GraphicsClass::Shutdown()
 		m_modelManager->Shutdown();
 		delete m_modelManager;
 		m_modelManager = 0;
+	}
+
+	if (m_particleManager) {
+		m_particleManager->Shutdown();
+		delete m_particleManager;
+		m_particleManager = 0;
 	}
 
 	if (m_Frustum) {
@@ -85,6 +95,7 @@ void GraphicsClass::Shutdown()
 
 void GraphicsClass::frame(TimerClass *timer)
 {
+	m_particleManager->Frame(timer->GetTime(), m_Frustum);
 }
 
 bool GraphicsClass::Render()
@@ -110,6 +121,7 @@ bool GraphicsClass::Render()
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
 	m_modelManager->Render(m_Camera, m_Frustum);
+	m_particleManager->Render(m_Camera, m_Frustum);
 
 	m_uiManager->Render();
 

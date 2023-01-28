@@ -234,6 +234,9 @@
     <ClCompile Include="models\particles\Fountain.cpp">
       <Filter>models\particles</Filter>
     </ClCompile>
+    <ClCompile Include="models\particles\ParticleManager.cpp">
+      <Filter>models\particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -444,6 +447,12 @@
       <Filter>models\particles</Filter>
     </ClInclude>
     <ClInclude Include="models\particles\Fountain.h">
+      <Filter>models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="models\particles\AbstractParticle.h">
+      <Filter>models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="models\particles\ParticleManager.h">
       <Filter>models\particles</Filter>
     </ClInclude>
   </ItemGroup>
