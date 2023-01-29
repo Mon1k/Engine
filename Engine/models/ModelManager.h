@@ -11,6 +11,11 @@ using namespace std;
 #include "../cameraclass.h"
 #include "../frustumclass.h"
 
+#include "../textures/depthshaderclass.h"
+#include "../textures/shadowshaderclass.h"
+#include "../lightclass.h"
+#include "../render/rendertextureclass.h"
+
 class ModelManager
 {
 public:
@@ -18,6 +23,7 @@ public:
     bool Initialize(D3DClass*);
     bool Add(AbstractModel* model);
     void PreRender(CameraClass*, FrustumClass*);
+    void RenderShadowDepth(std::vector<AbstractModel*>);
     void Render(CameraClass*, FrustumClass*);
     void Shutdown();
 
@@ -47,6 +53,9 @@ private:
     D3DClass* m_D3D;
     int m_RenderCount;
     int m_TriangleCount;
+
+    DepthShaderClass* m_DepthShader;
+    RenderTextureClass* m_RenderTexture;
 };
 
 #endif

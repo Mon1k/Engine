@@ -67,7 +67,7 @@ public:
 
 		return false;
 	}
-	
+
 protected:
 	virtual void CalcMinMax();
 	virtual bool InitializeBuffers(ID3D11Device*);

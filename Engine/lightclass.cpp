@@ -88,3 +88,32 @@ D3DXVECTOR4 LightClass::GetPosition()
 {
 	return m_position;
 }
+
+void LightClass::SetLookAt(float x, float y, float z)
+{
+	m_lookAt.x = x;
+	m_lookAt.y = y;
+	m_lookAt.z = z;
+}
+
+void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
+{
+	float fieldOfView, screenAspect;
+
+	// Setup field of view and screen aspect for a square light source.
+	fieldOfView = (float)D3DX_PI / 2.0f;
+	screenAspect = 1.0f;
+
+	// Create the projection matrix for the light.
+	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
+}
+
+void LightClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
+{
+	viewMatrix = m_viewMatrix;
+}
+
+void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
+{
+	projectionMatrix = m_projectionMatrix;
+}

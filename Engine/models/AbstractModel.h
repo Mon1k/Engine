@@ -82,14 +82,24 @@ public:
     {
         m_isAlpha = alpha;
     }
+
     bool getAlpha() {
         return m_isAlpha;
+    }
+
+    void setShadow(bool shadow) {
+        m_isShadow = shadow;
+    }
+
+    bool isShadow() {
+        return m_isShadow;
     }
 
 protected:
     int m_vertexCount, m_indexCount;
     bool visible = true;
     bool m_isAlpha = false;
+    bool m_isShadow = false;
 
     D3DXVECTOR3 position;
     D3DXVECTOR3 scale;

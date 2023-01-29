@@ -77,6 +77,7 @@ void Waterfall::EmitParticles(float frameTime)
 	bool emitParticle, found;
 	float positionX, positionY, positionZ, red, green, blue;
 	D3DXVECTOR3 velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int index, i, j;
 
 
@@ -93,8 +94,7 @@ void Waterfall::EmitParticles(float frameTime)
 	}
 
 	// If there are particles to emit then emit one per frame.
-	if ((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1)))
-	{
+	if ((emitParticle == true) && (m_currentParticleCount < (m_maxParticles - 1))) {
 		m_currentParticleCount++;
 
 		// Now generate the randomized particle properties.
@@ -132,6 +132,7 @@ void Waterfall::EmitParticles(float frameTime)
 			m_particleList[i].green = m_particleList[j].green;
 			m_particleList[i].blue = m_particleList[j].blue;
 			m_particleList[i].velocity = m_particleList[j].velocity;
+			m_particleList[i].direction = m_particleList[j].direction;
 			m_particleList[i].active = m_particleList[j].active;
 			i--;
 			j--;
@@ -145,17 +146,18 @@ void Waterfall::EmitParticles(float frameTime)
 		m_particleList[index].green = green;
 		m_particleList[index].blue = blue;
 		m_particleList[index].velocity = velocity;
+		m_particleList[index].direction = direction;
 		m_particleList[index].active = true;
-	}
 
-	CalcMinMax();
+		CalcMinMax();
+	}
 }
 
 void Waterfall::UpdateParticles(float frameTime)
 {
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for (int i = 0; i < m_currentParticleCount; i++) {
-		m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity.y * frameTime * 0.001f);
+		m_particleList[i].positionY -= (m_particleList[i].velocity.y * frameTime * 0.001f);
 	}
 }
 

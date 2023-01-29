@@ -123,6 +123,7 @@
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="textures\bumpmapshaderclass.cpp" />
+    <ClCompile Include="textures\depthshaderclass.cpp" />
     <ClCompile Include="textures\fadeshaderclass.cpp" />
     <ClCompile Include="textures\fireshaderclass.cpp" />
     <ClCompile Include="textures\glassshaderclass.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="textures\particleshaderclass.cpp" />
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
     <ClCompile Include="textures\refractionshaderclass.cpp" />
+    <ClCompile Include="textures\shadowshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="textures\translateshaderclass.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="textures\bumpmapshaderclass.h" />
+    <ClInclude Include="textures\depthshaderclass.h" />
     <ClInclude Include="textures\fadeshaderclass.h" />
     <ClInclude Include="textures\fireshaderclass.h" />
     <ClInclude Include="textures\glassshaderclass.h" />
@@ -203,6 +206,7 @@
     <ClInclude Include="textures\particleshaderclass.h" />
     <ClInclude Include="textures\reflectionshaderclass.h" />
     <ClInclude Include="textures\refractionshaderclass.h" />
+    <ClInclude Include="textures\shadowshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="textures\translateshaderclass.h" />
@@ -228,6 +232,8 @@
     <None Include="data\shaders\clipplane.vs" />
     <None Include="data\shaders\color.ps" />
     <None Include="data\shaders\color.vs" />
+    <None Include="data\shaders\depth.ps" />
+    <None Include="data\shaders\depth.vs" />
     <None Include="data\shaders\fade.ps" />
     <None Include="data\shaders\fade.vs" />
     <None Include="data\shaders\fire.ps" />
@@ -250,6 +256,8 @@
     <None Include="data\shaders\reflection.vs" />
     <None Include="data\shaders\refraction.ps" />
     <None Include="data\shaders\refraction.vs" />
+    <None Include="data\shaders\shadow.ps" />
+    <None Include="data\shaders\shadow.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
     <None Include="data\shaders\texture.ps" />

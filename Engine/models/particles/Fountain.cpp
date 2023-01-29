@@ -158,9 +158,9 @@ void Fountain::EmitParticles(float frameTime)
 		m_particleList[index].velocity = velocity;
 		m_particleList[index].direction = direction;
 		m_particleList[index].active = true;
-	}
 
-	CalcMinMax();
+		CalcMinMax();
+	}
 }
 
 void Fountain::UpdateParticles(float frameTime)
