@@ -62,8 +62,7 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	LightShaderClass* shader = dynamic_cast<LightShaderClass*>(m_RefractionModel->getShader());
-	LightClass* light = shader->getLight(0);
+	LightClass* light = m_RefractionModel->getLight(0);
 
 	m_RefractionModel->Render();
 	m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_RefractionModel->GetIndexCount(), m_RefractionModel->GetWorldMatrix(), viewMatrix,

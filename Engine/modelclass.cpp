@@ -406,3 +406,11 @@ D3DXMATRIX ModelClass::GetWorldMatrix()
 
 	return worldMatrix;
 }
+
+void ModelClass::addLights(std::vector<LightClass*> lights)
+{
+	this->m_lights.clear();
+	for (int i = 0; i < lights.size(); i++) {
+		this->m_lights.push_back(lights[i]);
+	}
+}

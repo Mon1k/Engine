@@ -331,7 +331,8 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr3->cameraPosition = cameraPosition;
 	dataPtr3->padding = 0.0f;
 	for (int i = 0; i < this->m_lights.size(); i++) {
-		dataPtr3->lightPosition[i] = this->m_lights[i]->GetPosition();
+		D3DXVECTOR4 position = D3DXVECTOR4(m_lights[i]->GetPosition().x, m_lights[i]->GetPosition().y, m_lights[i]->GetPosition().z, 1.0f);
+		dataPtr3->lightPosition[i] = position;
 	}
 
 	// Unlock the camera constant buffer.

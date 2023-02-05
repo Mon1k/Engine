@@ -28,13 +28,11 @@ void CameraClass::SetPosition(float x, float y, float z)
 	m_positionX = x;
 	m_positionY = y;
 	m_positionZ = z;
-	return;
 }
 
 void CameraClass::SetPosition(D3DXVECTOR3 position)
 {
 	SetPosition(position.x, position.y, position.z);
-	return;
 }
 
 
@@ -43,13 +41,11 @@ void CameraClass::SetRotation(float x, float y, float z)
 	m_rotationX = x;
 	m_rotationY = y;
 	m_rotationZ = z;
-	return;
 }
 
 void CameraClass::SetRotation(D3DXVECTOR3 rotation)
 {
 	SetRotation(rotation.x, rotation.y, rotation.z);
-	return;
 }
 
 D3DXVECTOR3 CameraClass::GetPosition()

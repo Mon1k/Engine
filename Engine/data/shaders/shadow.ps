@@ -30,7 +30,7 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     float4 textureColor;
 
     // Set the bias value for fixing the floating point precision issues.
-    bias = 0.001f;
+    bias = 0.00001f;
 
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
@@ -61,7 +61,7 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
             if(lightIntensity > 0.0f)
             {
                 // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-                color += (diffuseColor * lightIntensity);
+                color += (diffuseColor * lightIntensity * 4.0f);
 
                 // Saturate the final light color.
                 color = saturate(color);

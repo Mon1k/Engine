@@ -12,6 +12,7 @@ using namespace std;
 #include "models/AbstractModel.h"
 #include "textureclass.h"
 #include "textures/texturearrayclass.h"
+#include "lightclass.h"
 
 #include "models/loader/DsLoader.h"
 #include "models/loader/ObjLoader.h"
@@ -68,6 +69,12 @@ public:
 		return false;
 	}
 
+	void addLights(std::vector<LightClass*>);
+	LightClass* getLight(int index)
+	{
+		return m_lights[index];
+	}
+
 protected:
 	virtual void CalcMinMax();
 	virtual bool InitializeBuffers(ID3D11Device*);
@@ -83,6 +90,7 @@ protected:
 	D3DXVECTOR3 m_Min, m_Max;
 
 	TextureArrayClass* m_TextureArray;
+	std::vector<LightClass*> m_lights;
 };
 
 #endif

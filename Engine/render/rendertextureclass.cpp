@@ -19,7 +19,7 @@ RenderTextureClass::~RenderTextureClass()
 
 bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight)
 {
-	return InitializeFull(device, textureWidth, textureHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	return InitializeFull(device, textureWidth, textureHeight, 1000.0f, 0.1f);
 }
 
 bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
@@ -74,6 +74,14 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 		return false;
 	}
 
+	// Setup the viewport for rendering.
+	m_viewport.Width = (float)textureWidth;
+	m_viewport.Height = (float)textureHeight;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.TopLeftX = 0.0f;
+	m_viewport.TopLeftY = 0.0f;
+
 	// Setup the projection matrix.
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, ((float)D3DX_PI / 4.0f), ((float)textureWidth / (float)textureHeight), screenNear, screenDepth);
 
@@ -105,6 +113,9 @@ void RenderTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, depthStencilView);
+
+	// Set the viewport.
+	deviceContext->RSSetViewports(1, &m_viewport);
 }
 
 void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depthStencilView,

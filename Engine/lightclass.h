@@ -22,7 +22,7 @@ public:
 	D3DXVECTOR3 GetDirection();
 	D3DXVECTOR4 GetSpecularColor();
 	float GetSpecularPower();
-	D3DXVECTOR4 GetPosition();
+	D3DXVECTOR3 GetPosition();
 
 	void SetLookAt(float, float, float);
 	void GenerateViewMatrix();
@@ -37,7 +37,7 @@ private:
 	D3DXVECTOR3 m_direction;
 	D3DXVECTOR4 m_specularColor;
 	float m_specularPower;
-	D3DXVECTOR4 m_position;
+	D3DXVECTOR3 m_position;
 
 	D3DXVECTOR3 m_lookAt;
 	D3DXMATRIX m_viewMatrix;

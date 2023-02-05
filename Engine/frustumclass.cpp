@@ -71,8 +71,6 @@ void FrustumClass::ConstructFrustum(float screenDepth, D3DXMATRIX projectionMatr
 	m_planes[5].c = matrix._34 + matrix._32;
 	m_planes[5].d = matrix._44 + matrix._42;
 	D3DXPlaneNormalize(&m_planes[5], &m_planes[5]);
-
-	return;
 }
 
 bool FrustumClass::CheckPoint(float x, float y, float z)

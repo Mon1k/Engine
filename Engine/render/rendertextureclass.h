@@ -4,8 +4,6 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 
-#include "../graphicsclass.h"
-
 class RenderTextureClass
 {
 public:
@@ -28,6 +26,7 @@ private:
 	ID3D11Texture2D* m_renderTargetTexture;
 	ID3D11RenderTargetView* m_renderTargetView;
 	ID3D11ShaderResourceView* m_shaderResourceView;
+	D3D11_VIEWPORT m_viewport;
 
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_orthoMatrix;
