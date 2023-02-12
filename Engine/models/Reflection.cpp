@@ -31,10 +31,10 @@ void Reflection::RenderToTexture(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 
 	// Set the render target to be the render to texture.
-	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Use the camera to calculate the reflection matrix.
 	camera->RenderReflection(position.y);

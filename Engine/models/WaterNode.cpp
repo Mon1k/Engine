@@ -50,10 +50,10 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	clipPlane = D3DXVECTOR4(0.0f, position.y, 0.0f, m_waterHeight + 0.1f);
 
 	// Set the render target to be the refraction render to texture.
-	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the refraction render to texture.
-	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
 	camera->Render();
@@ -81,10 +81,10 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 
 	// Set the render target to be the reflection render to texture.
-	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the reflection render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Use the camera to render the reflection and create a reflection view matrix.
 	camera->RenderReflection(m_waterHeight);

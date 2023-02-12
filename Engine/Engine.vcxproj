@@ -184,6 +184,7 @@
     <ClInclude Include="models\particles\Waterfall.h" />
     <ClInclude Include="models\Reflection.h" />
     <ClInclude Include="models\WaterNode.h" />
+    <ClInclude Include="Options.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />

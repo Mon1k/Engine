@@ -1,4 +1,5 @@
 #include "ModelManager.h"
+#include "../Options.h"
 
 ModelManager::ModelManager()
 {
@@ -20,7 +21,7 @@ bool ModelManager::Initialize(D3DClass* d3d)
     m_ShadowShader->Initialize(m_D3D->GetDevice());
 
     m_RenderTexture = new RenderTextureClass;
-    if (!m_RenderTexture->Initialize(m_D3D->GetDevice(), 1024, 1024)) {
+    if (!m_RenderTexture->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height)) {
         return false;
     }
 
@@ -96,10 +97,10 @@ void ModelManager::RenderShadowDepth()
     D3DXMATRIX lightViewMatrix, lightProjectionMatrix, translateMatrix;
 
     // Set the render target to be the render to texture.
-    m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+    m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
     // Clear the render to texture.
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 
     LightClass* light;

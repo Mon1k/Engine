@@ -2,6 +2,9 @@
 #include <time.h>
 #include <stdio.h>
 
+int Options::shadow_width;
+int Options::shadow_height;
+
 SystemClass::SystemClass()
 {
 	m_Input = 0;
@@ -10,6 +13,8 @@ SystemClass::SystemClass()
 	m_Timer = 0;
 	m_Position = 0;
 	m_ResourceManager = 0;
+
+	Options::Init();
 }
 
 

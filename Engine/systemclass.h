@@ -5,6 +5,7 @@
 
 #include <windows.h>
 
+#include "Options.h"
 #include "inputclass.h"
 #include "graphicsclass.h"
 #include "fpsclass.h"

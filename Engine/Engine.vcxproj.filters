@@ -467,6 +467,9 @@
     <ClInclude Include="textures\shadowshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
