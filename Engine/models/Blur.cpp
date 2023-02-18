@@ -31,10 +31,10 @@ void Blur::PreRender(CameraClass* camera)
 void Blur::RenderToTexture(CameraClass* camera)
 {
 	// Set the render target to be the render to texture.
-	m_RenderToTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
+	m_RenderToTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the render to texture.
-	m_RenderToTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_RenderToTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {

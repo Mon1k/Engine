@@ -7,7 +7,9 @@ ModelManager::ModelManager()
     m_D3D = 0;
     m_DepthShader = 0;
     m_ShadowShader = 0;
+    m_BlurShader = 0;
     m_RenderTexture = 0;
+    m_RenderTextureBlur = 0;
 }
 
 bool ModelManager::Initialize(D3DClass* d3d)
@@ -20,10 +22,14 @@ bool ModelManager::Initialize(D3DClass* d3d)
     m_ShadowShader = new ShadowShaderClass;
     m_ShadowShader->Initialize(m_D3D->GetDevice());
 
+    m_BlurShader = new BlurShaderClass;
+    m_BlurShader->Initialize(m_D3D->GetDevice());
+
     m_RenderTexture = new RenderTextureClass;
-    if (!m_RenderTexture->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height)) {
-        return false;
-    }
+    m_RenderTexture->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
+
+    m_RenderTextureBlur = new RenderTextureClass;
+    m_RenderTextureBlur->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
 
     return true;
 }
@@ -54,11 +60,23 @@ void ModelManager::Shutdown()
         m_ShadowShader = 0;
     }
 
+    if (m_BlurShader) {
+        m_BlurShader->Shutdown();
+        delete m_BlurShader;
+        m_BlurShader = 0;
+    }
+
     if (m_RenderTexture) {
         m_RenderTexture->Shutdown();
 		delete m_RenderTexture;
         m_RenderTexture = 0;
 	}
+
+    if (m_RenderTextureBlur) {
+        m_RenderTextureBlur->Shutdown();
+        delete m_RenderTextureBlur;
+        m_RenderTextureBlur = 0;
+    }
 }
 
 void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
@@ -84,10 +102,11 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
         }
     }
 
-    RenderShadowDepth();
+    RenderShadowDepth(camera);
+    //RenderBlur(camera);
 }
 
-void ModelManager::RenderShadowDepth()
+void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
     int size = m_modelsShadow.size();
     if (size < 1) {
@@ -113,6 +132,44 @@ void ModelManager::RenderShadowDepth()
 
         model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix);
+    }
+
+    // Reset the render target back to the original back buffer and not the render to texture anymore.
+    m_D3D->SetBackBufferRenderTarget();
+
+    // Reset the viewport back to the original.
+    m_D3D->ResetViewport();
+}
+
+void ModelManager::RenderBlur(CameraClass* camera)
+{
+    int size = m_modelsShadow.size();
+    if (size < 1) {
+        return;
+    }
+
+    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, translateMatrix, projectionMatrix, viewMatrix;
+
+    camera->GetViewMatrix(viewMatrix);
+    m_D3D->GetProjectionMatrix(projectionMatrix);
+
+    // Set the render target to be the render to texture.
+    m_RenderTextureBlur->SetRenderTarget(m_D3D->GetDeviceContext());
+
+    // Clear the render to texture.
+    m_RenderTextureBlur->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+
+    LightClass* light;
+    for (int i = 0; i < size; i++) {
+        ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
+        light = model->getLight(0);
+        light->GenerateViewMatrix();
+        light->GetViewMatrix(lightViewMatrix);
+        light->GetProjectionMatrix(lightProjectionMatrix);
+
+        model->Render();
+        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
     }
 
     // Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -157,6 +214,9 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
 
                             model->Render();
                             m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+                            /*model->Render();
+                            m_BlurShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix,
+                                lightProjectionMatrix, m_RenderTextureBlur->GetShaderResourceView(), m_D3D->getScreenWidth() / 4, m_D3D->getScreenHeight() / 4);*/
                         }
                         else {
                             m_models[i]->Render(camera);
