@@ -1,13 +1,12 @@
-#include "shadowshaderclass.h"
+#include "softshadowshaderclass.h"
 
 
-ShadowShaderClass::ShadowShaderClass()
+SoftShadowShaderClass::SoftShadowShaderClass()
 {
 	m_vertexShader = 0;
 	m_pixelShader = 0;
 	m_layout = 0;
 	m_sampleStateWrap = 0;
-
 	m_sampleStateClamp = 0;
 	m_matrixBuffer = 0;
 	m_lightBuffer = 0;
@@ -15,23 +14,24 @@ ShadowShaderClass::ShadowShaderClass()
 }
 
 
-ShadowShaderClass::ShadowShaderClass(const ShadowShaderClass& other)
+SoftShadowShaderClass::SoftShadowShaderClass(const SoftShadowShaderClass& other)
 {
 }
 
 
-ShadowShaderClass::~ShadowShaderClass()
+SoftShadowShaderClass::~SoftShadowShaderClass()
 {
 }
 
 
-bool ShadowShaderClass::Initialize(ID3D11Device* device)
+bool SoftShadowShaderClass::Initialize(ID3D11Device* device)
 {
 	bool result;
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, L"./data/shaders/shadow.vs", L"./data/shaders/shadow.ps");
-	if (!result) {
+	result = InitializeShader(device, L"./data/shaders/softshadow.vs", L"./data/shaders/softshadow.ps");
+	if (!result)
+	{
 		return false;
 	}
 
@@ -39,22 +39,23 @@ bool ShadowShaderClass::Initialize(ID3D11Device* device)
 }
 
 
-void ShadowShaderClass::Shutdown()
+void SoftShadowShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
 }
 
-bool ShadowShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, D3DXVECTOR3 lightPosition,
-	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
+
+bool SoftShadowShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* shadowTexture,
+	D3DXVECTOR3 lightPosition, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
 {
 	bool result;
 
+
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, texture,
-		depthMapTexture, lightPosition, ambientColor, diffuseColor);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, shadowTexture, lightPosition, ambientColor,
+		diffuseColor);
 	if (!result) {
 		return false;
 	}
@@ -66,7 +67,7 @@ bool ShadowShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCoun
 }
 
 
-bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
+bool SoftShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -77,7 +78,6 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
-
 	D3D11_BUFFER_DESC lightBufferDesc2;
 
 
@@ -87,7 +87,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	pixelShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "SoftShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
@@ -103,7 +103,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	}
 
 	// Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "ShadowPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "SoftShadowPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
@@ -120,8 +120,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 
 	// Create the vertex shader from the buffer.
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -251,7 +250,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 }
 
 
-void ShadowShaderClass::ShutdownShader()
+void SoftShadowShaderClass::ShutdownShader()
 {
 	// Release the light constant buffers.
 	if (m_lightBuffer) {
@@ -291,10 +290,9 @@ void ShadowShaderClass::ShutdownShader()
 }
 
 
-bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, D3DXVECTOR3 lightPosition,
-	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
+bool SoftShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* shadowTexture,
+	D3DXVECTOR3 lightPosition, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -308,9 +306,6 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
-
-	D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
-	D3DXMatrixTranspose(&lightProjectionMatrix, &lightProjectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -326,9 +321,6 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr->view = viewMatrix;
 	dataPtr->projection = projectionMatrix;
 
-	dataPtr->lightView = lightViewMatrix;
-	dataPtr->lightProjection = lightProjectionMatrix;
-
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_matrixBuffer, 0);
 
@@ -341,7 +333,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 
-	deviceContext->PSSetShaderResources(1, 1, &depthMapTexture);
+	deviceContext->PSSetShaderResources(1, 1, &shadowTexture);
 
 	// Lock the light constant buffer so it can be written to.
 	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -355,7 +347,6 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	// Copy the lighting variables into the constant buffer.
 	dataPtr2->ambientColor = ambientColor;
 	dataPtr2->diffuseColor = diffuseColor;
-	dataPtr2->softShadow = (float)Options::soft_shadow;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -392,7 +383,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 }
 
 
-void ShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void SoftShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
@@ -407,12 +398,4 @@ void ShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int ind
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
-}
-
-void ShadowShaderClass::addLights(std::vector<LightClass*> lights)
-{
-	this->m_lights.clear();
-	for (int i = 0; i < lights.size(); i++) {
-		this->m_lights.push_back(lights[i]);
-	}
 }

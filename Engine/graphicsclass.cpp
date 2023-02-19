@@ -24,7 +24,6 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
-	D3DXMATRIX baseViewMatrix;
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
@@ -38,13 +37,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera = new CameraClass;
 	m_Camera->SetPosition(0.0f, 0.0f, -80.0f);
 	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
 	m_Camera->setBaseViewMatrix();
 
 	m_Frustum = new FrustumClass;
 
 	m_uiManager = new UIManager;
-	m_uiManager->Initialize(m_D3D, baseViewMatrix);
+	m_uiManager->Initialize(m_D3D, m_Camera->getBaseViewMatrix());
 
 	m_modelManager = new ModelManager;
 	m_modelManager->Initialize(m_D3D);

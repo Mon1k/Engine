@@ -4,6 +4,7 @@
 
 int Options::shadow_width;
 int Options::shadow_height;
+bool Options::soft_shadow;
 
 SystemClass::SystemClass()
 {

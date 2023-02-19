@@ -10,6 +10,7 @@ using namespace std;
 
 #include "../shaders/AbstractShader.h"
 #include "../lightclass.h"
+#include "../Options.h"
 
 class ShadowShaderClass : public AbstractShader
 {
@@ -27,6 +28,8 @@ private:
 	{
 		D3DXVECTOR4 ambientColor;
 		D3DXVECTOR4 diffuseColor;
+		float softShadow;
+		D3DXVECTOR3 padding;
 	};
 
 	struct LightBufferType2

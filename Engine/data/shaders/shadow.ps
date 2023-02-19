@@ -8,6 +8,8 @@ cbuffer LightBuffer
 {
     float4 ambientColor;
     float4 diffuseColor;
+    float softShadow;
+    float3 padding;
 };
 
 struct PixelInputType
@@ -33,7 +35,12 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     bias = 0.00001f;
 
     // Set the default output color to the ambient light value for all pixels.
-    color = ambientColor;
+    color = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (!softShadow) {
+        color = ambientColor;
+    }
+    
+    
 
     // Calculate the projected texture coordinates.
     projectTexCoord.x =  input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
@@ -60,20 +67,27 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
 
             if(lightIntensity > 0.0f)
             {
-                // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-                color += (diffuseColor * lightIntensity * 4.0f);
+                
+                if (softShadow) {
+                    color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+                } else {
+                    // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+                    color += (diffuseColor * lightIntensity * 4.0f);
 
-                // Saturate the final light color.
-                color = saturate(color);
+                    // Saturate the final light color.
+                    color = saturate(color);
+                }
             }
         }
     }
 
-    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-    textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
+    if (!softShadow) {
+        // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+        textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
 
-    // Combine the light and texture color.
-    color = color * textureColor;
+        // Combine the light and texture color.
+        color = color * textureColor;
+    }
 
     return color;
 }

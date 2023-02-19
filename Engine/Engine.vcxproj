@@ -133,6 +133,7 @@
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
     <ClCompile Include="textures\refractionshaderclass.cpp" />
     <ClCompile Include="textures\shadowshaderclass.cpp" />
+    <ClCompile Include="textures\softshadowshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="textures\translateshaderclass.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="textures\reflectionshaderclass.h" />
     <ClInclude Include="textures\refractionshaderclass.h" />
     <ClInclude Include="textures\shadowshaderclass.h" />
+    <ClInclude Include="textures\softshadowshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="textures\translateshaderclass.h" />
@@ -259,6 +261,8 @@
     <None Include="data\shaders\refraction.vs" />
     <None Include="data\shaders\shadow.ps" />
     <None Include="data\shaders\shadow.vs" />
+    <None Include="data\shaders\softshadow.ps" />
+    <None Include="data\shaders\softshadow.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
     <None Include="data\shaders\texture.ps" />

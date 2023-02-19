@@ -263,7 +263,6 @@ void DebugWindowClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	unsigned int stride;
 	unsigned int offset;
 
-
 	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType);
 	offset = 0;

@@ -54,7 +54,7 @@ PixelInputType HorizontalBlurVertexShader(VertexInputType input)
     texelSizeWidth = 1.0f / screenWidth;
     texelSizeHeight = 1.0f / screenHeight;
 
-      // Create UV coordinates for the pixel and its four horizontal neighbors on either side.
+    // Create UV coordinates for the pixel and its four horizontal neighbors on either side.
     output.texCoord1 = input.tex + float2(texelSizeWidth * -4.0f, texelSizeHeight * -4.0f);
     output.texCoord2 = input.tex + float2(texelSizeWidth * -3.0f, texelSizeHeight * -3.0f);
     output.texCoord3 = input.tex + float2(texelSizeWidth * -2.0f, texelSizeHeight * -2.0f);

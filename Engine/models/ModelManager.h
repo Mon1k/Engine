@@ -15,7 +15,11 @@ using namespace std;
 #include "../render/rendertextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
+#include "../textureshaderclass.h"
 #include "../textures/blurshaderclass.h"
+#include "../textures/softshadowshaderclass.h"
+#include "2d/DebugWindow.h"
+
 #include "../lightshaderclass.h"
 #include "../lightclass.h"
 
@@ -27,6 +31,8 @@ public:
     bool Add(AbstractModel* model);
     void PreRender(CameraClass*, FrustumClass*);
     void RenderShadowDepth(CameraClass*);
+    void RenderShadowShader(CameraClass*);
+    void RenderBlurTexture(CameraClass*);
     void RenderBlur(CameraClass*);
     void Render(CameraClass*, FrustumClass*);
     void Shutdown();
@@ -60,8 +66,14 @@ private:
 
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
+    TextureShaderClass* m_TextureShader;
     BlurShaderClass* m_BlurShader;
+    SoftShadowShaderClass* m_SoftShadowShader;
+    DebugWindowClass* m_WindowTexture;
+    
     RenderTextureClass* m_RenderTexture;
+    RenderTextureClass* m_RenderTextureShadow;
+    RenderTextureClass* m_RenderTextureBlurTexture;
     RenderTextureClass* m_RenderTextureBlur;
     std::vector<AbstractModel *> m_modelsShadow;
 };
