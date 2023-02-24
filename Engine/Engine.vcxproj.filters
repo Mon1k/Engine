@@ -246,6 +246,12 @@
     <ClCompile Include="textures\softshadowshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="textures\projectionshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="render\viewpointclass.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -476,6 +482,12 @@
     <ClInclude Include="textures\softshadowshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="textures\projectionshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="render\viewpointclass.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -620,6 +632,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\softshadow.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\projection.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\projection.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

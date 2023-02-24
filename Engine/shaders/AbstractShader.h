@@ -12,7 +12,9 @@ using namespace std;
 class AbstractShader
 {
 public:
-	virtual bool Initialize(ID3D11Device*) = 0;
+	virtual bool Initialize(ID3D11Device*) {
+		return true;
+	};
 	virtual void Shutdown()
 	{
 		// Release the pixel shader.

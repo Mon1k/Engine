@@ -255,10 +255,11 @@ void ModelClass::ReleaseTexture()
 
 void ModelClass::ReleaseModel()
 {
-	if (m_shader) {
+	if (m_shader && m_shader != nullptr) {
 		m_shader->Shutdown();
 		delete m_shader;
-		m_shader = 0;
+		m_shader = nullptr;
+		//m_shader = 0;
 	}
 
 	if (m_model) {

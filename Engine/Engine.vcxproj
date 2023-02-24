@@ -116,6 +116,7 @@
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="render\2d\debugwindowclass.cpp" />
     <ClCompile Include="render\rendertextureclass.cpp" />
+    <ClCompile Include="render\viewpointclass.cpp" />
     <ClCompile Include="resources\ResourceManager.cpp" />
     <ClCompile Include="sound\soundclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
     <ClCompile Include="textures\particleshaderclass.cpp" />
+    <ClCompile Include="textures\projectionshaderclass.cpp" />
     <ClCompile Include="textures\reflectionshaderclass.cpp" />
     <ClCompile Include="textures\refractionshaderclass.cpp" />
     <ClCompile Include="textures\shadowshaderclass.cpp" />
@@ -189,6 +191,7 @@
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />
+    <ClInclude Include="render\viewpointclass.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resources\AbstractResource.h" />
     <ClInclude Include="resources\ResourceManager.h" />
@@ -206,6 +209,7 @@
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
     <ClInclude Include="textures\particleshaderclass.h" />
+    <ClInclude Include="textures\projectionshaderclass.h" />
     <ClInclude Include="textures\reflectionshaderclass.h" />
     <ClInclude Include="textures\refractionshaderclass.h" />
     <ClInclude Include="textures\shadowshaderclass.h" />
@@ -255,6 +259,8 @@
     <None Include="data\shaders\multitexture.vs" />
     <None Include="data\shaders\particle.ps" />
     <None Include="data\shaders\particle.vs" />
+    <None Include="data\shaders\projection.ps" />
+    <None Include="data\shaders\projection.vs" />
     <None Include="data\shaders\reflection.ps" />
     <None Include="data\shaders\reflection.vs" />
     <None Include="data\shaders\refraction.ps" />
