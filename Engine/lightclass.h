@@ -16,6 +16,9 @@ public:
 	void SetSpecularColor(float, float, float, float);
 	void SetSpecularPower(float);
 	void SetPosition(float, float, float);
+	void setIntensity(float intensity) {
+		m_intensity = intensity;
+	};
 
 	D3DXVECTOR4 GetAmbientColor();
 	D3DXVECTOR4 GetDiffuseColor();
@@ -23,6 +26,9 @@ public:
 	D3DXVECTOR4 GetSpecularColor();
 	float GetSpecularPower();
 	D3DXVECTOR3 GetPosition();
+	float getIntensity() {
+		return m_intensity;
+	};
 
 	void SetLookAt(float, float, float);
 	void GenerateViewMatrix();
@@ -37,6 +43,7 @@ private:
 	D3DXVECTOR3 m_direction;
 	D3DXVECTOR4 m_specularColor;
 	float m_specularPower;
+	float m_intensity;
 	D3DXVECTOR3 m_position;
 
 	D3DXVECTOR3 m_lookAt;

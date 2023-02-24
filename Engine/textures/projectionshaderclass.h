@@ -25,6 +25,12 @@ private:
 		D3DXMATRIX projection2;
 	};
 
+	struct LightPositionBufferType
+	{
+		D3DXVECTOR3 lightPosition;
+		float intensity;
+	};
+
 	struct LightBufferType
 	{
 		D3DXVECTOR4 ambientColor;
@@ -52,7 +58,7 @@ private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3,
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, float,
 		D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 	void RenderShader(ID3D11DeviceContext*, int);
 		
@@ -60,7 +66,8 @@ private:
 	ID3D11InputLayout* m_layout;
 	ID3D11SamplerState* m_sampleState;
 	ID3D11Buffer* m_matrixBuffer;
-	ID3D11Buffer* m_lightBuffer;
+	ID3D11Buffer* m_lightPositionBuffer;
+	ID3D11Buffer* m_lightBuffer;	
 
 	ViewPointClass* m_pointView;
 	TextureClass* m_Texture;
