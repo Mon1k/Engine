@@ -56,6 +56,9 @@ public:
 
         return NULL;
     }
+    std::vector<AbstractModel*> getModels() {
+        return m_models;
+    }
 
 private:
     std::vector<AbstractModel *> m_models;
@@ -64,6 +67,7 @@ private:
     int m_RenderCount;
     int m_TriangleCount;
 
+    // for shadow and soft shadow - ugly
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
     TextureShaderClass* m_TextureShader;

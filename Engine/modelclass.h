@@ -50,6 +50,21 @@ public:
 
 	void ReleaseModel();
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
+	
+	D3DXVECTOR3 getSize() {
+		D3DXVECTOR3 size;
+		size.x = m_Max.x - m_Min.x;
+		size.y = m_Max.y - m_Min.y;
+		size.z = m_Max.z - m_Min.z;
+		return size;
+	};
+	D3DXVECTOR3 getMinPosition() {
+		return m_Min;
+	};
+	D3DXVECTOR3 getMaxPosition() {
+		return m_Max;
+	}
+
 	void SetPosition(D3DXVECTOR3);
 	void SetScale(D3DXVECTOR3);
 	virtual D3DXMATRIX GetWorldMatrix();

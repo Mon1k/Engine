@@ -154,6 +154,7 @@
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="clipplaneshaderclass.h" />
+    <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="fogshaderclass.h" />

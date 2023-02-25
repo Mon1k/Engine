@@ -488,6 +488,9 @@
     <ClInclude Include="render\viewpointclass.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionDetection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
