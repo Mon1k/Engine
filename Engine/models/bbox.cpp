@@ -3,6 +3,11 @@
 BBox::BBox()
 {
     color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+    m_shader = 0;
+
+    for (int i = 0; i < 12; i++) {
+        m_ModelColor[i] = 0;
+    }
 }
 
 void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 position, D3DXVECTOR3 size)
@@ -86,6 +91,11 @@ void BBox::Shutdown()
             delete m_ModelColor[i];
             m_ModelColor[i] = 0;
         }
+    }
+
+    if (m_shader) {
+        m_shader->Shutdown();
+        m_shader = 0;
     }
 }
 

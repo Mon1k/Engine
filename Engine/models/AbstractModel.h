@@ -55,8 +55,11 @@ public:
     int GetTtriangleCount() {
         return m_vertexCount / 3;
     }
+    void setVisible(bool visible) {
+        m_visible = visible;
+    }
     bool isVisible() {
-        return visible;
+        return m_visible;
     }
     void addShader(AbstractShader* shader)
     {
@@ -97,7 +100,7 @@ public:
 
 protected:
     int m_vertexCount, m_indexCount;
-    bool visible = true;
+    bool m_visible = true;
     bool m_isAlpha = false;
     bool m_isShadow = false;
 
