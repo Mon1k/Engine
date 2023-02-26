@@ -122,3 +122,15 @@ void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {
 	projectionMatrix = m_projectionMatrix;
 }
+
+void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
+{
+	// Create the orthographic matrix for the light.
+	D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+}
+
+
+void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
+{
+	orthoMatrix = m_orthoMatrix;
+}

@@ -47,14 +47,13 @@ void ShadowShaderClass::Shutdown()
 
 bool ShadowShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, D3DXVECTOR3 lightPosition,
-	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
+	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, LightClass* light)
 {
 	bool result;
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, texture,
-		depthMapTexture, lightPosition, ambientColor, diffuseColor);
+		depthMapTexture, light);
 	if (!result) {
 		return false;
 	}
@@ -293,8 +292,7 @@ void ShadowShaderClass::ShutdownShader()
 
 bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, D3DXVECTOR3 lightPosition,
-	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
+	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, LightClass* light)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -353,9 +351,13 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	dataPtr2->ambientColor = ambientColor;
-	dataPtr2->diffuseColor = diffuseColor;
-	dataPtr2->softShadow = (float)Options::soft_shadow;
+	dataPtr2->ambientColor = light->GetAmbientColor();
+	dataPtr2->diffuseColor = light->GetDiffuseColor();
+	dataPtr2->lightDirection = light->GetDirection();
+	dataPtr2->lightIntensity = light->getIntensity();
+	dataPtr2->isSoftShadow = (float)Options::soft_shadow;
+	dataPtr2->isDirection = (float)light->isDirection();
+	dataPtr2->padding = D3DXVECTOR2(0.0f, 0.0f);
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -376,7 +378,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr3 = (LightBufferType2*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	dataPtr3->lightPosition = lightPosition;
+	dataPtr3->lightPosition = light->GetPosition();
 	dataPtr3->padding = 0.0f;
 
 	// Unlock the constant buffer.

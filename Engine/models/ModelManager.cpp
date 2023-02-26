@@ -37,7 +37,7 @@ bool ModelManager::Initialize(D3DClass* d3d)
     m_WindowTexture->Initialize(m_D3D, m_D3D->getScreenWidth(), m_D3D->getScreenHeight(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight());
 
     m_RenderTexture = new RenderTextureClass;
-    m_RenderTexture->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
+    m_RenderTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
 
     m_RenderTextureShadow = new RenderTextureClass;
     m_RenderTextureShadow->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
@@ -166,7 +166,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         return;
     }
 
-    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, translateMatrix;
+    D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
 
     // Set the render target to be the render to texture.
     m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -201,7 +201,7 @@ void ModelManager::RenderShadowShader(CameraClass* camera)
         return;
     }
 
-    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, translateMatrix, viewMatrix, projectionMatrix;
+    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
 
     // Set the render target to be the render to texture.
     m_RenderTextureShadow->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -223,7 +223,7 @@ void ModelManager::RenderShadowShader(CameraClass* camera)
         light->GetProjectionMatrix(lightProjectionMatrix);
 
         model->Render();
-        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
     }
 
     // Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -337,11 +337,10 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
                             model->Render();
                             if (Options::soft_shadow) {
                                 m_SoftShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix,
-                                    model->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(),
-                                    light->GetAmbientColor(), light->GetDiffuseColor());
+                                    model->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
                             }
                             else {
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
                             }
                         }
                         else {

@@ -8,8 +8,11 @@ cbuffer LightBuffer
 {
     float4 ambientColor;
     float4 diffuseColor;
-    float softShadow;
-    float3 padding;
+    float3 lightDirection;
+    float lightIntensity;
+    float isSoftShadow;
+    float isDirection;
+    float2 padding;
 };
 
 struct PixelInputType
@@ -28,7 +31,7 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     float2 projectTexCoord;
     float depthValue;
     float lightDepthValue;
-    float lightIntensity;
+    float intensity;
     float4 textureColor;
 
     // Set the bias value for fixing the floating point precision issues.
@@ -36,12 +39,10 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
 
     // Set the default output color to the ambient light value for all pixels.
     color = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    if (!softShadow) {
+    if (!isSoftShadow) {
         color = ambientColor;
     }
     
-    
-
     // Calculate the projected texture coordinates.
     projectTexCoord.x =  input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
     projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
@@ -63,25 +64,37 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
         if(lightDepthValue < depthValue)
         {
             // Calculate the amount of light on this pixel.
-            lightIntensity = saturate(dot(input.normal, input.lightPos));
+            if (isDirection) {
+                intensity = saturate(dot(input.normal, -lightDirection));
+            } else {
+                intensity = saturate(dot(input.normal, input.lightPos));
+            }
 
-            if(lightIntensity > 0.0f)
+            if(intensity > 0.0f)
             {
-                
-                if (softShadow) {
+                if (isSoftShadow) {
                     color = float4(1.0f, 1.0f, 1.0f, 1.0f);
                 } else {
                     // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-                    color += (diffuseColor * lightIntensity * 4.0f);
+                    color += (diffuseColor * intensity * lightIntensity);
 
                     // Saturate the final light color.
                     color = saturate(color);
                 }
             }
         }
+    } else {
+        // If this is outside the area of shadow map range then draw things normally with regular lighting.
+        intensity = saturate(dot(input.normal, -lightDirection));
+        if (intensity > 0.0f)
+        {
+            color += (diffuseColor * intensity * lightIntensity);
+            color = saturate(color);
+        }
     }
 
-    if (!softShadow) {
+
+    if (!isSoftShadow) {
         // Sample the pixel color from the texture using the sampler at this texture coordinate location.
         textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
 
