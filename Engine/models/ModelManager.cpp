@@ -324,7 +324,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
                 D3DXVECTOR3 position, size;
                 m_models[i]->GetBoundingBox(position, size);
                 if (frustum->CheckRectangle(position, size)) {
-                    if (m_models[i]->getAlpha()) {
+                    if (m_models[i]->getAlpha() && !m_models[i]->isShadow()) {
                         modelsAlpha.push_back(m_models[i]);
                     } else {
                         if (m_models[i]->isShadow()) {

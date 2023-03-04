@@ -72,7 +72,7 @@ public:
 	bool LoadModel(char* filename) {
 		std::string string(filename);
 
-		if (string.rfind(".ds") != std::string::npos) {
+		if (string.rfind(".ds") != std::string::npos || string.rfind(".txt") != std::string::npos) {
 			DsLoader* loader = new DsLoader;
 			return loader->load(filename, this);
 		}
