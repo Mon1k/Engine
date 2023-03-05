@@ -69,7 +69,7 @@ private:
     int m_RenderCount;
     int m_TriangleCount;
 
-    // for shadow and soft shadow - ugly
+    //// for shadow and soft shadow - ugly
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
     TextureShaderClass* m_TextureShader;
@@ -82,6 +82,7 @@ private:
     RenderTextureClass* m_RenderTextureBlurTexture;
     RenderTextureClass* m_RenderTextureBlur;
     std::vector<AbstractModel *> m_modelsShadow;
+    ////
 };
 
 #endif

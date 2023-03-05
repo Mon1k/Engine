@@ -12,8 +12,8 @@ public:
 
 		Options::shadow_depth = 50.0f;
 		Options::shadow_near = 1.0f;
-
 		Options::soft_shadow = false;
+		Options::shadow_enabled = true;
 	}
 
 	static int shadow_width;
@@ -21,4 +21,5 @@ public:
 	static float shadow_near;
 	static float shadow_depth;
 	static bool soft_shadow;
+	static bool shadow_enabled;
 };

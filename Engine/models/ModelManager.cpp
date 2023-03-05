@@ -130,8 +130,6 @@ void ModelManager::Shutdown()
 
 void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
 {
-    int size = m_models.size();
-
     m_modelsShadow.clear();
     m_modelsRender.clear();
 
@@ -147,7 +145,7 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
         }
     }
 
-    size = m_modelsRender.size();
+    int size = m_modelsRender.size();
     for (int i = 0; i < size; i++) {
         if (m_modelsRender[i]->isVisible()) {
             if (m_modelsRender[i]->GetIndexCount() == 0) {
@@ -157,7 +155,7 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
                 m_modelsRender[i]->GetBoundingBox(position, size);
                 if (frustum->CheckRectangle(position, size)) {
                     m_modelsRender[i]->PreRender(camera);
-                    if (m_modelsRender[i]->isShadow()) {
+                    if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
                         m_modelsShadow.push_back(m_modelsRender[i]);
                     }
                 }
@@ -165,11 +163,13 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
         }
     }
 
-    RenderShadowDepth(camera);
-    if (Options::soft_shadow) {
-        RenderShadowShader(camera);
-        RenderBlurTexture(camera);
-        RenderBlur(camera);
+    if (m_modelsShadow.size() > 0) {
+        RenderShadowDepth(camera);
+        if (Options::soft_shadow) {
+            RenderShadowShader(camera);
+            RenderBlurTexture(camera);
+            RenderBlur(camera);
+        }
     }
 }
 
@@ -340,7 +340,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
                     if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
                         modelsAlpha.push_back(m_modelsRender[i]);
                     } else {
-                        if (m_modelsRender[i]->isShadow()) {
+                        if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
                             ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
                             LightClass* light = model->getLight(0);
                             light->GenerateViewMatrix();
