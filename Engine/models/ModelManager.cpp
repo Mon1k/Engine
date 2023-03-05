@@ -133,18 +133,32 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
     int size = m_models.size();
 
     m_modelsShadow.clear();
+    m_modelsRender.clear();
 
+    for (int i = 0; i < m_models.size(); i++) {
+        if (CompositeModel* composite = dynamic_cast<CompositeModel*>(m_models[i])) {
+            std::vector<AbstractModel*> childs = composite->getChilds();
+            for (int j = 0; j < childs.size(); j++) {
+                m_modelsRender.push_back(childs[j]);
+            }
+        }
+        else {
+            m_modelsRender.push_back(m_models[i]);
+        }
+    }
+
+    size = m_modelsRender.size();
     for (int i = 0; i < size; i++) {
-        if (m_models[i]->isVisible()) {
-            if (m_models[i]->GetIndexCount() == 0) {
-                m_models[i]->PreRender(camera);
+        if (m_modelsRender[i]->isVisible()) {
+            if (m_modelsRender[i]->GetIndexCount() == 0) {
+                m_modelsRender[i]->PreRender(camera);
             } else {
                 D3DXVECTOR3 position, size;
-                m_models[i]->GetBoundingBox(position, size);
+                m_modelsRender[i]->GetBoundingBox(position, size);
                 if (frustum->CheckRectangle(position, size)) {
-                    m_models[i]->PreRender(camera);
-                    if (m_models[i]->isShadow()) {
-                        m_modelsShadow.push_back(m_models[i]);
+                    m_modelsRender[i]->PreRender(camera);
+                    if (m_modelsRender[i]->isShadow()) {
+                        m_modelsShadow.push_back(m_modelsRender[i]);
                     }
                 }
             }
@@ -184,7 +198,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         light->GetProjectionMatrix(lightProjectionMatrix);
 
         model->Render();
-        m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix);
+        m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
     }
 
     // Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -311,28 +325,31 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
     m_RenderCount = 0;
     m_TriangleCount = 0;
     
-    int size = m_models.size();
-
+    
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
-    for (int i = 0; i < size; i++) {
-        if (m_models[i]->isVisible()) {
-            if (m_models[i]->GetIndexCount() == 0) {
-                m_models[i]->Render(camera);
+    for (int i = 0; i < m_modelsRender.size(); i++) {
+        if (m_modelsRender[i]->isVisible()) {
+            if (m_modelsRender[i]->GetIndexCount() == 0) {
+                m_modelsRender[i]->Render(camera);
             } else {
                 D3DXVECTOR3 position, size;
-                m_models[i]->GetBoundingBox(position, size);
+                m_modelsRender[i]->GetBoundingBox(position, size);
                 if (frustum->CheckRectangle(position, size)) {
-                    if (m_models[i]->getAlpha() && !m_models[i]->isShadow()) {
-                        modelsAlpha.push_back(m_models[i]);
+                    if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
+                        modelsAlpha.push_back(m_modelsRender[i]);
                     } else {
-                        if (m_models[i]->isShadow()) {
-                            ModelClass* model = dynamic_cast<ModelClass*> (m_models[i]);
+                        if (m_modelsRender[i]->isShadow()) {
+                            ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
                             LightClass* light = model->getLight(0);
                             light->GenerateViewMatrix();
                             light->GetViewMatrix(lightViewMatrix);
                             light->GetProjectionMatrix(lightProjectionMatrix);
+
+                            if (m_modelsRender[i]->getAlpha()) {
+                                m_D3D->TurnOnAlphaBlending();
+                            }
 
                             model->Render();
                             if (Options::soft_shadow) {
@@ -341,13 +358,18 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
                             }
                             else {
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                            
+                            }
+
+                            if (m_modelsRender[i]->getAlpha()) {
+                                m_D3D->TurnOffAlphaBlending();
                             }
                         }
                         else {
-                            m_models[i]->Render(camera);
+                            m_modelsRender[i]->Render(camera);
                         }
                     }
-                    m_TriangleCount += m_models[i]->GetTtriangleCount();
+                    m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
                     m_RenderCount++;
                 }
             }
@@ -355,7 +377,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
     }
 
 
-    size = modelsAlpha.size();
+    int size = modelsAlpha.size();
     // sort alpha model for render
     if (size > 0) {
         std::sort(begin(modelsAlpha), end(modelsAlpha), [&camera](AbstractModel* modelLeft, AbstractModel* modelRight) {

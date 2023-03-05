@@ -26,6 +26,9 @@ public:
     bool isVisible() {
         return m_visible;
     }
+    void setVisible(bool visible) {
+        m_visible = visible;
+    }
 
     virtual void onPress(int x, int y, int button)
     {

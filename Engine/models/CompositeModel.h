@@ -24,11 +24,22 @@ public:
 		}
 	}
 
+	virtual void Render() {
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			m_childs[i]->Render();
+		}
+	}
+
 	virtual void Shutdown() {
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Shutdown();
 		}
+	}
+
+	std::vector<AbstractModel*> getChilds() {
+		return m_childs;
 	}
 private:
 	std::vector<AbstractModel*> m_childs;

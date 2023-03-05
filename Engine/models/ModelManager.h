@@ -7,6 +7,7 @@
 using namespace std;
 
 #include "AbstractModel.h"
+#include "CompositeModel.h"
 #include "../d3dclass.h"
 #include "../cameraclass.h"
 #include "../frustumclass.h"
@@ -62,6 +63,7 @@ public:
 
 private:
     std::vector<AbstractModel *> m_models;
+    std::vector<AbstractModel *> m_modelsRender;
 
     D3DClass* m_D3D;
     int m_RenderCount;
