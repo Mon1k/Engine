@@ -75,6 +75,8 @@ bool TextClass::AddText(char* text, int positionX, int positionY, float red, flo
 	if (!result) {
 		return false;
 	}
+
+	updateRectangle(positionX, positionY);
 }
 
 void TextClass::Shutdown()
@@ -267,6 +269,13 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	vertices = 0;
 
 	return true;
+}
+
+void TextClass::updateRectangle(float positionX, float positionY)
+{
+	m_rectangle.position = new ds::math::Point(positionX, positionY);
+	m_rectangle.width = m_rectangle.position->x + strlen(m_text) * 8;
+	m_rectangle.height = 10;
 }
 
 void TextClass::ReleaseSentence(SentenceType** sentence)

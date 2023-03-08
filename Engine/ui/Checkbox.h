@@ -19,6 +19,9 @@ public:
     bool Add(char*, int, int, float, float, float);
     bool Add(char*, int, int);
     bool Render();
+
+    virtual bool isIntersect(int x, int y);
+
     bool getIsMarked() {
         return b_IsMarked;
     };

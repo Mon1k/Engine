@@ -166,6 +166,8 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="math\Point.h" />
+    <ClInclude Include="math\Rectangle.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="modellistclass.h" />
     <ClInclude Include="models\2d\DebugWindow.h" />

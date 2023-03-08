@@ -3,6 +3,7 @@
 
 #include "fontclass.h"
 #include "fontshaderclass.h"
+#include "math/Rectangle.h"
 
 class TextClass
 {
@@ -30,6 +31,11 @@ public:
 	bool Render(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
 	bool AddText(char*, int, int, float, float, float);
 
+	ds::math::Rectangle getRectangle() {
+		return m_rectangle;
+	}
+	void updateRectangle(float, float);
+
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
 	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);
@@ -44,6 +50,7 @@ private:
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
 
+	ds::math::Rectangle m_rectangle;
 	SentenceType* m_sentence;
 	char* m_text;
 };

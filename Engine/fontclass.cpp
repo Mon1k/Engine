@@ -43,8 +43,6 @@ void FontClass::Shutdown()
 
 	// Release the font data.
 	ReleaseFontData();
-
-	return;
 }
 
 bool FontClass::LoadFontData(char* filename)
@@ -94,8 +92,6 @@ void FontClass::ReleaseFontData()
 		delete[] m_Font;
 		m_Font = 0;
 	}
-
-	return;
 }
 
 bool FontClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
@@ -125,8 +121,6 @@ void FontClass::ReleaseTexture()
 		delete m_Texture;
 		m_Texture = 0;
 	}
-
-	return;
 }
 
 ID3D11ShaderResourceView* FontClass::GetTexture()
@@ -187,6 +181,4 @@ void FontClass::BuildVertexArray(void* vertices, char* sentence, float drawX, fl
 			drawX = drawX + m_Font[letter].size + 1.0f;
 		}
 	}
-
-	return;
 }

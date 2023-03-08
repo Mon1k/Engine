@@ -67,6 +67,15 @@ bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilen
 	}
 }
 
+bool Checkbox::isIntersect(int x, int y)
+{
+	ds::math::Rectangle rectangle = m_Text->getRectangle();
+	if (x >= m_x && x <= m_x + m_width + rectangle.width && y >= m_y && y <= m_y + m_height + rectangle.height) {
+		return true;
+	}
+
+	return false;
+}
 
 bool Checkbox::Add(char* text, int positionX, int positionY, float red, float green, float blue)
 {

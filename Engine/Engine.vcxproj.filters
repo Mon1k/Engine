@@ -49,6 +49,9 @@
     <Filter Include="models\particles">
       <UniqueIdentifier>{d9ac376d-3deb-4c19-901e-89f37727f35e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{5586af20-60b4-497b-8975-22c334742976}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -493,6 +496,12 @@
     </ClInclude>
     <ClInclude Include="models\CompositeModel.h">
       <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Point.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Rectangle.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
