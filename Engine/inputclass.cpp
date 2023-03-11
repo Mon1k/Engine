@@ -123,6 +123,18 @@ bool InputClass::IsKeyDown(unsigned int key)
 	return false;
 }
 
+bool InputClass::IsKeyDown()
+{
+	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
+	for (int i = 0; i < size; i++) {
+		if (m_keyboardState[i] & 0x80) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool InputClass::IsEscapePressed()
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.

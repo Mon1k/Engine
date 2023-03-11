@@ -25,6 +25,7 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(int&, int&);
 	bool IsKeyDown(unsigned int);
+	bool IsKeyDown();
 	int getMouseButton();
 	int getMouseButtonPress();
 

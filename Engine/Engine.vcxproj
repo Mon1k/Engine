@@ -112,6 +112,7 @@
     <ClCompile Include="models\particles\ParticleManager.cpp" />
     <ClCompile Include="models\particles\Waterfall.cpp" />
     <ClCompile Include="models\Reflection.cpp" />
+    <ClCompile Include="models\terrain\terrainclass.cpp" />
     <ClCompile Include="models\WaterNode.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="render\2d\debugwindowclass.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="models\particles\ParticleManager.h" />
     <ClInclude Include="models\particles\Waterfall.h" />
     <ClInclude Include="models\Reflection.h" />
+    <ClInclude Include="models\terrain\terrainclass.h" />
     <ClInclude Include="models\WaterNode.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="positionclass.h" />

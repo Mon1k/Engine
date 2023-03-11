@@ -52,6 +52,9 @@
     <Filter Include="math">
       <UniqueIdentifier>{5586af20-60b4-497b-8975-22c334742976}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models\terrain">
+      <UniqueIdentifier>{0d48b3a5-7877-49ee-9762-a4bc89c3e485}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -254,6 +257,9 @@
     </ClCompile>
     <ClCompile Include="render\viewpointclass.cpp">
       <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="models\terrain\terrainclass.cpp">
+      <Filter>models\terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +508,9 @@
     </ClInclude>
     <ClInclude Include="math\Rectangle.h">
       <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="models\terrain\terrainclass.h">
+      <Filter>models\terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
