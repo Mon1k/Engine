@@ -277,6 +277,8 @@
     <None Include="data\shaders\softshadow.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
+    <None Include="data\shaders\terrain.ps" />
+    <None Include="data\shaders\terrain.vs" />
     <None Include="data\shaders\texture.ps" />
     <None Include="data\shaders\texture.vs" />
     <None Include="data\shaders\translate.ps" />

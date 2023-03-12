@@ -664,5 +664,11 @@
     <None Include="data\shaders\projection.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="data\shaders\terrain.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\terrain.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

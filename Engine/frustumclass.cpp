@@ -111,6 +111,10 @@ bool FrustumClass::CheckRectangle(D3DXVECTOR3 position, D3DXVECTOR3 size)
 
 bool FrustumClass::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
 {
+	if (xSize == 0 && ySize == 0 && zSize == 0) {
+		return true;
+	}
+
 	// Check if any of the 6 planes of the rectangle are inside the view frustum.
 	for (int i = 0; i < 6; i++) {
 		if (D3DXPlaneDotCoord(&m_planes[i], &D3DXVECTOR3((xCenter - xSize), (yCenter - ySize), (zCenter - zSize))) >= 0.0f) {

@@ -77,7 +77,7 @@ void PositionClass::MoveForward(bool keydown)
 
 	// Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_forwardSpeed += m_frameTime * 0.001f * m_sensivity;
+		m_forwardSpeed += m_frameTime * 0.001f;
 
 		if (m_forwardSpeed > (m_frameTime * 0.03f)) {
 			m_forwardSpeed = m_frameTime * 0.03f;
@@ -95,8 +95,8 @@ void PositionClass::MoveForward(bool keydown)
 	radians = m_rotationY * 0.0174532925f;
 
 	// Update the position.
-	m_positionX += sinf(radians) * m_forwardSpeed;
-	m_positionZ += cosf(radians) * m_forwardSpeed;
+	m_positionX += sinf(radians) * m_forwardSpeed * m_sensivity;
+	m_positionZ += cosf(radians) * m_forwardSpeed * m_sensivity;
 }
 
 
@@ -106,7 +106,7 @@ void PositionClass::MoveLeft(bool keydown)
 
 	// Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_strafeLeftSpeed += m_frameTime * 0.001f * m_sensivity;
+		m_strafeLeftSpeed += m_frameTime * 0.001f;
 
 		if (m_strafeLeftSpeed > (m_frameTime * 0.03f)) {
 			m_strafeLeftSpeed = m_frameTime * 0.03f;
@@ -121,11 +121,11 @@ void PositionClass::MoveLeft(bool keydown)
 	}
 
 	// Convert degrees to radians.
-	radians = m_rotationY * 0.0174532925f;
+	radians = (m_rotationY - 90) * 0.0174532925f;
 
 	// Update the position.
-	m_positionX -= cosf(radians) * m_strafeLeftSpeed;
-	m_positionZ -= sinf(radians) * m_strafeLeftSpeed;
+	m_positionX += sinf(radians) * m_strafeLeftSpeed * m_sensivity;
+	m_positionZ += cosf(radians) * m_strafeLeftSpeed * m_sensivity;
 }
 
 void PositionClass::MoveRight(bool keydown)
@@ -134,7 +134,7 @@ void PositionClass::MoveRight(bool keydown)
 
 	// Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_strafeRightSpeed += m_frameTime * 0.001f * m_sensivity;
+		m_strafeRightSpeed += m_frameTime * 0.001f;
 
 		if (m_strafeRightSpeed > (m_frameTime * 0.03f)) {
 			m_strafeRightSpeed = m_frameTime * 0.03f;
@@ -149,11 +149,11 @@ void PositionClass::MoveRight(bool keydown)
 	}
 
 	// Convert degrees to radians.
-	radians = m_rotationY * 0.0174532925f;
+	radians = (m_rotationY + 90) * 0.0174532925f;
 
 	// Update the position.
-	m_positionX += cosf(radians) * m_strafeRightSpeed;
-	m_positionZ += sinf(radians) * m_strafeRightSpeed;
+	m_positionX += sinf(radians) * m_strafeRightSpeed * m_sensivity;
+	m_positionZ += cosf(radians) * m_strafeRightSpeed * m_sensivity;
 }
 
 void PositionClass::MoveBackward(bool keydown)
@@ -162,7 +162,7 @@ void PositionClass::MoveBackward(bool keydown)
 
 	// Update the backward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_backwardSpeed += m_frameTime * 0.001f * m_sensivity;
+		m_backwardSpeed += m_frameTime * 0.001f;
 
 		if (m_backwardSpeed > (m_frameTime * 0.03f)) {
 			m_backwardSpeed = m_frameTime * 0.03f;
@@ -180,15 +180,15 @@ void PositionClass::MoveBackward(bool keydown)
 	radians = m_rotationY * 0.0174532925f;
 
 	// Update the position.
-	m_positionX -= sinf(radians) * m_backwardSpeed;
-	m_positionZ -= cosf(radians) * m_backwardSpeed;
+	m_positionX -= sinf(radians) * m_backwardSpeed * m_sensivity;
+	m_positionZ -= cosf(radians) * m_backwardSpeed * m_sensivity;
 }
 
 void PositionClass::MoveUpward(bool keydown)
 {
 	// Update the upward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_upwardSpeed += m_frameTime * 0.003f * m_sensivity;
+		m_upwardSpeed += m_frameTime * 0.003f;
 
 		if (m_upwardSpeed > (m_frameTime * 0.03f)) {
 			m_upwardSpeed = m_frameTime * 0.03f;
@@ -210,7 +210,7 @@ void PositionClass::MoveDownward(bool keydown)
 {
 	// Update the downward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
-		m_downwardSpeed += m_frameTime * 0.003f * m_sensivity;
+		m_downwardSpeed += m_frameTime * 0.003f;
 
 		if (m_downwardSpeed > (m_frameTime * 0.03f)) {
 			m_downwardSpeed = m_frameTime * 0.03f;

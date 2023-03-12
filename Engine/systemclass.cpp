@@ -190,8 +190,7 @@ bool SystemClass::frame()
 	int mouseX, mouseY;
 	int lastMouseX, lastMouseY;
 	D3DXVECTOR3 position, rotation;
-	float mouseSensivityX = 7.0f, mouseSensivityY = 5.0f, cameraSensivity = 1.0f;
-	float sensivity = m_Position->getSensivity();
+	float mouseSensivityX = 12.0f, mouseSensivityY = 12.0f, cameraSensivity = 1.0f;
 
 	// last mouse coord
 	m_Input->GetMouseLocation(lastMouseX, lastMouseY);
@@ -237,7 +236,6 @@ bool SystemClass::frame()
 	}
 	
 	// Get the current view point rotation.
-	m_Position->setSensivity(sensivity);
 	position = m_Position->getPosition();
 	rotation = m_Position->getRotation();
 	m_Graphics->getCamera()->SetRotation(rotation);
