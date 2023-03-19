@@ -261,6 +261,9 @@
     <ClCompile Include="models\terrain\terrainclass.cpp">
       <Filter>models\terrain</Filter>
     </ClCompile>
+    <ClCompile Include="models\terrain\quadtreeclass.cpp">
+      <Filter>models\terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -510,6 +513,9 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="models\terrain\terrainclass.h">
+      <Filter>models\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="models\terrain\quadtreeclass.h">
       <Filter>models\terrain</Filter>
     </ClInclude>
   </ItemGroup>

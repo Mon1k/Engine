@@ -6,8 +6,9 @@
 #include <stdio.h>
 
 #include "../../modelclass.h"
-#include "../../textureclass.h"
+#include "quadtreeclass.h"
 #include "../../textures/terrainshaderclass.h"
+#include "../../frustumclass.h"
 
 class TerrainClass : public ModelClass
 {
@@ -36,9 +37,10 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
+	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*);
+	virtual void Shutdown();
 	virtual void Render(CameraClass*);
-	virtual void Render();
-	bool Initialize(D3DClass*, char*, WCHAR*);
+
 	float getTextureRepeat() {
 		return m_repeat ? m_repeat : m_terrainWidth / 16;
 	}
@@ -46,23 +48,30 @@ public:
 		m_repeat = repeat;
 	}
 
+	int GetTtriangleCount() {
+		return m_quadTree->GetDrawCount();
+	}
+
+	void CopyVertexArray(void*);
+
 private:
 	bool LoadHeightMap(char*);
 	void NormalizeHeightMap();
 	bool CalculateNormals();
 	void CalculateTextureCoordinates();
 	void ShutdownHeightMap();
-	
+	void ShutdownBuffers();
 
 	bool InitializeBuffers(ID3D11Device*);
-	void RenderBuffers(ID3D11DeviceContext*);
-
 private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
 
-	HeightMapType* m_heightMap;
 	TerrainShaderClass* m_shader;
+	HeightMapType* m_heightMap;
+
+	VertexType* m_vertices;
+	QuadTreeClass* m_quadTree;
 };
 
 #endif

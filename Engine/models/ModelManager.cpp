@@ -369,10 +369,11 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
                             m_modelsRender[i]->Render(camera);
                         }
                     }
-                    m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
-                    m_RenderCount++;
                 }
             }
+
+            m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
+            m_RenderCount++;
         }
     }
 

@@ -52,7 +52,7 @@ public:
         return m_indexCount;
     }
 
-    int GetTtriangleCount() {
+    virtual int GetTtriangleCount() {
         return m_vertexCount / 3;
     }
     void setVisible(bool visible) {

@@ -34,6 +34,9 @@ public:
 	CameraClass* getCamera() {
 		return m_Camera;
 	};
+	FrustumClass* getFrustum() {
+		return m_Frustum;
+	};
 
 	UIManager* getUiManager() {
 		return m_uiManager;
