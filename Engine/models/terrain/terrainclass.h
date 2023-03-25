@@ -53,6 +53,9 @@ public:
 	}
 
 	void CopyVertexArray(void*);
+	QuadTreeClass* getQuadTree() {
+		return m_quadTree;
+	}
 
 private:
 	bool LoadHeightMap(char*);

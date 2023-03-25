@@ -1,7 +1,7 @@
 #ifndef _QUADTREECLASS_H_
 #define _QUADTREECLASS_H_
 
-const int MAX_TRIANGLES = 100000;
+const int MAX_TRIANGLES = 10000;
 
 #include "../../d3dclass.h"
 #include "../../textures/terrainshaderclass.h"
@@ -18,11 +18,18 @@ private:
 		D3DXVECTOR3 normal;
 	};
 
+	struct VectorType
+	{
+		float x, y, z;
+	};
+
 	struct NodeType
 	{
 		float positionX, positionZ, width;
 		int triangleCount;
 		ID3D11Buffer* vertexBuffer, *indexBuffer;
+		VectorType* vertexArray;
+		NodeType* parent;
 		NodeType* nodes[4];
 	};
 
@@ -37,6 +44,8 @@ public:
 	void Render(TerrainShaderClass*);
 
 	int GetDrawCount();
+	bool GetHeightAtPosition(float, float, float&);
+
 
 private:
 	void CalculateMeshDimensions(int, float&, float&, float&);
@@ -45,9 +54,12 @@ private:
 	bool IsTriangleContained(int, float, float, float);
 	void ReleaseNode(NodeType*);
 	void RenderNode(NodeType*, TerrainShaderClass*);
+	void FindNode(NodeType*, float, float, float&);
+	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
 
 private:
 	int m_triangleCount, m_drawCount;
+	float m_width;
 
 	VertexType* m_vertexList;
 	NodeType* m_parentNode;
