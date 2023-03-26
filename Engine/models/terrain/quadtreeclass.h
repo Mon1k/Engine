@@ -3,6 +3,10 @@
 
 const int MAX_TRIANGLES = 10000;
 
+#include <fstream>
+#include <vector>
+using namespace std;
+
 #include "../../d3dclass.h"
 #include "../../textures/terrainshaderclass.h"
 #include "../../frustumclass.h"
@@ -29,8 +33,9 @@ private:
 		int triangleCount;
 		ID3D11Buffer* vertexBuffer, *indexBuffer;
 		VectorType* vertexArray;
-		NodeType* parent;
 		NodeType* nodes[4];
+		NodeType* parent;
+		vector<int> indexes;
 	};
 
 public:
@@ -50,12 +55,14 @@ public:
 private:
 	void CalculateMeshDimensions(int, float&, float&, float&);
 	void CreateTreeNode(NodeType*, float, float, float);
-	int CountTriangles(float, float, float);
+	int CountTriangles(NodeType*, float, float, float);
+	bool isCountTriangles(NodeType*, float, float, float);
 	bool IsTriangleContained(int, float, float, float);
-	void ReleaseNode(NodeType*);
-	void RenderNode(NodeType*, TerrainShaderClass*);
 	void FindNode(NodeType*, float, float, float&);
 	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
+
+	void ReleaseNode(NodeType*);
+	void RenderNode(NodeType*, TerrainShaderClass*);
 
 private:
 	int m_triangleCount, m_drawCount;

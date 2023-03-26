@@ -45,6 +45,7 @@ bool QuadTreeClass::Initialize(void* terrain, int vertexCount, D3DClass* d3dClas
 	if (!m_parentNode) {
 		return false;
 	}
+	m_parentNode->parent = 0;
 
 	// Recursively build the quad tree based on the vertex list data and mesh dimensions.
 	CreateTreeNode(m_parentNode, centerX, centerZ, width);
@@ -122,7 +123,7 @@ void QuadTreeClass::CalculateMeshDimensions(int vertexCount, float& centerX, flo
 
 void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positionZ, float width)
 {
-	int numTriangles, i, count, vertexCount, index, vertexIndex;
+	int numTriangles = 0, i, size, count, vertexCount, index, vertexIndex;
 	float offsetX, offsetZ;
 	VertexType* vertices;
 	unsigned long* indices;
@@ -152,13 +153,18 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 	node->nodes[3] = 0;
 
 	// Count the number of triangles that are inside this node.
-	//if (m_parentNode->triangleCount )
-	//numTriangles = CountTriangles(positionX, positionZ, width);
-	numTriangles = m_parentNode->triangleCount / 4;
-	if (!numTriangles) {
-		numTriangles = CountTriangles(positionX, positionZ, width);
+	if (node->parent) {
+		// если количество больше нужного для листа, то смысла считать общее нет, так как все равно в детях будет разбиение
+		if (node->parent->triangleCount / 4 > MAX_TRIANGLES) {
+			numTriangles = node->parent->triangleCount / 4;
+		}
 	}
-
+	else if (width == m_width) {
+		numTriangles = m_triangleCount;
+	}
+	if (!numTriangles) {
+		numTriangles = CountTriangles(node, positionX, positionZ, width);
+	}
 
 	// Case 1: If there are no triangles in this node then return as it is empty and requires no processing.
 	if (numTriangles == 0) {
@@ -167,22 +173,33 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 
 	// Case 2: If there are too many triangles in this node then split it into four equal sized smaller tree nodes.
 	if (numTriangles > MAX_TRIANGLES) {
+		node->indexes.clear();
+		size = node->parent ? node->parent->indexes.size() : m_triangleCount;
+		for (i = 0; i < size; i++) {
+			index = node->parent ? node->parent->indexes[i] : i;
+			if (IsTriangleContained(index, positionX, positionZ, width)) {
+				node->indexes.push_back(index);
+			}
+		}
+
 		for (i = 0; i < 4; i++) {
 			// Calculate the position offsets for the new child node.
 			offsetX = (((i % 2) < 1) ? -1.0f : 1.0f) * (width / 4.0f);
 			offsetZ = (((i % 4) < 2) ? -1.0f : 1.0f) * (width / 4.0f);
-
+				
 			// See if there are any triangles in the new node.
-			count = CountTriangles((positionX + offsetX), (positionZ + offsetZ), (width / 2.0f));
-			if (count > 0) {
+			if (isCountTriangles(node, positionX + offsetX, positionZ + offsetZ, width / 2.0f)) {
 				// If there are triangles inside where this new node would be then create the child node.
 				node->nodes[i] = new NodeType;
 				node->nodes[i]->parent = node;
+				node->triangleCount = numTriangles;
 
 				// Extend the tree starting from this new child node now.
-				CreateTreeNode(node->nodes[i], (positionX + offsetX), (positionZ + offsetZ), (width / 2.0f));
+				CreateTreeNode(node->nodes[i], positionX + offsetX, positionZ + offsetZ, width / 2.0f);
 			}
 		}
+
+		node->indexes.clear();
 
 		return;
 	}
@@ -207,11 +224,12 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 	index = 0;
 
 	// Go through all the triangles in the vertex list.
-	for (i = 0; i < m_triangleCount; i++) {
+	size = node->parent->indexes.size();
+	for (i = 0; i < size; i++) {
 		// If the triangle is inside this node then add it to the vertex array.
-		if (IsTriangleContained(i, positionX, positionZ, width)) {
+		if (IsTriangleContained(node->parent->indexes[i], positionX, positionZ, width)) {
 			// Calculate the index into the terrain vertex list.
-			vertexIndex = i * 3;
+			vertexIndex = node->parent->indexes[i] * 3;
 
 			// Get the three vertices of this triangle from the vertex list.
 			vertices[index].position = m_vertexList[vertexIndex].position;
@@ -249,6 +267,9 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			node->vertexArray[index].z = m_vertexList[vertexIndex].position.z;
 
 			index++;
+			if (index > vertexCount) {
+				break;
+			}
 		}
 	}
 
@@ -292,22 +313,35 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 	indices = 0;
 }
 
-int QuadTreeClass::CountTriangles(float positionX, float positionZ, float width)
+bool QuadTreeClass::isCountTriangles(NodeType* node, float positionX, float positionZ, float width)
 {
-	int count, i;
-	bool result;
+	int i, size, index;
 
-	//return m_triangleCount / (m_width / width);
-
-
-	// Initialize the count to zero.
-	count = 0;
+	size = node->parent ? node->parent->indexes.size() : m_triangleCount;
 
 	// Go through all the triangles in the entire mesh and check which ones should be inside this node.
-	for (i = 0; i < m_triangleCount; i++) {
+	for (i = 0; i < size; i++) {
+		index = node->parent ? node->parent->indexes[i] : i;
+		if (IsTriangleContained(index, positionX, positionZ, width)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int QuadTreeClass::CountTriangles(NodeType* node, float positionX, float positionZ, float width)
+{
+	int count, i, size, index;
+
+	count = 0;
+	size = node->parent ? node->parent->indexes.size() : m_triangleCount;
+
+	// Go through all the triangles in the entire mesh and check which ones should be inside this node.
+	for (i = 0; i < size; i++) {
+		index = node->parent ? node->parent->indexes[i] : i;
 		// If the triangle is inside the node then increment the count by one.
-		result = IsTriangleContained(i, positionX, positionZ, width);
-		if (result == true) {
+		if (IsTriangleContained(index, positionX, positionZ, width)) {
 			count++;
 		}
 	}
