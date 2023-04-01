@@ -48,6 +48,8 @@ public:
 	void TurnOnCulling();
 	void TurnOffCulling();
 
+	void EnableSecondBlendState();
+
 	ID3D11DepthStencilView* GetDepthStencilView();
 	void SetBackBufferRenderTarget();
 
@@ -87,6 +89,7 @@ private:
 
 	ID3D11BlendState* m_alphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
+	ID3D11BlendState* m_alphaBlendState2;
 };
 
 #endif

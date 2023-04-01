@@ -273,6 +273,12 @@
     <ClCompile Include="textures\skydomeshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="models\sky\skyplaneclass.cpp">
+      <Filter>models\sky</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\skyplaneshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -533,6 +539,12 @@
     <ClInclude Include="textures\skydomeshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="models\sky\skyplaneclass.h">
+      <Filter>models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\skyplaneshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -695,6 +707,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\skydome.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\skyplane.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\skyplane.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

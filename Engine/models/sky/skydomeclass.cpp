@@ -35,7 +35,9 @@ bool SkyDomeClass::Initialize(D3DClass* d3dClass, char* fileName)
 	}
 
 	m_shader = new SkyDomeShaderClass;
-	m_shader->Initialize(m_D3D->GetDevice());
+	if (!m_shader->Initialize(m_D3D->GetDevice())) {
+		return false;
+	}
 
 	// Set the color at the top of the sky dome.
 	m_apexColor = D3DXVECTOR4(0.28f, 0.66f, 1.0f, 1.0f);
