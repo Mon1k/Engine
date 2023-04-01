@@ -1,7 +1,7 @@
 #include "terrainclass.h"
 #include "../../tool/random.h"
 
-TerrainClass::TerrainClass()
+TerrainClass::TerrainClass(): ModelClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
@@ -177,9 +177,9 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 			index = (m_terrainHeight * j) + i;
 
-			m_heightMap[index].x = (float)i;
-			m_heightMap[index].y = (float)height;
-			m_heightMap[index].z = (float)j;
+			m_heightMap[index].x = (float)i * scale.x;
+			m_heightMap[index].y = (float)height * scale.y;
+			m_heightMap[index].z = (float)j * scale.z;
 
 			k += 3;
 		}
@@ -471,7 +471,9 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			tu = m_heightMap[index2].tu;
 
 			// Modify the texture coordinates to cover the right edge.
-			if (tu == 0.0f) { tu = 1.0f; }
+			if (tu == 0.0f) { 
+				tu = 1.0f;
+			}
 
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index2].x, m_heightMap[index2].y, m_heightMap[index2].z);
 			m_vertices[index].texture = D3DXVECTOR2(tu, m_heightMap[index2].tv);

@@ -55,6 +55,9 @@
     <Filter Include="models\terrain">
       <UniqueIdentifier>{0d48b3a5-7877-49ee-9762-a4bc89c3e485}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models\sky">
+      <UniqueIdentifier>{fd80a909-875a-41fd-ada7-cb353789f9df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -263,6 +266,12 @@
     </ClCompile>
     <ClCompile Include="models\terrain\quadtreeclass.cpp">
       <Filter>models\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="models\sky\skydomeclass.cpp">
+      <Filter>models\sky</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\skydomeshaderclass.cpp">
+      <Filter>textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -518,6 +527,12 @@
     <ClInclude Include="models\terrain\quadtreeclass.h">
       <Filter>models\terrain</Filter>
     </ClInclude>
+    <ClInclude Include="models\sky\skydomeclass.h">
+      <Filter>models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\skydomeshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -674,6 +689,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\terrain.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\skydome.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\skydome.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

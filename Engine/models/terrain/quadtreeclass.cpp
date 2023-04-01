@@ -426,8 +426,7 @@ void QuadTreeClass::ReleaseNode(NodeType* node)
 	}
 
 	// Release the vertex array for this node.
-	if (node->vertexArray)
-	{
+	if (node->vertexArray) {
 		delete[] node->vertexArray;
 		node->vertexArray = 0;
 	}

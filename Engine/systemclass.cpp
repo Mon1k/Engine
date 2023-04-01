@@ -190,7 +190,7 @@ bool SystemClass::frame()
 	int mouseX, mouseY;
 	int lastMouseX, lastMouseY;
 	D3DXVECTOR3 position, rotation;
-	float mouseSensivityX = 12.0f, mouseSensivityY = 12.0f, cameraSensivity = 1.0f;
+	float mouseSensivityX = 18.0f, mouseSensivityY = 18.0f, cameraSensivity = 1.0f;
 
 	// last mouse coord
 	m_Input->GetMouseLocation(lastMouseX, lastMouseY);

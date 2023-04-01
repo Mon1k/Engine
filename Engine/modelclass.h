@@ -67,7 +67,7 @@ public:
 
 	void SetPosition(D3DXVECTOR3);
 	void SetScale(D3DXVECTOR3);
-	virtual D3DXMATRIX GetWorldMatrix();
+	virtual D3DXMATRIX GetWorldMatrix();	
 
 	bool LoadModel(char* filename) {
 		std::string string(filename);
