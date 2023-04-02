@@ -34,12 +34,13 @@ public:
 	void Shutdown();
 	void Frame();
 
-	float GetBrightness();
 	void setBrightness(float brightness) {
 		m_brightness = brightness;
 	}
 
-	float GetTranslation(int);
+	float GetScale();
+	float GetBrightness();
+	float GetTranslation();
 
 private:
 	bool InitializeSkyPlane(int, float, float, float, int);
@@ -50,10 +51,7 @@ private:
 private:
 	SkyPlaneType* m_skyPlane;
 
-	float m_brightness;
-
-	float m_translationSpeed[4];
-	float m_textureTranslation[4];
+	float m_scale, m_brightness, m_translation;
 
 	SkyPlaneShaderClass* m_shader;
 };

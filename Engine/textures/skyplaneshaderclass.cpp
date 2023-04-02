@@ -8,7 +8,6 @@ SkyPlaneShaderClass::SkyPlaneShaderClass()
 	m_layout = 0;
 	m_sampleState = 0;
 	m_matrixBuffer = 0;
-
 	m_skyBuffer = 0;
 }
 
@@ -45,15 +44,14 @@ void SkyPlaneShaderClass::Shutdown()
 
 
 bool SkyPlaneShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
-	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ, float brightness)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* cloudTexture, ID3D11ShaderResourceView* perturbTexture,
+	float translation, float scale, float brightness)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ,
-		secondTranslationX, secondTranslationZ, brightness);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, cloudTexture, perturbTexture, translation, scale, brightness);
 	if (!result) {
 		return false;
 	}
@@ -244,9 +242,8 @@ void SkyPlaneShaderClass::ShutdownShader()
 }
 
 bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
-	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ,
-	float brightness)
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* cloudTexture,
+	ID3D11ShaderResourceView* perturbTexture, float translation, float scale, float brightness)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -293,12 +290,10 @@ bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	dataPtr2 = (SkyBufferType*)mappedResource.pData;
 
 	// Copy the sky variables into the constant buffer.
-	dataPtr2->firstTranslationX = firstTranslationX;
-	dataPtr2->firstTranslationZ = firstTranslationZ;
-	dataPtr2->secondTranslationX = secondTranslationX;
-	dataPtr2->secondTranslationZ = secondTranslationZ;
+	dataPtr2->translation = translation;
+	dataPtr2->scale = scale;
 	dataPtr2->brightness = brightness;
-	dataPtr2->padding = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	dataPtr2->padding = 0.0f;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_skyBuffer, 0);
@@ -309,9 +304,9 @@ bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	// Finally set the sky constant buffer in the pixel shader with the updated values.
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_skyBuffer);
 
-	// Set the shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-	deviceContext->PSSetShaderResources(1, 1, &texture2);
+	// Set the shader texture resources in the pixel shader.
+	deviceContext->PSSetShaderResources(0, 1, &cloudTexture);
+	deviceContext->PSSetShaderResources(1, 1, &perturbTexture);
 
 	return true;
 }

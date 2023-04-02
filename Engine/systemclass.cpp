@@ -8,6 +8,7 @@ float Options::shadow_near;
 float Options::shadow_depth;
 bool Options::soft_shadow;
 bool Options::shadow_enabled;
+bool Options::full_screen;
 
 SystemClass::SystemClass()
 {
@@ -223,8 +224,8 @@ bool SystemClass::frame()
 
 	// rotate camera by mouse
 	if (mouseButtonPress != MOUSE_BUTTON2) {
-		float diffRotationX = mouseX - lastMouseX;
-		float diffRotationY = mouseY - lastMouseY;
+		float diffRotationX = m_Input->getMouseDiffPosition().x;
+		float diffRotationY = m_Input->getMouseDiffPosition().y;
 
 		m_Position->setSensivity(mouseSensivityY);
 		m_Position->LookDownward(diffRotationY > 0.0f);
@@ -304,6 +305,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	DEVMODE dmScreenSettings;
 	int posX, posY;
 
+	posX = posY = 0;
+
 
 	// Get an external pointer to this object.	
 	ApplicationHandle = this;
@@ -336,7 +339,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if (FULL_SCREEN) {
+	if (Options::full_screen) {
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize       = sizeof(dmScreenSettings);
@@ -347,8 +350,6 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 		// Change the display settings to full screen.
 		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-
-		// Set the position of the window to the top left corner.
 		posX = posY = 0;
 	} else {
 		// If windowed then set it to 800x600 resolution.
@@ -356,8 +357,12 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 		screenHeight = this->screenHeight;
 
 		// Place the window in the middle of the screen.
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		if (screenWidth != this->screenWidth) {
+			posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
+		}
+		if (screenHeight != this->screenHeight) {
+			posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		}
 	}
 
 	// Create the window with the screen settings and get the handle to it.
@@ -384,7 +389,7 @@ void SystemClass::ShutdownWindows()
 	ShowCursor(true);
 
 	// Fix the display settings if leaving full screen mode.
-	if (FULL_SCREEN) {
+	if (Options::full_screen) {
 		ChangeDisplaySettings(NULL, 0);
 	}
 

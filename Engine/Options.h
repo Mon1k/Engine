@@ -14,6 +14,8 @@ public:
 		Options::shadow_near = 1.0f;
 		Options::soft_shadow = false;
 		Options::shadow_enabled = true;
+
+		Options::full_screen = false;
 	}
 
 	static int shadow_width;
@@ -22,4 +24,6 @@ public:
 	static float shadow_depth;
 	static bool soft_shadow;
 	static bool shadow_enabled;
+	
+	static bool full_screen;
 };

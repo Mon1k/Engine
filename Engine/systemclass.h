@@ -56,8 +56,8 @@ protected:
 	bool done;
 
 public:
-	int screenWidth = 1680;
-	int screenHeight = 1050;
+	int screenWidth = 1920;
+	int screenHeight = 1080;
 };
 
 

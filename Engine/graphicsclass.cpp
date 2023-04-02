@@ -27,7 +27,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
-	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
+	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, Options::full_screen, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;

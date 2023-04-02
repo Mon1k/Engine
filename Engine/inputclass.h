@@ -10,6 +10,8 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include <dinput.h>
+#include <d3d11.h>
+#include <d3dx10math.h>
 
 class InputClass
 {
@@ -28,6 +30,9 @@ public:
 	bool IsKeyDown();
 	int getMouseButton();
 	int getMouseButtonPress();
+	D3DXVECTOR2 getMouseDiffPosition() {
+		return D3DXVECTOR2(m_mouseState.lX, m_mouseState.lY);
+	};
 
 private:
 	bool ReadKeyboard();

@@ -4,8 +4,9 @@ SkyPlaneClass::SkyPlaneClass(): ModelClass()
 {
 	m_skyPlane = 0;
 
-	// Set the brightness of the clouds.
+	m_scale = 0.3f;
 	m_brightness = 0.65f;
+	m_translation = 0.0f;
 }
 
 
@@ -27,23 +28,11 @@ bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::wstring> tex
 	m_D3D = d3dClass;
 
 	// Set the sky plane parameters.
-	skyPlaneResolution = 10;
+	skyPlaneResolution = 50;
 	skyPlaneWidth = 10.0f;
 	skyPlaneTop = 0.5f;
 	skyPlaneBottom = 0.0f;
-	textureRepeat = 5;
-
-	// Setup the cloud translation speed increments.
-	m_translationSpeed[0] = 0.0003f;   // First texture X translation speed.
-	m_translationSpeed[1] = 0.0f;      // First texture Z translation speed.
-	m_translationSpeed[2] = 0.00015f;  // Second texture X translation speed.
-	m_translationSpeed[3] = 0.0f;      // Second texture Z translation speed.
-
-	// Initialize the texture translation values.
-	m_textureTranslation[0] = 0.0f;
-	m_textureTranslation[1] = 0.0f;
-	m_textureTranslation[2] = 0.0f;
-	m_textureTranslation[3] = 0.0f;
+	textureRepeat = 4;
 
 	// Create the sky plane.
 	result = InitializeSkyPlane(skyPlaneResolution, skyPlaneWidth, skyPlaneTop, skyPlaneBottom, textureRepeat);
@@ -95,24 +84,10 @@ void SkyPlaneClass::ShutdownSkyPlane()
 
 void SkyPlaneClass::Frame()
 {
-	// Increment the translation values to simulate the moving clouds.
-	m_textureTranslation[0] += m_translationSpeed[0];
-	m_textureTranslation[1] += m_translationSpeed[1];
-	m_textureTranslation[2] += m_translationSpeed[2];
-	m_textureTranslation[3] += m_translationSpeed[3];
-
-	// Keep the values in the zero to one range.
-	if (m_textureTranslation[0] > 1.0f) { 
-		m_textureTranslation[0] -= 1.0f; 
-	}
-	if (m_textureTranslation[1] > 1.0f) { 
-		m_textureTranslation[1] -= 1.0f; 
-	}
-	if (m_textureTranslation[2] > 1.0f) { 
-		m_textureTranslation[2] -= 1.0f; 
-	}
-	if (m_textureTranslation[3] > 1.0f) { 
-		m_textureTranslation[3] -= 1.0f; 
+	// Increment the texture translation value each frame.
+	m_translation += 0.0001f;
+	if (m_translation > 1.0f) {
+		m_translation -= 1.0f;
 	}
 }
 
@@ -121,9 +96,14 @@ float SkyPlaneClass::GetBrightness()
 	return m_brightness;
 }
 
-float SkyPlaneClass::GetTranslation(int index)
+float SkyPlaneClass::GetScale()
 {
-	return m_textureTranslation[index];
+	return m_scale;
+}
+
+float SkyPlaneClass::GetTranslation()
+{
+	return m_translation;
 }
 
 bool SkyPlaneClass::InitializeSkyPlane(int skyPlaneResolution, float skyPlaneWidth, float skyPlaneTop, float skyPlaneBottom, int textureRepeat)
@@ -321,7 +301,7 @@ void SkyPlaneClass::Render(CameraClass* camera)
 	m_D3D->EnableSecondBlendState();
 
 	RenderBuffers(m_D3D->GetDeviceContext());
-	m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, GetTexture(0), GetTexture(1), GetTranslation(0), GetTranslation(1), GetTranslation(2), GetTranslation(3), GetBrightness());
+	m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, GetTexture(0), GetTexture(1), GetTranslation(), GetScale(), GetBrightness());
 
 	m_D3D->TurnOffAlphaBlending();
 	m_D3D->TurnZBufferOn();
