@@ -66,7 +66,7 @@ public:
         m_shader = shader;
         m_shader->setD3D(m_D3D);
     }
-    AbstractShader* getShader()
+    virtual AbstractShader* getShader()
     {
         return m_shader;
     }

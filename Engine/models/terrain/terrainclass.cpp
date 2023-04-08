@@ -22,7 +22,7 @@ TerrainClass::~TerrainClass()
 {
 }
 
-bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename)
+bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename, WCHAR* detailMapFilename)
 {
 	bool result;
 
@@ -46,7 +46,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	// Calculate the texture coordinates.
 	CalculateTextureCoordinates();
 
-	if (!LoadTextures(m_D3D->GetDevice(), textureFilename)) {
+	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename, detailMapFilename })) {
 		return false;
 	}
 
@@ -417,7 +417,7 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			}
 
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index3].x, m_heightMap[index3].y, m_heightMap[index3].z);
-			m_vertices[index].texture = D3DXVECTOR2(m_heightMap[index3].tu, tv);
+			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index3].tu, tv, 0.0f, 0.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index3].nx, m_heightMap[index3].ny, m_heightMap[index3].nz);
 			index++;
 
@@ -434,19 +434,19 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			}
 
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index4].x, m_heightMap[index4].y, m_heightMap[index4].z);
-			m_vertices[index].texture = D3DXVECTOR2(tu, tv);
+			m_vertices[index].texture = D3DXVECTOR4(tu, tv, 1.0f, 0.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index4].nx, m_heightMap[index4].ny, m_heightMap[index4].nz);
 			index++;
 
 			// Bottom left.
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
-			m_vertices[index].texture = D3DXVECTOR2(m_heightMap[index1].tu, m_heightMap[index1].tv);
+			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
 			index++;
 
 			// Bottom left.
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
-			m_vertices[index].texture = D3DXVECTOR2(m_heightMap[index1].tu, m_heightMap[index1].tv);
+			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
 			index++;
 
@@ -463,7 +463,7 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			}
 
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index4].x, m_heightMap[index4].y, m_heightMap[index4].z);
-			m_vertices[index].texture = D3DXVECTOR2(tu, tv);
+			m_vertices[index].texture = D3DXVECTOR4(tu, tv, 1.0f, 0.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index4].nx, m_heightMap[index4].ny, m_heightMap[index4].nz);
 			index++;
 
@@ -476,7 +476,7 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			}
 
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index2].x, m_heightMap[index2].y, m_heightMap[index2].z);
-			m_vertices[index].texture = D3DXVECTOR2(tu, m_heightMap[index2].tv);
+			m_vertices[index].texture = D3DXVECTOR4(tu, m_heightMap[index2].tv, 1.0f, 1.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index2].nx, m_heightMap[index2].ny, m_heightMap[index2].nz);
 			index++;
 		}
@@ -496,7 +496,7 @@ void TerrainClass::Render(CameraClass* camera)
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture());
+	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), GetTexture(1));
 
 	m_quadTree->Render(m_shader);
 }

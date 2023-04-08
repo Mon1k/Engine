@@ -16,7 +16,7 @@ private:
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
+		D3DXVECTOR4 texture;
 		D3DXVECTOR3 normal;
 	};
 
@@ -37,7 +37,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*);
+	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
@@ -55,6 +55,10 @@ public:
 	void CopyVertexArray(void*);
 	QuadTreeClass* getQuadTree() {
 		return m_quadTree;
+	}
+
+	virtual AbstractShader* getShader() {
+		return m_shader;
 	}
 
 private:

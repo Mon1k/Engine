@@ -9,6 +9,9 @@ TerrainShaderClass::TerrainShaderClass()
 	m_sampleState = 0;
 	m_matrixBuffer = 0;
 	m_lightBuffer = 0;
+
+	m_lightDetailIntensity = 1.8f;
+	m_distanceIntensity = 0.9f;
 }
 
 
@@ -45,13 +48,13 @@ void TerrainShaderClass::Shutdown()
 
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture)
+	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* detailTexture)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, texture, detailTexture);
 	if (!result) {
 		return false;
 	}
@@ -136,7 +139,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 
 	polygonLayout[1].SemanticName = "TEXCOORD";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -252,7 +255,7 @@ void TerrainShaderClass::ShutdownShader()
 
 
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture)
+	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* detailTexture)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -303,6 +306,8 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->diffuseColor = light->GetDiffuseColor();
 	dataPtr2->lightDirection = light->GetDirection();
 	dataPtr2->lightIntensity = light->getIntensity();
+	dataPtr2->lightDetailIntensity = m_lightDetailIntensity;
+	dataPtr2->distanceIntensity = m_distanceIntensity;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -315,6 +320,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(1, 1, &detailTexture);
 
 	return true;
 }

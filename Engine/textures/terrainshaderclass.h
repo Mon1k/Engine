@@ -26,6 +26,9 @@ private:
 		D3DXVECTOR4 diffuseColor;
 		D3DXVECTOR3 lightDirection;
 		float lightIntensity;
+		float lightDetailIntensity;
+		float distanceIntensity;
+		D3DXVECTOR2 padding;
 	};
 
 public:
@@ -35,9 +38,16 @@ public:
 
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
 	void RenderShader(ID3D11DeviceContext*, int);
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*);
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
+
+	void setLightDetailIntensity(float intensity) {
+		m_lightDetailIntensity = intensity;
+	}
+	void setDistnaceIntensity(float distance) {
+		m_distanceIntensity = distance;
+	}
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
@@ -48,6 +58,9 @@ private:
 	ID3D11SamplerState* m_sampleState;
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11Buffer* m_lightBuffer;
+
+	float m_lightDetailIntensity;
+	float m_distanceIntensity;
 };
 
 #endif
