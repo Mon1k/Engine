@@ -11,7 +11,7 @@ TerrainShaderClass::TerrainShaderClass()
 	m_lightBuffer = 0;
 
 	m_lightDetailIntensity = 1.8f;
-	m_distanceIntensity = 0.9f;
+	m_distanceIntensity = 0.999f;
 }
 
 
@@ -48,13 +48,13 @@ void TerrainShaderClass::Shutdown()
 
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* detailTexture)
+	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMapTexture, ID3D11ShaderResourceView* detailTexture)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, texture, detailTexture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, texture, normalMapTexture, detailTexture);
 	if (!result) {
 		return false;
 	}
@@ -72,7 +72,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
 	unsigned int numElements;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
@@ -152,6 +152,22 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[2].InstanceDataStepRate = 0;
+
+	polygonLayout[3].SemanticName = "TANGENT";
+	polygonLayout[3].SemanticIndex = 0;
+	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[3].InputSlot = 0;
+	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[3].InstanceDataStepRate = 0;
+
+	polygonLayout[4].SemanticName = "BINORMAL";
+	polygonLayout[4].SemanticIndex = 0;
+	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[4].InputSlot = 0;
+	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[4].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -255,7 +271,7 @@ void TerrainShaderClass::ShutdownShader()
 
 
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* detailTexture)
+	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMapTexture, ID3D11ShaderResourceView* detailTexture)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -320,7 +336,8 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
-	deviceContext->PSSetShaderResources(1, 1, &detailTexture);
+	deviceContext->PSSetShaderResources(1, 1, &normalMapTexture);
+	deviceContext->PSSetShaderResources(2, 1, &detailTexture);
 
 	return true;
 }

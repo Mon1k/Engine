@@ -20,6 +20,8 @@ private:
 		D3DXVECTOR3 position;
 		D3DXVECTOR4 texture;
 		D3DXVECTOR3 normal;
+		D3DXVECTOR3 tangent;
+		D3DXVECTOR3 binormal;
 	};
 
 	struct VectorType

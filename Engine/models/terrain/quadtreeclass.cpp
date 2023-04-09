@@ -235,6 +235,8 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			vertices[index].position = m_vertexList[vertexIndex].position;
 			vertices[index].texture = m_vertexList[vertexIndex].texture;
 			vertices[index].normal = m_vertexList[vertexIndex].normal;
+			vertices[index].tangent = m_vertexList[vertexIndex].tangent;
+			vertices[index].binormal = m_vertexList[vertexIndex].binormal;
 			indices[index] = index;
 			
 			// Also store the vertex position information in the node vertex array.
@@ -248,6 +250,8 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			vertices[index].position = m_vertexList[vertexIndex].position;
 			vertices[index].texture = m_vertexList[vertexIndex].texture;
 			vertices[index].normal = m_vertexList[vertexIndex].normal;
+			vertices[index].tangent = m_vertexList[vertexIndex].tangent;
+			vertices[index].binormal = m_vertexList[vertexIndex].binormal;
 			indices[index] = index;
 			
 			node->vertexArray[index].x = m_vertexList[vertexIndex].position.x;
@@ -260,6 +264,8 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			vertices[index].position = m_vertexList[vertexIndex].position;
 			vertices[index].texture = m_vertexList[vertexIndex].texture;
 			vertices[index].normal = m_vertexList[vertexIndex].normal;
+			vertices[index].tangent = m_vertexList[vertexIndex].tangent;
+			vertices[index].binormal = m_vertexList[vertexIndex].binormal;
 			indices[index] = index;
 
 			node->vertexArray[index].x = m_vertexList[vertexIndex].position.x;

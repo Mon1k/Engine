@@ -18,6 +18,8 @@ private:
 		D3DXVECTOR3 position;
 		D3DXVECTOR4 texture;
 		D3DXVECTOR3 normal;
+		D3DXVECTOR3 tangent;
+		D3DXVECTOR3 binormal;
 	};
 
 	struct HeightMapType
@@ -25,6 +27,8 @@ private:
 		float x, y, z;
 		float tu, tv;
 		float nx, ny, nz;
+		float tx, ty, tz;
+		float bx, by, bz;
 	};
 
 	struct VectorType
@@ -37,7 +41,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*);
+	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*, WCHAR*);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
@@ -70,12 +74,17 @@ private:
 	void ShutdownBuffers();
 
 	bool InitializeBuffers(ID3D11Device*);
+
+	void CalculateTerrainVectors();
+	bool BuildTerrainModel();
+	void CalculateTangentBinormal(HeightMapType, HeightMapType, HeightMapType, VectorType&, VectorType&);
 private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
 
 	TerrainShaderClass* m_shader;
 	HeightMapType* m_heightMap;
+	HeightMapType* m_TerrainModel;
 
 	VertexType* m_vertices;
 	QuadTreeClass* m_quadTree;

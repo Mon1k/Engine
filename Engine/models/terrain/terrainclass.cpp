@@ -22,7 +22,7 @@ TerrainClass::~TerrainClass()
 {
 }
 
-bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename, WCHAR* detailMapFilename)
+bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename, WCHAR* textureNormalFilename, WCHAR* detailMapFilename)
 {
 	bool result;
 
@@ -46,7 +46,11 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	// Calculate the texture coordinates.
 	CalculateTextureCoordinates();
 
-	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename, detailMapFilename })) {
+	// Calculate the normal, tangent, and binormal vectors for the terrain model.
+	BuildTerrainModel();
+	CalculateTerrainVectors();
+
+	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename, textureNormalFilename, detailMapFilename })) {
 		return false;
 	}
 
@@ -136,6 +140,9 @@ bool TerrainClass::LoadHeightMap(char* filename)
 	// Save the dimensions of the terrain.
 	m_terrainWidth = bitmapInfoHeader.biWidth;
 	m_terrainHeight = bitmapInfoHeader.biHeight;
+
+	// Calculate the number of vertices in the terrain mesh.
+	m_vertexCount = (m_terrainWidth - 1) * (m_terrainHeight - 1) * 6;
 
 	// Calculate the size of the bitmap image data.
 	imageSize = m_terrainWidth * m_terrainHeight * 3;
@@ -381,15 +388,229 @@ void TerrainClass::CalculateTextureCoordinates()
 	}
 }
 
+bool TerrainClass::BuildTerrainModel()
+{
+	int i, j, index, index1, index2, index3, index4;
+
+	// Create the terrain model array.
+	m_TerrainModel = new HeightMapType[m_vertexCount];
+	if (!m_TerrainModel) {
+		return false;
+	}
+
+	// Load the terrain model with the height map terrain data.
+	index = 0;
+
+	for (j = 0; j < (m_terrainHeight - 1); j++) {
+		for (i = 0; i < (m_terrainWidth - 1); i++) {
+			index1 = (m_terrainWidth * j) + i;          // Bottom left.
+			index2 = (m_terrainWidth * j) + (i + 1);      // Bottom right.
+			index3 = (m_terrainWidth * (j + 1)) + i;      // Upper left.
+			index4 = (m_terrainWidth * (j + 1)) + (i + 1);  // Upper right.
+
+			// Upper left.
+			m_TerrainModel[index].x = m_heightMap[index3].x;
+			m_TerrainModel[index].y = m_heightMap[index3].y;
+			m_TerrainModel[index].z = m_heightMap[index3].z;
+			m_TerrainModel[index].nx = m_heightMap[index3].nx;
+			m_TerrainModel[index].ny = m_heightMap[index3].ny;
+			m_TerrainModel[index].nz = m_heightMap[index3].nz;
+			m_TerrainModel[index].tu = 0.0f;
+			m_TerrainModel[index].tv = 0.0f;
+			index++;
+
+			// Upper right.
+			m_TerrainModel[index].x = m_heightMap[index4].x;
+			m_TerrainModel[index].y = m_heightMap[index4].y;
+			m_TerrainModel[index].z = m_heightMap[index4].z;
+			m_TerrainModel[index].nx = m_heightMap[index4].nx;
+			m_TerrainModel[index].ny = m_heightMap[index4].ny;
+			m_TerrainModel[index].nz = m_heightMap[index4].nz;
+			m_TerrainModel[index].tu = 1.0f;
+			m_TerrainModel[index].tv = 0.0f;
+			index++;
+
+			// Bottom left.
+			m_TerrainModel[index].x = m_heightMap[index1].x;
+			m_TerrainModel[index].y = m_heightMap[index1].y;
+			m_TerrainModel[index].z = m_heightMap[index1].z;
+			m_TerrainModel[index].nx = m_heightMap[index1].nx;
+			m_TerrainModel[index].ny = m_heightMap[index1].ny;
+			m_TerrainModel[index].nz = m_heightMap[index1].nz;
+			m_TerrainModel[index].tu = 0.0f;
+			m_TerrainModel[index].tv = 1.0f;
+			index++;
+
+			// Bottom left.
+			m_TerrainModel[index].x = m_heightMap[index1].x;
+			m_TerrainModel[index].y = m_heightMap[index1].y;
+			m_TerrainModel[index].z = m_heightMap[index1].z;
+			m_TerrainModel[index].nx = m_heightMap[index1].nx;
+			m_TerrainModel[index].ny = m_heightMap[index1].ny;
+			m_TerrainModel[index].nz = m_heightMap[index1].nz;
+			m_TerrainModel[index].tu = 0.0f;
+			m_TerrainModel[index].tv = 1.0f;
+			index++;
+
+			// Upper right.
+			m_TerrainModel[index].x = m_heightMap[index4].x;
+			m_TerrainModel[index].y = m_heightMap[index4].y;
+			m_TerrainModel[index].z = m_heightMap[index4].z;
+			m_TerrainModel[index].nx = m_heightMap[index4].nx;
+			m_TerrainModel[index].ny = m_heightMap[index4].ny;
+			m_TerrainModel[index].nz = m_heightMap[index4].nz;
+			m_TerrainModel[index].tu = 1.0f;
+			m_TerrainModel[index].tv = 0.0f;
+			index++;
+
+			// Bottom right.
+			m_TerrainModel[index].x = m_heightMap[index2].x;
+			m_TerrainModel[index].y = m_heightMap[index2].y;
+			m_TerrainModel[index].z = m_heightMap[index2].z;
+			m_TerrainModel[index].nx = m_heightMap[index2].nx;
+			m_TerrainModel[index].ny = m_heightMap[index2].ny;
+			m_TerrainModel[index].nz = m_heightMap[index2].nz;
+			m_TerrainModel[index].tu = 1.0f;
+			m_TerrainModel[index].tv = 1.0f;
+			index++;
+		}
+	}
+
+	return true;
+}
+
+void TerrainClass::CalculateTerrainVectors()
+{
+	int faceCount, i, index;
+	HeightMapType vertex1, vertex2, vertex3;
+	VectorType tangent, binormal;
+
+
+	// Calculate the number of faces in the terrain model.
+	faceCount = m_vertexCount / 3;
+
+	// Initialize the index to the model data.
+	index = 0;
+
+	// Go through all the faces and calculate the the tangent, binormal, and normal vectors.
+	for (i = 0; i < faceCount; i++) {
+		// Get the three vertices for this face from the terrain model.
+		vertex1.x = m_TerrainModel[index].x;
+		vertex1.y = m_TerrainModel[index].y;
+		vertex1.z = m_TerrainModel[index].z;
+		vertex1.tu = m_TerrainModel[index].tu;
+		vertex1.tv = m_TerrainModel[index].tv;
+		vertex1.nx = m_TerrainModel[index].nx;
+		vertex1.ny = m_TerrainModel[index].ny;
+		vertex1.nz = m_TerrainModel[index].nz;
+		index++;
+
+		vertex2.x = m_TerrainModel[index].x;
+		vertex2.y = m_TerrainModel[index].y;
+		vertex2.z = m_TerrainModel[index].z;
+		vertex2.tu = m_TerrainModel[index].tu;
+		vertex2.tv = m_TerrainModel[index].tv;
+		vertex2.nx = m_TerrainModel[index].nx;
+		vertex2.ny = m_TerrainModel[index].ny;
+		vertex2.nz = m_TerrainModel[index].nz;
+		index++;
+
+		vertex3.x = m_TerrainModel[index].x;
+		vertex3.y = m_TerrainModel[index].y;
+		vertex3.z = m_TerrainModel[index].z;
+		vertex3.tu = m_TerrainModel[index].tu;
+		vertex3.tv = m_TerrainModel[index].tv;
+		vertex3.nx = m_TerrainModel[index].nx;
+		vertex3.ny = m_TerrainModel[index].ny;
+		vertex3.nz = m_TerrainModel[index].nz;
+		index++;
+
+		// Calculate the tangent and binormal of that face.
+		CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
+
+		// Store the tangent and binormal for this face back in the model structure.
+		m_TerrainModel[index - 1].tx = tangent.x;
+		m_TerrainModel[index - 1].ty = tangent.y;
+		m_TerrainModel[index - 1].tz = tangent.z;
+		m_TerrainModel[index - 1].bx = binormal.x;
+		m_TerrainModel[index - 1].by = binormal.y;
+		m_TerrainModel[index - 1].bz = binormal.z;
+
+		m_TerrainModel[index - 2].tx = tangent.x;
+		m_TerrainModel[index - 2].ty = tangent.y;
+		m_TerrainModel[index - 2].tz = tangent.z;
+		m_TerrainModel[index - 2].bx = binormal.x;
+		m_TerrainModel[index - 2].by = binormal.y;
+		m_TerrainModel[index - 2].bz = binormal.z;
+
+		m_TerrainModel[index - 3].tx = tangent.x;
+		m_TerrainModel[index - 3].ty = tangent.y;
+		m_TerrainModel[index - 3].tz = tangent.z;
+		m_TerrainModel[index - 3].bx = binormal.x;
+		m_TerrainModel[index - 3].by = binormal.y;
+		m_TerrainModel[index - 3].bz = binormal.z;
+	}
+}
+
+
+void TerrainClass::CalculateTangentBinormal(HeightMapType vertex1, HeightMapType vertex2, HeightMapType vertex3, VectorType& tangent,
+	VectorType& binormal)
+{
+	float vector1[3], vector2[3];
+	float tuVector[2], tvVector[2];
+	float den;
+	float length;
+
+
+	// Calculate the two vectors for this face.
+	vector1[0] = vertex2.x - vertex1.x;
+	vector1[1] = vertex2.y - vertex1.y;
+	vector1[2] = vertex2.z - vertex1.z;
+
+	vector2[0] = vertex3.x - vertex1.x;
+	vector2[1] = vertex3.y - vertex1.y;
+	vector2[2] = vertex3.z - vertex1.z;
+
+	// Calculate the tu and tv texture space vectors.
+	tuVector[0] = vertex2.tu - vertex1.tu;
+	tvVector[0] = vertex2.tv - vertex1.tv;
+
+	tuVector[1] = vertex3.tu - vertex1.tu;
+	tvVector[1] = vertex3.tv - vertex1.tv;
+
+	// Calculate the denominator of the tangent/binormal equation.
+	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	// Calculate the length of this normal.
+	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+	// Normalize the normal and then store it
+	tangent.x = tangent.x / length;
+	tangent.y = tangent.y / length;
+	tangent.z = tangent.z / length;
+
+	// Calculate the length of this normal.
+	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+	// Normalize the normal and then store it
+	binormal.x = binormal.x / length;
+	binormal.y = binormal.y / length;
+	binormal.z = binormal.z / length;
+}
 
 bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 {
 	int index, i, j, index1, index2, index3, index4;
 	float tu, tv;
-
-
-	// Calculate the number of vertices in the terrain mesh.
-	m_vertexCount = (m_terrainWidth - 1) * (m_terrainHeight - 1) * 6;
 
 	// Create the vertex array.
 	m_vertices = new VertexType[m_vertexCount];
@@ -419,6 +640,51 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index3].x, m_heightMap[index3].y, m_heightMap[index3].z);
 			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index3].tu, tv, 0.0f, 0.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index3].nx, m_heightMap[index3].ny, m_heightMap[index3].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index3].tx, m_heightMap[index3].ty, m_heightMap[index3].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index3].bx, m_heightMap[index3].by, m_heightMap[index3].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
+			index++;
+
+			// Upper right.
+			tu = m_heightMap[index4].tu;
+			tv = m_heightMap[index4].tv;
+
+			// Modify the texture coordinates to cover the top and right edge.
+			if (tu == 0.0f) { 
+				tu = 1.0f; 
+			}
+			if (tv == 1.0f) { 
+				tv = 0.0f;
+			}
+
+			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index4].x, m_heightMap[index4].y, m_heightMap[index4].z);
+			m_vertices[index].texture = D3DXVECTOR4(tu, tv, 1.0f, 0.0f);
+			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index4].nx, m_heightMap[index4].ny, m_heightMap[index4].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index4].tx, m_heightMap[index4].ty, m_heightMap[index4].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index4].bx, m_heightMap[index4].by, m_heightMap[index4].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
+			index++;
+
+			// Bottom left.
+			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
+			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
+			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index1].tx, m_heightMap[index1].ty, m_heightMap[index1].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index1].bx, m_heightMap[index1].by, m_heightMap[index1].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
+			index++;
+
+			// Bottom left.
+			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
+			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
+			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index1].tx, m_heightMap[index1].ty, m_heightMap[index1].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index1].bx, m_heightMap[index1].by, m_heightMap[index1].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
 			index++;
 
 			// Upper right.
@@ -436,35 +702,10 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index4].x, m_heightMap[index4].y, m_heightMap[index4].z);
 			m_vertices[index].texture = D3DXVECTOR4(tu, tv, 1.0f, 0.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index4].nx, m_heightMap[index4].ny, m_heightMap[index4].nz);
-			index++;
-
-			// Bottom left.
-			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
-			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
-			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
-			index++;
-
-			// Bottom left.
-			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index1].x, m_heightMap[index1].y, m_heightMap[index1].z);
-			m_vertices[index].texture = D3DXVECTOR4(m_heightMap[index1].tu, m_heightMap[index1].tv, 0.0f, 1.0f);
-			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index1].nx, m_heightMap[index1].ny, m_heightMap[index1].nz);
-			index++;
-
-			// Upper right.
-			tu = m_heightMap[index4].tu;
-			tv = m_heightMap[index4].tv;
-
-			// Modify the texture coordinates to cover the top and right edge.
-			if (tu == 0.0f) { 
-				tu = 1.0f; 
-			}
-			if (tv == 1.0f) { 
-				tv = 0.0f; 
-			}
-
-			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index4].x, m_heightMap[index4].y, m_heightMap[index4].z);
-			m_vertices[index].texture = D3DXVECTOR4(tu, tv, 1.0f, 0.0f);
-			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index4].nx, m_heightMap[index4].ny, m_heightMap[index4].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index4].tx, m_heightMap[index4].ty, m_heightMap[index4].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index4].bx, m_heightMap[index4].by, m_heightMap[index4].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
 			index++;
 
 			// Bottom right.
@@ -478,9 +719,16 @@ bool TerrainClass::InitializeBuffers(ID3D11Device* device)
 			m_vertices[index].position = D3DXVECTOR3(m_heightMap[index2].x, m_heightMap[index2].y, m_heightMap[index2].z);
 			m_vertices[index].texture = D3DXVECTOR4(tu, m_heightMap[index2].tv, 1.0f, 1.0f);
 			m_vertices[index].normal = D3DXVECTOR3(m_heightMap[index2].nx, m_heightMap[index2].ny, m_heightMap[index2].nz);
+			//m_vertices[index].tangent = D3DXVECTOR3(m_heightMap[index2].tx, m_heightMap[index2].ty, m_heightMap[index2].tz);
+			//m_vertices[index].binormal = D3DXVECTOR3(m_heightMap[index2].bx, m_heightMap[index2].by, m_heightMap[index2].bz);
+			m_vertices[index].tangent = D3DXVECTOR3(m_TerrainModel[index].tx, m_TerrainModel[index].ty, m_TerrainModel[index].tz);
+			m_vertices[index].binormal = D3DXVECTOR3(m_TerrainModel[index].bx, m_TerrainModel[index].by, m_TerrainModel[index].bz);
 			index++;
 		}
 	}
+
+	delete[] m_TerrainModel;
+	m_TerrainModel = 0;
 
 	return true;
 }
@@ -496,7 +744,7 @@ void TerrainClass::Render(CameraClass* camera)
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), GetTexture(1));
+	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), GetTexture(1), GetTexture(2));
 
 	m_quadTree->Render(m_shader);
 }

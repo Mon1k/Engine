@@ -10,6 +10,8 @@ struct VertexInputType
     float4 position : POSITION;
     float4 tex : TEXCOORD0;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
 };
 
 struct PixelInputType
@@ -17,6 +19,8 @@ struct PixelInputType
     float4 position : SV_POSITION;
     float4 tex : TEXCOORD0;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
     float4 depthPosition : TEXCOORD1;
 };
 
@@ -38,9 +42,15 @@ PixelInputType TerrainVertexShader(VertexInputType input)
     
     // Calculate the normal vector against the world matrix only.
     output.normal = mul(input.normal, (float3x3)worldMatrix);
-	
-    // Normalize the normal vector.
     output.normal = normalize(output.normal);
+
+    // Calculate the tangent vector against the world matrix only and then normalize the final value.
+    output.tangent = mul(input.tangent, (float3x3)worldMatrix);
+    output.tangent = normalize(output.tangent);
+
+    // Calculate the binormal vector against the world matrix only and then normalize the final value.
+    output.binormal = mul(input.binormal, (float3x3)worldMatrix);
+    output.binormal = normalize(output.binormal);
 
     // Store the position value in a second input value for depth value calculations.
     output.depthPosition = output.position;
