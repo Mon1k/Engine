@@ -324,6 +324,8 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->lightIntensity = light->getIntensity();
 	dataPtr2->lightDetailIntensity = m_lightDetailIntensity;
 	dataPtr2->distanceIntensity = m_distanceIntensity;
+	dataPtr2->isBumpTexture = normalMapTexture ? 1 : 0;
+	dataPtr2->isDetailTexture = detailTexture ? 1 : 0;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

@@ -28,7 +28,8 @@ private:
 		float lightIntensity;
 		float lightDetailIntensity;
 		float distanceIntensity;
-		D3DXVECTOR2 padding;
+		float isBumpTexture;
+		float isDetailTexture;
 	};
 
 public:

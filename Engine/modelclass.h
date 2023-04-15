@@ -46,7 +46,7 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
-	ID3D11ShaderResourceView** GetTextureArray(int);
+	bool addTexture(std::wstring);
 
 	void ReleaseModel();
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);

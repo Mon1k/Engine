@@ -2,10 +2,6 @@
 
 TextureArrayClass::TextureArrayClass()
 {
-	int size = sizeof(m_textures) / sizeof(m_textures[0]);
-	for (int i = 0; i < size; i++) {
-		m_textures[i] = 0;
-	}
 }
 
 
@@ -18,46 +14,47 @@ TextureArrayClass::~TextureArrayClass()
 {
 }
 
-bool TextureArrayClass::Initialize(ID3D11Device* device, WCHAR* filename1)
+bool TextureArrayClass::Initialize(ID3D11Device* device, WCHAR* filename)
 {
-	HRESULT result;
-
-	// Load the first texture in.
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename1, NULL, NULL, &m_textures[0], NULL);
-	if (FAILED(result)) {
-		return false;
-	}
+	m_textures.clear();
+	AddTexture(device, filename);
 
 	return true;
 }
 
-void TextureArrayClass::AddTexture(ID3D11Device* device, WCHAR* filename, int index)
+void TextureArrayClass::AddTexture(ID3D11Device* device, WCHAR* filename)
 {
+	ID3D11ShaderResourceView* texture;
+
 	// Load the first texture in.
-	D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &m_textures[index], NULL);
+	D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &texture, NULL);
+	m_textures.push_back(texture);
 }
 
 void TextureArrayClass::Shutdown()
 {
 	// Release the texture resources.
-	int size = sizeof(m_textures) / sizeof(m_textures[0]);
+	int size = m_textures.size();
 	for (int i = 0; i < size; i++) {
 		if (m_textures[i]) {
 			m_textures[i]->Release();
 			m_textures[i] = 0;
 		}
 	}
+
+	m_textures.clear();
+}
+
+ID3D11ShaderResourceView* TextureArrayClass::GetTexture(int index)
+{
+	if (index < 0 || index >= m_textures.size()) {
+		return 0;
+	}
+
+	return m_textures[index];
 }
 
 ID3D11ShaderResourceView** TextureArrayClass::GetTextureArray()
 {
-	return m_textures;
-}
-
-ID3D11ShaderResourceView** TextureArrayClass::GetTextureArray(int size)
-{
-	ID3D11ShaderResourceView** textures;
-	textures = new ID3D11ShaderResourceView *[size];
-	memcpy(textures, m_textures, size * sizeof(m_textures[0]));
-	return textures;
+	return m_textures.data();
 }

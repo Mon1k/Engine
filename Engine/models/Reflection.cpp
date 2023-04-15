@@ -65,7 +65,7 @@ void Reflection::Render(CameraClass* camera)
 
 		ReflectionShaderClass* shader = dynamic_cast<ReflectionShaderClass*>(m_shader);
 		shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix,
-			projectionMatrix, GetTextureArray()[0], m_ReflectionTexture->GetShaderResourceView(), m_ReflectionMatrix);
+			projectionMatrix, GetTexture(), m_ReflectionTexture->GetShaderResourceView(), m_ReflectionMatrix);
 	}
 }
 

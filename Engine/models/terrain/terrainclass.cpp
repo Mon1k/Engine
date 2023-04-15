@@ -10,6 +10,9 @@ TerrainClass::TerrainClass(): ModelClass()
 	m_vertices = 0;
 	m_shader = 0;
 	m_quadTree = 0;
+
+	isDetailTexture = 0;
+	isBumpTexture = 0;
 }
 
 
@@ -22,7 +25,7 @@ TerrainClass::~TerrainClass()
 {
 }
 
-bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename, WCHAR* textureNormalFilename, WCHAR* detailMapFilename)
+bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, WCHAR* textureFilename)
 {
 	bool result;
 
@@ -50,7 +53,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	BuildTerrainModel();
 	CalculateTerrainVectors();
 
-	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename, textureNormalFilename, detailMapFilename })) {
+	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename })) {
 		return false;
 	}
 
@@ -741,10 +744,12 @@ void TerrainClass::CopyVertexArray(void* vertexList)
 void TerrainClass::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
+	ID3D11ShaderResourceView* bumpTexture = isBumpTexture > 0 ? GetTexture(isBumpTexture) : 0;
+	ID3D11ShaderResourceView* detailTexture = isDetailTexture > 0 ? GetTexture(isDetailTexture) : 0;
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), GetTexture(1), GetTexture(2));
 
+	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), bumpTexture, detailTexture);
 	m_quadTree->Render(m_shader);
 }

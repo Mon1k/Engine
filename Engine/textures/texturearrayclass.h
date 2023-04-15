@@ -5,6 +5,9 @@
 #include <d3dx11tex.h>
 #include <algorithm>
 #include <iterator>
+#include <vector>
+using namespace std;
+
 
 class TextureArrayClass
 {
@@ -14,14 +17,18 @@ public:
 	~TextureArrayClass();
 
 	bool Initialize(ID3D11Device*, WCHAR*);
-	void AddTexture(ID3D11Device*, WCHAR*, int);
+	void AddTexture(ID3D11Device*, WCHAR*);
 	void Shutdown();
 
+	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
-	ID3D11ShaderResourceView** GetTextureArray(int);
+	std::vector<ID3D11ShaderResourceView*> getTextures() {
+		return m_textures;
+	}
+
 
 private:
-	ID3D11ShaderResourceView* m_textures[3];
+	std::vector<ID3D11ShaderResourceView*> m_textures;
 };
 
 #endif

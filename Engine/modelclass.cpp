@@ -76,22 +76,17 @@ void ModelClass::Shutdown()
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
-	return m_TextureArray->GetTextureArray()[0];
+	return m_TextureArray->GetTexture(0);
 }
 
 ID3D11ShaderResourceView* ModelClass::GetTexture(int index)
 {
-	return m_TextureArray->GetTextureArray()[index];
+	return m_TextureArray->GetTexture(index);
 }
 
 ID3D11ShaderResourceView** ModelClass::GetTextureArray()
 {
 	return m_TextureArray->GetTextureArray();
-}
-
-ID3D11ShaderResourceView** ModelClass::GetTextureArray(int size)
-{
-	return m_TextureArray->GetTextureArray(size);
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
@@ -236,9 +231,16 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstrin
 	int size = filenames.size();
 	if (size > 1) {
 		for (int i = 1; i < size; i++) {
-			m_TextureArray->AddTexture(device, &filenames[i][0], i);
+			m_TextureArray->AddTexture(device, &filenames[i][0]);
 		}
 	}
+
+	return true;
+}
+
+bool ModelClass::addTexture(std::wstring filename)
+{
+	m_TextureArray->AddTexture(m_D3D->GetDevice(), &filename[0]);
 
 	return true;
 }

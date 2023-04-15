@@ -41,7 +41,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*, WCHAR*);
+	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
@@ -50,6 +50,14 @@ public:
 	}
 	void setTextureRepeat(float repeat) {
 		m_repeat = repeat;
+	}
+	void addDetailTexture(std::wstring texture) {
+		addTexture(texture);
+		isDetailTexture = m_TextureArray->getTextures().size() - 1;
+	}
+	void addBumpTexture(std::wstring texture) {
+		addTexture(texture);
+		isBumpTexture = m_TextureArray->getTextures().size() - 1;
 	}
 
 	int GetTtriangleCount() {
@@ -81,6 +89,7 @@ private:
 private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
+	int isDetailTexture, isBumpTexture;
 
 	TerrainShaderClass* m_shader;
 	HeightMapType* m_heightMap;

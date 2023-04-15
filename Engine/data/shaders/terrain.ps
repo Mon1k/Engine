@@ -11,6 +11,8 @@ cbuffer LightBuffer
     float lightIntensity;
     float lightDetailIntensity;
     float distanceIntensity;
+    float isBumpTexture;
+    float isDetailTexture;
 };
 
 
@@ -42,30 +44,34 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
     // Get the depth value of the pixel by dividing the Z pixel depth by the homogeneous W coordinate.
     depthValue = input.depthPosition.z / input.depthPosition.w;
 
+    bumpNormal = input.normal;
+
     // Check if the depth value is close to the screen, if so we will apply the detail texture.
     if (depthValue < distanceIntensity) {
-        // Sample the pixel color from the detail map texture using the sampler at this texture coordinate location.
-        detailColor = detailTexture.Sample(SampleType, input.tex.zw);
+        if (isDetailTexture) {
+            // Sample the pixel color from the detail map texture using the sampler at this texture coordinate location.
+            detailColor = detailTexture.Sample(SampleType, input.tex.zw);
 
-        // Set the brightness of the detail texture.
-        detailBrightness = lightDetailIntensity;
+            // Set the brightness of the detail texture.
+            detailBrightness = lightDetailIntensity;
 
-        // Combine the ground texture and the detail texture.  Also multiply in the detail brightness.
-        textureColor = textureColor * detailColor * detailBrightness;
+            // Combine the ground texture and the detail texture.  Also multiply in the detail brightness.
+            textureColor = textureColor * detailColor * detailBrightness;
+        }
 
-        // Sample the pixel in the bump map.
-        bumpMap = normalTexture.Sample(SampleType, input.tex);
+        if (isBumpTexture) {
+            // Sample the pixel in the bump map.
+            bumpMap = normalTexture.Sample(SampleType, input.tex);
 
-        // Expand the range of the normal value from (0, +1) to (-1, +1).
-        bumpMap = (bumpMap * 2.0f) - 1.0f;
+            // Expand the range of the normal value from (0, +1) to (-1, +1).
+            bumpMap = (bumpMap * 2.0f) - 1.0f;
 
-        // Calculate the normal from the data in the bump map.
-        bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+            // Calculate the normal from the data in the bump map.
+            bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
 
-        // Normalize the resulting bump normal.
-        bumpNormal = normalize(bumpNormal);
-    } else {
-        bumpNormal = input.normal;
+            // Normalize the resulting bump normal.
+            bumpNormal = normalize(bumpNormal);
+        }
     }	
 
     // Set the default output color to the ambient light value for all pixels.
