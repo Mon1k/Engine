@@ -43,6 +43,7 @@ public:
 	{
 		return true;
 	};
+	virtual void RenderShader(ID3D11DeviceContext*, int) {};
 
 	void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
 	{

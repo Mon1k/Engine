@@ -446,7 +446,7 @@ void QuadTreeClass::ReleaseNode(NodeType* node)
 	}
 }
 
-void QuadTreeClass::Render(TerrainShaderClass* shader)
+void QuadTreeClass::Render(AbstractShader* shader)
 {
 	// Reset the number of triangles that are drawn for this frame.
 	m_drawCount = 0;
@@ -455,7 +455,7 @@ void QuadTreeClass::Render(TerrainShaderClass* shader)
 	RenderNode(m_parentNode, shader);
 }
 
-void QuadTreeClass::RenderNode(NodeType* node, TerrainShaderClass* shader)
+void QuadTreeClass::RenderNode(NodeType* node, AbstractShader* shader)
 {
 	bool result;
 	int count, i, indexCount;
@@ -507,7 +507,7 @@ void QuadTreeClass::RenderNode(NodeType* node, TerrainShaderClass* shader)
 
 	// Call the terrain shader to render the polygons in this node.
 	shader->RenderShader(deviceContext, indexCount);
-
+	
 	// Increase the count of the number of polygons that have been rendered during this frame.
 	m_drawCount += node->triangleCount;
 }

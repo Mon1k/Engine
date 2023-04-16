@@ -9,6 +9,8 @@
 class AbstractModel : public AbstractNode
 {
 public:
+    bool useShader = true;
+
     struct ModelType
     {
         float x, y, z;
@@ -61,7 +63,7 @@ public:
     bool isVisible() {
         return m_visible;
     }
-    void addShader(AbstractShader* shader)
+    virtual void addShader(AbstractShader* shader)
     {
         m_shader = shader;
         m_shader->setD3D(m_D3D);

@@ -38,7 +38,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	}
 
 	// Normalize the height of the height map.
-	NormalizeHeightMap();
+	//NormalizeHeightMap();
 
 	// Calculate the normals for the terrain data.
 	result = CalculateNormals();
@@ -750,6 +750,9 @@ void TerrainClass::Render(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	m_shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), bumpTexture, detailTexture);
+	if (useShader) {
+		TerrainShaderClass* shader = dynamic_cast<TerrainShaderClass*>(m_shader);
+		shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), bumpTexture, detailTexture);
+	}
 	m_quadTree->Render(m_shader);
 }

@@ -29,13 +29,17 @@ bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<
 		return false;
 	}
 
+	m_RefractionModel = 0;
+
 	return true;
 }
 
 void WaterNode::PreRender(CameraClass* camera)
 {
-	if (m_modelsTarget.size() != 0) {
+	if (m_RefractionModel) {
 		RenderRefractionToTexture(camera);
+	}
+	if (m_modelsTarget.size() != 0) {
 		RenderReflectionToTexture(camera);
 	}
 }
@@ -47,7 +51,8 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	D3DXVECTOR3 position = this->GetPosition();
 
 	// Setup a clipping plane based on the height of the water to clip everything above it.
-	clipPlane = D3DXVECTOR4(0.0f, position.y, 0.0f, m_waterHeight + 0.1f);
+	//clipPlane = D3DXVECTOR4(0.0f, position.y, 0.0f, m_waterHeight + 0.1f);
+	clipPlane = D3DXVECTOR4(0.0f, 1.0f, 0.0f, m_waterHeight + 0.1f);
 
 	// Set the render target to be the refraction render to texture.
 	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -63,11 +68,20 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	LightClass* light = m_RefractionModel->getLight(0);
-
-	m_RefractionModel->Render();
-	m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_RefractionModel->GetIndexCount(), m_RefractionModel->GetWorldMatrix(), viewMatrix,
+	/*m_RefractionShader->SetShaderParameters(m_D3D->GetDeviceContext(), m_RefractionModel->GetWorldMatrix(), viewMatrix,
 		projectionMatrix, m_RefractionModel->GetTexture(), light->GetDirection(),
-		light->GetAmbientColor(), light->GetDiffuseColor(), clipPlane);
+		light->GetAmbientColor(), light->GetDiffuseColor(), clipPlane);*/
+	
+
+	AbstractShader* shader = m_RefractionModel->getShader();
+	//m_RefractionModel->addShader(m_RefractionShader);
+
+	//m_RefractionModel->useShader = false;
+	m_RefractionModel->Render(camera);
+	//m_RefractionShader->RenderShader(m_D3D->GetDeviceContext(), m_RefractionModel->GetIndexCount());
+	//m_RefractionModel->useShader = true;
+	
+	//m_RefractionModel->addShader(shader);
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
@@ -77,8 +91,13 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 {
 	D3DXMATRIX reflectionViewMatrix, projectionMatrix, viewMatrix;
+	D3DXVECTOR3 cameraPosition, oldCameraPosition;
 
 	camera->GetViewMatrix(viewMatrix);
+
+	cameraPosition = camera->GetPosition();
+	oldCameraPosition = cameraPosition;
+
 
 	// Set the render target to be the reflection render to texture.
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -95,6 +114,9 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	// Get the world and projection matrices from the d3d object.
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
+	cameraPosition.y = -cameraPosition.y + (m_waterHeight * 2.0f);
+	camera->SetPosition(cameraPosition);
+
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
 		ModelClass* model = dynamic_cast<ModelClass*>(m_modelsTarget[i]);
@@ -106,6 +128,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_D3D->SetBackBufferRenderTarget();
 
 	camera->setViewMatrix(viewMatrix);
+	camera->SetPosition(oldCameraPosition);
 }
 
 void WaterNode::Render(CameraClass* camera)

@@ -8,9 +8,8 @@ const int MAX_TRIANGLES = 10000;
 using namespace std;
 
 #include "../../d3dclass.h"
-#include "../../textures/terrainshaderclass.h"
 #include "../../frustumclass.h"
-
+#include "../../shaders/AbstractShader.h"
 
 class QuadTreeClass
 {
@@ -48,7 +47,7 @@ public:
 	bool Initialize(void*, int, D3DClass*, FrustumClass*);
 
 	void Shutdown();
-	void Render(TerrainShaderClass*);
+	void Render(AbstractShader*);
 
 	int GetDrawCount();
 	bool GetHeightAtPosition(float, float, float&);
@@ -64,7 +63,7 @@ private:
 	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
 
 	void ReleaseNode(NodeType*);
-	void RenderNode(NodeType*, TerrainShaderClass*);
+	void RenderNode(NodeType*, AbstractShader*);
 
 private:
 	int m_triangleCount, m_drawCount;

@@ -12,8 +12,8 @@ public:
 	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
 	virtual void PreRender(CameraClass*);
 	virtual void Render(CameraClass*);
-	void RenderToTexture(CameraClass*);
-	void Shutdown();
+	virtual void RenderToTexture(CameraClass*);
+	virtual void Shutdown();
 
 protected:
 	RenderTextureClass* m_ReflectionTexture;
