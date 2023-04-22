@@ -5,9 +5,10 @@ WaterShaderClass::WaterShaderClass()
 	m_pixelShader = 0;
 	m_layout = 0;
 	m_sampleState = 0;
-	m_matrixBuffer = 0;
 
+	m_matrixBuffer = 0;
 	m_reflectionBuffer = 0;
+	m_camNormBuffer = 0;
 	m_waterBuffer = 0;
 }
 
@@ -45,14 +46,17 @@ void WaterShaderClass::Shutdown()
 bool WaterShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 			      D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix, 
 			      ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* refractionTexture,
-			      ID3D11ShaderResourceView* normalTexture, float waterTranslation, float reflectRefractScale)
+			      ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
+	D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale, D3DXVECTOR4 refractionTint,
+	D3DXVECTOR3 lightDirection, float specularShininess)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, reflectionTexture, 
-				     refractionTexture, normalTexture, waterTranslation, reflectRefractScale);
+				     refractionTexture, normalTexture, cameraPosition, normalMapTiling, waterTranslation, reflectRefractScale, refractionTint, lightDirection,
+		specularShininess);
 	if(!result) {
 		return false;
 	}
@@ -75,6 +79,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC reflectionBufferDesc;
+	D3D11_BUFFER_DESC camNormBufferDesc;
 	D3D11_BUFFER_DESC waterBufferDesc;
 
 
@@ -214,6 +219,20 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 		return false;
 	}
 
+	// Setup the description of the camera and normal tiling dynamic constant buffer that is in the vertex shader.
+	camNormBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	camNormBufferDesc.ByteWidth = sizeof(CamNormBufferType);
+	camNormBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	camNormBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	camNormBufferDesc.MiscFlags = 0;
+	camNormBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = device->CreateBuffer(&camNormBufferDesc, NULL, &m_camNormBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	// Setup the description of the water dynamic constant buffer that is in the pixel shader.
 	waterBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	waterBufferDesc.ByteWidth = sizeof(WaterBufferType);
@@ -238,6 +257,12 @@ void WaterShaderClass::ShutdownShader()
 	if (m_waterBuffer) {
 		m_waterBuffer->Release();
 		m_waterBuffer = 0;
+	}
+
+	// Release the camera and normal tiling constant buffer.
+	if (m_camNormBuffer) {
+		m_camNormBuffer->Release();
+		m_camNormBuffer = 0;
 	}
 
 	// Release the reflection constant buffer.
@@ -269,15 +294,16 @@ void WaterShaderClass::ShutdownShader()
 
 bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix,
-	ID3D11ShaderResourceView* reflectionTexture,
-	ID3D11ShaderResourceView* refractionTexture, ID3D11ShaderResourceView* normalTexture,
-	float waterTranslation, float reflectRefractScale)
+	ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* refractionTexture, ID3D11ShaderResourceView* normalTexture,
+	D3DXVECTOR3 cameraPosition, D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale,
+	D3DXVECTOR4 refractionTint, D3DXVECTOR3 lightDirection, float specularShininess)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	ReflectionBufferType* dataPtr2;
+	CamNormBufferType* dataPtr2_2;
 	WaterBufferType* dataPtr3;
 
 	// Transpose all the input matrices to prepare them for the shader.
@@ -330,6 +356,32 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Finally set the reflection constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_reflectionBuffer);
 
+
+	// Lock the camera and normal tiling constant buffer so it can be written to.
+	result = deviceContext->Map(m_camNormBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	dataPtr2_2 = (CamNormBufferType*)mappedResource.pData;
+
+	// Copy the data into the constant buffer.
+	dataPtr2_2->cameraPosition = cameraPosition;
+	dataPtr2_2->padding1 = 0.0f;
+	dataPtr2_2->normalMapTiling = normalMapTiling;
+	dataPtr2_2->padding2 = D3DXVECTOR2(0.0f, 0.0f);
+
+	// Unlock the constant buffer.
+	deviceContext->Unmap(m_camNormBuffer, 0);
+
+	// Set the position of the constant buffer in the vertex shader.
+	bufferNumber = 2;
+
+	// Set the constant buffer in the vertex shader with the updated values.
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_camNormBuffer);
+
+
 	// Set the reflection texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &reflectionTexture);
 
@@ -351,6 +403,9 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Copy the water data into the constant buffer.
 	dataPtr3->waterTranslation = waterTranslation;
 	dataPtr3->reflectRefractScale = reflectRefractScale;
+	dataPtr3->refractionTint = refractionTint;
+	dataPtr3->lightDirection = lightDirection;
+	dataPtr3->specularShininess = specularShininess;
 	dataPtr3->padding = D3DXVECTOR2(0.0f, 0.0f);
 
 	// Unlock the constant buffer.

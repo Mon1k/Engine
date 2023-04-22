@@ -750,9 +750,7 @@ void TerrainClass::Render(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	if (useShader) {
-		TerrainShaderClass* shader = dynamic_cast<TerrainShaderClass*>(m_shader);
-		shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), bumpTexture, detailTexture);
-	}
+	TerrainShaderClass* shader = dynamic_cast<TerrainShaderClass*>(m_shader);
+	shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), GetTexture(), bumpTexture, detailTexture);
 	m_quadTree->Render(m_shader);
 }

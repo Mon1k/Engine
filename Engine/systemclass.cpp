@@ -350,12 +350,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 		// Change the display settings to full screen.
 		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-		posX = posY = 0;
 	} else {
-		// If windowed then set it to 800x600 resolution.
-		screenWidth  = this->screenWidth;
-		screenHeight = this->screenHeight;
-
 		// Place the window in the middle of the screen.
 		if (screenWidth != this->screenWidth) {
 			posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
@@ -363,6 +358,10 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 		if (screenHeight != this->screenHeight) {
 			posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
 		}
+
+		// If windowed then set it to 800x600 resolution.
+		screenWidth = this->screenWidth;
+		screenHeight = this->screenHeight;
 	}
 
 	// Create the window with the screen settings and get the handle to it.

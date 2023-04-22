@@ -40,9 +40,12 @@ protected:
 	LightShaderClass* m_LightShaderWater;
 	ModelClass* m_RefractionModel;
 
-	float m_waterHeight = 2.75f;
-	float m_waterTranslation = 0.0f;
-	float m_reflectRefractScale = 0.02f;
+	float m_waterHeight;
+	float m_waterTranslation;
+	float m_reflectRefractScale;
+	float m_specularShininess;
+	D3DXVECTOR2 m_normalMapTiling;
+	D3DXVECTOR4 m_refractionTint;
 };
 
 #endif

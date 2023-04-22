@@ -9,8 +9,6 @@
 class AbstractModel : public AbstractNode
 {
 public:
-    bool useShader = true;
-
     struct ModelType
     {
         float x, y, z;
