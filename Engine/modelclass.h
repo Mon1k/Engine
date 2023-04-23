@@ -65,8 +65,8 @@ public:
 		return m_Max;
 	}
 
-	void SetPosition(D3DXVECTOR3);
-	void SetScale(D3DXVECTOR3);
+	virtual void SetPosition(D3DXVECTOR3);
+	virtual void SetScale(D3DXVECTOR3);
 	virtual D3DXMATRIX GetWorldMatrix();	
 
 	bool LoadModel(char* filename) {

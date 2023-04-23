@@ -401,10 +401,10 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr3 = (WaterBufferType*)mappedResource.pData;
 
 	// Copy the water data into the constant buffer.
-	dataPtr3->waterTranslation = waterTranslation;
-	dataPtr3->reflectRefractScale = reflectRefractScale;
 	dataPtr3->refractionTint = refractionTint;
 	dataPtr3->lightDirection = lightDirection;
+	dataPtr3->waterTranslation = waterTranslation;
+	dataPtr3->reflectRefractScale = reflectRefractScale;
 	dataPtr3->specularShininess = specularShininess;
 	dataPtr3->padding = D3DXVECTOR2(0.0f, 0.0f);
 

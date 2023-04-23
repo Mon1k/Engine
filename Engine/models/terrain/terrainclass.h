@@ -69,18 +69,12 @@ public:
 		return m_quadTree;
 	}
 
-	/*void addShader(AbstractShader* shader)
-	{
-		m_shader = dynamic_cast<TerrainShaderClass *>(shader);
-		m_shader->setD3D(m_D3D);
+	void setScaleNormal(D3DXVECTOR3 scale) {
+		m_scaleNormal = scale;
 	}
-	virtual AbstractShader* getShader() {
-		return m_shader;
-	}*/
 
 private:
 	bool LoadHeightMap(char*);
-	void NormalizeHeightMap();
 	bool CalculateNormals();
 	void CalculateTextureCoordinates();
 	void ShutdownHeightMap();
@@ -95,8 +89,8 @@ private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
 	int isDetailTexture, isBumpTexture;
+	D3DXVECTOR3 m_scaleNormal;
 
-	//TerrainShaderClass* m_shader;
 	HeightMapType* m_heightMap;
 	HeightMapType* m_TerrainModel;
 

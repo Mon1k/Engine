@@ -34,20 +34,18 @@ bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<
 	m_waterHeight = position.y;
 
 	// Set the tiling for the water normal maps.
-	m_normalMapTiling.x = 0.01f;  // Tile ten times over the quad.
-	m_normalMapTiling.y = 0.02f;  // Tile five times over the quad.
-
+	m_normalMapTiling.x = scale.x / 10.0f;  // Tile ten times over the quad.
+	m_normalMapTiling.y = scale.z / 5.0f;  // Tile five times over the quad.
+	
 	// Initialize the water translation to zero.
-	m_waterTranslation = 0.0f;
+	m_waterTranslation = 0;
+	m_waterTranslationSpeed = 0.003f;
 
 	// Set the scaling value for the water normal map.
-	m_reflectRefractScale = 0.3f;
+	m_reflectRefractScale = 0.03f;
 
 	// Set the tint of the refraction.
 	m_refractionTint = D3DXVECTOR4(0.0f, 0.8f, 1.0f, 1.0f);
-
-	// Set the specular shininess.
-	m_specularShininess = 200.0f;
 
 	return true;
 }
@@ -150,7 +148,7 @@ void WaterNode::Render(CameraClass* camera)
 
 	m_WaterShader->Render(m_D3D->GetDeviceContext(), this->GetIndexCount(), this->GetWorldMatrix(), viewMatrix, projectionMatrix, m_ReflectionMatrix, 
 		m_ReflectionTexture->GetShaderResourceView(), m_RefractionTexture->GetShaderResourceView(), this->GetTexture(),
-		camera->GetPosition(), m_normalMapTiling, m_waterTranslation, m_reflectRefractScale, m_refractionTint, getLight(0)->GetDirection(), m_specularShininess);
+		camera->GetPosition(), m_normalMapTiling, m_waterTranslation, m_reflectRefractScale, m_refractionTint, getLight(0)->GetDirection(), getLight(0)->GetSpecularPower());
 }
 
 void WaterNode::Shutdown()

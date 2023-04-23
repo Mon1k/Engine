@@ -23,15 +23,29 @@ public:
 
 	void incrementTranslation()
 	{
-		m_waterTranslation += 0.005f;
+		m_waterTranslation += m_waterTranslationSpeed;
 		if (m_waterTranslation > 1.0f) {
 			m_waterTranslation -= 1.0f;
 		}
+	}
+	void setWaterTranslationSpeed(float speed)
+	{
+		m_waterTranslationSpeed = speed;
 	}
 	void setWaterHeight(float height)
 	{
 		m_waterHeight = height;
 	}
+	void setReflectRefractScale(float scale)
+	{
+		m_reflectRefractScale = scale;
+	}
+	void setNormalMapTiling(float x, float y)
+	{
+		m_normalMapTiling = D3DXVECTOR2(x, y);
+	}
+
+	
 
 protected:
 	RenderTextureClass* m_RefractionTexture;
@@ -42,8 +56,8 @@ protected:
 
 	float m_waterHeight;
 	float m_waterTranslation;
+	float m_waterTranslationSpeed;
 	float m_reflectRefractScale;
-	float m_specularShininess;
 	D3DXVECTOR2 m_normalMapTiling;
 	D3DXVECTOR4 m_refractionTint;
 };

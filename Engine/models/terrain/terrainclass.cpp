@@ -1,5 +1,4 @@
 #include "terrainclass.h"
-#include "../../tool/random.h"
 
 TerrainClass::TerrainClass(): ModelClass()
 {
@@ -10,6 +9,8 @@ TerrainClass::TerrainClass(): ModelClass()
 	m_vertices = 0;
 	m_shader = 0;
 	m_quadTree = 0;
+
+	m_scaleNormal = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
 	isDetailTexture = 0;
 	isBumpTexture = 0;
@@ -36,10 +37,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	if (!result) {
 		return false;
 	}
-
-	// Normalize the height of the height map.
-	//NormalizeHeightMap();
-
+	
 	// Calculate the normals for the terrain data.
 	result = CalculateNormals();
 	if (!result) {
@@ -199,18 +197,11 @@ bool TerrainClass::LoadHeightMap(char* filename)
 	delete[] bitmapImage;
 	bitmapImage = 0;
 
+
+	// restore for normal worldmartix
+	SetScale(D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+
 	return true;
-}
-
-void TerrainClass::NormalizeHeightMap()
-{
-	int i, j;
-
-	for (j = 0; j < m_terrainHeight; j++) {
-		for (i = 0; i < m_terrainWidth; i++) {
-			m_heightMap[(m_terrainHeight * j) + i].y /= 5.0f;
-		}
-	}
 }
 
 bool TerrainClass::CalculateNormals()
@@ -218,7 +209,6 @@ bool TerrainClass::CalculateNormals()
 	int i, j, index1, index2, index3, index, count;
 	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3], sum[3], length;
 	VectorType* normals;
-
 
 	// Create a temporary array to hold the un-normalized normal vectors.
 	normals = new VectorType[(m_terrainHeight - 1) * (m_terrainWidth - 1)];
@@ -234,17 +224,17 @@ bool TerrainClass::CalculateNormals()
 			index3 = ((j + 1) * m_terrainHeight) + i;
 
 			// Get three vertices from the face.
-			vertex1[0] = m_heightMap[index1].x;
-			vertex1[1] = m_heightMap[index1].y;
-			vertex1[2] = m_heightMap[index1].z;
+			vertex1[0] = m_heightMap[index1].x * m_scaleNormal.x;
+			vertex1[1] = m_heightMap[index1].y * m_scaleNormal.y;
+			vertex1[2] = m_heightMap[index1].z * m_scaleNormal.z;
 
-			vertex2[0] = m_heightMap[index2].x;
-			vertex2[1] = m_heightMap[index2].y;
-			vertex2[2] = m_heightMap[index2].z;
+			vertex2[0] = m_heightMap[index2].x * m_scaleNormal.x;
+			vertex2[1] = m_heightMap[index2].y * m_scaleNormal.y;
+			vertex2[2] = m_heightMap[index2].z * m_scaleNormal.z;
 
-			vertex3[0] = m_heightMap[index3].x;
-			vertex3[1] = m_heightMap[index3].y;
-			vertex3[2] = m_heightMap[index3].z;
+			vertex3[0] = m_heightMap[index3].x * m_scaleNormal.x;
+			vertex3[1] = m_heightMap[index3].y * m_scaleNormal.y;
+			vertex3[2] = m_heightMap[index3].z * m_scaleNormal.z;
 
 			// Calculate the two vectors for this face.
 			vector1[0] = vertex1[0] - vertex3[0];
