@@ -1,6 +1,12 @@
-Texture2D shaderTexture : register(t0);
-Texture2D normalTexture : register(t1);
-Texture2D detailTexture : register(t2);
+Texture2D shaderTexture1 : register(t0);
+Texture2D normalTexture1 : register(t1);
+Texture2D shaderTexture2 : register(t2);
+Texture2D normalTexture2 : register(t3);
+Texture2D shaderTexture3 : register(t4);
+Texture2D normalTexture3 : register(t5);
+Texture2D shaderTexture4 : register(t6);
+Texture2D normalTexture4 : register(t7);
+Texture2D alphaTexture1 : register(t8);
 SamplerState SampleType;
 
 cbuffer LightBuffer
@@ -11,8 +17,8 @@ cbuffer LightBuffer
     float lightIntensity;
     float lightDetailIntensity;
     float distanceIntensity;
-    float isBumpTexture;
-    float isDetailTexture;
+    float countLayers;
+    float padding;
 };
 
 
@@ -24,75 +30,97 @@ struct PixelInputType
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
     float4 depthPosition : TEXCOORD1;
+    float2 tex2 : TEXCOORD2;
 };
 
 float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 {
-    float4 textureColor;
     float depthValue;
     float detailBrightness;
     float4 detailColor;
     float4 bumpMap;
     float3 bumpNormal;
+    float lightIntensity1;
+    float lightIntensity2;
+    float lightIntensity3;
+    float4 textureColor1;
+    float4 textureColor2;
+    float4 textureColor3;
     float3 lightDir;
-    float intensity;
+    float4 alphaMap1;
     float4 color;
 
-    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-    textureColor = shaderTexture.Sample(SampleType, input.tex.xy);
+    // Invert the light direction for calculations.
+    lightDir = -lightDirection;
 
     // Get the depth value of the pixel by dividing the Z pixel depth by the homogeneous W coordinate.
     depthValue = input.depthPosition.z / input.depthPosition.w;
 
     bumpNormal = input.normal;
+    lightIntensity1 = saturate(dot(bumpNormal, lightDir));
+    lightIntensity2 = lightIntensity1;
 
     // Check if the depth value is close to the screen, if so we will apply the detail texture.
     if (depthValue < distanceIntensity) {
-        if (isDetailTexture) {
-            // Sample the pixel color from the detail map texture using the sampler at this texture coordinate location.
+        /*if (isDetailTexture) {
             detailColor = detailTexture.Sample(SampleType, input.tex.zw);
-
-            // Set the brightness of the detail texture.
             detailBrightness = lightDetailIntensity;
-
-            // Combine the ground texture and the detail texture.  Also multiply in the detail brightness.
             textureColor = textureColor * detailColor * detailBrightness;
-        }
+        }*/
 
-        if (isBumpTexture) {
-            // Sample the pixel in the bump map.
-            bumpMap = normalTexture.Sample(SampleType, input.tex);
-
-            // Expand the range of the normal value from (0, +1) to (-1, +1).
-            bumpMap = (bumpMap * 2.0f) - 1.0f;
-
-            // Calculate the normal from the data in the bump map.
-            bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
-
-            // Normalize the resulting bump normal.
-            bumpNormal = normalize(bumpNormal);
-        }
+        bumpMap = normalTexture1.Sample(SampleType, input.tex);
+        bumpMap = (bumpMap * 2.0f) - 1.0f;
+        bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+        bumpNormal = normalize(bumpNormal);
+        lightIntensity1 = saturate(dot(bumpNormal, lightDir));
     }	
 
-    // Set the default output color to the ambient light value for all pixels.
-    color = ambientColor;
+    textureColor1 = shaderTexture1.Sample(SampleType, input.tex);
+    color = saturate(ambientColor + (diffuseColor * lightIntensity * lightIntensity1 * textureColor1));
 
-    // Invert the light direction for calculations.
-    lightDir = -lightDirection;
+    if (countLayers > 2) {
+        if (countLayers == 8) {
+            alphaMap1 = alphaTexture1.Sample(SampleType, input.tex2);
+        } else if (countLayers == 6) {
+            alphaMap1 = shaderTexture4.Sample(SampleType, input.tex2);
+        } else {
+            alphaMap1 = shaderTexture3.Sample(SampleType, input.tex2);
+        }
 
-    // Calculate the amount of light on this pixel.
-    intensity = saturate(dot(bumpNormal, lightDir));
+        bumpMap = normalTexture2.Sample(SampleType, input.tex);
+        bumpMap = (bumpMap * 2.0f) - 1.0f;
+        bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+        bumpNormal = normalize(bumpNormal);
+        lightIntensity2 = saturate(dot(bumpNormal, lightDir));
 
-    if (intensity > 0.0f) {
-        // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-        color += (diffuseColor * intensity * lightIntensity);
+        textureColor2 = shaderTexture2.Sample(SampleType, input.tex);
+        textureColor2 = saturate(lightIntensity2 * textureColor2);
+        color = lerp(color, textureColor2, alphaMap1.r);
+
+        if (countLayers > 4) {
+            bumpMap = normalTexture3.Sample(SampleType, input.tex);
+            bumpMap = (bumpMap * 2.0f) - 1.0f;
+            bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+            bumpNormal = normalize(bumpNormal);
+            lightIntensity3 = saturate(dot(bumpNormal, lightDir));
+
+            textureColor3 = shaderTexture3.Sample(SampleType, input.tex);
+            textureColor3 = saturate(lightIntensity3 * textureColor3);
+            color = lerp(color, textureColor3, alphaMap1.g);
+
+            if (countLayers > 6) {
+                bumpMap = normalTexture4.Sample(SampleType, input.tex);
+                bumpMap = (bumpMap * 2.0f) - 1.0f;
+                bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+                bumpNormal = normalize(bumpNormal);
+                lightIntensity3 = saturate(dot(bumpNormal, lightDir));
+
+                textureColor3 = shaderTexture4.Sample(SampleType, input.tex);
+                textureColor3 = saturate(lightIntensity3 * textureColor3);
+                color = lerp(color, textureColor3, alphaMap1.b);
+            }
+        }
     }
-
-    // Saturate the final light color.
-    color = saturate(color);
-
-    // Multiply the texture pixel and the final light color to get the result.
-    color = color * textureColor;
-
+    
     return color;
 }

@@ -48,13 +48,13 @@ void TerrainShaderClass::Shutdown()
 
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMapTexture, ID3D11ShaderResourceView* detailTexture)
+	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, texture, normalMapTexture, detailTexture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, textures);
 	if (!result) {
 		return false;
 	}
@@ -72,7 +72,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[6];
 	unsigned int numElements;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
@@ -168,6 +168,14 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[4].InstanceDataStepRate = 0;
+
+	polygonLayout[5].SemanticName = "TEXCOORD";
+	polygonLayout[5].SemanticIndex = 1;
+	polygonLayout[5].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[5].InputSlot = 0;
+	polygonLayout[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[5].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -271,13 +279,14 @@ void TerrainShaderClass::ShutdownShader()
 
 
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMapTexture, ID3D11ShaderResourceView* detailTexture)
+	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	LightBufferType* dataPtr2;
+	int i, size;
 
 
 	// Transpose the matrices to prepare them for the shader.
@@ -324,8 +333,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->lightIntensity = light->getIntensity();
 	dataPtr2->lightDetailIntensity = m_lightDetailIntensity;
 	dataPtr2->distanceIntensity = m_distanceIntensity;
-	dataPtr2->isBumpTexture = normalMapTexture ? 1 : 0;
-	dataPtr2->isDetailTexture = detailTexture ? 1 : 0;
+	dataPtr2->countLayers = (float)textures->getTextures().size() - 1;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -337,9 +345,10 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-	deviceContext->PSSetShaderResources(1, 1, &normalMapTexture);
-	deviceContext->PSSetShaderResources(2, 1, &detailTexture);
+	size = textures->getTextures().size();
+	for (i = 0; i < size; i++) {
+		deviceContext->PSSetShaderResources(i, 1, &textures->getTextures()[i]);
+	}
 
 	return true;
 }

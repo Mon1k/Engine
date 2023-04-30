@@ -20,6 +20,7 @@ private:
 		D3DXVECTOR3 normal;
 		D3DXVECTOR3 tangent;
 		D3DXVECTOR3 binormal;
+		D3DXVECTOR2 texture2;
 	};
 
 	struct HeightMapType
@@ -29,6 +30,7 @@ private:
 		float nx, ny, nz;
 		float tx, ty, tz;
 		float bx, by, bz;
+		float tu2, tv2;
 	};
 
 	struct VectorType
@@ -41,7 +43,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*);
+	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
@@ -58,6 +60,13 @@ public:
 	void addBumpTexture(std::wstring texture) {
 		addTexture(texture);
 		isBumpTexture = m_TextureArray->getTextures().size() - 1;
+	}
+	void addTextureLayer(std::wstring texture, std::wstring normalTexture) {
+		addTexture(texture);
+		addTexture(normalTexture);
+	}
+	void addTextureAlpha(std::wstring texture) {
+		addTexture(texture);
 	}
 
 	int GetTtriangleCount() {

@@ -40,7 +40,7 @@ bool SkyDomeClass::Initialize(D3DClass* d3dClass, char* fileName)
 	}
 
 	// Set the color at the top of the sky dome.
-	m_apexColor = D3DXVECTOR4(0.28f, 0.66f, 1.0f, 1.0f);
+	m_apexColor = D3DXVECTOR4(0.28f, 0.56f, 1.0f, 1.0f);
 
 	// Set the color at the center of the sky dome.
 	m_centerColor = D3DXVECTOR4(0.7f, 0.87f, 1.0f, 1.0f);

@@ -18,6 +18,7 @@ public:
 
 	bool Initialize(ID3D11Device*, WCHAR*);
 	void AddTexture(ID3D11Device*, WCHAR*);
+	void AddResource(ID3D11ShaderResourceView*);
 	void Shutdown();
 
 	ID3D11ShaderResourceView* GetTexture(int);

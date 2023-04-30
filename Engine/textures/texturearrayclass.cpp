@@ -26,8 +26,12 @@ void TextureArrayClass::AddTexture(ID3D11Device* device, WCHAR* filename)
 {
 	ID3D11ShaderResourceView* texture;
 
-	// Load the first texture in.
 	D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &texture, NULL);
+	m_textures.push_back(texture);
+}
+
+void TextureArrayClass::AddResource(ID3D11ShaderResourceView* texture)
+{
 	m_textures.push_back(texture);
 }
 

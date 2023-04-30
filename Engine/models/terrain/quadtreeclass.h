@@ -21,6 +21,7 @@ private:
 		D3DXVECTOR3 normal;
 		D3DXVECTOR3 tangent;
 		D3DXVECTOR3 binormal;
+		D3DXVECTOR2 texture2;
 	};
 
 	struct VectorType
