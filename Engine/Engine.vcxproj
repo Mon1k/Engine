@@ -102,6 +102,7 @@
     <ClCompile Include="models\Billboard.cpp" />
     <ClCompile Include="models\Blur.cpp" />
     <ClCompile Include="models\Fire.cpp" />
+    <ClCompile Include="models\foliageclass.cpp" />
     <ClCompile Include="models\Glass.cpp" />
     <ClCompile Include="models\loader\DsLoader.cpp" />
     <ClCompile Include="models\loader\ObjLoader.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="textures\depthshaderclass.cpp" />
     <ClCompile Include="textures\fadeshaderclass.cpp" />
     <ClCompile Include="textures\fireshaderclass.cpp" />
+    <ClCompile Include="textures\foliageshaderclass.cpp" />
     <ClCompile Include="textures\glassshaderclass.cpp" />
     <ClCompile Include="textures\lightmapshaderclass.cpp" />
     <ClCompile Include="textures\multitextureshaderclass.cpp" />
@@ -184,6 +186,7 @@
     <ClInclude Include="models\Blur.h" />
     <ClInclude Include="models\CompositeModel.h" />
     <ClInclude Include="models\Fire.h" />
+    <ClInclude Include="models\foliageclass.h" />
     <ClInclude Include="models\Glass.h" />
     <ClInclude Include="models\loader\AbstractLoader.h" />
     <ClInclude Include="models\loader\DsLoader.h" />
@@ -219,6 +222,7 @@
     <ClInclude Include="textures\depthshaderclass.h" />
     <ClInclude Include="textures\fadeshaderclass.h" />
     <ClInclude Include="textures\fireshaderclass.h" />
+    <ClInclude Include="textures\foliageshaderclass.h" />
     <ClInclude Include="textures\glassshaderclass.h" />
     <ClInclude Include="textures\lightmapshaderclass.h" />
     <ClInclude Include="textures\multitextureshaderclass.h" />
@@ -263,6 +267,8 @@
     <None Include="data\shaders\fire.vs" />
     <None Include="data\shaders\fog.ps" />
     <None Include="data\shaders\fog.vs" />
+    <None Include="data\shaders\foliage.ps" />
+    <None Include="data\shaders\foliage.vs" />
     <None Include="data\shaders\font.ps" />
     <None Include="data\shaders\font.vs" />
     <None Include="data\shaders\glass.ps" />

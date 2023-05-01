@@ -43,9 +43,11 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
     float lightIntensity1;
     float lightIntensity2;
     float lightIntensity3;
+    float lightIntensity4;
     float4 textureColor1;
     float4 textureColor2;
     float4 textureColor3;
+    float4 textureColor4;
     float3 lightDir;
     float4 alphaMap1;
     float4 color;
@@ -59,6 +61,8 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
     bumpNormal = input.normal;
     lightIntensity1 = saturate(dot(bumpNormal, lightDir));
     lightIntensity2 = lightIntensity1;
+    lightIntensity3 = lightIntensity1;
+    lightIntensity4 = lightIntensity1;
 
     // Check if the depth value is close to the screen, if so we will apply the detail texture.
     if (depthValue < distanceIntensity) {
@@ -87,37 +91,43 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
             alphaMap1 = shaderTexture3.Sample(SampleType, input.tex2);
         }
 
-        bumpMap = normalTexture2.Sample(SampleType, input.tex);
-        bumpMap = (bumpMap * 2.0f) - 1.0f;
-        bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
-        bumpNormal = normalize(bumpNormal);
-        lightIntensity2 = saturate(dot(bumpNormal, lightDir));
+		if (depthValue < distanceIntensity) {
+            bumpMap = normalTexture2.Sample(SampleType, input.tex);
+            bumpMap = (bumpMap * 2.0f) - 1.0f;
+            bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+            bumpNormal = normalize(bumpNormal);
+            lightIntensity2 = saturate(dot(bumpNormal, lightDir));
+		}
 
         textureColor2 = shaderTexture2.Sample(SampleType, input.tex);
         textureColor2 = saturate(lightIntensity2 * textureColor2);
         color = lerp(color, textureColor2, alphaMap1.r);
 
         if (countLayers > 4) {
-            bumpMap = normalTexture3.Sample(SampleType, input.tex);
-            bumpMap = (bumpMap * 2.0f) - 1.0f;
-            bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
-            bumpNormal = normalize(bumpNormal);
-            lightIntensity3 = saturate(dot(bumpNormal, lightDir));
+		    if (depthValue < distanceIntensity) {
+                bumpMap = normalTexture3.Sample(SampleType, input.tex);
+                bumpMap = (bumpMap * 2.0f) - 1.0f;
+                bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+                bumpNormal = normalize(bumpNormal);
+                lightIntensity3 = saturate(dot(bumpNormal, lightDir));
+			}
 
             textureColor3 = shaderTexture3.Sample(SampleType, input.tex);
             textureColor3 = saturate(lightIntensity3 * textureColor3);
             color = lerp(color, textureColor3, alphaMap1.g);
 
             if (countLayers > 6) {
-                bumpMap = normalTexture4.Sample(SampleType, input.tex);
-                bumpMap = (bumpMap * 2.0f) - 1.0f;
-                bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
-                bumpNormal = normalize(bumpNormal);
-                lightIntensity3 = saturate(dot(bumpNormal, lightDir));
+			    if (depthValue < distanceIntensity) {
+                    bumpMap = normalTexture4.Sample(SampleType, input.tex);
+                    bumpMap = (bumpMap * 2.0f) - 1.0f;
+                    bumpNormal = input.normal + bumpMap.x * input.tangent + bumpMap.y * input.binormal;
+                    bumpNormal = normalize(bumpNormal);
+                    lightIntensity4 = saturate(dot(bumpNormal, lightDir));
+				}
 
-                textureColor3 = shaderTexture4.Sample(SampleType, input.tex);
-                textureColor3 = saturate(lightIntensity3 * textureColor3);
-                color = lerp(color, textureColor3, alphaMap1.b);
+                textureColor4 = shaderTexture4.Sample(SampleType, input.tex);
+                textureColor4 = saturate(lightIntensity4 * textureColor4);
+                color = lerp(color, textureColor4, alphaMap1.b);
             }
         }
     }

@@ -279,6 +279,12 @@
     <ClCompile Include="textures\skyplaneshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="models\foliageclass.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="textures\foliageshaderclass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -545,6 +551,12 @@
     <ClInclude Include="textures\skyplaneshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
+    <ClInclude Include="models\foliageclass.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="textures\foliageshaderclass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -713,6 +725,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\skyplane.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\foliage.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="data\shaders\foliage.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
