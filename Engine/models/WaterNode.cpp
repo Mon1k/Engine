@@ -126,7 +126,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
-		ModelClass* model = dynamic_cast<ModelClass*>(m_modelsTarget[i]);
+		AbstractModel* model = dynamic_cast<AbstractModel*>(m_modelsTarget[i]);
 		model->Render(camera);
 	}
 

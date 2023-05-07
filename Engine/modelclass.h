@@ -67,6 +67,7 @@ public:
 
 	virtual void SetPosition(D3DXVECTOR3);
 	virtual void SetScale(D3DXVECTOR3);
+	virtual void SetRotation(D3DXVECTOR3);
 	virtual D3DXMATRIX GetWorldMatrix();	
 
 	bool LoadModel(char* filename) {

@@ -376,6 +376,11 @@ void ModelClass::SetScale(D3DXVECTOR3 _scale)
 	m_Max.z *= delta.z;
 }
 
+void ModelClass::SetRotation(D3DXVECTOR3 _rotation)
+{
+	m_rotation = _rotation;
+}
+
 D3DXMATRIX ModelClass::GetWorldMatrix()
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotateMatrix, worldMatrix;

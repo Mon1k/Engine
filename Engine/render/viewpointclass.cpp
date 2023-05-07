@@ -57,8 +57,6 @@ void ViewPointClass::GenerateViewMatrix()
 
 	// Create the view matrix from the three vectors.
 	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
-
-	return;
 }
 
 
