@@ -285,6 +285,9 @@
     <ClCompile Include="textures\foliageshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
+    <ClCompile Include="ui\input.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -556,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="textures\foliageshaderclass.h">
       <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\input.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

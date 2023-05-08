@@ -1,23 +1,19 @@
-#include "button.h"
+#include "input.h"
 
 
-Button::Button()
+Input::Input()
 {
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
+	m_bIsFocused = false;
 }
 
-
-Button::Button(const Button& other)
+Input::~Input()
 {
 }
 
-Button::~Button()
-{
-}
-
-bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool Input::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight, int positionX, int positionY)
 {
 	bool result;
 
@@ -30,7 +26,6 @@ bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilena
 	// Initialize the text object.
 	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
 	if (!result) {
-		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -43,7 +38,6 @@ bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilena
 	// Initialize the texture shader object.
 	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
-		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -58,49 +52,35 @@ bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilena
 	m_height = bitmapHeight;
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
 	if (!result) {
-		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
+
+	m_x = positionX;
+	m_y = positionY;
 
 	return true;
 }
 
 
-bool Button::Add(char* text, int positionX, int positionY, float red, float green, float blue)
+bool Input::setText(char* text)
 {
-	m_x = positionX;
-	m_y = positionY;
-
-	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, red, green, blue);
+	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 
-bool Button::Add(char* text, int positionX, int positionY)
+void Input::Shutdown()
 {
-	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
-}
-
-bool Button::setText(char* text)
-{
-	return Add(text, m_x, m_y);
-}
-
-void Button::Shutdown()
-{
-	// Release the text object.
 	if (m_Text) {
 		m_Text->Shutdown();
 		delete m_Text;
 		m_Text = 0;
 	}
 
-	// Release the bitmap object.
 	if (m_Bitmap) {
 		m_Bitmap->Shutdown();
 		delete m_Bitmap;
 		m_Bitmap = 0;
 	}
 
-	// Release the texture shader object.
 	if (m_TextureShader) {
 		m_TextureShader->Shutdown();
 		delete m_TextureShader;
@@ -108,7 +88,7 @@ void Button::Shutdown()
 	}
 }
 
-bool Button::Render()
+bool Input::Render()
 {
 	bool result;
 	D3DXMATRIX worldMatrix, orthoMatrix;
@@ -117,13 +97,11 @@ bool Button::Render()
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
-	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	if (!result) {
 		return false;
 	}
 
-	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;
