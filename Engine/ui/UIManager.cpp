@@ -58,7 +58,18 @@ void UIManager::onMouseClick(int x, int y, int button)
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
         if (m_elements[i]->isVisible() && m_elements[i]->isIntersect(x, y)) {
-            m_elements[i]->onPress(x, y, button);
+            m_elements[i]->onMousePress(x, y, button);
+            m_events.push_back(m_elements[i]);
+        }
+    }
+}
+
+void UIManager::onKeyboardClick(int key, char symbol)
+{
+    int size = m_elements.size();
+    for (int i = 0; i < size; i++) {
+        if (m_elements[i]->isVisible() && m_elements[i]->isFocused()) {
+            m_elements[i]->onKeyboardPress(key, symbol);
             m_events.push_back(m_elements[i]);
         }
     }
@@ -67,11 +78,32 @@ void UIManager::onMouseClick(int x, int y, int button)
 void UIManager::EventProccesor(InputClass* input)
 {
     int mouseButton = input->getMouseButton();
+    int keyboardKey = input->getKeyDown();
 
     m_events.clear();
+
     if (mouseButton >= 0) {
         int mouseX, mouseY;
         input->GetMouseLocation(mouseX, mouseY);
         onMouseClick(mouseX, mouseY, mouseButton);
+    }
+
+    if (keyboardKey > 0) {
+        char keyboardSymbol = input->getSymbolKey(keyboardKey);
+        onKeyboardClick(keyboardKey, keyboardSymbol);
+    }
+}
+
+void UIManager::frame(float counter)
+{
+    m_IsFocused = false;
+    int size = m_elements.size();
+    for (int i = 0; i < size; i++) {
+        if (m_elements[i]->isVisible()) {
+            m_elements[i]->frame(counter);
+            if (m_elements[i]->isFocused()) {
+                m_IsFocused = true;
+            }
+        }
     }
 }

@@ -201,51 +201,54 @@ bool SystemClass::frame()
 	m_Fps->Frame();
 	m_Input->Frame();
 
-	// Get the location of the mouse from the input object,
-	m_Input->GetMouseLocation(mouseX, mouseY);
-	int mouseButtonPress = m_Input->getMouseButtonPress();
-
-
-	// rotate camera by keyboard
-	m_Position->SetFrameTime(m_Timer->GetTime());
-
-	if (m_Input->IsKeyDown(DIK_LSHIFT)) {
-		cameraSensivity *= 2;
-	}
-
-	m_Position->setSensivity(cameraSensivity);
-	m_Position->MoveLeft(m_Input->IsKeyDown(DIK_LEFTARROW) || m_Input->IsKeyDown(DIK_A));
-	m_Position->MoveRight(m_Input->IsKeyDown(DIK_RIGHTARROW) || m_Input->IsKeyDown(DIK_D));
-	m_Position->MoveForward(m_Input->IsKeyDown(DIK_UPARROW) || m_Input->IsKeyDown(DIK_W));
-	m_Position->MoveBackward(m_Input->IsKeyDown(DIK_DOWNARROW) || m_Input->IsKeyDown(DIK_S));
-	m_Position->MoveUpward(m_Input->IsKeyDown(DIK_Z));
-	m_Position->MoveDownward(m_Input->IsKeyDown(DIK_X));
-
-
-	// rotate camera by mouse
-	if (mouseButtonPress != MOUSE_BUTTON2) {
-		float diffRotationX = m_Input->getMouseDiffPosition().x;
-		float diffRotationY = m_Input->getMouseDiffPosition().y;
-
-		m_Position->setSensivity(mouseSensivityY);
-		m_Position->LookDownward(diffRotationY > 0.0f);
-		m_Position->LookUpward(diffRotationY < 0.0f);
-
-		m_Position->setSensivity(mouseSensivityX);
-		m_Position->TurnLeft(diffRotationX < 0.0f);
-		m_Position->TurnRight(diffRotationX > 0.0f);
-	}
-	
-	// Get the current view point rotation.
-	position = m_Position->getPosition();
-	rotation = m_Position->getRotation();
-	m_Graphics->getCamera()->SetRotation(rotation);
-	m_Graphics->getCamera()->SetPosition(position);
-
 	// frame ui
 	m_Graphics->getUiManager()->EventProccesor(m_Input);
+	m_Graphics->getUiManager()->frame(m_Timer->GetTime());
 	// frame graphic
 	m_Graphics->frame(m_Timer);
+
+
+	// movement camera only unfocussed ui
+	if (!m_Graphics->getUiManager()->isFocused()) {
+		m_Input->GetMouseLocation(mouseX, mouseY);
+		int mouseButtonPress = m_Input->getMouseButtonPress();
+
+		// rotate camera by keyboard
+		m_Position->SetFrameTime(m_Timer->GetTime());
+
+		if (m_Input->IsKeyDown(DIK_LSHIFT)) {
+			cameraSensivity *= 2;
+		}
+
+		m_Position->setSensivity(cameraSensivity);
+		m_Position->MoveLeft(m_Input->IsKeyDown(DIK_LEFTARROW) || m_Input->IsKeyDown(DIK_A));
+		m_Position->MoveRight(m_Input->IsKeyDown(DIK_RIGHTARROW) || m_Input->IsKeyDown(DIK_D));
+		m_Position->MoveForward(m_Input->IsKeyDown(DIK_UPARROW) || m_Input->IsKeyDown(DIK_W));
+		m_Position->MoveBackward(m_Input->IsKeyDown(DIK_DOWNARROW) || m_Input->IsKeyDown(DIK_S));
+		m_Position->MoveUpward(m_Input->IsKeyDown(DIK_Z));
+		m_Position->MoveDownward(m_Input->IsKeyDown(DIK_X));
+
+
+		// rotate camera by mouse
+		if (mouseButtonPress != MOUSE_BUTTON2) {
+			float diffRotationX = m_Input->getMouseDiffPosition().x;
+			float diffRotationY = m_Input->getMouseDiffPosition().y;
+
+			m_Position->setSensivity(mouseSensivityY);
+			m_Position->LookDownward(diffRotationY > 0.0f);
+			m_Position->LookUpward(diffRotationY < 0.0f);
+
+			m_Position->setSensivity(mouseSensivityX);
+			m_Position->TurnLeft(diffRotationX < 0.0f);
+			m_Position->TurnRight(diffRotationX > 0.0f);
+		}
+
+		// Get the current view point rotation.
+		position = m_Position->getPosition();
+		rotation = m_Position->getRotation();
+		m_Graphics->getCamera()->SetRotation(rotation);
+		m_Graphics->getCamera()->SetPosition(position);
+	}
 	
 	return true;
 }

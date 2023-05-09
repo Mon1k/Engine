@@ -27,6 +27,8 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(int&, int&);
 	bool IsKeyDown(unsigned int);
+	int getKeyDown();
+	char getSymbolKey(int);
 	bool IsKeyDown();
 	int getMouseButton();
 	int getMouseButtonPress();
@@ -45,6 +47,7 @@ private:
 	IDirectInputDevice8* m_mouse;
 
 	unsigned char m_keyboardState[256];
+	bool m_PrevKeyboardState[256];
 	bool m_PrevMouseState[4];
 	DIMOUSESTATE m_mouseState;
 

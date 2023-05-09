@@ -17,6 +17,7 @@ public:
     bool Add(AbstractGui* ui);
     void Render();
     void Shutdown();
+    void frame(float);
 
     std::vector<AbstractGui*> getElements()
     {
@@ -39,10 +40,16 @@ public:
     }
 
     void onMouseClick(int x, int y, int button);
+    void onKeyboardClick(int, char);
+
+    bool isFocused() {
+        return m_IsFocused;
+    }
 
 private:
     std::vector<AbstractGui*> m_elements;
     std::vector<AbstractGui*> m_events;
+    bool m_IsFocused;
 
     D3DClass* m_D3D;
     D3DXMATRIX m_baseViewMatrix;

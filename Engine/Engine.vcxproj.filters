@@ -563,6 +563,9 @@
     <ClInclude Include="ui\input.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="ui\group.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">

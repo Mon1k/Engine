@@ -56,14 +56,6 @@ bool Cursor::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilenam
 }
 
 
-bool Cursor::set(int positionX, int positionY)
-{
-	m_x = positionX;
-	m_y = positionY;
-
-	return true;
-}
-
 void Cursor::Shutdown()
 {
 	// Release the bitmap object.

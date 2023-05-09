@@ -33,6 +33,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	for (int i = 0; i < 4; i++) {
 		m_PrevMouseState[i] = false;
 	}
+	for (int i = 0; i < 256; i++) {
+		m_PrevKeyboardState[i] = false;
+	}
 
 	// Initialize the main direct input interface.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
@@ -77,7 +80,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE | DISCL_NOWINKEY);
 	if (FAILED(result)) {
 		return false;
 	}
@@ -123,6 +126,33 @@ bool InputClass::IsKeyDown(unsigned int key)
 	return false;
 }
 
+int InputClass::getKeyDown()
+{
+	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
+	int key = 0;
+
+	for (int i = 0; i < size; i++) {
+		if ((m_keyboardState[i] & 0x80) && !m_PrevKeyboardState[i]) {
+			m_PrevKeyboardState[i] = true;
+			key = i;
+		} else if (!(m_keyboardState[i] & 0x80) && m_PrevKeyboardState[i]) {
+			m_PrevKeyboardState[i] = false;
+		}
+	}
+
+	return key;
+}
+
+char InputClass::getSymbolKey(int code)
+{
+	int key = MapVirtualKeyA(code, MAPVK_VSC_TO_VK);
+	unsigned short asciiValue;
+	ToAscii(key, code, m_keyboardState, &asciiValue, 0);
+	char c = static_cast<char>(asciiValue);
+
+	return c;
+}
+
 bool InputClass::IsKeyDown()
 {
 	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
@@ -162,11 +192,7 @@ int InputClass::getMouseButton()
 			m_PrevMouseState[i] = true;
 			m_mouseButton = i;
 			return i;
-		}
-	}
-
-	for (int i = 0; i < 4; i++) {
-		if (!m_mouseState.rgbButtons[i] && m_PrevMouseState[i]) {
+		} else if (!m_mouseState.rgbButtons[i] && m_PrevMouseState[i]) {
 			m_PrevMouseState[i] = false;
 		}
 	}

@@ -6,7 +6,13 @@ Input::Input()
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
-	m_bIsFocused = false;
+
+	m_IsFocused = false;
+	m_Flash = true;
+	m_FrameCounter = 0;
+	m_CursorShift = 0;
+	m_MaxSize = 0;
+	m_String.clear();
 }
 
 Input::~Input()
@@ -47,24 +53,18 @@ bool Input::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename
 		return false;
 	}
 
-	// Initialize the bitmap object.
 	m_width = bitmapWidth;
 	m_height = bitmapHeight;
+	m_x = positionX;
+	m_y = positionY;
+
+	// Initialize the bitmap object.
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
 	if (!result) {
 		return false;
 	}
 
-	m_x = positionX;
-	m_y = positionY;
-
 	return true;
-}
-
-
-bool Input::setText(char* text)
-{
-	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 
 void Input::Shutdown()
@@ -108,4 +108,101 @@ bool Input::Render()
 	}
 
 	return true;
+}
+
+bool Input::setText(char* text)
+{
+	m_String = text;
+	m_CursorShift = m_String.length();
+
+	return updateText(text);
+}
+
+bool Input::updateText(char* text)
+{
+	return m_Text->AddText(text, m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
+}
+
+void Input::updateText()
+{
+	m_ViewedString = m_String.substr(0, m_CursorShift);
+	if (m_IsFocused && !m_Flash) {
+		m_ViewedString += "|";
+	}
+	if (m_CursorShift < m_String.length()) {
+		m_ViewedString += m_String.substr(m_CursorShift, m_String.length());
+	}
+	updateText(&m_ViewedString[0]);
+}
+
+void Input::onMousePress(int x, int y, int button)
+{
+	if (button == MOUSE_BUTTON1) {
+		m_IsFocused = true;
+		m_Flash = false;
+		m_FrameCounter = 0;
+		updateText();
+	}
+}
+
+void Input::onKeyboardPress(int key, char symbol)
+{
+	std::string chunkLeft;
+	std::string chunkRight;
+	int size = m_String.length();
+
+	chunkLeft.clear();
+	chunkRight.clear();
+	if (m_CursorShift > 0) {
+		chunkLeft = m_String.substr(0, m_CursorShift);
+	}
+	if (m_CursorShift < size) {
+		chunkRight = m_String.substr(m_CursorShift, size);
+	}
+
+	if (key == DIK_BACKSPACE && m_CursorShift > 0) {
+		m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
+		m_CursorShift = min(m_CursorShift, m_String.length());
+		m_Flash = false;
+		updateText();
+	}
+	else if (key == DIK_LEFTARROW) {
+		m_CursorShift = max(--m_CursorShift, 0);
+		m_Flash = false;
+		updateText();
+	}
+	else if (key == DIK_RIGHTARROW) {
+		m_CursorShift = min(++m_CursorShift, size);
+		m_Flash = false;
+		updateText();
+	} else if (key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
+		m_String = chunkLeft + symbol + chunkRight;
+		m_CursorShift = min(++m_CursorShift, size);
+		updateText();
+	}
+}
+
+bool Input::isIntersect(int x, int y) {
+	bool result = AbstractGui::isIntersect(x, y);
+	if (!result && m_IsFocused) {
+		m_IsFocused = false;
+		updateText(&m_String[0]);
+	}
+
+	return result;
+}
+
+void Input::frame(float counter)
+{
+	if (!m_IsFocused) {
+		return;
+	}
+
+	int timeout = m_Flash ? 500 : 1000;
+	m_FrameCounter += counter;
+	if (m_FrameCounter > timeout) {
+		m_Flash = !m_Flash;
+		m_FrameCounter = 0;
+		updateText();
+	}
 }

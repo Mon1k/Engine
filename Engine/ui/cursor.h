@@ -15,8 +15,12 @@ public:
 
     bool Initialize(int, int, WCHAR*, int, int);
     void Shutdown();
-    bool set(int, int);
     bool Render();
+
+    virtual bool isIntersect(int x, int y)
+    {
+        return false;
+    }
 
 private:
     TextureShaderClass* m_TextureShader;

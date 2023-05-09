@@ -31,7 +31,7 @@ public:
     void toogle() {
         b_IsMarked = !b_IsMarked;
     };
-    virtual void onPress(int x, int y, int button)
+    virtual void onMousePress(int x, int y, int button)
     {
         if (button == MOUSE_BUTTON1) {
             toogle();
