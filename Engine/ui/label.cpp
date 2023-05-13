@@ -19,6 +19,9 @@ bool Label::Initialize(int screenWidth, int screenHeight, int bitmapWidth, int b
 {
 	bool result;
 
+	m_width = bitmapWidth;
+	m_height = bitmapHeight;
+
 	// Create the text object.
 	m_Text = new TextClass;
 	if (!m_Text) {
@@ -31,6 +34,8 @@ bool Label::Initialize(int screenWidth, int screenHeight, int bitmapWidth, int b
 		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
+
+	return true;
 }
 
 

@@ -13,7 +13,7 @@ public:
 		m_childs.clear();
 	}
 
-	void addChild(AbstractGui* child)
+	virtual void addChild(AbstractGui* child)
 	{
 		child->m_D3D = m_D3D;
 		child->m_baseViewMatrix = m_baseViewMatrix;
@@ -40,7 +40,7 @@ public:
 		}
 	}
 
-	std::vector<AbstractGui*> getChilds()
+	virtual std::vector<AbstractGui*> getChilds()
 	{
 		return m_childs;
 	}
@@ -101,6 +101,6 @@ public:
 		return false;
 	}
 
-private:
+protected:
 	std::vector<AbstractGui*> m_childs;
 };

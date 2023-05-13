@@ -156,6 +156,7 @@
     <ClCompile Include="ui\input.cpp" />
     <ClCompile Include="ui\label.cpp" />
     <ClCompile Include="ui\UIManager.cpp" />
+    <ClCompile Include="ui\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractNode.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="ui\input.h" />
     <ClInclude Include="ui\label.h" />
     <ClInclude Include="ui\UIManager.h" />
+    <ClInclude Include="ui\window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps" />
