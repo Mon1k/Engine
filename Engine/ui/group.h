@@ -57,7 +57,7 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			if (m_childs[i]->isIntersect(x, y)) {
+			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
 				return true;
 			}
 		}
@@ -69,7 +69,9 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			m_childs[i]->onMousePress(x, y, button);
+			if (m_childs[i]->isVisible()) {
+				m_childs[i]->onMousePress(x, y, button);
+			}
 		}
 	}
 
@@ -77,7 +79,9 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			m_childs[i]->onKeyboardPress(key, symbol);
+			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
+				m_childs[i]->onKeyboardPress(key, symbol);
+			}
 		}
 	}
 
@@ -85,7 +89,9 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			m_childs[i]->frame(counter);
+			if (m_childs[i]->isVisible()) {
+				m_childs[i]->frame(counter);
+			}
 		}
 	}
 
@@ -93,7 +99,7 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			if (m_childs[i]->isFocused()) {
+			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
 				return true;
 			}
 		}

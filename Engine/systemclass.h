@@ -53,7 +53,7 @@ protected:
 	PositionClass* m_Position;
 	ResourceManager* m_ResourceManager;
 
-	bool done;
+	bool m_Done;
 
 public:
 	int screenWidth = Options::screen_width;

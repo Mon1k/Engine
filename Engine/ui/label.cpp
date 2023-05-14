@@ -1,5 +1,5 @@
 #include "label.h"
-
+#include "../Options.h"
 
 Label::Label()
 {
@@ -15,21 +15,15 @@ Label::~Label()
 {
 }
 
-bool Label::Initialize(int screenWidth, int screenHeight, int bitmapWidth, int bitmapHeight)
+bool Label::Initialize(int bitmapWidth, int bitmapHeight)
 {
 	bool result;
 
 	m_width = bitmapWidth;
 	m_height = bitmapHeight;
 
-	// Create the text object.
 	m_Text = new TextClass;
-	if (!m_Text) {
-		return false;
-	}
-
-	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), Options::screen_width, Options::screen_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
@@ -54,7 +48,6 @@ bool Label::Add(char* text, int positionX, int positionY)
 
 void Label::Shutdown()
 {
-	// Release the text object.
 	if (m_Text) {
 		m_Text->Shutdown();
 		delete m_Text;
@@ -70,7 +63,6 @@ bool Label::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_baseViewMatrix);
 	if (!result) {
 		return false;

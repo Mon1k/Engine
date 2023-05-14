@@ -66,7 +66,7 @@ bool Window::addHeader(char* title, int flags)
 
 	m_title = new Label;
 	m_header->addChild(m_title);
-	m_title->Initialize(Options::screen_width, Options::screen_height, m_header->m_width - rightShift, headerHeightElm);
+	m_title->Initialize(m_header->m_width - rightShift, headerHeightElm);
 	m_title->Add(title, m_header->m_x + paddingX, m_header->m_y + paddingY);
 
 	m_BitmapHeader = new BitmapClass;

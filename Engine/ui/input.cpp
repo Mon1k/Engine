@@ -1,5 +1,5 @@
 #include "input.h"
-
+#include "../Options.h"
 
 Input::Input()
 {
@@ -20,7 +20,7 @@ Input::~Input()
 {
 }
 
-bool Input::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight, int positionX, int positionY)
+bool Input::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight, int positionX, int positionY)
 {
 	bool result;
 
@@ -31,7 +31,7 @@ bool Input::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename
 	}
 
 	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), Options::screen_width, Options::screen_height);
 	if (!result) {
 		return false;
 	}
@@ -60,7 +60,7 @@ bool Input::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename
 	m_y = positionY;
 
 	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		return false;
 	}

@@ -31,6 +31,14 @@ public:
     bool Render();
     void addChild(AbstractGui*);
     void setTitle(char*);
+    
+    Group* getHeader() {
+        return m_header;
+    }
+    
+    Group* getBody() {
+        return m_body;
+    }
 
 protected:
     TextureShaderClass* m_TextureShader;

@@ -13,7 +13,7 @@ public:
     Cursor(const Cursor&);
     ~Cursor();
 
-    bool Initialize(int, int, WCHAR*, int, int);
+    bool Initialize(WCHAR*, int, int);
     void Shutdown();
     bool Render();
 

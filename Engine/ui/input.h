@@ -16,7 +16,7 @@ public:
     Input();
     ~Input();
 
-    bool Initialize(int, int, WCHAR*, int, int, int, int);
+    bool Initialize(WCHAR*, int, int, int, int);
     void Shutdown();
     bool Render();
 

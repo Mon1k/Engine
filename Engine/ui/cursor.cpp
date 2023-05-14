@@ -1,5 +1,5 @@
 #include "cursor.h"
-
+#include "../Options.h"
 
 Cursor::Cursor()
 {
@@ -22,17 +22,14 @@ Cursor::~Cursor()
 {
 }
 
-bool Cursor::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool Cursor::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
 
-	// Create the texture shader object.
-	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader) {
-		return false;
-	}
+	m_width = bitmapWidth;
+	m_height = bitmapHeight;
 
-	// Initialize the texture shader object.
+	m_TextureShader = new TextureShaderClass;
 	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
@@ -41,14 +38,7 @@ bool Cursor::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilenam
 
 	// Create the bitmap object.
 	m_Bitmap = new BitmapClass;
-	if (!m_Bitmap) {
-		return false;
-	}
-
-	// Initialize the bitmap object.
-	m_width = bitmapWidth;
-	m_height = bitmapHeight;
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
@@ -58,14 +48,12 @@ bool Cursor::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilenam
 
 void Cursor::Shutdown()
 {
-	// Release the bitmap object.
 	if (m_Bitmap) {
 		m_Bitmap->Shutdown();
 		delete m_Bitmap;
 		m_Bitmap = 0;
 	}
 
-	// Release the texture shader object.
 	if (m_TextureShader) {
 		m_TextureShader->Shutdown();
 		delete m_TextureShader;
@@ -84,7 +72,6 @@ bool Cursor::Render()
 
 
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
-	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	if (!result) {
 		return false;

@@ -12,7 +12,7 @@ public:
     Label(const Label&);
     ~Label();
 
-    bool Initialize(int, int, int, int);
+    bool Initialize(int, int);
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Add(char*, int, int);

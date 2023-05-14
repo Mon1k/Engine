@@ -162,8 +162,8 @@ void SystemClass::run()
 	ZeroMemory(&msg, sizeof(MSG));
 	
 	// Loop until there is a quit message from the window or the user.
-	done = false;
-	while (!done) {
+	m_Done = false;
+	while (!m_Done) {
 		// Handle the windows messages.
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
@@ -172,10 +172,10 @@ void SystemClass::run()
 
 		// If windows signals to end the application then exit out.
 		if(msg.message == WM_QUIT) {
-			done = true;
+			m_Done = true;
 		} else {
 			if (!frame()) {
-				done = true;
+				m_Done = true;
 			} else {
 				m_Graphics->Render();
 			}
@@ -183,7 +183,7 @@ void SystemClass::run()
 
 		// Check if the user pressed escape and wants to quit.
 		if (m_Input->IsEscapePressed() == true) {
-			done = true;
+			m_Done = true;
 		} else if (m_Input->IsKeyDown(DIK_F12)) {
 			createScreenshot();
 		}
