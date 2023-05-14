@@ -1,5 +1,5 @@
 #include "button.h"
-
+#include "../Options.h"
 
 Button::Button()
 {
@@ -17,7 +17,7 @@ Button::~Button()
 {
 }
 
-bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool Button::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
 
@@ -28,7 +28,7 @@ bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilena
 	}
 
 	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), Options::screen_width, Options::screen_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
@@ -56,7 +56,7 @@ bool Button::Initialize(int screenWidth, int screenHeight,  WCHAR* textureFilena
 	// Initialize the bitmap object.
 	m_width = bitmapWidth;
 	m_height = bitmapHeight;
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
@@ -71,7 +71,10 @@ bool Button::Add(char* text, int positionX, int positionY, float red, float gree
 	m_x = positionX;
 	m_y = positionY;
 
-	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, red, green, blue);
+	int length = strlen(text);
+	int shiftX = m_width / 2 - (length * 7) / 2;
+
+	return m_Text->AddText(text, m_x + shiftX, m_y + m_height / 3, red, green, blue);
 }
 
 bool Button::Add(char* text, int positionX, int positionY)

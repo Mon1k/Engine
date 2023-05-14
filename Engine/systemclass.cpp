@@ -9,6 +9,8 @@ float Options::shadow_depth;
 bool Options::soft_shadow;
 bool Options::shadow_enabled;
 bool Options::full_screen;
+int Options::screen_width;
+int Options::screen_height;
 
 SystemClass::SystemClass()
 {
@@ -20,6 +22,9 @@ SystemClass::SystemClass()
 	m_ResourceManager = 0;
 
 	Options::Init();
+
+	screenWidth = Options::screen_width;
+	screenHeight = Options::screen_height;
 }
 
 

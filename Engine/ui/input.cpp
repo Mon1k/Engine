@@ -9,6 +9,7 @@ Input::Input()
 
 	m_IsFocused = false;
 	m_Flash = true;
+	m_usesFlashCursor = false;
 	m_FrameCounter = 0;
 	m_CursorShift = 0;
 	m_MaxSize = 0;
@@ -126,7 +127,7 @@ bool Input::updateText(char* text)
 void Input::updateText()
 {
 	m_ViewedString = m_String.substr(0, m_CursorShift);
-	if (m_IsFocused && !m_Flash) {
+	if (m_IsFocused && (!m_usesFlashCursor || !m_Flash)) {
 		m_ViewedString += "|";
 	}
 	if (m_CursorShift < m_String.length()) {
@@ -143,6 +144,8 @@ void Input::onMousePress(int x, int y, int button)
 		m_FrameCounter = 0;
 		updateText();
 	}
+
+	AbstractGui::onMousePress(x, y, button);
 }
 
 void Input::onKeyboardPress(int key, char symbol)
@@ -167,17 +170,20 @@ void Input::onKeyboardPress(int key, char symbol)
 		updateText();
 	}
 	else if (key == DIK_LEFTARROW) {
-		m_CursorShift = max(--m_CursorShift, 0);
+		m_CursorShift--;
+		m_CursorShift = max(m_CursorShift, 0);
 		m_Flash = false;
 		updateText();
 	}
 	else if (key == DIK_RIGHTARROW) {
-		m_CursorShift = min(++m_CursorShift, size);
+		m_CursorShift++;
+		m_CursorShift = min(m_CursorShift, size);
 		m_Flash = false;
 		updateText();
 	} else if (key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
 		m_String = chunkLeft + symbol + chunkRight;
-		m_CursorShift = min(++m_CursorShift, size);
+		m_CursorShift++;
+		m_CursorShift = min(m_CursorShift, size);
 		updateText();
 	}
 }
@@ -194,7 +200,7 @@ bool Input::isIntersect(int x, int y) {
 
 void Input::frame(float counter)
 {
-	if (!m_IsFocused) {
+	if (!m_usesFlashCursor || !m_IsFocused) {
 		return;
 	}
 

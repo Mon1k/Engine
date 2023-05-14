@@ -33,12 +33,18 @@ public:
         m_MaxSize = size;
     }
 
+    void setUsesFlashCursor(bool isFlash)
+    {
+        m_usesFlashCursor = isFlash;
+    }
+
 private:
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
     TextClass* m_Text;
 
     bool m_Flash;
+    bool m_usesFlashCursor;
     int m_CursorShift;
     float m_FrameCounter;
     int m_MaxSize;

@@ -4,6 +4,8 @@
 #include "../AbstractNode.h"
 #include "../d3dclass.h"
 
+#include <functional>
+
 class AbstractGui: public AbstractNode
 {
 public:
@@ -15,6 +17,8 @@ public:
         m_height = 0;
         m_x = 0;
         m_y = 0;
+
+        m_handler = 0;
     };
     virtual void Shutdown() = 0;
     virtual bool Render() = 0;
@@ -36,8 +40,17 @@ public:
         return m_IsFocused;
     }
 
-    virtual void onMousePress(int x, int y, int button) {}
+    virtual void onMousePress(int x, int y, int button)
+    {
+        if (isIntersect(x, y) && m_handler) {
+            m_handler();
+        }
+    }
     virtual void onKeyboardPress(int key, char symbol) {}
+
+    virtual void addEventHandler(std::function<int()> handler) {
+        m_handler = handler;
+    }
 
     virtual bool isIntersect(int x, int y)
     {
@@ -63,6 +76,7 @@ public:
     bool m_IsFocused;
 
     int m_width, m_height, m_x, m_y;
+    std::function<int()> m_handler;
 };
 
 #endif

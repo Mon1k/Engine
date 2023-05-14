@@ -6,6 +6,7 @@ TextClass::TextClass()
 	m_FontShader = 0;
 
 	m_sentence = 0;
+	m_text = "";
 }
 
 

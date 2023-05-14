@@ -14,7 +14,7 @@ public:
     Button(const Button&);
     ~Button();
 
-    bool Initialize(int, int, WCHAR*, int, int);
+    bool Initialize(WCHAR*, int, int);
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Add(char*, int, int);

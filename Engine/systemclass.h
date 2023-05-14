@@ -56,8 +56,8 @@ protected:
 	bool done;
 
 public:
-	int screenWidth = 1920;
-	int screenHeight = 1080;
+	int screenWidth = Options::screen_width;
+	int screenHeight = Options::screen_height;
 };
 
 

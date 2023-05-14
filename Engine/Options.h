@@ -16,6 +16,8 @@ public:
 		Options::shadow_enabled = true;
 
 		Options::full_screen = false;
+		Options::screen_width = 1980;
+		Options::screen_height = 1080;
 	}
 
 	static int shadow_width;
@@ -26,4 +28,6 @@ public:
 	static bool shadow_enabled;
 	
 	static bool full_screen;
+	static int screen_width;
+	static int screen_height;
 };
