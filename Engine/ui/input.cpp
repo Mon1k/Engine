@@ -111,7 +111,7 @@ bool Input::Render()
 	return true;
 }
 
-bool Input::setText(char* text)
+bool Input::setText(std::string text)
 {
 	m_String = text;
 	m_CursorShift = m_String.length();
@@ -119,9 +119,9 @@ bool Input::setText(char* text)
 	return updateText(text);
 }
 
-bool Input::updateText(char* text)
+bool Input::updateText(std::string text)
 {
-	return m_Text->AddText(text, m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
+	return m_Text->AddText(&text[0], m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 
 void Input::updateText()
@@ -143,6 +143,7 @@ void Input::onMousePress(int x, int y, int button)
 		m_Flash = false;
 		m_FrameCounter = 0;
 		updateText();
+		proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
 	}
 
 	AbstractGui::onMousePress(x, y, button);
@@ -186,6 +187,8 @@ void Input::onKeyboardPress(int key, char symbol)
 		m_CursorShift = min(m_CursorShift, size);
 		updateText();
 	}
+
+	AbstractGui::onKeyboardPress(key, symbol);
 }
 
 bool Input::isIntersect(int x, int y) {
@@ -193,6 +196,7 @@ bool Input::isIntersect(int x, int y) {
 	if (!result && m_IsFocused) {
 		m_IsFocused = false;
 		updateText(&m_String[0]);
+		proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
 	}
 
 	return result;

@@ -23,6 +23,19 @@ bool UIManager::Add(AbstractGui* ui)
     return true;
 }
 
+AbstractGui* UIManager::getById(int id)
+{
+    int size = m_elements.size();
+    for (int i = 0; i < size; i++) {
+        AbstractGui* node =  dynamic_cast<AbstractGui*>(m_elements[i]->getById(id));
+        if (node) {
+            return node;
+        }
+    }
+
+    return NULL;
+}
+
 void UIManager::Shutdown()
 {
     int size = m_elements.size();

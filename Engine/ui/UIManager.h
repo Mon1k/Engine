@@ -27,17 +27,7 @@ public:
     {
         return this->m_events;
     };
-    AbstractGui* getById(int id)
-    {
-        int size = m_elements.size();
-        for (int i = 0; i < size; i++) {
-            if (m_elements[i]->getId() == id) {
-                return m_elements[i];
-            }
-        }
-
-        return NULL;
-    }
+    AbstractGui* getById(int);
 
     void onMouseClick(int x, int y, int button);
     void onKeyboardClick(int, char);

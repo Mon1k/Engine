@@ -20,13 +20,17 @@ public:
     void Shutdown();
     bool Render();
 
-    bool setText(char*);
-    bool updateText(char*);
+    bool setText(std::string);
+    bool updateText(std::string);
     void updateText();
     virtual void onMousePress(int x, int y, int button);
     virtual void onKeyboardPress(int key, char symbol);
     virtual bool isIntersect(int x, int y);
     virtual void frame(float counter);
+
+    std::string getValue() {
+        return m_String;
+    }
 
     void setMaxSize(int size)
     {

@@ -6,15 +6,27 @@ class AbstractNode
 public:
     AbstractNode() {
         m_id = 0;
-    };
-    void setId(int id)
+    }
+    
+    virtual void setId(int id)
     {
         m_id = id;
-    };
-    int getId()
+    }
+
+    virtual int getId()
     {
         return m_id;
-    };
+    }
+
+    virtual bool compareId(int id)
+    {
+        return m_id == id;
+    }
+
+    virtual AbstractNode* getById(int id)
+    {
+        return m_id == id ? this : 0;
+    }
 
 private:
     int m_id;

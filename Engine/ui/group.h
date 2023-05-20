@@ -13,6 +13,39 @@ public:
 		m_childs.clear();
 	}
 
+	virtual bool compareId(int id) {
+		if (AbstractNode::compareId(id)) {
+			return true;
+		}
+
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			if (m_childs[i]->isVisible() && m_childs[i]->compareId(id)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	virtual AbstractNode* getById(int id) {
+		if (AbstractNode::compareId(id)) {
+			return this;
+		}
+
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			if (m_childs[i]->isVisible()) {
+				AbstractGui* node = dynamic_cast<AbstractGui*>(m_childs[i]->getById(id));
+				if (node) {
+					return node;
+				}
+			}
+		}
+
+		return 0;
+	}
+
 	virtual void addChild(AbstractGui* child)
 	{
 		child->m_D3D = m_D3D;
@@ -63,6 +96,26 @@ public:
 		}
 
 		return false;
+	}
+
+	virtual void proccesedEventHandlers(int event) {
+		if (!isVisible()) {
+			return;
+		}
+
+		int size = m_handlers.size();
+		for (int i = 0; i < size; i++) {
+			if (m_handlers[i].event == event) {
+				m_handlers[i].handler();
+			}
+
+			int sizeChild = m_childs.size();
+			for (int i = 0; i < sizeChild; i++) {
+				if (m_childs[i]->isVisible() && m_childs[i]->m_handlers[i].event == event) {
+					m_childs[i]->m_handlers[i].handler();
+				}
+			}
+		}
 	}
 
 	virtual void onMousePress(int x, int y, int button)

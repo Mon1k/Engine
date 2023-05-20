@@ -56,7 +56,7 @@ bool Window::addHeader(char* title, int flags)
 			buttonClose->Initialize(L"data/textures/ui/button_close.png", headerHeightElm, headerHeightElm);
 			buttonClose->m_x = m_header->m_x + m_header->m_width - headerHeightElm;
 			buttonClose->m_y = m_header->m_y + paddingY;
-			buttonClose->addEventHandler([this] { 
+			buttonClose->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
 				this->hide();
 				return 0;
 			});
