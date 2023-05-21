@@ -70,9 +70,15 @@ void UIManager::onMouseClick(int x, int y, int button)
 {
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
-        if (m_elements[i]->isVisible() && m_elements[i]->isIntersect(x, y)) {
-            m_elements[i]->onMousePress(x, y, button);
-            m_events.push_back(m_elements[i]);
+        if (m_elements[i]->isVisible()) {
+            if (m_elements[i]->isIntersect(x, y)) {
+                m_elements[i]->onMousePress(x, y, button);
+                m_elements[i]->m_IsFocused = true;
+                m_events.push_back(m_elements[i]);
+            }
+            else {
+                m_elements[i]->m_IsFocused = false;
+            }
         }
     }
 }

@@ -138,7 +138,7 @@ void Input::updateText()
 
 void Input::onMousePress(int x, int y, int button)
 {
-	if (button == MOUSE_BUTTON1) {
+	if (button == MOUSE_BUTTON1 && isIntersect(x, y)) {
 		m_IsFocused = true;
 		m_Flash = false;
 		m_FrameCounter = 0;
@@ -166,6 +166,7 @@ void Input::onKeyboardPress(int key, char symbol)
 
 	if (key == DIK_BACKSPACE && m_CursorShift > 0) {
 		m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
+		m_CursorShift--;
 		m_CursorShift = min(m_CursorShift, m_String.length());
 		m_Flash = false;
 		updateText();
@@ -183,6 +184,7 @@ void Input::onKeyboardPress(int key, char symbol)
 		updateText();
 	} else if (key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
 		m_String = chunkLeft + symbol + chunkRight;
+		size = m_String.length();
 		m_CursorShift++;
 		m_CursorShift = min(m_CursorShift, size);
 		updateText();

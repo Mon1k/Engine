@@ -392,3 +392,18 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
         }
     }
 }
+
+int ModelManager::getNextId()
+{
+    int nextId = 0;
+    int modelId;
+    for (int i = 0; i < m_models.size(); i++) {
+        modelId = m_models[i]->getId();
+        if (nextId < modelId) {
+            nextId = modelId;
+        }
+    }
+    nextId++;
+
+    return nextId;
+}

@@ -122,7 +122,7 @@ public:
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			if (m_childs[i]->isVisible()) {
+			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
 				m_childs[i]->onMousePress(x, y, button);
 			}
 		}

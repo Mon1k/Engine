@@ -47,9 +47,7 @@ public:
 
     virtual void onMousePress(int x, int y, int button)
     {
-        if (isIntersect(x, y)) {
-            proccesedEventHandlers(EventType::MOUSE_DOWN);
-        }
+        proccesedEventHandlers(EventType::MOUSE_DOWN);
     }
 
     virtual void onKeyboardPress(int key, char symbol) {

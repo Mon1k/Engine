@@ -176,6 +176,7 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Point.h" />
     <ClInclude Include="math\Rectangle.h" />
     <ClInclude Include="modelclass.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="textures\watershaderclass.h" />
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="tool\random.h" />
+    <ClInclude Include="tool\String.h" />
     <ClInclude Include="ui\AbstractGUI.h" />
     <ClInclude Include="ui\button.h" />
     <ClInclude Include="ui\checkbox.h" />

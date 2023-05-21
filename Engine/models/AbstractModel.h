@@ -55,17 +55,21 @@ public:
     virtual int GetTtriangleCount() {
         return m_vertexCount / 3;
     }
+
     void setVisible(bool visible) {
         m_visible = visible;
     }
+    
     bool isVisible() {
         return m_visible;
     }
+    
     virtual void addShader(AbstractShader* shader)
     {
         m_shader = shader;
         m_shader->setD3D(m_D3D);
     }
+    
     virtual AbstractShader* getShader()
     {
         return m_shader;
@@ -74,9 +78,11 @@ public:
     D3DXVECTOR3 GetPosition() {
         return position;
     }
+
     D3DXVECTOR3 GetScale() {
         return scale;
     }
+
     D3DXVECTOR3 getRotation() {
         return m_rotation;
     }

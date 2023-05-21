@@ -181,10 +181,10 @@ void SystemClass::run()
 			}
 		}
 
-		// Check if the user pressed escape and wants to quit.
-		if (m_Input->IsEscapePressed() == true) {
+		if (m_Input->IsKeyDown(DIK_F10)) {
 			m_Done = true;
-		} else if (m_Input->IsKeyDown(DIK_F12)) {
+		}
+		if (m_Input->IsKeyDown(DIK_F12)) {
 			createScreenshot();
 		}
 	}

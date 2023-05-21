@@ -61,6 +61,8 @@ public:
         return m_models;
     }
 
+    int getNextId();
+
 private:
     std::vector<AbstractModel *> m_models;
     std::vector<AbstractModel *> m_modelsRender;

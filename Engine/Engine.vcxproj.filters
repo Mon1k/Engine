@@ -572,6 +572,12 @@
     <ClInclude Include="ui\window.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="math\Math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="tool\String.h">
+      <Filter>tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
