@@ -182,6 +182,16 @@ void Input::onKeyboardPress(int key, char symbol)
 		m_CursorShift = min(m_CursorShift, size);
 		m_Flash = false;
 		updateText();
+	} 
+	else if (key == DIK_HOME) {
+		m_CursorShift = 0;
+		m_Flash = false;
+		updateText();
+	}
+	else if (key == DIK_END) {
+		m_CursorShift = size;
+		m_Flash = false;
+		updateText();
 	} else if (key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
 		m_String = chunkLeft + symbol + chunkRight;
 		size = m_String.length();

@@ -1,7 +1,7 @@
 #include "Reflection.h"
 
 
-bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
+bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::string> texturesFilename)
 {
 	if (!ModelClass::Initialize(d3dClass, modelFilename, texturesFilename)) {
 		return false;

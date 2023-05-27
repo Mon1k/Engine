@@ -18,7 +18,7 @@ Fountain::~Fountain()
 {
 }
 
-bool Fountain::Initialize(D3DClass* d3dClass, std::wstring textureFilename)
+bool Fountain::Initialize(D3DClass* d3dClass, std::string textureFilename)
 {
 	m_D3D = d3dClass;
 

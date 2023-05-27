@@ -10,7 +10,7 @@ public:
 	Waterfall(const Waterfall&);
 	~Waterfall();
 
-	bool Initialize(D3DClass*, std::wstring);
+	bool Initialize(D3DClass*, std::string);
 
 protected:
 	bool InitializeParticleSystem();

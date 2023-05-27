@@ -28,7 +28,7 @@ public:
 	SkyPlaneClass(const SkyPlaneClass&);
 	~SkyPlaneClass();
 
-	bool Initialize(D3DClass*, std::vector<std::wstring>);
+	bool Initialize(D3DClass*, std::vector<std::string>);
 	void RenderBuffers(ID3D11DeviceContext*);
 	void Render(CameraClass*);
 	void Shutdown();

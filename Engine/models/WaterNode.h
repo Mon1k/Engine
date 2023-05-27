@@ -10,7 +10,7 @@
 class WaterNode: public Reflection
 {
 public:
-	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	virtual bool Initialize(D3DClass*, char*, std::vector<std::string>);
 	virtual void PreRender(CameraClass*);
 	virtual void Render(CameraClass*);
 	void RenderRefractionToTexture(CameraClass*);

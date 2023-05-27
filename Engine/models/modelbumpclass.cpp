@@ -11,7 +11,7 @@ ModelBumpClass::ModelBumpClass()
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 }
 
-bool ModelBumpClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
+bool ModelBumpClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::string> texturesFilename)
 {
 	m_D3D = d3dClass;
 

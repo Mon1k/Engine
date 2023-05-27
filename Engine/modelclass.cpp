@@ -27,7 +27,7 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
+bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::string> texturesFilename)
 {
 	bool result;
 
@@ -193,7 +193,7 @@ void ModelClass::CalcMinMax()
 	}
 }
 
-bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename)
+bool ModelClass::LoadTextures(ID3D11Device* device, std::string filename)
 {
 	bool result;
 
@@ -204,7 +204,8 @@ bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename)
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, &filename[0]);
+	std::wstring texture(filename.begin(), filename.end());
+	result = m_TextureArray->Initialize(device, &texture[0]);
 	if (!result) {
 		return false;
 	}
@@ -212,7 +213,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, std::wstring filename)
 	return true;
 }
 
-bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstring> filenames)
+bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::string> filenames)
 {
 	bool result;
 
@@ -223,7 +224,8 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstrin
 	}
 
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, &filenames[0][0]);
+	std::wstring texture(filenames[0].begin(), filenames[0].end());
+	result = m_TextureArray->Initialize(device, &texture[0]);
 	if (!result) {
 		return false;
 	}
@@ -231,16 +233,18 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::wstrin
 	int size = filenames.size();
 	if (size > 1) {
 		for (int i = 1; i < size; i++) {
-			m_TextureArray->AddTexture(device, &filenames[i][0]);
+			texture = std::wstring(filenames[i].begin(), filenames[i].end());
+			m_TextureArray->AddTexture(device, &texture[i]);
 		}
 	}
 
 	return true;
 }
 
-bool ModelClass::addTexture(std::wstring filename)
+bool ModelClass::addTexture(std::string filename)
 {
-	m_TextureArray->AddTexture(m_D3D->GetDevice(), &filename[0]);
+	std::wstring texture(filename.begin(), filename.end());
+	m_TextureArray->AddTexture(m_D3D->GetDevice(), &texture[0]);
 
 	return true;
 }

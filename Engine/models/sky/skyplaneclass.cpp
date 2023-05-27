@@ -19,7 +19,7 @@ SkyPlaneClass::~SkyPlaneClass()
 {
 }
 
-bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::wstring> texturesFilename)
+bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::string> texturesFilename)
 {
 	int skyPlaneResolution, textureRepeat;
 	float skyPlaneWidth, skyPlaneTop, skyPlaneBottom;

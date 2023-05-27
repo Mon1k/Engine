@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 using namespace std;
 
 #include "models/AbstractModel.h"
@@ -38,7 +39,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	virtual bool Initialize(D3DClass*, char*, std::vector<std::string>);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 	virtual void Render();
@@ -46,7 +47,7 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
-	bool addTexture(std::wstring);
+	bool addTexture(std::string);
 
 	void ReleaseModel();
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
@@ -97,8 +98,8 @@ protected:
 	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
 
-	bool LoadTextures(ID3D11Device*, std::wstring);
-	bool LoadTexturesArray(ID3D11Device*, std::vector<std::wstring>);
+	bool LoadTextures(ID3D11Device*, std::string);
+	bool LoadTexturesArray(ID3D11Device*, std::vector<std::string>);
 	void ReleaseTexture();
 
 protected:

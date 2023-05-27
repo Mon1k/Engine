@@ -43,7 +43,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, WCHAR*, WCHAR*);
+	bool Initialize(D3DClass*, FrustumClass*, char*, std::string, ::string);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
@@ -53,19 +53,19 @@ public:
 	void setTextureRepeat(float repeat) {
 		m_repeat = repeat;
 	}
-	void addDetailTexture(std::wstring texture) {
+	void addDetailTexture(std::string texture) {
 		addTexture(texture);
 		isDetailTexture = m_TextureArray->getTextures().size() - 1;
 	}
-	void addBumpTexture(std::wstring texture) {
+	void addBumpTexture(std::string texture) {
 		addTexture(texture);
 		isBumpTexture = m_TextureArray->getTextures().size() - 1;
 	}
-	void addTextureLayer(std::wstring texture, std::wstring normalTexture) {
+	void addTextureLayer(std::string texture, std::string normalTexture) {
 		addTexture(texture);
 		addTexture(normalTexture);
 	}
-	void addTextureAlpha(std::wstring texture) {
+	void addTextureAlpha(std::string texture) {
 		addTexture(texture);
 	}
 

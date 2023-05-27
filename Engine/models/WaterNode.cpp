@@ -1,6 +1,6 @@
 #include "WaterNode.h"
 
-bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::wstring> texturesFilename)
+bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::string> texturesFilename)
 {
 	if (!Reflection::Initialize(d3dClass, modelFilename, texturesFilename)) {
 		return false;

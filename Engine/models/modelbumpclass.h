@@ -35,7 +35,7 @@ private:
 public:
 	ModelBumpClass();
 
-	bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	bool Initialize(D3DClass*, char*, std::vector<std::string>);
 
 protected:
 	bool InitializeBuffers(ID3D11Device*);

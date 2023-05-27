@@ -150,6 +150,10 @@ public:
 
 	virtual bool isFocused()
 	{
+		if (m_visible && m_IsFocused) {
+			return true;
+		}
+
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {

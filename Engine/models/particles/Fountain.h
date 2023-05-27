@@ -11,7 +11,7 @@ public:
 	Fountain(const Fountain&);
 	~Fountain();
 
-	bool Initialize(D3DClass*, std::wstring);
+	bool Initialize(D3DClass*, std::string);
 
 protected:
 	bool InitializeParticleSystem();

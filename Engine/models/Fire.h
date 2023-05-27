@@ -7,7 +7,7 @@
 class Fire : public ModelClass
 {
 public:
-	virtual bool Initialize(D3DClass*, char*, std::vector<std::wstring>);
+	virtual bool Initialize(D3DClass*, char*, std::vector<std::string>);
 	virtual void Render(CameraClass*);
 	void Shutdown();
 	void setFrameTime(float frameTime) {
