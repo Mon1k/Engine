@@ -234,7 +234,7 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::string
 	if (size > 1) {
 		for (int i = 1; i < size; i++) {
 			texture = std::wstring(filenames[i].begin(), filenames[i].end());
-			m_TextureArray->AddTexture(device, &texture[i]);
+			m_TextureArray->AddTexture(device, &texture[0]);
 		}
 	}
 

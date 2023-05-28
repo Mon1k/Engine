@@ -178,6 +178,9 @@ bool TerrainClass::LoadHeightMap(char* filename)
 	// Initialize the position in the image data buffer.
 	k = 0;
 
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+
 	// Read the image data into the height map.
 	for (j = 0; j < m_terrainHeight; j++) {
 		for (i = 0; i < m_terrainWidth; i++) {
@@ -185,9 +188,28 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 			index = (m_terrainHeight * j) + i;
 
-			m_heightMap[index].x = (float)i * scale.x;
-			m_heightMap[index].y = (float)height * scale.y;
-			m_heightMap[index].z = (float)j * scale.z;
+			m_heightMap[index].x = (float)i * scale.x + position.x;
+			m_heightMap[index].y = (float)height * scale.y + position.y;
+			m_heightMap[index].z = (float)j * scale.z + position.z;
+
+			if (m_heightMap[index].x > m_Max.x) {
+				m_Max.x = m_heightMap[index].x;
+			}
+			if (m_heightMap[index].y > m_Max.y) {
+				m_Max.y = m_heightMap[index].y;
+			}
+			if (m_heightMap[index].z > m_Max.z) {
+				m_Max.z = m_heightMap[index].z;
+			}
+			if (m_heightMap[index].x < m_Min.x) {
+				m_Min.x = m_heightMap[index].x;
+			}
+			if (m_heightMap[index].y < m_Min.y) {
+				m_Min.y = m_heightMap[index].y;
+			}
+			if (m_heightMap[index].z < m_Min.z) {
+				m_Min.z = m_heightMap[index].z;
+			}
 
 			k += 3;
 		}

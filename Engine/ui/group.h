@@ -88,6 +88,10 @@ public:
 
 	virtual bool isIntersect(int x, int y)
 	{
+		if (AbstractGui::isIntersect(x, y)) {
+			return true;
+		}
+
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {

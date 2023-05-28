@@ -10,7 +10,8 @@
 class AbstractGui: public AbstractNode
 {
 public:
-    AbstractGui() {
+    AbstractGui()
+    {
         m_visible = true;
         m_IsFocused = false;
 
@@ -24,20 +25,25 @@ public:
     virtual void Shutdown() = 0;
     virtual bool Render() = 0;
 
-    void hide() {
+    virtual void hide()
+    {
         m_visible = false;
+        unfocus();
     }
 
-    void show() {
+    virtual void show()
+    {
         m_visible = true;
     }
 
-    bool isVisible() {
-        return m_visible;
+    virtual void focus()
+    {
+        m_IsFocused = true;
     }
 
-    void setVisible(bool visible) {
-        m_visible = visible;
+    virtual void unfocus()
+    {
+        m_IsFocused = false;
     }
 
     virtual bool isFocused()
@@ -45,23 +51,36 @@ public:
         return m_IsFocused;
     }
 
+    virtual bool isVisible()
+    {
+        return m_visible;
+    }
+
+    virtual void setVisible(bool visible)
+    {
+        m_visible = visible;
+    }
+
     virtual void onMousePress(int x, int y, int button)
     {
         proccesedEventHandlers(EventType::MOUSE_DOWN);
     }
 
-    virtual void onKeyboardPress(int key, char symbol) {
+    virtual void onKeyboardPress(int key, char symbol)
+    {
         proccesedEventHandlers(EventType::KEYBOARD_DOWN);
     }
 
-    virtual void addEventHandler(int event, std::function<int()> handler) {
+    virtual void addEventHandler(int event, std::function<int()> handler)
+    {
         Event eventObject;
         eventObject.event = event;
         eventObject.handler = handler;
         m_handlers.push_back(eventObject);
     }
 
-    virtual void proccesedEventHandlers(int event) {
+    virtual void proccesedEventHandlers(int event)
+    {
         if (!isVisible()) {
             return;
         }

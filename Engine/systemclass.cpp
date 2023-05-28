@@ -193,14 +193,6 @@ void SystemClass::run()
 
 bool SystemClass::frame()
 {
-	int mouseX, mouseY;
-	int lastMouseX, lastMouseY;
-	D3DXVECTOR3 position, rotation;
-	float mouseSensivityX = 18.0f, mouseSensivityY = 18.0f, cameraSensivity = 1.0f;
-
-	// last mouse coord
-	m_Input->GetMouseLocation(lastMouseX, lastMouseY);
-
 	// Update the system stats.
 	m_Timer->Frame();
 	m_Fps->Frame();
@@ -215,8 +207,12 @@ bool SystemClass::frame()
 
 	// movement camera only unfocussed ui
 	if (!m_Graphics->getUiManager()->isFocused()) {
-		m_Input->GetMouseLocation(mouseX, mouseY);
+		int mouseX, mouseY;
+		D3DXVECTOR3 position, rotation;
+		float mouseSensivityX = 18.0f, mouseSensivityY = 18.0f, cameraSensivity = 1.0f;
 		int mouseButtonPress = m_Input->getMouseButtonPress();
+
+		m_Input->GetMouseLocation(mouseX, mouseY);
 
 		// rotate camera by keyboard
 		m_Position->SetFrameTime(m_Timer->GetTime());

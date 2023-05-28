@@ -48,6 +48,9 @@ public:
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
 	bool addTexture(std::string);
+	bool LoadTextures(ID3D11Device*, std::string);
+	bool LoadTexturesArray(ID3D11Device*, std::vector<std::string>);
+	void ReleaseTexture();
 
 	void ReleaseModel();
 	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
@@ -97,10 +100,6 @@ protected:
 	virtual bool InitializeBuffers(ID3D11Device*);
 	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
-
-	bool LoadTextures(ID3D11Device*, std::string);
-	bool LoadTexturesArray(ID3D11Device*, std::vector<std::string>);
-	void ReleaseTexture();
 
 protected:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;

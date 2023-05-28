@@ -72,12 +72,13 @@ void UIManager::onMouseClick(int x, int y, int button)
     for (int i = 0; i < size; i++) {
         if (m_elements[i]->isVisible()) {
             if (m_elements[i]->isIntersect(x, y)) {
+                m_elements[i]->focus();
                 m_elements[i]->onMousePress(x, y, button);
-                m_elements[i]->m_IsFocused = true;
                 m_events.push_back(m_elements[i]);
+                return;
             }
             else {
-                m_elements[i]->m_IsFocused = false;
+                m_elements[i]->unfocus();
             }
         }
     }
@@ -116,12 +117,14 @@ void UIManager::EventProccesor(InputClass* input)
 void UIManager::frame(float counter)
 {
     m_IsFocused = false;
+
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
         if (m_elements[i]->isVisible()) {
             m_elements[i]->frame(counter);
             if (m_elements[i]->isFocused()) {
                 m_IsFocused = true;
+                return;
             }
         }
     }
