@@ -23,18 +23,24 @@ public:
 	bool Initialize(HINSTANCE, HWND, int, int);
 	void Shutdown();
 	bool Frame();
-
-	bool IsEscapePressed();
+	void resetState();
+	
 	void GetMouseLocation(int&, int&);
-	bool IsKeyDown(unsigned int);
-	int getKeyDown();
-	char getSymbolKey(int);
-	bool IsKeyDown();
 	int getMouseButton();
 	int getMouseButtonPress();
-	D3DXVECTOR2 getMouseDiffPosition() {
+	
+	
+	bool IsKeyDown(unsigned int);
+	bool IsKeyDown();
+
+	bool IsEscapePressed();
+	int getKeyDown();
+	char getSymbolKey(int);
+	
+	D3DXVECTOR2 getMouseDiffPosition()
+	{
 		return D3DXVECTOR2(m_mouseState.lX, m_mouseState.lY);
-	};
+	}
 
 private:
 	bool ReadKeyboard();

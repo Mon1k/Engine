@@ -18,6 +18,8 @@ public:
 		Options::full_screen = false;
 		Options::screen_width = 1980;
 		Options::screen_height = 1080;
+
+		Options::reflectionLevel = 0;
 	}
 
 	static int shadow_width;
@@ -30,4 +32,6 @@ public:
 	static bool full_screen;
 	static int screen_width;
 	static int screen_height;
+
+	static unsigned int reflectionLevel;
 };

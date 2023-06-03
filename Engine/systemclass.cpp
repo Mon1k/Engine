@@ -11,6 +11,7 @@ bool Options::shadow_enabled;
 bool Options::full_screen;
 int Options::screen_width;
 int Options::screen_height;
+unsigned int Options::reflectionLevel;
 
 SystemClass::SystemClass()
 {

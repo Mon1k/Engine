@@ -47,25 +47,31 @@ public:
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 
-	float getTextureRepeat() {
+	float getTextureRepeat()
+	{
 		return m_repeat ? m_repeat : m_terrainWidth / 16;
 	}
-	void setTextureRepeat(float repeat) {
+	void setTextureRepeat(float repeat)
+	{
 		m_repeat = repeat;
 	}
-	void addDetailTexture(std::string texture) {
+	void addDetailTexture(std::string texture)
+	{
 		addTexture(texture);
 		isDetailTexture = m_TextureArray->getTextures().size() - 1;
 	}
-	void addBumpTexture(std::string texture) {
+	void addBumpTexture(std::string texture)
+	{
 		addTexture(texture);
 		isBumpTexture = m_TextureArray->getTextures().size() - 1;
 	}
-	void addTextureLayer(std::string texture, std::string normalTexture) {
+	void addTextureLayer(std::string texture, std::string normalTexture)
+	{
 		addTexture(texture);
 		addTexture(normalTexture);
 	}
-	void addTextureAlpha(std::string texture) {
+	void addTextureAlpha(std::string texture)
+	{
 		addTexture(texture);
 	}
 
@@ -74,12 +80,18 @@ public:
 	}
 
 	void CopyVertexArray(void*);
-	QuadTreeClass* getQuadTree() {
+	QuadTreeClass* getQuadTree()
+	{
 		return m_quadTree;
 	}
 
-	void setScaleNormal(D3DXVECTOR3 scale) {
+	void setScaleNormal(D3DXVECTOR3 scale)
+	{
 		m_scaleNormal = scale;
+	}
+	D3DXVECTOR3 getScaleNormal()
+	{
+		return m_scaleNormal;
 	}
 
 private:

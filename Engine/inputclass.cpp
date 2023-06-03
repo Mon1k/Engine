@@ -126,6 +126,18 @@ bool InputClass::IsKeyDown(unsigned int key)
 	return false;
 }
 
+bool InputClass::IsKeyDown()
+{
+	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
+	for (int i = 0; i < size; i++) {
+		if (m_keyboardState[i] & 0x80) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 int InputClass::getKeyDown()
 {
 	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
@@ -151,18 +163,6 @@ char InputClass::getSymbolKey(int code)
 	char c = static_cast<char>(asciiValue);
 
 	return c;
-}
-
-bool InputClass::IsKeyDown()
-{
-	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
-	for (int i = 0; i < size; i++) {
-		if (m_keyboardState[i] & 0x80) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 bool InputClass::IsEscapePressed()
@@ -231,6 +231,18 @@ bool InputClass::Frame()
 	ProcessInput();
 
 	return true;
+}
+
+void InputClass::resetState()
+{
+	for (int i = 0; i < 4; i++) {
+		m_mouseState.rgbButtons[i] = 0;
+	}
+
+	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
+	for (int i = 0; i < size; i++) {
+		m_keyboardState[i] = 0;
+	}
 }
 
 bool InputClass::ReadKeyboard()

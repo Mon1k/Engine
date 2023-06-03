@@ -117,6 +117,10 @@ void UIManager::EventProccesor(InputClass* input)
 void UIManager::frame(float counter)
 {
     m_IsFocused = false;
+    if (m_events.size() > 1) {
+        m_IsFocused = true;
+        return;
+    }
 
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
