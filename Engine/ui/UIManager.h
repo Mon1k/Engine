@@ -30,7 +30,7 @@ public:
     AbstractGui* getById(int);
 
     void onMouseClick(int x, int y, int button);
-    void onKeyboardClick(int, char);
+    void onKeyboardClick(InputClass::EventKey);
 
     bool isFocused() {
         return m_IsFocused;

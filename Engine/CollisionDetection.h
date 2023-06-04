@@ -86,6 +86,11 @@ public:
 		return true;
 	}
 
+	float getDistanceByPoints(D3DXVECTOR3 point1, D3DXVECTOR3 point2)
+	{
+		return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2) + pow(point2.z - point1.z, 2));
+	}
+
 public:
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_viewMatrix;

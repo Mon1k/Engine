@@ -16,6 +16,13 @@
 class InputClass
 {
 public:
+	struct EventKey {
+		int key;
+		char symbol;
+		bool shift;
+	};
+
+public:
 	InputClass();
 	InputClass(const InputClass&);
 	~InputClass();
@@ -34,7 +41,7 @@ public:
 	bool IsKeyDown();
 
 	bool IsEscapePressed();
-	int getKeyDown();
+	EventKey getKeyDown();
 	char getSymbolKey(int);
 	
 	D3DXVECTOR2 getMouseDiffPosition()

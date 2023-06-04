@@ -149,7 +149,7 @@ void Input::onMousePress(int x, int y, int button)
 	AbstractGui::onMousePress(x, y, button);
 }
 
-void Input::onKeyboardPress(int key, char symbol)
+void Input::onKeyboardPress(InputClass::EventKey event)
 {
 	std::string chunkLeft;
 	std::string chunkRight;
@@ -164,35 +164,36 @@ void Input::onKeyboardPress(int key, char symbol)
 		chunkRight = m_String.substr(m_CursorShift, size);
 	}
 
-	if (key == DIK_BACKSPACE && m_CursorShift > 0) {
+	if (event.key == DIK_BACKSPACE && m_CursorShift > 0) {
 		m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
 		m_CursorShift--;
 		m_CursorShift = min(m_CursorShift, m_String.length());
 		m_Flash = false;
 		updateText();
 	}
-	else if (key == DIK_LEFTARROW) {
+	else if (event.key == DIK_LEFTARROW) {
 		m_CursorShift--;
 		m_CursorShift = max(m_CursorShift, 0);
 		m_Flash = false;
 		updateText();
 	}
-	else if (key == DIK_RIGHTARROW) {
+	else if (event.key == DIK_RIGHTARROW) {
 		m_CursorShift++;
 		m_CursorShift = min(m_CursorShift, size);
 		m_Flash = false;
 		updateText();
 	} 
-	else if (key == DIK_HOME) {
+	else if (event.key == DIK_HOME) {
 		m_CursorShift = 0;
 		m_Flash = false;
 		updateText();
 	}
-	else if (key == DIK_END) {
+	else if (event.key == DIK_END) {
 		m_CursorShift = size;
 		m_Flash = false;
 		updateText();
-	} else if (key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
+	} else if (event.key <= DIK_SPACE && (m_MaxSize == 0 || size < m_MaxSize)) {
+		char symbol = replaceSymbolByEvent(event);
 		m_String = chunkLeft + symbol + chunkRight;
 		size = m_String.length();
 		m_CursorShift++;
@@ -200,14 +201,63 @@ void Input::onKeyboardPress(int key, char symbol)
 		updateText();
 	}
 
-	AbstractGui::onKeyboardPress(key, symbol);
+	AbstractGui::onKeyboardPress(event);
+}
+
+char Input::replaceSymbolByEvent(InputClass::EventKey event)
+{
+	char symbol = event.symbol;
+
+	if (event.shift) {
+		if (event.symbol == '1') {
+			symbol = '!';
+		}
+		else if (event.symbol == '2') {
+			symbol = '@';
+		}
+		else if (event.symbol == '3') {
+			symbol = '#';
+		}
+		else if (event.symbol == '4') {
+			symbol = '$';
+		}
+		else if (event.symbol == '5') {
+			symbol = '%';
+		}
+		else if (event.symbol == '6') {
+			symbol = '^';
+		}
+		else if (event.symbol == '7') {
+			symbol = '&';
+		}
+		else if (event.symbol == '8') {
+			symbol = '*';
+		}
+		else if (event.symbol == '9') {
+			symbol = '(';
+		}
+		else if (event.symbol == '0') {
+			symbol = ')';
+		}
+		else if (event.symbol == '-') {
+			symbol = '_';
+		}
+		else if (event.symbol == '=') {
+			symbol = '+';
+		}
+		else {
+			symbol = toupper(symbol);
+		}
+	}
+
+	return symbol;
 }
 
 bool Input::isIntersect(int x, int y) {
 	bool result = AbstractGui::isIntersect(x, y);
 	if (!result && m_IsFocused) {
 		m_IsFocused = false;
-		updateText(&m_String[0]);
+		updateText(m_String);
 		proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
 	}
 

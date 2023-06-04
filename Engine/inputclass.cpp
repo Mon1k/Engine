@@ -1,6 +1,5 @@
 #include "inputclass.h"
 
-
 InputClass::InputClass()
 {
 	m_directInput = 0;
@@ -138,21 +137,31 @@ bool InputClass::IsKeyDown()
 	return false;
 }
 
-int InputClass::getKeyDown()
+InputClass::EventKey InputClass::getKeyDown()
 {
 	int size = sizeof(m_keyboardState) / sizeof(m_keyboardState[0]);
-	int key = 0;
+	EventKey event = {
+		0,
+		0,
+		false
+	};
 
 	for (int i = 0; i < size; i++) {
+		if ((m_keyboardState[i] & 0x80) && (i == DIK_LSHIFT || i == DIK_RSHIFT)) {
+			event.shift = true;
+			continue;
+		}
+
 		if ((m_keyboardState[i] & 0x80) && !m_PrevKeyboardState[i]) {
+			event.key = i;
+			event.symbol = getSymbolKey(i);
 			m_PrevKeyboardState[i] = true;
-			key = i;
 		} else if (!(m_keyboardState[i] & 0x80) && m_PrevKeyboardState[i]) {
 			m_PrevKeyboardState[i] = false;
 		}
 	}
 
-	return key;
+	return event;
 }
 
 char InputClass::getSymbolKey(int code)
@@ -160,9 +169,8 @@ char InputClass::getSymbolKey(int code)
 	int key = MapVirtualKeyA(code, MAPVK_VSC_TO_VK);
 	unsigned short asciiValue;
 	ToAscii(key, code, m_keyboardState, &asciiValue, 0);
-	char c = static_cast<char>(asciiValue);
 
-	return c;
+	return static_cast<char>(asciiValue);
 }
 
 bool InputClass::IsEscapePressed()

@@ -3,6 +3,7 @@
 
 #include "../AbstractNode.h"
 #include "../d3dclass.h"
+#include "../inputclass.h"
 
 #include <functional>
 #include <vector>
@@ -66,7 +67,7 @@ public:
         proccesedEventHandlers(EventType::MOUSE_DOWN);
     }
 
-    virtual void onKeyboardPress(int key, char symbol)
+    virtual void onKeyboardPress(InputClass::EventKey)
     {
         proccesedEventHandlers(EventType::KEYBOARD_DOWN);
     }
@@ -124,6 +125,9 @@ public:
 
         OBJECT_FOCUS = 200,
         OBJECT_BLUR = 201
+
+
+        // more 32768 user event
     };
 
     D3DClass* m_D3D;

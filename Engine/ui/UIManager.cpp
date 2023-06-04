@@ -84,12 +84,12 @@ void UIManager::onMouseClick(int x, int y, int button)
     }
 }
 
-void UIManager::onKeyboardClick(int key, char symbol)
+void UIManager::onKeyboardClick(InputClass::EventKey event)
 {
     int size = m_elements.size();
     for (int i = 0; i < size; i++) {
         if (m_elements[i]->isVisible() && m_elements[i]->isFocused()) {
-            m_elements[i]->onKeyboardPress(key, symbol);
+            m_elements[i]->onKeyboardPress(event);
             m_events.push_back(m_elements[i]);
         }
     }
@@ -98,7 +98,7 @@ void UIManager::onKeyboardClick(int key, char symbol)
 void UIManager::EventProccesor(InputClass* input)
 {
     int mouseButton = input->getMouseButton();
-    int keyboardKey = input->getKeyDown();
+    InputClass::EventKey eventKey = input->getKeyDown();
 
     m_events.clear();
 
@@ -108,9 +108,8 @@ void UIManager::EventProccesor(InputClass* input)
         onMouseClick(mouseX, mouseY, mouseButton);
     }
 
-    if (keyboardKey > 0) {
-        char keyboardSymbol = input->getSymbolKey(keyboardKey);
-        onKeyboardClick(keyboardKey, keyboardSymbol);
+    if (eventKey.key > 0) {
+        onKeyboardClick(eventKey);
     }
 }
 

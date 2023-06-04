@@ -24,7 +24,7 @@ public:
     bool updateText(std::string);
     void updateText();
     virtual void onMousePress(int x, int y, int button);
-    virtual void onKeyboardPress(int key, char symbol);
+    virtual void onKeyboardPress(InputClass::EventKey);
     virtual bool isIntersect(int x, int y);
     virtual void frame(float counter);
 
@@ -41,6 +41,8 @@ public:
     {
         m_usesFlashCursor = isFlash;
     }
+
+    char replaceSymbolByEvent(InputClass::EventKey);
 
 private:
     TextureShaderClass* m_TextureShader;

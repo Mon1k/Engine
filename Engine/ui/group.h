@@ -108,15 +108,20 @@ public:
 		}
 
 		int size = m_handlers.size();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {	
 			if (m_handlers[i].event == event) {
 				m_handlers[i].handler();
 			}
+		}
 
-			int sizeChild = m_childs.size();
-			for (int i = 0; i < sizeChild; i++) {
-				if (m_childs[i]->isVisible() && m_childs[i]->m_handlers[i].event == event) {
-					m_childs[i]->m_handlers[i].handler();
+		int sizeChild = m_childs.size();
+		for (int i = 0; i < sizeChild; i++) {
+			if (m_childs[i]->isVisible()) {
+				int sizeChildHandler = m_childs[i]->m_handlers.size();
+				for (int j = 0; j < sizeChildHandler; j++) {
+					if (m_childs[i]->m_handlers[j].event == event) {
+						m_childs[i]->m_handlers[j].handler();
+					}
 				}
 			}
 		}
@@ -132,12 +137,12 @@ public:
 		}
 	}
 
-	virtual void onKeyboardPress(int key, char symbol)
+	virtual void onKeyboardPress(InputClass::EventKey event)
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
-				m_childs[i]->onKeyboardPress(key, symbol);
+				m_childs[i]->onKeyboardPress(event);
 			}
 		}
 	}

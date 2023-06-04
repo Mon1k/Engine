@@ -15,6 +15,10 @@ using namespace std;
 class Window : public Group
 {
 public:
+    enum EventType : int {
+        WINDOW_CLOSE = 32769
+    };
+
     static const int HEADER_BUTTON_CLOSE = 1;
     static const int HEADER_BUTTON_MAXIMIZE = 2;
     static const int HEADER_BUTTON_MINIMIZE = 4;
@@ -41,6 +45,8 @@ public:
     }
 
 protected:
+   
+
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_BitmapHeader;
     BitmapClass* m_BitmapBody;
