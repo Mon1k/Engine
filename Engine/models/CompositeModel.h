@@ -5,8 +5,9 @@
 using namespace std;
 
 #include "AbstractModel.h"
+#include "../modelclass.h"
 
-class CompositeModel : public AbstractModel
+class CompositeModel : public ModelClass
 {
 public:
 	CompositeModel() {
@@ -15,6 +16,7 @@ public:
 
 	void addChild(AbstractModel* child) {
 		m_childs.push_back(child);
+		this->CalcMinMax();
 	}
 
 	virtual void Render(CameraClass* camera) {
@@ -35,6 +37,66 @@ public:
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Shutdown();
+		}
+	}
+
+	virtual void SetPosition(D3DXVECTOR3 _position)
+	{
+		D3DXVECTOR3 delta;
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			delta.x = _position.x - position.x;
+			delta.y = _position.y - position.y;
+			delta.z = _position.z - position.z;
+			D3DXVECTOR3 newPosition = m_childs[i]->GetPosition();
+			newPosition.x += delta.x;
+			newPosition.y += delta.y;
+			newPosition.z += delta.z;
+
+			m_childs[i]->SetPosition(newPosition);
+		}
+
+		position = _position;
+		this->CalcMinMax();
+	}
+
+	virtual void SetScale(D3DXVECTOR3 _scale)
+	{
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			m_childs[i]->SetScale(_scale);
+		}
+
+		scale = _scale;
+		this->CalcMinMax();
+	}
+
+	virtual void SetRotation(D3DXVECTOR3 _rotation)
+	{
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			m_childs[i]->SetRotation(_rotation);
+		}
+
+		m_rotation = _rotation;
+	}
+
+	virtual void CalcMinMax()
+	{
+		D3DXVECTOR3 min, max;
+
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			min = m_childs[i]->getMinPosition();
+			max = m_childs[i]->getMaxPosition();
+
+			m_Min.x = min(m_Min.x, min.x);
+			m_Min.y = min(m_Min.y, min.y);
+			m_Min.z = min(m_Min.z, min.z);
+
+			m_Max.x = max(m_Max.x, max.x);
+			m_Max.y = max(m_Max.y, max.y);
+			m_Max.z = max(m_Max.z, max.z);
 		}
 	}
 

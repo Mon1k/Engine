@@ -28,13 +28,13 @@ public:
     ~Window();
 
     bool Initialize(int, int, int, int);
-    bool addHeader(char*, int);
+    bool addHeader(std::string, int);
     bool addBody();
 
     void Shutdown();
     bool Render();
     void addChild(AbstractGui*);
-    void setTitle(char*);
+    void setTitle(std::string);
     
     Group* getHeader() {
         return m_header;
@@ -45,8 +45,6 @@ public:
     }
 
 protected:
-   
-
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_BitmapHeader;
     BitmapClass* m_BitmapBody;

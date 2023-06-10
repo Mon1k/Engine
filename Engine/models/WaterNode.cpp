@@ -58,6 +58,10 @@ void WaterNode::PreRender(CameraClass* camera)
 
 void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 {
+	if (!m_RefractionModel) {
+		return;
+	}
+
 	D3DXVECTOR4 clipPlane;
 	D3DXMATRIX viewMatrix, projectionMatrix;
 	D3DXVECTOR3 position = this->GetPosition();
@@ -78,19 +82,17 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	if (m_RefractionModel) {
-		LightClass* light = m_RefractionModel->getLight(0);
-		AbstractShader* shader = m_RefractionModel->getShader();
+	LightClass* light = m_RefractionModel->getLight(0);
+	AbstractShader* shader = m_RefractionModel->getShader();
 
-		if (shader) {
-			m_RefractionModel->Render(camera);
-		}
-		else {
-			m_RefractionModel->Render();
-			m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_RefractionModel->GetIndexCount(), m_RefractionModel->GetWorldMatrix(), viewMatrix,
-				projectionMatrix, m_RefractionModel->GetTexture(), light->GetDirection(),
-				light->GetAmbientColor(), light->GetDiffuseColor(), clipPlane);
-		}
+	if (shader) {
+		m_RefractionModel->Render(camera);
+	}
+	else {
+		m_RefractionModel->Render();
+		m_RefractionShader->Render(m_D3D->GetDeviceContext(), m_RefractionModel->GetIndexCount(), m_RefractionModel->GetWorldMatrix(), viewMatrix,
+			projectionMatrix, m_RefractionModel->GetTexture(), light->GetDirection(),
+			light->GetAmbientColor(), light->GetDiffuseColor(), clipPlane);
 	}
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -100,6 +102,10 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 
 void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 {
+	if (m_modelsTarget.size() == 0) {
+		return;
+	}
+
 	D3DXMATRIX reflectionViewMatrix, projectionMatrix, viewMatrix;
 	D3DXVECTOR3 cameraPosition, oldCameraPosition;
 

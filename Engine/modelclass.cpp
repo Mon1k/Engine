@@ -348,43 +348,6 @@ void ModelClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
 	position.z = m_Min.z + size.z / 2;
 }
 
-void ModelClass::SetPosition(D3DXVECTOR3 _position)
-{
-	D3DXVECTOR3 delta;
-	delta.x = _position.x - position.x;
-	delta.y = _position.y - position.y;
-	delta.z = _position.z - position.z;
-	position = _position;
-
-	m_Max.x += delta.x;
-	m_Max.y += delta.y;
-	m_Max.z += delta.z;
-	m_Min.x += delta.x;
-	m_Min.y += delta.y;
-	m_Min.z += delta.z;
-}
-
-/**
-* @todo - Неверно по Y масштабирует
-*/
-void ModelClass::SetScale(D3DXVECTOR3 _scale)
-{
-	D3DXVECTOR3 delta;
-	delta.x = _scale.x / scale.x;
-	delta.y = _scale.y / scale.y;
-	delta.z = _scale.z / scale.z;
-	scale = _scale;
-
-	m_Max.x *= delta.x;
-	m_Max.y *= delta.y;
-	m_Max.z *= delta.z;
-}
-
-void ModelClass::SetRotation(D3DXVECTOR3 _rotation)
-{
-	m_rotation = _rotation;
-}
-
 D3DXMATRIX ModelClass::GetWorldMatrix()
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotateMatrix, worldMatrix;

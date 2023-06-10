@@ -33,7 +33,7 @@ bool Window::Initialize(int width, int height, int positionX, int positionY)
 	return true;
 }
 
-bool Window::addHeader(char* title, int flags)
+bool Window::addHeader(std::string title, int flags)
 {
 	bool result;
 	int rightShift = 0;
@@ -68,7 +68,7 @@ bool Window::addHeader(char* title, int flags)
 	m_title = new Label;
 	m_header->addChild(m_title);
 	m_title->Initialize(m_header->m_width - rightShift, headerHeightElm);
-	m_title->Add(title, m_header->m_x + paddingX, m_header->m_y + paddingY);
+	m_title->Add(&title[0], m_header->m_x + paddingX, m_header->m_y + paddingY);
 
 	m_BitmapHeader = new BitmapClass;
 	result = m_BitmapHeader->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"data/textures/ui/window_header.png", m_header->m_width, m_header->m_height);
@@ -106,9 +106,9 @@ void Window::addChild(AbstractGui* child)
 	m_body->addChild(child);
 }
 
-void Window::setTitle(char* title)
+void Window::setTitle(std::string title)
 {
-	m_title->Add(title, m_title->m_x, m_title->m_y);
+	m_title->Add(&title[0], m_title->m_x, m_title->m_y);
 }
 
 void Window::Shutdown()

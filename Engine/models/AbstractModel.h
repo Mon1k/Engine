@@ -87,6 +87,73 @@ public:
         return m_rotation;
     }
 
+    virtual void SetPosition(D3DXVECTOR3 _position)
+    {
+        D3DXVECTOR3 delta;
+        delta.x = _position.x - position.x;
+        delta.y = _position.y - position.y;
+        delta.z = _position.z - position.z;
+        position = _position;
+
+        m_Max.x += delta.x;
+        m_Max.y += delta.y;
+        m_Max.z += delta.z;
+        m_Min.x += delta.x;
+        m_Min.y += delta.y;
+        m_Min.z += delta.z;
+    }
+
+    /**
+    * @todo - Неверно по Y масштабирует
+    */
+    virtual void SetScale(D3DXVECTOR3 _scale)
+    {
+        D3DXVECTOR3 delta;
+        delta.x = _scale.x / scale.x;
+        delta.y = _scale.y / scale.y;
+        delta.z = _scale.z / scale.z;
+        scale = _scale;
+
+        m_Max.x *= delta.x;
+        m_Max.y *= delta.y;
+        m_Max.z *= delta.z;
+    }
+
+    virtual void SetRotation(D3DXVECTOR3 _rotation)
+    {
+        m_rotation = _rotation;
+    }
+
+    D3DXVECTOR3 getMinPosition()
+    {
+        return m_Min;
+    }
+
+    D3DXVECTOR3 getMaxPosition()
+    {
+        return m_Max;
+    }
+
+    D3DXVECTOR3 getSize()
+    {
+        D3DXVECTOR3 size;
+        size.x = m_Max.x - m_Min.x;
+        size.y = m_Max.y - m_Min.y;
+        size.z = m_Max.z - m_Min.z;
+        return size;
+    }
+
+    D3DXVECTOR3 getCenter()
+    {
+        D3DXVECTOR3 center;
+
+        center.x = (m_Max.x + m_Min.x) / 2;
+        center.y = (m_Max.y + m_Min.y) / 2;
+        center.z = (m_Max.z + m_Min.z) / 2;
+
+        return center;
+    }
+
     void setAlpha(bool alpha)
     {
         m_isAlpha = alpha;
@@ -113,6 +180,7 @@ protected:
     D3DXVECTOR3 position;
     D3DXVECTOR3 scale;
     D3DXVECTOR3 m_rotation;
+    D3DXVECTOR3 m_Min, m_Max;
 
     D3DClass* m_D3D;
     AbstractShader* m_shader;
