@@ -16,6 +16,7 @@ public:
 	void RenderRefractionToTexture(CameraClass*);
 	void RenderReflectionToTexture(CameraClass*);
 	void Shutdown();
+
 	void addRefractionTarget(ModelClass* model)
 	{
 		this->m_RefractionModel = model;
@@ -45,7 +46,7 @@ public:
 		m_normalMapTiling = D3DXVECTOR2(x, y);
 	}
 
-	
+	virtual void frame(CameraClass*, float);
 
 protected:
 	RenderTextureClass* m_RefractionTexture;
@@ -55,11 +56,16 @@ protected:
 	ModelClass* m_RefractionModel;
 
 	float m_waterHeight;
+	
 	float m_waterTranslation;
 	float m_waterTranslationSpeed;
+	float m_counterFrame;
+
 	float m_reflectRefractScale;
 	D3DXVECTOR2 m_normalMapTiling;
 	D3DXVECTOR4 m_refractionTint;
+
+	
 };
 
 #endif

@@ -29,11 +29,16 @@ public:
     virtual void Render(CameraClass* = 0) = 0;
     virtual void PreRender(CameraClass*)
     {
-    };
+    }
     virtual void Shutdown() = 0;
     virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&)
     {
-    };
+    }
+
+    virtual void frame(CameraClass* camera, float time)
+    {
+
+    }
 
     void setVertexCount(int vertexCount) {
         m_vertexCount = vertexCount;
@@ -93,30 +98,42 @@ public:
         delta.x = _position.x - position.x;
         delta.y = _position.y - position.y;
         delta.z = _position.z - position.z;
-        position = _position;
 
-        m_Max.x += delta.x;
-        m_Max.y += delta.y;
-        m_Max.z += delta.z;
         m_Min.x += delta.x;
+        m_Max.x += delta.x;
+        
         m_Min.y += delta.y;
+        m_Max.y += delta.y;
+
         m_Min.z += delta.z;
+        m_Max.z += delta.z;
+
+        position = _position;
     }
 
-    /**
-    * @todo - Неверно по Y масштабирует
-    */
     virtual void SetScale(D3DXVECTOR3 _scale)
     {
         D3DXVECTOR3 delta;
-        delta.x = _scale.x / scale.x;
-        delta.y = _scale.y / scale.y;
-        delta.z = _scale.z / scale.z;
-        scale = _scale;
+        D3DXVECTOR3 size = getSize();
+        D3DXVECTOR3 center = getCenter();
 
-        m_Max.x *= delta.x;
-        m_Max.y *= delta.y;
-        m_Max.z *= delta.z;
+        if (scale.x != _scale.x) {
+            delta.x = _scale.x / scale.x;
+            m_Min.x = center.x - size.x / 2 * delta.x;
+            m_Max.x = center.x + size.x / 2 * delta.x;
+        }
+        if (scale.y != _scale.y) {
+            delta.y = _scale.y / scale.y;
+            m_Min.y = center.y - size.y / 2 * delta.y;
+            m_Max.y = center.y + size.y / 2 * delta.y;
+        }
+        if (scale.z != _scale.z) {
+            delta.z = _scale.z / scale.z;
+            m_Min.z = center.z - size.z / 2 * delta.z;
+            m_Max.z = center.z + size.z / 2 * delta.z;
+        }
+        
+        scale = _scale;
     }
 
     virtual void SetRotation(D3DXVECTOR3 _rotation)
@@ -140,6 +157,7 @@ public:
         size.x = m_Max.x - m_Min.x;
         size.y = m_Max.y - m_Min.y;
         size.z = m_Max.z - m_Min.z;
+
         return size;
     }
 

@@ -17,13 +17,13 @@ SkyDomeClass::~SkyDomeClass()
 {
 }
 
-bool SkyDomeClass::Initialize(D3DClass* d3dClass, char* fileName)
+bool SkyDomeClass::Initialize(D3DClass* d3dClass, std::string fileName)
 {
 	bool result;
 
 	m_D3D = d3dClass;
 
-	if (!LoadModel(fileName)) {
+	if (!LoadModel(&fileName[0])) {
 		return false;
 	}
 

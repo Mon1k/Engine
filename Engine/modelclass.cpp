@@ -33,6 +33,10 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 
 	m_D3D = d3dClass;
 
+	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	if (strlen(modelFilename) > 0) {
 		if (!LoadModel(modelFilename)) {
 			return false;
@@ -337,15 +341,10 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void ModelClass::GetBoundingBox(D3DXVECTOR3& position, D3DXVECTOR3& size)
+void ModelClass::GetBoundingBox(D3DXVECTOR3& _position, D3DXVECTOR3& _size)
 {
-	size.x = m_Max.x - m_Min.x;
-	size.y = m_Max.y - m_Min.y;
-	size.z = m_Max.z - m_Min.z;
-
-	position.x = m_Min.x + size.x / 2;
-	position.y = m_Min.y + size.y / 2;
-	position.z = m_Min.z + size.z / 2;
+	_size = this->getSize();
+	_position = this->getCenter();
 }
 
 D3DXMATRIX ModelClass::GetWorldMatrix()
@@ -388,4 +387,9 @@ void ModelClass::addLights(std::vector<LightClass*> lights)
 	for (int i = 0; i < lights.size(); i++) {
 		this->m_lights.push_back(lights[i]);
 	}
+}
+
+void ModelClass::frame(CameraClass* camera, float time)
+{
+
 }

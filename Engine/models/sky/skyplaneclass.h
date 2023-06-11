@@ -32,7 +32,7 @@ public:
 	void RenderBuffers(ID3D11DeviceContext*);
 	void Render(CameraClass*);
 	void Shutdown();
-	void Frame();
+	void frame(CameraClass* camera, float time);
 
 	void setBrightness(float brightness) {
 		m_brightness = brightness;
@@ -52,6 +52,7 @@ private:
 	SkyPlaneType* m_skyPlane;
 
 	float m_scale, m_brightness, m_translation;
+	float m_counter;
 
 	SkyPlaneShaderClass* m_shader;
 };

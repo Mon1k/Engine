@@ -407,3 +407,13 @@ int ModelManager::getNextId()
 
     return nextId;
 }
+
+
+void ModelManager::frame(CameraClass* camera, float time)
+{
+    for (int i = 0; i < m_models.size(); i++) {
+        if (m_models[i]->isVisible()) {
+            m_models[i]->frame(camera, time);
+        }
+    }
+}

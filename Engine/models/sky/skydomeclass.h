@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 #include <fstream>
+#include <string>
 using namespace std;
 
 #include "../../modelclass.h"
@@ -29,7 +30,7 @@ public:
 	SkyDomeClass(const SkyDomeClass&);
 	~SkyDomeClass();
 
-	bool Initialize(D3DClass*, char*);
+	bool Initialize(D3DClass*, std::string);
 	void RenderBuffers(ID3D11DeviceContext*);
 	void Render(CameraClass*);
 

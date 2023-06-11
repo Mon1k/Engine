@@ -40,6 +40,7 @@ bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<
 	// Initialize the water translation to zero.
 	m_waterTranslation = 0;
 	m_waterTranslationSpeed = 0.003f;
+	m_counterFrame = 0;
 
 	// Set the scaling value for the water normal map.
 	m_reflectRefractScale = 0.03f;
@@ -184,4 +185,13 @@ void WaterNode::Shutdown()
 	}
 
 	Reflection::Shutdown();
+}
+
+void WaterNode::frame(CameraClass* camera, float time)
+{
+	m_counterFrame += time;
+	if (m_counterFrame > 50) {
+		this->incrementTranslation();
+		m_counterFrame = 0;
+	}
 }

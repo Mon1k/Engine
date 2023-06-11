@@ -3,10 +3,6 @@
 SkyPlaneClass::SkyPlaneClass(): ModelClass()
 {
 	m_skyPlane = 0;
-
-	m_scale = 0.3f;
-	m_brightness = 0.65f;
-	m_translation = 0.0f;
 }
 
 
@@ -33,6 +29,11 @@ bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::string> text
 	skyPlaneTop = 0.5f;
 	skyPlaneBottom = 0.0f;
 	textureRepeat = 4;
+
+	m_scale = 0.3f;
+	m_brightness = 0.65f;
+	m_translation = 0.0f;
+	m_counter = 0;
 
 	// Create the sky plane.
 	result = InitializeSkyPlane(skyPlaneResolution, skyPlaneWidth, skyPlaneTop, skyPlaneBottom, textureRepeat);
@@ -82,12 +83,16 @@ void SkyPlaneClass::ShutdownSkyPlane()
 	}
 }
 
-void SkyPlaneClass::Frame()
+void SkyPlaneClass::frame(CameraClass* camera, float time)
 {
-	// Increment the texture translation value each frame.
-	m_translation += 0.0001f;
-	if (m_translation > 1.0f) {
-		m_translation -= 1.0f;
+	m_counter += time;
+	if (m_counter > 10) {
+		// Increment the texture translation value each frame.
+		m_translation += 0.0001f;
+		if (m_translation > 1.0f) {
+			m_translation -= 1.0f;
+		}
+		m_counter = 0;
 	}
 }
 

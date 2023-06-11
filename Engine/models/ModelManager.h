@@ -62,6 +62,7 @@ public:
     }
 
     int getNextId();
+    void frame(CameraClass*, float);
 
 private:
     std::vector<AbstractModel *> m_models;
