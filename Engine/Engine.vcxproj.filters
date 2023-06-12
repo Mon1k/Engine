@@ -58,6 +58,15 @@
     <Filter Include="models\sky">
       <UniqueIdentifier>{fd80a909-875a-41fd-ada7-cb353789f9df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{0dcf3c42-51e2-4f4b-8386-0fb9c626f181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="reader">
+      <UniqueIdentifier>{140f96a4-10fa-42fe-883d-6bd3c412a3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="reader\xml">
+      <UniqueIdentifier>{93c52f26-7dcb-4cbb-bf89-e8d7f83d906b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -577,6 +586,33 @@
     </ClInclude>
     <ClInclude Include="tool\String.h">
       <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="map\MapEntity.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\XmlSave.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\AbstractEntity.h">
+      <Filter>reader</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\AbstractReader.h">
+      <Filter>reader</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\AbstractWriter.h">
+      <Filter>reader</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\xml\Attribute.h">
+      <Filter>reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\xml\Node.h">
+      <Filter>reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\xml\XmlReader.h">
+      <Filter>reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="reader\xml\XmlWriter.h">
+      <Filter>reader\xml</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

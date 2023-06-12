@@ -176,6 +176,8 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="map\MapEntity.h" />
+    <ClInclude Include="map\XmlSave.h" />
     <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Point.h" />
     <ClInclude Include="math\Rectangle.h" />
@@ -209,6 +211,13 @@
     <ClInclude Include="models\WaterNode.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="positionclass.h" />
+    <ClInclude Include="reader\AbstractEntity.h" />
+    <ClInclude Include="reader\AbstractReader.h" />
+    <ClInclude Include="reader\AbstractWriter.h" />
+    <ClInclude Include="reader\xml\Attribute.h" />
+    <ClInclude Include="reader\xml\Node.h" />
+    <ClInclude Include="reader\xml\XmlReader.h" />
+    <ClInclude Include="reader\xml\XmlWriter.h" />
     <ClInclude Include="render\2d\debugwindowclass.h" />
     <ClInclude Include="render\rendertextureclass.h" />
     <ClInclude Include="render\viewpointclass.h" />
