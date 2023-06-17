@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <string>
 
 #include "../AbstractWriter.h"
 #include "Node.h"
@@ -11,7 +12,7 @@ public:
 	virtual void save(std::string path, AbstractEntity* entity)
 	{
 		Node* node = static_cast<Node*>(entity);
-		std::string data = getNodeString(node);
+		std::string data = getNodeString(node, 0);
 
 		std::fstream file;
 		file.open(&path[0], std::fstream::out);
@@ -19,7 +20,8 @@ public:
 		file.close();
 	}
 
-	std::string getNodeString(Node* node)
+protected:
+	std::string getNodeString(Node* node, int level)
 	{
 		std::string data;
 		data.clear();
@@ -35,10 +37,19 @@ public:
 
 		if (node->childs.size() > 0) {
 			for (int i = 0; i < node->childs.size(); i++) {
-				data += "\n\t" + getNodeString(node->childs[i]);
+				data += "\n";
+				for (int j = 0; j < level + 1; j++) {
+					data += "\t";
+				}
+				data += getNodeString(node->childs[i], level + 1);
 			}
 		}
-		data += "\r</" + node->name + ">";
+
+		data += "\n";
+		for (int j = 0; j < level; j++) {
+			data += "\t";
+		}
+		data += "</" + node->name + ">";
 
 		return data;
 	}

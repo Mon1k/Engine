@@ -40,11 +40,57 @@ public:
 
 				node->addChild(child);
 			}
+			if (entities[i].type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
+				Node* child = new Node;
+
+				child->name = "compositeModel";
+				fillAttributes(child, entities[i]);
+
+				node->addChild(child);
+			}
+			if (entities[i].type == MapEntity::ObjectTypes::TERRAIN) {
+				Node* child = new Node;
+
+				child->name = "terrain";
+				fillAttributes(child, entities[i]);
+
+				node->addChild(child);
+			}
+			if (entities[i].type == MapEntity::ObjectTypes::WATER) {
+				Node* child = new Node;
+
+				child->name = "water";
+				fillAttributes(child, entities[i]);
+
+				node->addChild(child);
+			}
+			if (entities[i].type == MapEntity::ObjectTypes::SKY) {
+				Node* child = new Node;
+
+				child->name = "sky";
+				fillAttributes(child, entities[i]);
+
+				node->addChild(child);
+			}
 		}
 	}
 
 	void fillAttributes(Node* node, MapEntity::ObjectFormat entity)
 	{
+		if (entity.id) {
+			Attribute* id = new Attribute;
+			id->name = "id";
+			id->value = std::to_string(entity.id);
+			node->addAttribute(id);
+		}
+
+		if (entity.type != 0) {
+			Attribute* type = new Attribute;
+			type->name = "type";
+			type->value = std::to_string(entity.type);
+			node->addAttribute(type);
+		}
+
 		if (entity.position) {
 			Attribute* position = new Attribute;
 			position->name = "position";
@@ -78,13 +124,6 @@ public:
 			texture->name = "texture";
 			texture->value = entity.texture;
 			node->addAttribute(texture);
-		}
-
-		if (entity.type != 0) {
-			Attribute* type = new Attribute;
-			type->name = "type";
-			type->value = std::to_string(entity.type);
-			node->addAttribute(type);
 		}
 
 		if (entity.extraParams.size() > 0) {

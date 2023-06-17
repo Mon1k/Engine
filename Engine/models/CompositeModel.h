@@ -14,9 +14,23 @@ public:
 		m_childs.clear();
 	}
 
-	void addChild(AbstractModel* child) {
+	void addChild(AbstractModel* child)
+	{
 		m_childs.push_back(child);
 		this->CalcMinMax();
+	}
+
+	void removeChild(int id)
+	{
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			m_childs.erase(m_childs.begin() + i);
+		}
+	}
+
+	void removeChilds()
+	{
+		m_childs.clear();
 	}
 
 	virtual void Render(CameraClass* camera) {
@@ -84,6 +98,9 @@ public:
 	virtual void CalcMinMax()
 	{
 		D3DXVECTOR3 min, max;
+
+		m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+		m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
