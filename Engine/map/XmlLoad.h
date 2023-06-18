@@ -18,6 +18,13 @@ public:
 		Node* node = static_cast<Node*>(this->reader->read(path));
 	}
 
+	D3DXVECTOR3 extractVector3(Attribute* attribute)
+	{
+		D3DXVECTOR3 vector;
+
+		return vector;
+	}
+
 public:
 	AbstractReader* reader;
 };
