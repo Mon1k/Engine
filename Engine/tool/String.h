@@ -28,4 +28,24 @@ public:
 
         return std::string(zc.data(), iLen);
 	}
+
+    std::vector<std::string> static explode(std::string delimiter, std::string string)
+    {
+        std::vector<std::string> array;
+        array.clear();
+
+        int shift = 0;
+        do {
+            int nextDelimiter = string.find_first_of(delimiter, shift);
+            if (nextDelimiter == -1) {
+                nextDelimiter = string.size() - 1;
+            }
+
+            std::string scope = string.substr(shift, nextDelimiter - shift - 1);
+            array.push_back(scope);
+            shift = nextDelimiter + 1;
+        } while (shift < string.size());
+
+        return array;
+    }
 };

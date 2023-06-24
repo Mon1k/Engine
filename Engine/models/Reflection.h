@@ -9,6 +9,8 @@
 class Reflection: public ModelClass, public AbstractTarget
 {
 public:
+	Reflection();
+
 	virtual bool Initialize(D3DClass*, char*, std::vector<std::string>);
 	virtual void PreRender(CameraClass*);
 	virtual void Render(CameraClass*);

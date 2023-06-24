@@ -32,11 +32,38 @@ public:
 
 	void addChild(Node* child)
 	{
+		child->parent = this;
 		childs.push_back(child);
+	}
+
+	Attribute* getAttribute(std::string name)
+	{
+		for (int i = 0; i < attributes.size(); i++) {
+			if (attributes[i]->name == name) {
+				return attributes[i];
+			}
+		}
+
+		return 0;
+	}
+
+	std::vector<Attribute*> getAttributes(std::string name)
+	{
+		std::vector<Attribute*> vector;
+		vector.clear();
+
+		for (int i = 0; i < attributes.size(); i++) {
+			if (attributes[i]->name == name) {
+				vector.push_back(attributes[i]);
+			}
+		}
+
+		return vector;
 	}
 
 public:
 	std::string name;
 	std::vector<Attribute*> attributes;
 	std::vector<Node*> childs;
+	Node* parent;
 };

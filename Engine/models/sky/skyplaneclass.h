@@ -38,7 +38,6 @@ public:
 		m_brightness = brightness;
 	}
 
-	float GetScale();
 	float GetBrightness();
 	float GetTranslation();
 
@@ -51,7 +50,7 @@ private:
 private:
 	SkyPlaneType* m_skyPlane;
 
-	float m_scale, m_brightness, m_translation;
+	float m_brightness, m_translation;
 	float m_counter;
 
 	SkyPlaneShaderClass* m_shader;

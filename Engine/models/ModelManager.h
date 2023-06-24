@@ -28,14 +28,16 @@ class ModelManager
 {
 public:
     ModelManager();
-    bool Initialize(D3DClass*);
+    bool Initialize(D3DClass*, FrustumClass*);
     bool Add(AbstractModel* model);
-    void PreRender(CameraClass*, FrustumClass*);
+    void PreRender(CameraClass*);
     void RenderShadowDepth(CameraClass*);
     void RenderShadowShader(CameraClass*);
     void RenderBlurTexture(CameraClass*);
     void RenderBlur(CameraClass*);
-    void Render(CameraClass*, FrustumClass*);
+    void Render(CameraClass*);
+    
+    void clear();
     void Shutdown();
 
     int getRenderCount()
@@ -64,11 +66,23 @@ public:
     int getNextId();
     void frame(CameraClass*, float);
 
+    D3DClass* getD3D()
+    {
+        return m_D3D;
+    }
+
+    FrustumClass* getFrustum()
+    {
+        return m_frustum;
+    }
+
 private:
     std::vector<AbstractModel *> m_models;
     std::vector<AbstractModel *> m_modelsRender;
 
     D3DClass* m_D3D;
+    FrustumClass* m_frustum;
+
     int m_RenderCount;
     int m_TriangleCount;
 

@@ -14,12 +14,12 @@ public:
 		this->writer = writer;
 	}
 
-	void save(std::string path, std::vector<MapEntity::ObjectFormat> entities)
+	void save(std::string path, MapEntity* entities)
 	{
 		this->writer->save(path, getNode(entities));
 	}
 
-	Node* getNode(std::vector<MapEntity::ObjectFormat> entities)
+	Node* getNode(MapEntity* entities)
 	{
 		Node* node = new Node();
 		node->name = "world";
@@ -29,46 +29,48 @@ public:
 		return node;
 	}
 
-	void getModelsNode(Node* node, std::vector<MapEntity::ObjectFormat> entities)
+	void getModelsNode(Node* node, MapEntity* entities)
 	{
-		for (int i = 0; i < entities.size(); i++) {
-			if (entities[i].type == MapEntity::ObjectTypes::MODEL) {
+		std::vector<MapEntity::ObjectFormat> entitiesList = entities->m_entities;
+
+		for (int i = 0; i < entitiesList.size(); i++) {
+			if (entitiesList[i].type == MapEntity::ObjectTypes::MODEL) {
 				Node* child = new Node;
 
 				child->name = "model";
-				fillAttributes(child, entities[i]);
+				fillAttributes(child, entitiesList[i]);
 
 				node->addChild(child);
 			}
-			if (entities[i].type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
+			if (entitiesList[i].type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
 				Node* child = new Node;
 
 				child->name = "compositeModel";
-				fillAttributes(child, entities[i]);
+				fillAttributes(child, entitiesList[i]);
 
 				node->addChild(child);
 			}
-			if (entities[i].type == MapEntity::ObjectTypes::TERRAIN) {
+			if (entitiesList[i].type == MapEntity::ObjectTypes::TERRAIN) {
 				Node* child = new Node;
 
 				child->name = "terrain";
-				fillAttributes(child, entities[i]);
+				fillAttributes(child, entitiesList[i]);
 
 				node->addChild(child);
 			}
-			if (entities[i].type == MapEntity::ObjectTypes::WATER) {
+			if (entitiesList[i].type == MapEntity::ObjectTypes::WATER) {
 				Node* child = new Node;
 
 				child->name = "water";
-				fillAttributes(child, entities[i]);
+				fillAttributes(child, entitiesList[i]);
 
 				node->addChild(child);
 			}
-			if (entities[i].type == MapEntity::ObjectTypes::SKY) {
+			if (entitiesList[i].type == MapEntity::ObjectTypes::SKY) {
 				Node* child = new Node;
 
 				child->name = "sky";
-				fillAttributes(child, entities[i]);
+				fillAttributes(child, entitiesList[i]);
 
 				node->addChild(child);
 			}
@@ -94,21 +96,21 @@ public:
 		if (entity.position) {
 			Attribute* position = new Attribute;
 			position->name = "position";
-			position->value = std::to_string(entity.position.x) + ":" + std::to_string(entity.position.y) + ":" + std::to_string(entity.position.z);
+			position->value = std::to_string(entity.position.x) + ";" + std::to_string(entity.position.y) + ";" + std::to_string(entity.position.z);
 			node->addAttribute(position);
 		}
 
 		if (entity.scale) {
 			Attribute* scale = new Attribute;
 			scale->name = "scale";
-			scale->value = std::to_string(entity.scale.x) + ":" + std::to_string(entity.scale.y) + ":" + std::to_string(entity.scale.z);
+			scale->value = std::to_string(entity.scale.x) + ";" + std::to_string(entity.scale.y) + ";" + std::to_string(entity.scale.z);
 			node->addAttribute(scale);
 		}
 
 		if (entity.rotation) {
 			Attribute* rotation = new Attribute;
 			rotation->name = "rotation";
-			rotation->value = std::to_string(entity.rotation.x) + ":" + std::to_string(entity.rotation.y) + ":" + std::to_string(entity.rotation.z);
+			rotation->value = std::to_string(entity.rotation.x) + ";" + std::to_string(entity.rotation.y) + ";" + std::to_string(entity.rotation.z);
 			node->addAttribute(rotation);
 		}
 

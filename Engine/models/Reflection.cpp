@@ -1,5 +1,9 @@
 #include "Reflection.h"
 
+Reflection::Reflection() : ModelClass()
+{
+
+}
 
 bool Reflection::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<std::string> texturesFilename)
 {

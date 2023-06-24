@@ -32,7 +32,7 @@ protected:
 		line.erase(0, line.find_first_not_of(" \n\r\t"));
 
 		if (line.substr(0, 2) == "</") {
-			return node;
+			return node->parent;
 		}
 
 		int space = line.find_first_of(" ");
@@ -59,9 +59,9 @@ protected:
 	void parseAttribute(Node* node, std::string stringAttrubutes)
 	{
 		std::vector<std::string> attributesScopes;
-		int shift = 0;
-		
 		attributesScopes.clear();
+
+		int shift = 0;
 		do {
 			std::string attributeScope = "";
 			int nextSpace = stringAttrubutes.find_first_of(" ", shift);

@@ -45,7 +45,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_uiManager->Initialize(m_D3D, m_Camera->getBaseViewMatrix());
 
 	m_modelManager = new ModelManager;
-	m_modelManager->Initialize(m_D3D);
+	m_modelManager->Initialize(m_D3D, m_Frustum);
 
 	m_particleManager = new ParticleManager;
 	m_particleManager->Initialize(m_D3D);
@@ -104,7 +104,7 @@ bool GraphicsClass::Render()
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
 
-	m_modelManager->PreRender(m_Camera, m_Frustum);
+	m_modelManager->PreRender(m_Camera);
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
@@ -118,7 +118,7 @@ bool GraphicsClass::Render()
 
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
-	m_modelManager->Render(m_Camera, m_Frustum);
+	m_modelManager->Render(m_Camera);
 	m_particleManager->Render(m_Camera, m_Frustum);
 
 	m_uiManager->Render();

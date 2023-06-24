@@ -10,7 +10,8 @@ using namespace std;
 class CompositeModel : public ModelClass
 {
 public:
-	CompositeModel() {
+	CompositeModel(): ModelClass()
+	{
 		m_childs.clear();
 	}
 

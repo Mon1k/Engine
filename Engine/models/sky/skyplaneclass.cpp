@@ -30,7 +30,7 @@ bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::string> text
 	skyPlaneBottom = 0.0f;
 	textureRepeat = 4;
 
-	m_scale = 0.3f;
+	scale.y = 0.3f;
 	m_brightness = 0.65f;
 	m_translation = 0.0f;
 	m_counter = 0;
@@ -99,11 +99,6 @@ void SkyPlaneClass::frame(CameraClass* camera, float time)
 float SkyPlaneClass::GetBrightness()
 {
 	return m_brightness;
-}
-
-float SkyPlaneClass::GetScale()
-{
-	return m_scale;
 }
 
 float SkyPlaneClass::GetTranslation()
@@ -306,7 +301,7 @@ void SkyPlaneClass::Render(CameraClass* camera)
 	m_D3D->EnableSecondBlendState();
 
 	RenderBuffers(m_D3D->GetDeviceContext());
-	m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, GetTexture(0), GetTexture(1), GetTranslation(), GetScale(), GetBrightness());
+	m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, GetTexture(0), GetTexture(1), GetTranslation(), GetScale().y, GetBrightness());
 
 	m_D3D->TurnOffAlphaBlending();
 	m_D3D->TurnZBufferOn();

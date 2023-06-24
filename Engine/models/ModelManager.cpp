@@ -14,9 +14,10 @@ ModelManager::ModelManager()
     m_RenderTextureBlur = 0;
 }
 
-bool ModelManager::Initialize(D3DClass* d3d)
+bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
 {
     m_D3D = d3d;
+    m_frustum = frustum;
 
     m_DepthShader = new DepthShaderClass;
     m_DepthShader->Initialize(m_D3D->GetDevice());
@@ -58,12 +59,17 @@ bool ModelManager::Add(AbstractModel* model)
     return true;
 }
 
-void ModelManager::Shutdown()
+void ModelManager::clear()
 {
-    int size = m_models.size();
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < m_models.size(); i++) {
         m_models[i]->Shutdown();
     }
+    m_models.clear();
+}
+
+void ModelManager::Shutdown()
+{
+    clear();
 
     if (m_DepthShader) {
         m_DepthShader->Shutdown();
@@ -128,7 +134,7 @@ void ModelManager::Shutdown()
     }
 }
 
-void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
+void ModelManager::PreRender(CameraClass* camera)
 {
     m_modelsShadow.clear();
     m_modelsRender.clear();
@@ -153,7 +159,7 @@ void ModelManager::PreRender(CameraClass* camera, FrustumClass* frustum)
             } else {
                 D3DXVECTOR3 position, size;
                 m_modelsRender[i]->GetBoundingBox(position, size);
-                if (frustum->CheckRectangle(position, size)) {
+                if (m_frustum->CheckRectangle(position, size)) {
                     m_modelsRender[i]->PreRender(camera);
                     if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
                         m_modelsShadow.push_back(m_modelsRender[i]);
@@ -315,7 +321,7 @@ void ModelManager::RenderBlur(CameraClass* camera)
     m_D3D->ResetViewport();
 }
 
-void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
+void ModelManager::Render(CameraClass* camera)
 {
     std::vector<AbstractModel*> modelsAlpha;
     D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix, baseViewMatrix, lightViewMatrix, lightProjectionMatrix;
@@ -336,7 +342,7 @@ void ModelManager::Render(CameraClass* camera, FrustumClass* frustum)
             } else {
                 D3DXVECTOR3 position, size;
                 m_modelsRender[i]->GetBoundingBox(position, size);
-                if (frustum->CheckRectangle(position, size)) {
+                if (m_frustum->CheckRectangle(position, size)) {
                     if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
                         modelsAlpha.push_back(m_modelsRender[i]);
                     } else {

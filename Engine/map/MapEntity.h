@@ -28,5 +28,38 @@ public:
 		std::vector<std::string> extraParams;
 		ObjectTypes type;
 		CompositeModel* parent;
-	};
+	} format;
+
+	std::vector<MapEntity::ObjectFormat> m_entities;
+
+public:
+	MapEntity()
+	{
+		m_entities.clear();
+	}
+
+	void add(MapEntity::ObjectFormat entity)
+	{
+		m_entities.push_back(entity);
+	}
+
+	MapEntity::ObjectFormat* getEntity(int id)
+	{
+		int size = m_entities.size();
+		for (int i = 0; i < size; i++) {
+			if (m_entities[i].id == id) {
+				return &m_entities[i];
+			}
+		}
+	}
+
+	std::vector<MapEntity::ObjectFormat>* getEntities()
+	{
+		return &m_entities;
+	}
+
+	void clear()
+	{
+		m_entities.clear();
+	}
 };
