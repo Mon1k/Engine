@@ -6,6 +6,8 @@
 #include <d3dx10math.h>
 
 #include "../models/CompositeModel.h"
+#include "../models/ModelManager.h"
+#include "../lightshaderclass.h"
 
 class MapEntity
 {
@@ -20,6 +22,7 @@ public:
 
 	struct ObjectFormat {
 		int id;
+		std::string name;
 		D3DXVECTOR3 position;
 		D3DXVECTOR3 scale;
 		D3DXVECTOR3 rotation;
@@ -61,5 +64,39 @@ public:
 	void clear()
 	{
 		m_entities.clear();
+	}
+
+	ModelClass* copyModel(MapEntity::ObjectFormat entity, ModelManager* manager)
+	{
+		ModelClass* model = new ModelClass;
+		ModelClass* modelOriginal = dynamic_cast<ModelClass*>(manager->getById(entity.id));
+		D3DXVECTOR3 position;
+
+		position = entity.position;
+		float maxX = modelOriginal->getMaxPosition().x;
+		float minX = modelOriginal->getMinPosition().x;
+		float width = maxX - minX;
+		position.x += width * 1.1;
+
+		model->Initialize(modelOriginal->getD3D(), &entity.path[0], {entity.texture});
+		model->SetPosition(position);
+		model->SetScale(entity.scale);
+		model->SetRotation(entity.rotation);
+		model->addLights({ modelOriginal->getLight(0) });
+
+		LightShaderClass* shader = new LightShaderClass;
+		shader->Initialize(modelOriginal->getD3D()->GetDevice());
+		shader->addLights({ modelOriginal->getLight(0) });
+		model->addShader(shader);
+
+		model->setId(manager->getNextId());
+		manager->Add(model);
+
+		MapEntity::ObjectFormat entityNew = entity;
+		entityNew.id = model->getId();
+		entityNew.position = model->GetPosition();
+		this->add(entityNew);
+
+		return model;
 	}
 };

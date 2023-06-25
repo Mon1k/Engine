@@ -35,6 +35,7 @@ public:
     {
         if (button == MOUSE_BUTTON1) {
             toogle();
+            proccesedEventHandlers(AbstractGui::EventType::MOUSE_DOWN);
         }
     }
 

@@ -189,6 +189,11 @@ public:
         return m_isShadow;
     }
 
+    D3DClass* getD3D()
+    {
+        return m_D3D;
+    }
+
 protected:
     int m_vertexCount, m_indexCount;
     bool m_visible = true;

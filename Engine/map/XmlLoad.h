@@ -65,6 +65,7 @@ protected:
 		ModelClass* model = new ModelClass;
 		std::string path, texture;
 		D3DXVECTOR3 position, scale, rotation;
+		std::vector<Attribute*> params;
 
 		int id = stoi(node->getAttribute("id")->value);
 
@@ -74,6 +75,8 @@ protected:
 		position = extractVector3(node->getAttribute("position"));
 		scale = extractVector3(node->getAttribute("scale"));
 		rotation = extractVector3(node->getAttribute("rotation"));
+
+		params = node->getAttributes("params");
 
 		bool result = model->Initialize(manager->getD3D(), &path[0], {texture});
 		if (result) {
@@ -88,6 +91,10 @@ protected:
 			shader->addLights({ m_light });
 			model->addShader(shader);
 
+			if (stoi(params[0]->value) != 0) {
+				model->setAlpha(true);
+			}
+
 			manager->Add(model);
 
 			MapEntity::ObjectFormat format;
@@ -99,6 +106,9 @@ protected:
 			format.path = path;
 			format.texture = texture;
 			format.parent = 0;
+			for (int i = 0; i < params.size(); i++) {
+				format.extraParams.push_back(params[i]->value);
+			}
 			entities->add(format);
 		}
 	}
@@ -158,9 +168,11 @@ protected:
 
 		position = extractVector3(node->getAttribute("position"));
 		scale = extractVector3(node->getAttribute("scale"));
+		scaleNormal = extractVector3(params[1]);
 
 		model->SetPosition(position);
 		model->SetScale(scale);
+		model->setScaleNormal(scaleNormal);
 
 		bool result = model->Initialize(manager->getD3D(), manager->getFrustum(), &path[0], texture, params[0]->value);
 		if (result) {
@@ -168,14 +180,26 @@ protected:
 			model->addLights({ m_light });
 			manager->Add(model);
 
+			if (params[2]->value.size() > 1 && params[3]->value.size() > 1 && params[4]->value.size() > 1) {
+				model->addTextureLayer(params[3]->value, params[4]->value);
+				if (params[5]->value.size() > 1 && params[6]->value.size() > 1) {
+					model->addTextureLayer(params[5]->value, params[6]->value);
+					if (params[7]->value.size() > 1 && params[8]->value.size() > 1) {
+						model->addTextureLayer(params[7]->value, params[8]->value);
+					}
+				}
+				model->addTextureAlpha(params[2]->value);
+			}
+
 			MapEntity::ObjectFormat format;
 			format.id = model->getId();
 			format.type = MapEntity::ObjectTypes::TERRAIN;
 			format.position = position;
 			format.scale = scale;
+			format.rotation = model->getRotation();
 			format.path = path;
 			format.texture = texture;
-			for (int i = 0; i <= 7; i++) {
+			for (int i = 0; i <= 8; i++) {
 				if (i < params.size()) {
 					format.extraParams.push_back(params[i]->value);
 				}
@@ -264,6 +288,9 @@ protected:
 			MapEntity::ObjectFormat format;
 			format.id = model->getId();
 			format.type = MapEntity::ObjectTypes::SKY;
+			format.position = model->GetPosition();
+			format.scale = model->GetScale();
+			format.rotation = model->getRotation();
 			format.path = path;
 			format.texture = texture;
 			for (int i = 0; i < params.size(); i++) {
