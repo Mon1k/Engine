@@ -20,7 +20,7 @@ FoliageClass::~FoliageClass()
 }
 
 
-bool FoliageClass::Initialize(D3DClass* d3dClass, WCHAR* textureFilename, int fCount)
+bool FoliageClass::Initialize(D3DClass* d3dClass, std::string textureFilename, int fCount)
 {
 	bool result;
 
@@ -38,7 +38,7 @@ bool FoliageClass::Initialize(D3DClass* d3dClass, WCHAR* textureFilename, int fC
 	// Set the initial wind rotation and direction.
 	m_windRotation = 0.0f;
 	m_windDirection = 1;
-	m_windPower = 0.05f;
+	m_windPower = 0.01f;
 
 	m_shader = new FoliageShaderClass;
 	m_shader->Initialize(m_D3D->GetDevice());
@@ -74,16 +74,18 @@ void FoliageClass::Render(CameraClass* camera)
 	m_D3D->TurnOffAlphaBlending();
 }
 
-bool FoliageClass::Frame(D3DXVECTOR3 cameraPosition)
+void FoliageClass::frame(CameraClass* camera, float time)
 {
 	D3DXMATRIX rotateMatrix, translationMatrix, rotateMatrix2, finalMatrix;
-	D3DXVECTOR3 modelPosition;
+	D3DXVECTOR3 modelPosition, cameraPosition;
 	int i;
 	double angle;
 	float rotation, windRotation;
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	InstanceType* instancesPtr;
+
+	cameraPosition = camera->GetPosition();
 
 
 	// Update the wind rotation.
@@ -133,7 +135,7 @@ bool FoliageClass::Frame(D3DXVECTOR3 cameraPosition)
 	// Lock the instance buffer so it can be written to.
 	result = m_D3D->GetDeviceContext()->Map(m_instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) {
-		return false;
+		return;
 	}
 
 	// Get a pointer to the data in the instance buffer.
@@ -144,8 +146,6 @@ bool FoliageClass::Frame(D3DXVECTOR3 cameraPosition)
 
 	// Unlock the instance buffer.
 	m_D3D->GetDeviceContext()->Unmap(m_instanceBuffer, 0);
-
-	return true;
 }
 
 int FoliageClass::GetInstanceCount()

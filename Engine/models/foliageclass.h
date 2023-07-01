@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 #include <time.h>
+#include <string>
 
 #include "../modelclass.h"
 #include "../textures/foliageshaderclass.h"
@@ -35,10 +36,10 @@ public:
 	FoliageClass(const FoliageClass&);
 	~FoliageClass();
 
-	bool Initialize(D3DClass*, WCHAR*, int);
+	bool Initialize(D3DClass*, std::string, int);
 	void Shutdown();
 	void Render(CameraClass*);
-	bool Frame(D3DXVECTOR3);
+	virtual void frame(CameraClass*, float);
 
 	int GetInstanceCount();
 	bool GeneratePositions();

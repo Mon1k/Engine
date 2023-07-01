@@ -91,7 +91,7 @@ protected:
 			shader->addLights({ m_light });
 			model->addShader(shader);
 
-			if (stoi(params[0]->value) != 0) {
+			if (params.size() > 0 && stoi(params[0]->value) != 0) {
 				model->setAlpha(true);
 			}
 
