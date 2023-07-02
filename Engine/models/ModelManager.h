@@ -12,7 +12,8 @@ using namespace std;
 #include "../cameraclass.h"
 #include "../frustumclass.h"
 
-#include "../modelclass.h"
+#include "Model.h"
+
 #include "../render/rendertextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
@@ -59,8 +60,15 @@ public:
 
         return NULL;
     }
-    std::vector<AbstractModel*> getModels() {
+
+    std::vector<AbstractModel*> getModels()
+    {
         return m_models;
+    }
+
+    std::vector<AbstractModel*> getModelsRenderer()
+    {
+        return m_modelsRender;
     }
 
     int getNextId();

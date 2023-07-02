@@ -166,9 +166,11 @@ InputClass::EventKey InputClass::getKeyDown()
 
 char InputClass::getSymbolKey(int code)
 {
-	int key = MapVirtualKeyA(code, MAPVK_VSC_TO_VK);
+	static HKL layout = GetKeyboardLayout(0);
+	int key = MapVirtualKeyEx(code, MAPVK_VSC_TO_VK, layout);
+	static unsigned char State[256];
 	unsigned short asciiValue;
-	ToAscii(key, code, m_keyboardState, &asciiValue, 0);
+	ToAsciiEx(key, code, State, &asciiValue, 0, layout);
 
 	return static_cast<char>(asciiValue);
 }

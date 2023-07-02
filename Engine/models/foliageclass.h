@@ -42,10 +42,13 @@ public:
 	virtual void frame(CameraClass*, float);
 
 	int GetInstanceCount();
-	bool GeneratePositions();
-	bool GeneratePositionsFromTerrain(D3DXVECTOR3, D3DXVECTOR3, TerrainClass*);
 
-	void setWindPower(float power) {
+	bool GeneratePositions(D3DXVECTOR3, D3DXVECTOR3);
+	bool GeneratePositionsFromTerrain(D3DXVECTOR3, D3DXVECTOR3, TerrainClass*);
+	bool GeneratePositionsFromTerrainWithMap(TerrainClass*, std::string);
+
+	void setWindPower(float power)
+	{
 		m_windPower = power;
 	}
 

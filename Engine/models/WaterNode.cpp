@@ -1,4 +1,5 @@
 #include "WaterNode.h"
+#include "Model.h"
 
 WaterNode::WaterNode(): Reflection()
 {
@@ -139,6 +140,10 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
 		AbstractModel* model = dynamic_cast<AbstractModel*>(m_modelsTarget[i]);
+		// skip refraction model if this Model (but not terrain sample)
+		if (model == m_RefractionModel && dynamic_cast<const Model*>(m_RefractionModel) != nullptr) {
+			continue;
+		}
 		model->Render(camera);
 	}
 

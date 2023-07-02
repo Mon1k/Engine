@@ -614,6 +614,9 @@
     <ClInclude Include="reader\xml\XmlWriter.h">
       <Filter>reader\xml</Filter>
     </ClInclude>
+    <ClInclude Include="models\Model.h">
+      <Filter>models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">

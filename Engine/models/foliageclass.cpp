@@ -49,7 +49,6 @@ bool FoliageClass::Initialize(D3DClass* d3dClass, std::string textureFilename, i
 
 void FoliageClass::Shutdown()
 {
-	// Release the foliage array.
 	if (m_foliageArray) {
 		delete[] m_foliageArray;
 		m_foliageArray = 0;
@@ -86,7 +85,6 @@ void FoliageClass::frame(CameraClass* camera, float time)
 	InstanceType* instancesPtr;
 
 	cameraPosition = camera->GetPosition();
-
 
 	// Update the wind rotation.
 	if (m_windDirection == 1) {
@@ -296,10 +294,11 @@ void FoliageClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-bool FoliageClass::GeneratePositions()
+bool FoliageClass::GeneratePositions(D3DXVECTOR3 min, D3DXVECTOR3 max)
 {
 	int i;
 	float red, green;
+	float height, x, z;
 
 	// Create an array to store all the foliage information.
 	m_foliageArray = new FoliageType[m_foliageCount];
@@ -312,9 +311,13 @@ bool FoliageClass::GeneratePositions()
 
 	// Set random positions and random colors for each piece of foliage.
 	for (i = 0; i < m_foliageCount; i++) {
-		m_foliageArray[i].x = ((float)rand() / (float)(RAND_MAX)) * 9.0f - 4.5f;
-		m_foliageArray[i].y = -0.1f;
-		m_foliageArray[i].z = ((float)rand() / (float)(RAND_MAX)) * 9.0f - 4.5f;
+		x = Random::randDouble(min.x, max.x);
+		z = Random::randDouble(min.z, max.z);
+		height = -0.1f;
+
+		m_foliageArray[i].x = x;
+		m_foliageArray[i].y = height;
+		m_foliageArray[i].z = z;
 
 		red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
 		green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
@@ -331,7 +334,7 @@ bool FoliageClass::GeneratePositionsFromTerrain(D3DXVECTOR3 min, D3DXVECTOR3 max
 {
 	int i;
 	float red, green;
-	int attempt, maxAttempt = 100;
+	int attempt, maxAttempt = 5;
 	float height, x, z;
 
 	// Create an array to store all the foliage information.
@@ -360,6 +363,42 @@ bool FoliageClass::GeneratePositionsFromTerrain(D3DXVECTOR3 min, D3DXVECTOR3 max
 			m_foliageArray[i].z = z;
 			break;
 		} while (attempt < maxAttempt);
+
+		red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
+		green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
+
+		m_foliageArray[i].r = red + 1.0f;
+		m_foliageArray[i].g = green + 0.5f;
+		m_foliageArray[i].b = 0.0f;
+	}
+
+	return InitializeBuffers(m_D3D->GetDevice());
+}
+
+bool FoliageClass::GeneratePositionsFromTerrainWithMap(TerrainClass* terrain, std::string map)
+{
+	int i;
+	float red, green;
+	float height, x, z;
+
+	// Create an array to store all the foliage information.
+	m_foliageArray = new FoliageType[m_foliageCount];
+	if (!m_foliageArray) {
+		return false;
+	}
+
+	// Seed the random generator.
+	srand((int)time(NULL));
+
+	// Set random positions and random colors for each piece of foliage.
+	for (i = 0; i < m_foliageCount; i++) {
+		x = 1;
+		z = 2;
+		terrain->getQuadTree()->GetHeightAtPosition(x, z, height);
+			
+		m_foliageArray[i].x = x;
+		m_foliageArray[i].y = height - 0.3f;
+		m_foliageArray[i].z = z;
 
 		red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
 		green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;

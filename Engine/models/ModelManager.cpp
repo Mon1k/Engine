@@ -1,5 +1,6 @@
 #include "ModelManager.h"
 #include "../Options.h"
+#include "AbstractTarget.h"
 
 ModelManager::ModelManager()
 {
@@ -136,36 +137,56 @@ void ModelManager::Shutdown()
 
 void ModelManager::PreRender(CameraClass* camera)
 {
+    D3DXVECTOR3 position, size;
+
     m_modelsShadow.clear();
     m_modelsRender.clear();
 
     for (int i = 0; i < m_models.size(); i++) {
-        if (CompositeModel* composite = dynamic_cast<CompositeModel*>(m_models[i])) {
-            std::vector<AbstractModel*> childs = composite->getChilds();
-            for (int j = 0; j < childs.size(); j++) {
-                m_modelsRender.push_back(childs[j]);
-            }
+        if (!m_models[i]->isVisible()) {
+            continue;
+        }
+
+        if (m_models[i]->GetIndexCount() == 0) {
+            m_modelsRender.push_back(m_models[i]);
         }
         else {
-            m_modelsRender.push_back(m_models[i]);
+            m_models[i]->GetBoundingBox(position, size);
+            if (m_frustum->CheckRectangle(position, size)) {
+                if (CompositeModel* composite = dynamic_cast<CompositeModel*>(m_models[i])) {
+                    std::vector<AbstractModel*> childs = composite->getChilds();
+                    for (int j = 0; j < childs.size(); j++) {
+                        m_modelsRender.push_back(childs[j]);
+                    }
+                }
+                else {
+                    m_modelsRender.push_back(m_models[i]);
+                }
+            }
         }
     }
 
-    int size = m_modelsRender.size();
-    for (int i = 0; i < size; i++) {
-        if (m_modelsRender[i]->isVisible()) {
-            if (m_modelsRender[i]->GetIndexCount() == 0) {
-                m_modelsRender[i]->PreRender(camera);
-            } else {
-                D3DXVECTOR3 position, size;
-                m_modelsRender[i]->GetBoundingBox(position, size);
-                if (m_frustum->CheckRectangle(position, size)) {
-                    m_modelsRender[i]->PreRender(camera);
-                    if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
-                        m_modelsShadow.push_back(m_modelsRender[i]);
+    for (int i = 0; i < m_modelsRender.size(); i++) {
+        if (Options::reflectionLevel < 2 && dynamic_cast<const AbstractTarget*>(m_modelsRender[i]) != nullptr) {
+            AbstractTarget* targetScopes = dynamic_cast<AbstractTarget*>(m_modelsRender[i]);
+            targetScopes->clearTargets();
+            for (int j = 0; j < m_modelsRender.size(); j++) {
+                if (i != j && dynamic_cast<const AbstractTarget*>(m_modelsRender[j]) == nullptr) {
+                    if (Options::reflectionLevel == 1) {
+                        if (dynamic_cast<const Model*>(m_modelsRender[j]) != nullptr) {
+                            targetScopes->addTarget(m_modelsRender[j]);
+                        }
+                    }
+                    else {
+                        targetScopes->addTarget(m_modelsRender[j]);
                     }
                 }
             }
+        }
+
+        m_modelsRender[i]->PreRender(camera);
+        if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
+            m_modelsShadow.push_back(m_modelsRender[i]);
         }
     }
 
@@ -255,8 +276,7 @@ void ModelManager::RenderShadowShader(CameraClass* camera)
 
 void ModelManager::RenderBlurTexture(CameraClass* camera)
 {
-    int size = m_modelsShadow.size();
-    if (size < 1) {
+    if (m_modelsShadow.size() < 1) {
         return;
     }
 
@@ -289,8 +309,7 @@ void ModelManager::RenderBlurTexture(CameraClass* camera)
 
 void ModelManager::RenderBlur(CameraClass* camera)
 {
-    int size = m_modelsShadow.size();
-    if (size < 1) {
+    if (m_modelsShadow.size() < 1) {
         return;
     }
 
@@ -336,51 +355,45 @@ void ModelManager::Render(CameraClass* camera)
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
     for (int i = 0; i < m_modelsRender.size(); i++) {
-        if (m_modelsRender[i]->isVisible()) {
-            if (m_modelsRender[i]->GetIndexCount() == 0) {
-                m_modelsRender[i]->Render(camera);
+        if (m_modelsRender[i]->GetIndexCount() == 0) {
+            m_modelsRender[i]->Render(camera);
+        } else {
+            if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
+                modelsAlpha.push_back(m_modelsRender[i]);
             } else {
-                D3DXVECTOR3 position, size;
-                m_modelsRender[i]->GetBoundingBox(position, size);
-                if (m_frustum->CheckRectangle(position, size)) {
-                    if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
-                        modelsAlpha.push_back(m_modelsRender[i]);
-                    } else {
-                        if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
-                            ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                            LightClass* light = model->getLight(0);
-                            light->GenerateViewMatrix();
-                            light->GetViewMatrix(lightViewMatrix);
-                            light->GetProjectionMatrix(lightProjectionMatrix);
+                if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
+                    ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
+                    LightClass* light = model->getLight(0);
+                    light->GenerateViewMatrix();
+                    light->GetViewMatrix(lightViewMatrix);
+                    light->GetProjectionMatrix(lightProjectionMatrix);
 
-                            if (m_modelsRender[i]->getAlpha()) {
-                                m_D3D->TurnOnAlphaBlending();
-                            }
+                    if (m_modelsRender[i]->getAlpha()) {
+                        m_D3D->TurnOnAlphaBlending();
+                    }
 
-                            model->Render();
-                            if (Options::soft_shadow) {
-                                m_SoftShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix,
-                                    model->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
-                            }
-                            else {
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                    model->Render();
+                    if (Options::soft_shadow) {
+                        m_SoftShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix,
+                            model->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+                    }
+                    else {
+                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
                             
-                            }
+                    }
 
-                            if (m_modelsRender[i]->getAlpha()) {
-                                m_D3D->TurnOffAlphaBlending();
-                            }
-                        }
-                        else {
-                            m_modelsRender[i]->Render(camera);
-                        }
+                    if (m_modelsRender[i]->getAlpha()) {
+                        m_D3D->TurnOffAlphaBlending();
                     }
                 }
+                else {
+                    m_modelsRender[i]->Render(camera);
+                }
             }
-
-            m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
-            m_RenderCount++;
         }
+
+        m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
+        m_RenderCount++;
     }
 
 
@@ -417,9 +430,7 @@ int ModelManager::getNextId()
 
 void ModelManager::frame(CameraClass* camera, float time)
 {
-    for (int i = 0; i < m_models.size(); i++) {
-        if (m_models[i]->isVisible()) {
-            m_models[i]->frame(camera, time);
-        }
+    for (int i = 0; i < m_modelsRender.size(); i++) {
+        m_modelsRender[i]->frame(camera, time);
     }
 }

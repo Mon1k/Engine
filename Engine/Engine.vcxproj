@@ -196,6 +196,7 @@
     <ClInclude Include="models\loader\AbstractLoader.h" />
     <ClInclude Include="models\loader\DsLoader.h" />
     <ClInclude Include="models\loader\ObjLoader.h" />
+    <ClInclude Include="models\Model.h" />
     <ClInclude Include="models\modelbumpclass.h" />
     <ClInclude Include="models\modelcolor.h" />
     <ClInclude Include="models\ModelManager.h" />

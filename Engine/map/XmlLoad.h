@@ -5,7 +5,12 @@
 #include "../reader/AbstractReader.h"
 #include "../reader/xml/Node.h"
 #include "MapEntity.h"
+
 #include "../models/ModelManager.h"
+#include "../models/WaterNode.h"
+#include "../models/terrain/terrainclass.h"
+#include "../models/sky/skydomeclass.h"
+#include "../models/sky/skyplaneclass.h"
 
 class XmlLoad
 {
@@ -62,7 +67,7 @@ protected:
 
 	void loadModel(Node* node, MapEntity* entities, ModelManager* manager)
 	{
-		ModelClass* model = new ModelClass;
+		Model* model = new Model;
 		std::string path, texture;
 		D3DXVECTOR3 position, scale, rotation;
 		std::vector<Attribute*> params;

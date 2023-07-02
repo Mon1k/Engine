@@ -60,7 +60,7 @@ private:
 	int CountTriangles(NodeType*, float, float, float);
 	bool isCountTriangles(NodeType*, float, float, float);
 	bool IsTriangleContained(int, float, float, float);
-	void FindNode(NodeType*, float, float, float&);
+	bool FindNode(NodeType*, float, float, float&);
 	bool CheckHeightOfTriangle(float, float, float&, float[3], float[3], float[3]);
 
 	void ReleaseNode(NodeType*);

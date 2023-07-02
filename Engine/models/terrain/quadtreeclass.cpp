@@ -537,13 +537,9 @@ bool QuadTreeClass::GetHeightAtPosition(float positionX, float positionZ, float&
 	return true;
 }
 
-void QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
+bool QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 {
 	float xMin, xMax, zMin, zMax;
-	int count, i, index;
-	float vertex1[3], vertex2[3], vertex3[3];
-	bool foundHeight;
-
 
 	// Calculate the dimensions of this node.
 	xMin = node->positionX - (node->width / 2.0f);
@@ -554,8 +550,11 @@ void QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 
 	// See if the x and z coordinate are in this node, if not then stop traversing this part of the tree.
 	if ((x < xMin) || (x > xMax) || (z < zMin) || (z > zMax)) {
-		return;
+		return false;
 	}
+
+	int count, i, index;
+	float vertex1[3], vertex2[3], vertex3[3];
 
 	// If the coordinates are in this node then check first to see if children nodes exist.
 	count = 0;
@@ -563,13 +562,15 @@ void QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 	for (i = 0; i < 4; i++) {
 		if (node->nodes[i] != 0) {
 			count++;
-			FindNode(node->nodes[i], x, z, height);
+			if (FindNode(node->nodes[i], x, z, height)) {
+				return true;
+			}
 		}
 	}
 
 	// If there were children nodes then return since the polygon will be in one of the children.
 	if (count > 0) {
-		return;
+		return false;
 	}
 
 	// If there were no children then the polygon must be in this node.  Check all the polygons in this node to find 
@@ -590,14 +591,20 @@ void QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 		vertex3[1] = node->vertexArray[index].y;
 		vertex3[2] = node->vertexArray[index].z;
 
-		// Check to see if this is the polygon we are looking for.
-		foundHeight = CheckHeightOfTriangle(x, z, height, vertex1, vertex2, vertex3);
+		if (x < min(vertex1[0], min(vertex2[0], vertex3[0])) || x > max(vertex1[0], max(vertex2[0], vertex3[0]))) {
+			continue;
+		}
+		if (z < min(vertex1[2], min(vertex2[2], vertex3[2])) || z > max(vertex1[2], max(vertex2[2], vertex3[2]))) {
+			continue;
+		}
 
 		// If this was the triangle then quit the function and the height will be returned to the calling function.
-		if (foundHeight) {
-			return;
+		if (CheckHeightOfTriangle(x, z, height, vertex1, vertex2, vertex3)) {
+			return true;
 		}
 	}
+
+	return false;
 }
 
 
