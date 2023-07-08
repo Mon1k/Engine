@@ -94,6 +94,7 @@ void GraphicsClass::Shutdown()
 void GraphicsClass::frame(TimerClass *timer)
 {
 	m_particleManager->Frame(timer->GetTime(), m_Frustum);
+	m_modelManager->frame(m_Camera, timer->GetTime());
 }
 
 bool GraphicsClass::Render()

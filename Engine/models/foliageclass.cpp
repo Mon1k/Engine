@@ -38,7 +38,8 @@ bool FoliageClass::Initialize(D3DClass* d3dClass, std::string textureFilename, i
 	// Set the initial wind rotation and direction.
 	m_windRotation = 0.0f;
 	m_windDirection = 1;
-	m_windPower = 0.01f;
+	m_windPower = 0.05f;
+	m_counter = 0;
 
 	m_shader = new FoliageShaderClass;
 	m_shader->Initialize(m_D3D->GetDevice());
@@ -75,6 +76,13 @@ void FoliageClass::Render(CameraClass* camera)
 
 void FoliageClass::frame(CameraClass* camera, float time)
 {
+	m_counter += time;
+	if (m_counter < 10) {
+		return;
+	}
+	m_counter = 0;
+
+
 	D3DXMATRIX rotateMatrix, translationMatrix, rotateMatrix2, finalMatrix;
 	D3DXVECTOR3 modelPosition, cameraPosition;
 	int i;
@@ -352,6 +360,7 @@ bool FoliageClass::GeneratePositionsFromTerrain(D3DXVECTOR3 min, D3DXVECTOR3 max
 		do {
 			x = Random::randDouble(min.x, max.x);
 			z = Random::randDouble(min.z, max.z);
+			
 			terrain->getQuadTree()->GetHeightAtPosition(x, z, height);
 			if (height < min.y || height > max.y) {
 				attempt++;

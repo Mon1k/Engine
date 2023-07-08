@@ -204,8 +204,6 @@ bool SystemClass::frame()
 	m_Graphics->getUiManager()->frame(m_Timer->GetTime());
 	// frame graphic
 	m_Graphics->frame(m_Timer);
-	// frame models
-	m_Graphics->getModelManager()->frame(m_Graphics->getCamera(), m_Timer->GetTime());
 
 
 	// movement camera only unfocussed ui

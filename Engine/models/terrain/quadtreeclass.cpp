@@ -554,11 +554,9 @@ bool QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 	}
 
 	int count, i, index;
-	float vertex1[3], vertex2[3], vertex3[3];
 
 	// If the coordinates are in this node then check first to see if children nodes exist.
 	count = 0;
-
 	for (i = 0; i < 4; i++) {
 		if (node->nodes[i] != 0) {
 			count++;
@@ -575,6 +573,7 @@ bool QuadTreeClass::FindNode(NodeType* node, float x, float z, float& height)
 
 	// If there were no children then the polygon must be in this node.  Check all the polygons in this node to find 
 	// the height of which one the polygon we are looking for.
+	float vertex1[3], vertex2[3], vertex3[3];
 	for (i = 0; i < node->triangleCount; i++) {
 		index = i * 3;
 		vertex1[0] = node->vertexArray[index].x;

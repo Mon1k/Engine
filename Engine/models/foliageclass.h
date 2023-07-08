@@ -68,6 +68,7 @@ private:
 	int m_foliageCount;
 	float m_windRotation;
 	float m_windPower;
+	float m_counter;
 	int m_windDirection;
 };
 
