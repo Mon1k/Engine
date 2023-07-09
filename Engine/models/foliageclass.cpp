@@ -3,10 +3,6 @@
 
 FoliageClass::FoliageClass(): ModelClass()
 {
-	m_foliageArray = 0;
-	m_Instances = 0;
-
-	m_instanceBuffer = 0;
 }
 
 
@@ -25,6 +21,10 @@ bool FoliageClass::Initialize(D3DClass* d3dClass, std::string textureFilename, i
 	bool result;
 
 	m_D3D = d3dClass;
+
+	m_foliageArray = 0;
+	m_Instances = 0;
+	m_instanceBuffer = 0;
 
 	// Set the foliage count.
 	m_foliageCount = fCount;
@@ -384,38 +384,100 @@ bool FoliageClass::GeneratePositionsFromTerrain(D3DXVECTOR3 min, D3DXVECTOR3 max
 	return InitializeBuffers(m_D3D->GetDevice());
 }
 
-bool FoliageClass::GeneratePositionsFromTerrainWithMap(TerrainClass* terrain, std::string map)
+bool FoliageClass::GeneratePositionsFromTerrainWithMap(TerrainClass* terrain, std::string textureMap)
 {
-	int i;
+	FILE* filePtr;
+	int error;
+	int count;
+	BITMAPFILEHEADER bitmapFileHeader;
+	BITMAPINFOHEADER bitmapInfoHeader;
+	unsigned char* bitmapImage;
+	int imageSize, i, j, g, index;
+	float step;
 	float red, green;
 	float height, x, z;
-
-	// Create an array to store all the foliage information.
-	m_foliageArray = new FoliageType[m_foliageCount];
-	if (!m_foliageArray) {
-		return false;
-	}
 
 	// Seed the random generator.
 	srand((int)time(NULL));
 
-	// Set random positions and random colors for each piece of foliage.
-	for (i = 0; i < m_foliageCount; i++) {
-		x = 1;
-		z = 2;
-		terrain->getQuadTree()->GetHeightAtPosition(x, z, height);
-			
-		m_foliageArray[i].x = x;
-		m_foliageArray[i].y = height - 0.3f;
-		m_foliageArray[i].z = z;
-
-		red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
-		green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
-
-		m_foliageArray[i].r = red + 1.0f;
-		m_foliageArray[i].g = green + 0.5f;
-		m_foliageArray[i].b = 0.0f;
+	// Open the height map file in binary.
+	error = fopen_s(&filePtr, &textureMap[0], "rb");
+	if (error != 0) {
+		return false;
 	}
+
+	// Read in the file header.
+	count = fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+	if (count != 1) {
+		return false;
+	}
+
+	// Read in the bitmap info header.
+	count = fread(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+	if (count != 1) {
+		return false;
+	}
+
+	imageSize = bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight * 3;
+	bitmapImage = new unsigned char[imageSize];
+
+	fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
+	count = fread(bitmapImage, sizeof(unsigned char), imageSize, filePtr);
+	if (count != imageSize) {
+		return false;
+	}
+
+	// Close the file.
+	error = fclose(filePtr);
+	if (error != 0) {
+		return false;
+	}
+
+	step = terrain->getWidth() * terrain->getOrigScale().x / (float)bitmapInfoHeader.biWidth;
+
+	m_foliageArray = new FoliageType[m_foliageCount];
+
+	count = 0;
+	for (i = 0; i < imageSize; i++) {
+		if (bitmapImage[i + 1] != 0) {
+			count++;
+		}
+	}
+
+	index = 0;
+	do {
+		for (j = 0; j < bitmapInfoHeader.biHeight; j++) {
+			for (i = 0; i < bitmapInfoHeader.biWidth; i++) {
+				g = 3 * (j * bitmapInfoHeader.biWidth + i) + 1;
+				if (index < m_foliageCount && g < imageSize && bitmapImage[g] != 0) {
+					// uniform position for all area
+					if ((int)Random::randDouble(1, (float)count / (m_foliageCount - index)) > 1) {
+						continue;
+					}
+
+					x = i * step;
+					z = j * step;
+					terrain->getQuadTree()->GetHeightAtPosition(x, z, height);
+
+					m_foliageArray[index].x = x;
+					m_foliageArray[index].y = height - 0.3f;
+					m_foliageArray[index].z = z;
+
+					red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
+					green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
+
+					m_foliageArray[index].r = red + 1.0f;
+					m_foliageArray[index].g = green + 0.5f;
+					m_foliageArray[index].b = 0.0f;
+
+					index++;
+				}
+			}
+		}
+	} while (index < m_foliageCount);
+
+	delete[] bitmapImage;
+	bitmapImage = 0;
 
 	return InitializeBuffers(m_D3D->GetDevice());
 }

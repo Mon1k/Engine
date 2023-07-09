@@ -94,6 +94,21 @@ public:
 		return m_scaleNormal;
 	}
 
+	int getWidth()
+	{
+		return m_terrainWidth;
+	}
+
+	int getHeight()
+	{
+		return m_terrainHeight;
+	}
+
+	D3DXVECTOR3 getOrigScale()
+	{
+		return m_origScale;
+	}
+
 private:
 	bool LoadHeightMap(char*);
 	bool CalculateNormals();
@@ -111,6 +126,7 @@ private:
 	float m_repeat;
 	int isDetailTexture, isBumpTexture;
 	D3DXVECTOR3 m_scaleNormal;
+	D3DXVECTOR3 m_origScale;
 
 	HeightMapType* m_heightMap;
 	HeightMapType* m_TerrainModel;

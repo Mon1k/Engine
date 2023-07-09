@@ -180,6 +180,7 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+	m_origScale = scale;
 
 	// Read the image data into the height map.
 	for (j = 0; j < m_terrainHeight; j++) {
