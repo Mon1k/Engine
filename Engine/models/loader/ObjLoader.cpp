@@ -1,6 +1,10 @@
 #include "ObjLoader.h"
+#include "../../modelclass.h"
 
-bool ObjLoader::load(char* filename, AbstractModel* model)
+#include <vector>
+#include <algorithm>
+
+bool ObjLoader::load(char* filename, ModelClass* model)
 {
 	typedef struct
 	{
@@ -78,30 +82,20 @@ bool ObjLoader::load(char* filename, AbstractModel* model)
 
 	// Initialize the four data structures.
 	vertices = new VertexType[vertexCount];
-	if (!vertices) {
-		return false;
-	}
-
 	texcoords = new VertexType[textureCount];
-	if (!texcoords) {
-		return false;
-	}
-
 	normals = new VertexType[normalCount];
-	if (!normals) {
-		return false;
-	}
-
 	faces = new FaceType[faceCount];
-	if (!faces) {
-		return false;
-	}
 
 	// Initialize the indexes.
 	vertexIndex = 0;
 	texcoordIndex = 0;
 	normalIndex = 0;
 	faceIndex = 0;
+
+	std::vector< std::vector<AbstractModel::ModelType> > modelsType;
+	std::vector<int> subsetIndex;
+	modelsType.clear();
+	subsetIndex.clear();
 
 	// Open the file.
 	fin.open(filename);
@@ -146,6 +140,15 @@ bool ObjLoader::load(char* filename, AbstractModel* model)
 			}
 		}
 
+		// group
+		if (input == 'g') {
+			subsetIndex.push_back(faceIndex);
+		}
+
+		if (input == 'u') {
+			subsetIndex.push_back(faceIndex);
+		}
+
 		// Read in the faces.
 		if (input == 'f') {
 			fin.get(input);
@@ -171,40 +174,107 @@ bool ObjLoader::load(char* filename, AbstractModel* model)
 	fin.close();
 
 	///// create model with readed data
-	model->setVertexCount(faceIndex * 3);
-	model->setIndexCount(faceIndex * 3);
+	/*model->setVertexCount(faceIndex * 3);
+	model->setIndexCount(faceIndex * 3);*/
 
 	int index = 0;
+	AbstractModel::ModelType modelType;
+	std::vector<AbstractModel::ModelType> subsetModelType;
+	subsetModelType.clear();
 	for (int i = 0; i < faceIndex; i++) {
+		////
+		if (subsetIndex.size() > 0 && subsetModelType.size() > 0 && std::find(subsetIndex.begin(), subsetIndex.end(), i) != subsetIndex.end()) {
+			index = 0;
+			modelsType.push_back(subsetModelType);
+			subsetModelType.clear();
+		}
+		////
+
 		for (int j = 1; j <= 3; j++) {
 			switch (j) {
-			case 1:
-				vIndex = faces[i].vIndex1 - 1;
-				tIndex = faces[i].tIndex1 - 1;
-				nIndex = faces[i].nIndex1 - 1;
-				break;
+				case 1:
+					vIndex = faces[i].vIndex1 - 1;
+					tIndex = faces[i].tIndex1 - 1;
+					nIndex = faces[i].nIndex1 - 1;
+					break;
 
-			case 2:
-				vIndex = faces[i].vIndex2 - 1;
-				tIndex = faces[i].tIndex2 - 1;
-				nIndex = faces[i].nIndex2 - 1;
-				break;
+				case 2:
+					vIndex = faces[i].vIndex2 - 1;
+					tIndex = faces[i].tIndex2 - 1;
+					nIndex = faces[i].nIndex2 - 1;
+					break;
 
-			case 3:
-				vIndex = faces[i].vIndex3 - 1;
-				tIndex = faces[i].tIndex3 - 1;
-				nIndex = faces[i].nIndex3 - 1;
-				break;
+				case 3:
+					vIndex = faces[i].vIndex3 - 1;
+					tIndex = faces[i].tIndex3 - 1;
+					nIndex = faces[i].nIndex3 - 1;
+					break;
 			}
-			model->m_model[index].x = vertices[vIndex].x;
+			/*model->m_model[index].x = vertices[vIndex].x;
 			model->m_model[index].y = vertices[vIndex].y;
 			model->m_model[index].z = vertices[vIndex].z;
 			model->m_model[index].tu = texcoords[tIndex].x;
 			model->m_model[index].tv = texcoords[tIndex].y;
 			model->m_model[index].nx = normals[nIndex].x;
 			model->m_model[index].ny = normals[nIndex].y;
-			model->m_model[index].nz = normals[nIndex].z;
+			model->m_model[index].nz = normals[nIndex].z;*/
+
+
+			////
+			modelType.x = vertices[vIndex].x;
+			modelType.y = vertices[vIndex].y;
+			modelType.z = vertices[vIndex].z;
+			modelType.tu = texcoords[tIndex].x;
+			modelType.tv = texcoords[tIndex].y;
+			modelType.nx = normals[nIndex].x;
+			modelType.ny = normals[nIndex].y;
+			modelType.nz = normals[nIndex].z;
+
+			subsetModelType.push_back(modelType);
+			////
+
 			index++;
+		}
+	}
+	///
+	if (subsetModelType.size() > 0) {
+		modelsType.push_back(subsetModelType);
+	}
+
+	for (int i = 0; i < modelsType.size(); i++) {
+		int size = modelsType[i].size();
+
+		if (i == 0) {
+			index = 0;
+			model->setVertexCount(size);
+			model->setIndexCount(size);
+			for (int j = 0; j < modelsType[i].size(); j++) {
+				model->m_model[index] = modelsType[i][j];
+				index++;
+			}
+		}
+		else {
+			index = 0;
+			ModelClass* subset = new ModelClass;
+			subset->setD3D(model->getD3D());
+			subset->setVertexCount(size);
+			subset->setIndexCount(size);
+			
+			for (int j = 0; j < modelsType[i].size(); j++) {
+				subset->m_model[index] = modelsType[i][j];
+				index++;
+			}
+
+			subset->setAlpha(model->getAlpha());
+			subset->addLights(model->getLights());
+			subset->addShader(model->getShader());
+			std::string texture = model->GetTextureClass()->getTexturePath(i);
+			subset->LoadTextures(texture.size() > 0 ? texture : model->GetTextureClass()->getTexturePath(0));
+
+			subset->InitializeBuffers();
+			subset->CalcMinMax();
+
+			model->addSubset(subset);
 		}
 	}
 

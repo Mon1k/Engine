@@ -2,15 +2,13 @@
 
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #include "AbstractModel.h"
-#include "../modelclass.h"
 
-class CompositeModel : public ModelClass
+class CompositeModel: public AbstractModel
 {
 public:
-	CompositeModel(): ModelClass()
+	CompositeModel()
 	{
 		m_childs.clear();
 	}
@@ -34,21 +32,24 @@ public:
 		m_childs.clear();
 	}
 
-	virtual void Render(CameraClass* camera) {
+	virtual void Render(CameraClass* camera)
+	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Render(camera);
 		}
 	}
 
-	virtual void Render() {
+	virtual void Render()
+	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Render();
 		}
 	}
 
-	virtual void Shutdown() {
+	virtual void Shutdown()
+	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Shutdown();
@@ -60,13 +61,10 @@ public:
 		D3DXVECTOR3 delta;
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
-			delta.x = _position.x - position.x;
-			delta.y = _position.y - position.y;
-			delta.z = _position.z - position.z;
 			D3DXVECTOR3 newPosition = m_childs[i]->GetPosition();
-			newPosition.x += delta.x;
-			newPosition.y += delta.y;
-			newPosition.z += delta.z;
+			newPosition.x += _position.x - newPosition.x;
+			newPosition.y += _position.y - newPosition.y;
+			newPosition.z += _position.z - newPosition.z;
 
 			m_childs[i]->SetPosition(newPosition);
 		}

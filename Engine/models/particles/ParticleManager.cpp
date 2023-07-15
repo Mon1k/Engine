@@ -40,7 +40,7 @@ void ParticleManager::Render(CameraClass* camera, FrustumClass* frustum)
             m_models[i]->GetBoundingBox(position, size);
             if (frustum->CheckRectangle(position, size)) {
                 m_models[i]->Render(camera);
-                m_TriangleCount += m_models[i]->GetTtriangleCount();
+                m_TriangleCount += m_models[i]->GetTriangleCount();
                 m_RenderCount++;
             }
         }

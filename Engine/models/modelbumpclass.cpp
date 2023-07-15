@@ -29,7 +29,7 @@ bool ModelBumpClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::ve
 	CalcMinMax();
 
 	// Load the textures for this model.
-	if (!LoadTexturesArray(m_D3D->GetDevice(), texturesFilename)) {
+	if (!LoadTexturesArray(texturesFilename)) {
 		return false;
 	}
 

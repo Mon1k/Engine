@@ -22,7 +22,7 @@ bool Fountain::Initialize(D3DClass* d3dClass, std::string textureFilename)
 {
 	m_D3D = d3dClass;
 
-	if (!LoadTextures(m_D3D->GetDevice(), textureFilename)) {
+	if (!LoadTextures(textureFilename)) {
 		return false;
 	}
 

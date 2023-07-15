@@ -1,5 +1,7 @@
 #include "modelclass.h"
 
+#include "models/loader/DsLoader.h"
+#include "models/loader/ObjLoader.h"
 
 ModelClass::ModelClass(): AbstractModel()
 {
@@ -10,6 +12,8 @@ ModelClass::ModelClass(): AbstractModel()
 	m_shader = 0;
 	m_isAlpha = false;
 	m_isShadow = false;
+
+	m_subsets = 0;
 
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
@@ -37,39 +41,47 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	if (strlen(modelFilename) > 0) {
-		if (!LoadModel(modelFilename)) {
-			return false;
-		}
-
-		// Initialize the vertex and index buffers.
-		result = InitializeBuffers(m_D3D->GetDevice());
-		if (!result) {
-			return false;
-		}
-		CalcMinMax();
-	}
-
 	if (!texturesFilename.empty()) {
 		if (texturesFilename.size() > 1) {
 			// Load the textures for this model.
-			result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
+			result = LoadTexturesArray(texturesFilename);
 			if (!result) {
 				return false;
 			}
 		}
 		else if (texturesFilename[0].size() > 0) {
-			result = LoadTextures(m_D3D->GetDevice(), texturesFilename[0]);
+			result = LoadTextures(texturesFilename[0]);
 			if (!result) {
 				return false;
 			}
 		}
 	}
 
+	if (!LoadModel(modelFilename)) {
+		return false;
+	}
+
+	InitializeBuffers();
+	CalcMinMax();
 
 	return true;
 }
 
+bool ModelClass::LoadModel(char* filename)
+{
+	std::string string(filename);
+
+	if (string.rfind(".ds") != std::string::npos || string.rfind(".txt") != std::string::npos) {
+		DsLoader* loader = new DsLoader;
+		return loader->load(filename, this);
+	}
+	else if (string.rfind(".obj") != std::string::npos) {
+		ObjLoader* loader = new ObjLoader;
+		return loader->load(filename, this);
+	}
+
+	return false;
+}
 
 void ModelClass::Shutdown()
 {
@@ -93,7 +105,7 @@ ID3D11ShaderResourceView** ModelClass::GetTextureArray()
 	return m_TextureArray->GetTextureArray();
 }
 
-bool ModelClass::InitializeBuffers(ID3D11Device* device)
+bool ModelClass::InitializeBuffers()
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -136,7 +148,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-    result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+    result = m_D3D->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result)) {
 		return false;
 	}
@@ -155,7 +167,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = m_D3D->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result)) {
 		return false;
 	}
@@ -197,7 +209,7 @@ void ModelClass::CalcMinMax()
 	}
 }
 
-bool ModelClass::LoadTextures(ID3D11Device* device, std::string filename)
+bool ModelClass::LoadTextures(std::string filename)
 {
 	bool result;
 
@@ -209,7 +221,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, std::string filename)
 
 	// Initialize the texture array object.
 	std::wstring texture(filename.begin(), filename.end());
-	result = m_TextureArray->Initialize(device, &texture[0]);
+	result = m_TextureArray->Initialize(m_D3D->GetDevice(), &texture[0]);
 	if (!result) {
 		return false;
 	}
@@ -217,7 +229,7 @@ bool ModelClass::LoadTextures(ID3D11Device* device, std::string filename)
 	return true;
 }
 
-bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::string> filenames)
+bool ModelClass::LoadTexturesArray(std::vector<std::string> filenames)
 {
 	bool result;
 
@@ -229,7 +241,7 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::string
 
 	// Initialize the texture array object.
 	std::wstring texture(filenames[0].begin(), filenames[0].end());
-	result = m_TextureArray->Initialize(device, &texture[0]);
+	result = m_TextureArray->Initialize(m_D3D->GetDevice(), &texture[0]);
 	if (!result) {
 		return false;
 	}
@@ -238,7 +250,7 @@ bool ModelClass::LoadTexturesArray(ID3D11Device* device, std::vector<std::string
 	if (size > 1) {
 		for (int i = 1; i < size; i++) {
 			texture = std::wstring(filenames[i].begin(), filenames[i].end());
-			m_TextureArray->AddTexture(device, &texture[0]);
+			m_TextureArray->AddTexture(m_D3D->GetDevice(), &texture[0]);
 		}
 	}
 
@@ -276,6 +288,11 @@ void ModelClass::ReleaseModel()
 		delete[] m_model;
 		m_model = 0;
 	}
+
+	if (m_subsets) {
+		m_subsets->Shutdown();
+		m_subsets = 0;
+	}
 }
 
 void ModelClass::ShutdownBuffers()
@@ -296,11 +313,11 @@ void ModelClass::ShutdownBuffers()
 
 void ModelClass::Render(CameraClass* camera)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix;
-
 	Render();
-	
+
 	if (m_shader) {
+		D3DXMATRIX viewMatrix, projectionMatrix;
+
 		camera->GetViewMatrix(viewMatrix);
 		m_D3D->GetProjectionMatrix(projectionMatrix);
 
@@ -314,6 +331,10 @@ void ModelClass::Render(CameraClass* camera)
 		if (m_isAlpha) {
 			m_D3D->TurnOffAlphaBlending();
 		}
+	}
+
+	if (m_subsets) {
+		m_subsets->Render(camera);
 	}
 }
 

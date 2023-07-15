@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <string>
 using namespace std;
 
 
@@ -23,13 +24,29 @@ public:
 
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();
-	std::vector<ID3D11ShaderResourceView*> getTextures() {
+	std::vector<ID3D11ShaderResourceView*> getTextures()
+	{
 		return m_textures;
+	}
+
+	std::string getTexturePath(int index)
+	{
+		if (index >= m_texturesPath.size()) {
+			return "";
+		}
+
+		return m_texturesPath[index];
+	}
+
+	std::vector<std::string> getTexturesPath()
+	{
+		return m_texturesPath;
 	}
 
 
 private:
 	std::vector<ID3D11ShaderResourceView*> m_textures;
+	std::vector<std::string> m_texturesPath;
 };
 
 #endif

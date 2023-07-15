@@ -30,7 +30,7 @@ bool FoliageClass::Initialize(D3DClass* d3dClass, std::string textureFilename, i
 	m_foliageCount = fCount;
 
 	// Load the texture for this model.
-	result = LoadTextures(m_D3D->GetDevice(), textureFilename);
+	result = LoadTextures(textureFilename);
 	if (!result) {
 		return false;
 	}

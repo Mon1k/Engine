@@ -11,14 +11,12 @@
 using namespace std;
 
 #include "models/AbstractModel.h"
+#include "models/CompositeModel.h"
 #include "textureclass.h"
 #include "textures/texturearrayclass.h"
 #include "lightclass.h"
 
-#include "models/loader/DsLoader.h"
-#include "models/loader/ObjLoader.h"
-
-class ModelClass: public AbstractModel
+class ModelClass : public AbstractModel
 {
 private:
 	struct VertexType
@@ -43,13 +41,20 @@ public:
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 	virtual void Render();
+	virtual bool InitializeBuffers();
+	virtual void CalcMinMax();
 
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView* GetTexture(int);
+	TextureArrayClass* GetTextureClass()
+	{
+		return m_TextureArray;
+	}
+
 	ID3D11ShaderResourceView** GetTextureArray();
 	bool addTexture(std::string);
-	bool LoadTextures(ID3D11Device*, std::string);
-	bool LoadTexturesArray(ID3D11Device*, std::vector<std::string>);
+	bool LoadTextures(std::string);
+	bool LoadTexturesArray(std::vector<std::string>);
 	void ReleaseTexture();
 
 	void ReleaseModel();
@@ -59,39 +64,74 @@ public:
 
 	virtual D3DXMATRIX GetWorldMatrix();	
 
-	bool LoadModel(char* filename) {
-		std::string string(filename);
-
-		if (string.rfind(".ds") != std::string::npos || string.rfind(".txt") != std::string::npos) {
-			DsLoader* loader = new DsLoader;
-			return loader->load(filename, this);
-		}
-		else if (string.rfind(".obj") != std::string::npos) {
-			ObjLoader* loader = new ObjLoader;
-			return loader->load(filename, this);
-		}
-
-		return false;
-	}
-
+	bool LoadModel(char* filename);
+	
 	void addLights(std::vector<LightClass*>);
+	
 	LightClass* getLight(int index)
 	{
 		return m_lights[index];
 	}
 
+	std::vector<LightClass*> getLights()
+	{
+		return m_lights;
+	}
+
 	virtual void frame(CameraClass*, float);
 
+	void addSubset(ModelClass* subset)
+	{
+		if (!m_subsets) {
+			m_subsets = new CompositeModel;
+		}
+		m_subsets->addChild(subset);
+	}
+
+	virtual int GetTriangleCount()
+	{
+		int count = m_vertexCount / 3;
+		if (m_subsets) {
+			for (int i = 0; i < m_subsets->getChilds().size(); i++) {
+				count += m_subsets->getChilds()[i]->GetTriangleCount();
+			}
+		}
+
+		return count;
+	}
+
+	virtual void SetPosition(D3DXVECTOR3 _position)
+	{
+		AbstractModel::SetPosition(_position);
+		if (m_subsets) {
+			m_subsets->SetPosition(_position);
+		}
+	}
+
+	virtual void SetScale(D3DXVECTOR3 _scale)
+	{
+		AbstractModel::SetScale(_scale);
+		if (m_subsets) {
+			m_subsets->SetScale(_scale);
+		}
+	}
+
+	virtual void SetRotation(D3DXVECTOR3 _rotation)
+	{
+		AbstractModel::SetRotation(_rotation);
+		if (m_subsets) {
+			m_subsets->SetRotation(_rotation);
+		}
+	}
+
 protected:
-	virtual void CalcMinMax();
-	virtual bool InitializeBuffers(ID3D11Device*);
 	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
 
 protected:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	
-
+	CompositeModel* m_subsets;
 	TextureArrayClass* m_TextureArray;
 	std::vector<LightClass*> m_lights;
 };

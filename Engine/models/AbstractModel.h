@@ -57,7 +57,7 @@ public:
         return m_indexCount;
     }
 
-    virtual int GetTtriangleCount() {
+    virtual int GetTriangleCount() {
         return m_vertexCount / 3;
     }
 
@@ -192,6 +192,11 @@ public:
     D3DClass* getD3D()
     {
         return m_D3D;
+    }
+
+    void setD3D(D3DClass* d3d)
+    {
+        m_D3D = d3d;
     }
 
 protected:

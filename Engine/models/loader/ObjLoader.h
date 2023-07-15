@@ -2,12 +2,12 @@
 #define _OBJLOADER_H_
 
 #include "AbstractLoader.h"
-#include "../AbstractModel.h"
+#include "../../modelclass.h"
 
 class ObjLoader : public AbstractLoader
 {
 public:
-    bool load(char*, AbstractModel*);
+    bool load(char*, ModelClass*);
 };
 
 #endif

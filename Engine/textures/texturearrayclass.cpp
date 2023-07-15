@@ -28,6 +28,9 @@ void TextureArrayClass::AddTexture(ID3D11Device* device, WCHAR* filename)
 
 	D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &texture, NULL);
 	m_textures.push_back(texture);
+
+	std::wstring filenameW = filename;
+	m_texturesPath.push_back(std::string(filenameW.begin(), filenameW.end()));
 }
 
 void TextureArrayClass::AddResource(ID3D11ShaderResourceView* texture)

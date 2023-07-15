@@ -48,7 +48,7 @@ bool SkyPlaneClass::Initialize(D3DClass* d3dClass, std::vector<std::string> text
 	}
 
 	// Load the sky plane textures.
-	result = LoadTexturesArray(m_D3D->GetDevice(), texturesFilename);
+	result = LoadTexturesArray(texturesFilename);
 	if (!result) {
 		return false;
 	}

@@ -392,7 +392,7 @@ void ModelManager::Render(CameraClass* camera)
             }
         }
 
-        m_TriangleCount += m_modelsRender[i]->GetTtriangleCount();
+        m_TriangleCount += m_modelsRender[i]->GetTriangleCount();
         m_RenderCount++;
     }
 

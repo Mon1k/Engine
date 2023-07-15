@@ -51,7 +51,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	BuildTerrainModel();
 	CalculateTerrainVectors();
 
-	if (!LoadTexturesArray(m_D3D->GetDevice(), { textureFilename, normalTextureFilename })) {
+	if (!LoadTexturesArray({ textureFilename, normalTextureFilename })) {
 		return false;
 	}
 
