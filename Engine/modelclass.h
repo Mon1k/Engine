@@ -42,7 +42,9 @@ public:
 	virtual void Render(CameraClass*);
 	virtual void Render();
 	virtual bool InitializeBuffers();
+	
 	virtual void CalcMinMax();
+	void CalcMinMaxSubsets();
 
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView* GetTexture(int);
@@ -80,13 +82,7 @@ public:
 
 	virtual void frame(CameraClass*, float);
 
-	void addSubset(ModelClass* subset)
-	{
-		if (!m_subsets) {
-			m_subsets = new CompositeModel;
-		}
-		m_subsets->addChild(subset);
-	}
+	void addSubset(ModelClass* subset);
 
 	virtual int GetTriangleCount()
 	{
@@ -105,6 +101,7 @@ public:
 		AbstractModel::SetPosition(_position);
 		if (m_subsets) {
 			m_subsets->SetPosition(_position);
+			CalcMinMaxSubsets();
 		}
 	}
 
@@ -113,6 +110,7 @@ public:
 		AbstractModel::SetScale(_scale);
 		if (m_subsets) {
 			m_subsets->SetScale(_scale);
+			CalcMinMaxSubsets();
 		}
 	}
 
@@ -121,6 +119,7 @@ public:
 		AbstractModel::SetRotation(_rotation);
 		if (m_subsets) {
 			m_subsets->SetRotation(_rotation);
+			CalcMinMaxSubsets();
 		}
 	}
 

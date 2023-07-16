@@ -11,9 +11,6 @@ TerrainClass::TerrainClass(): ModelClass()
 	m_quadTree = 0;
 
 	m_scaleNormal = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-
-	isDetailTexture = 0;
-	isBumpTexture = 0;
 }
 
 
@@ -794,8 +791,6 @@ void TerrainClass::CopyVertexArray(void* vertexList)
 void TerrainClass::Render(CameraClass* camera)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
-	//ID3D11ShaderResourceView* bumpTexture = isBumpTexture > 0 ? GetTexture(isBumpTexture) : 0;
-	//ID3D11ShaderResourceView* detailTexture = isDetailTexture > 0 ? GetTexture(isDetailTexture) : 0;
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);

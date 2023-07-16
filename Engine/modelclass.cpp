@@ -207,6 +207,24 @@ void ModelClass::CalcMinMax()
 			m_Min.z = m_model[i].z;
 		}
 	}
+	
+	if (m_subsets) {
+		CalcMinMaxSubsets();
+	}
+}
+
+void ModelClass::CalcMinMaxSubsets()
+{
+	D3DXVECTOR3 min, max;
+	min = m_subsets->getMinPosition();
+	max = m_subsets->getMaxPosition();
+
+	m_Min.x = min(m_Min.x, min.x);
+	m_Min.y = min(m_Min.y, min.y);
+	m_Min.z = min(m_Min.z, min.z);
+	m_Max.x = max(m_Max.x, max.x);
+	m_Max.y = max(m_Max.y, max.y);
+	m_Max.z = max(m_Max.z, max.z);
 }
 
 bool ModelClass::LoadTextures(std::string filename)
@@ -279,9 +297,7 @@ void ModelClass::ReleaseModel()
 {
 	if (m_shader && m_shader != nullptr) {
 		m_shader->Shutdown();
-		delete m_shader;
 		m_shader = nullptr;
-		//m_shader = 0;
 	}
 
 	if (m_model) {
@@ -413,4 +429,12 @@ void ModelClass::addLights(std::vector<LightClass*> lights)
 void ModelClass::frame(CameraClass* camera, float time)
 {
 
+}
+
+void ModelClass::addSubset(ModelClass* subset)
+{
+	if (!m_subsets) {
+		m_subsets = new CompositeModel;
+	}
+	m_subsets->addChild(subset);
 }

@@ -617,6 +617,9 @@
     <ClInclude Include="models\Model.h">
       <Filter>models</Filter>
     </ClInclude>
+    <ClInclude Include="map\XmlLoad.h">
+      <Filter>map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">

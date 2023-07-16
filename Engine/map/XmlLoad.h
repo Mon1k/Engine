@@ -20,6 +20,11 @@ public:
 		this->reader = reader;
 
 		//// @todo
+		m_lightModel = new LightClass;
+		m_lightModel->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		m_lightModel->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
+
 		m_light = new LightClass;
 		m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 		m_light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -76,6 +81,8 @@ protected:
 
 		path = node->getAttribute("path")->value;
 		texture = node->getAttribute("texture")->value;
+		std::vector<std::string> textures;
+		textures.push_back(texture);
 
 		position = extractVector3(node->getAttribute("position"));
 		scale = extractVector3(node->getAttribute("scale"));
@@ -83,22 +90,26 @@ protected:
 
 		params = node->getAttributes("params");
 
-		bool result = model->Initialize(manager->getD3D(), &path[0], {texture});
+		model->addLights({ m_lightModel });
+		LightShaderClass* shader = new LightShaderClass;
+		shader->Initialize(manager->getD3D()->GetDevice());
+		shader->addLights({ m_lightModel });
+		model->addShader(shader);
+
+		if (params.size() > 0 && stoi(params[0]->value) != 0) {
+			model->setAlpha(true);
+		}
+
+		if (params.size() > 1 && params[1]->value.size() > 0) {
+			textures.push_back(params[1]->value);
+		}
+
+		bool result = model->Initialize(manager->getD3D(), &path[0], textures);
 		if (result) {
-			model->SetPosition(position);
 			model->SetScale(scale);
 			model->SetRotation(rotation);
+			model->SetPosition(position);
 			model->setId(id);
-
-			model->addLights({ m_light });
-			LightShaderClass* shader = new LightShaderClass;
-			shader->Initialize(manager->getD3D()->GetDevice());
-			shader->addLights({ m_light });
-			model->addShader(shader);
-
-			if (params.size() > 0 && stoi(params[0]->value) != 0) {
-				model->setAlpha(true);
-			}
 
 			manager->Add(model);
 
@@ -175,8 +186,8 @@ protected:
 		scale = extractVector3(node->getAttribute("scale"));
 		scaleNormal = extractVector3(params[1]);
 
-		model->SetPosition(position);
 		model->SetScale(scale);
+		model->SetPosition(position);
 		model->setScaleNormal(scaleNormal);
 
 		bool result = model->Initialize(manager->getD3D(), manager->getFrustum(), &path[0], texture, params[0]->value);
@@ -236,8 +247,8 @@ protected:
 
 		bool result = model->Initialize(manager->getD3D(), &path[0], { texture });
 		if (result) {
-			model->SetPosition(position);
 			model->SetScale(scale);
+			model->SetPosition(position);
 			//model->SetRotation(rotation);
 			model->setId(id);
 			model->addLights({ m_light });
@@ -315,5 +326,6 @@ protected:
 public:
 	AbstractReader* reader;
 
+	LightClass* m_lightModel;
 	LightClass* m_light;
 };

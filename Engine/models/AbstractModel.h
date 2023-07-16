@@ -124,8 +124,10 @@ public:
         }
         if (scale.y != _scale.y) {
             delta.y = _scale.y / scale.y;
-            m_Min.y = center.y - size.y / 2 * delta.y;
-            m_Max.y = center.y + size.y / 2 * delta.y;
+            /*m_Min.y = center.y - size.y / 2 * delta.y;
+            m_Max.y = center.y + size.y / 2 * delta.y;*/
+            m_Min.y *= delta.y;
+            m_Max.y *= delta.y;
         }
         if (scale.z != _scale.z) {
             delta.z = _scale.z / scale.z;
@@ -154,9 +156,9 @@ public:
     D3DXVECTOR3 getSize()
     {
         D3DXVECTOR3 size;
-        size.x = m_Max.x - m_Min.x;
-        size.y = m_Max.y - m_Min.y;
-        size.z = m_Max.z - m_Min.z;
+        size.x = fabs(m_Max.x - m_Min.x);
+        size.y = fabs(m_Max.y - m_Min.y);
+        size.z = fabs(m_Max.z - m_Min.z);
 
         return size;
     }

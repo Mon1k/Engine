@@ -112,7 +112,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 		if (input == 'v') {
 			fin.get(input);
 
-			// Read in the vertices.
+			// Read in the vertices - v
 			if (input == ' ') {
 				fin >> vertices[vertexIndex].x >> vertices[vertexIndex].y >> vertices[vertexIndex].z;
 
@@ -121,7 +121,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 				vertexIndex++;
 			}
 
-			// Read in the texture uv coordinates.
+			// Read in the texture uv coordinates - vt
 			if (input == 't') {
 				fin >> texcoords[texcoordIndex].x >> texcoords[texcoordIndex].y;
 
@@ -130,7 +130,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 				texcoordIndex++;
 			}
 
-			// Read in the normals.
+			// Read in the normals - vn
 			if (input == 'n') {
 				fin >> normals[normalIndex].x >> normals[normalIndex].y >> normals[normalIndex].z;
 
@@ -142,11 +142,16 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 
 		// group
 		if (input == 'g') {
-			subsetIndex.push_back(faceIndex);
+			if (subsetIndex.size() < 1 || subsetIndex[subsetIndex.size() - 1] != faceIndex) {
+				subsetIndex.push_back(faceIndex);
+			}
 		}
 
+		// usemtl
 		if (input == 'u') {
-			subsetIndex.push_back(faceIndex);
+			if (subsetIndex.size() < 1 || subsetIndex[subsetIndex.size() - 1] != faceIndex) {
+				subsetIndex.push_back(faceIndex);
+			}
 		}
 
 		// Read in the faces.
@@ -174,21 +179,17 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 	fin.close();
 
 	///// create model with readed data
-	/*model->setVertexCount(faceIndex * 3);
-	model->setIndexCount(faceIndex * 3);*/
-
 	int index = 0;
 	AbstractModel::ModelType modelType;
 	std::vector<AbstractModel::ModelType> subsetModelType;
 	subsetModelType.clear();
+
 	for (int i = 0; i < faceIndex; i++) {
-		////
 		if (subsetIndex.size() > 0 && subsetModelType.size() > 0 && std::find(subsetIndex.begin(), subsetIndex.end(), i) != subsetIndex.end()) {
 			index = 0;
 			modelsType.push_back(subsetModelType);
 			subsetModelType.clear();
 		}
-		////
 
 		for (int j = 1; j <= 3; j++) {
 			switch (j) {
@@ -210,17 +211,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 					nIndex = faces[i].nIndex3 - 1;
 					break;
 			}
-			/*model->m_model[index].x = vertices[vIndex].x;
-			model->m_model[index].y = vertices[vIndex].y;
-			model->m_model[index].z = vertices[vIndex].z;
-			model->m_model[index].tu = texcoords[tIndex].x;
-			model->m_model[index].tv = texcoords[tIndex].y;
-			model->m_model[index].nx = normals[nIndex].x;
-			model->m_model[index].ny = normals[nIndex].y;
-			model->m_model[index].nz = normals[nIndex].z;*/
 
-
-			////
 			modelType.x = vertices[vIndex].x;
 			modelType.y = vertices[vIndex].y;
 			modelType.z = vertices[vIndex].z;
@@ -231,12 +222,9 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 			modelType.nz = normals[nIndex].z;
 
 			subsetModelType.push_back(modelType);
-			////
-
 			index++;
 		}
 	}
-	///
 	if (subsetModelType.size() > 0) {
 		modelsType.push_back(subsetModelType);
 	}

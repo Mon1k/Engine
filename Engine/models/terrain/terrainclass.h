@@ -55,16 +55,6 @@ public:
 	{
 		m_repeat = repeat;
 	}
-	void addDetailTexture(std::string texture)
-	{
-		addTexture(texture);
-		isDetailTexture = m_TextureArray->getTextures().size() - 1;
-	}
-	void addBumpTexture(std::string texture)
-	{
-		addTexture(texture);
-		isBumpTexture = m_TextureArray->getTextures().size() - 1;
-	}
 	void addTextureLayer(std::string texture, std::string normalTexture)
 	{
 		addTexture(texture);
@@ -124,7 +114,6 @@ private:
 private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
-	int isDetailTexture, isBumpTexture;
 	D3DXVECTOR3 m_scaleNormal;
 	D3DXVECTOR3 m_origScale;
 

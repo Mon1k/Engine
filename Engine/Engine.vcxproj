@@ -177,6 +177,7 @@
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="map\MapEntity.h" />
+    <ClInclude Include="map\XmlLoad.h" />
     <ClInclude Include="map\XmlSave.h" />
     <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Point.h" />
