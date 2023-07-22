@@ -60,8 +60,6 @@ public:
 	void ReleaseTexture();
 
 	void ReleaseModel();
-	void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&);
-	
 	
 
 	virtual D3DXMATRIX GetWorldMatrix();	

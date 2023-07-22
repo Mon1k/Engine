@@ -15,10 +15,6 @@ void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 _position, D3DXVECTOR3 _size)
     ID3D11Device* device = d3d->GetDevice();
     m_D3D = d3d;
 
-    _size.x /= 2;
-    _size.y /= 2;
-    _size.z /= 2;
-
     m_ModelColor[0] = new ModelColorClass;
     m_ModelColor[0]->SetPoint(D3DXVECTOR3(_position.x - _size.x, _position.y - _size.y, _position.z - _size.z), D3DXVECTOR3(_position.x + _size.x, _position.y - _size.y, _position.z - _size.z));
     m_ModelColor[0]->SetColor(color);
@@ -80,6 +76,12 @@ void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 _position, D3DXVECTOR3 _size)
     m_ModelColor[11]->SetPoint(D3DXVECTOR3(_position.x + _size.x, _position.y + _size.y, _position.z - _size.z), D3DXVECTOR3(_position.x + _size.x, _position.y + _size.y, _position.z + _size.z));
     m_ModelColor[11]->SetColor(color);
     m_ModelColor[11]->Initialize(device);
+
+    m_vertexCount = 12;
+    m_indexCount = m_vertexCount;
+
+    m_Min = D3DXVECTOR3(_position.x - _size.x, _position.y - _size.y, _position.z - _size.z);
+    m_Max = D3DXVECTOR3(_position.x + _size.x, _position.y + _size.y, _position.z + _size.z);
 
 
     ColorShaderClass* shader = new ColorShaderClass;

@@ -153,15 +153,7 @@ void ModelManager::PreRender(CameraClass* camera)
         else {
             m_models[i]->GetBoundingBox(position, size);
             if (m_frustum->CheckRectangle(position, size)) {
-                if (CompositeModel* composite = dynamic_cast<CompositeModel*>(m_models[i])) {
-                    std::vector<AbstractModel*> childs = composite->getChilds();
-                    for (int j = 0; j < childs.size(); j++) {
-                        m_modelsRender.push_back(childs[j]);
-                    }
-                }
-                else {
-                    m_modelsRender.push_back(m_models[i]);
-                }
+                m_modelsRender.push_back(m_models[i]);
             }
         }
     }

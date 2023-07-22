@@ -119,6 +119,16 @@ public:
 	std::vector<AbstractModel*> getChilds() {
 		return m_childs;
 	}
+
+	int GetIndexCount()
+	{
+		int count = 0;
+		for (int i = 0; i < m_childs.size(); i++) {
+			count += m_childs[i]->GetIndexCount();
+		}
+
+		return count;
+	}
 private:
 	std::vector<AbstractModel*> m_childs;
 };

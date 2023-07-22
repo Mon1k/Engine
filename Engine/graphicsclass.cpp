@@ -105,19 +105,19 @@ bool GraphicsClass::Render()
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
 
-	m_modelManager->PreRender(m_Camera);
-
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
 
-	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(background.x, background.y, background.z, 1.0f);
-	
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
+
+	m_modelManager->PreRender(m_Camera);
+
+	// Clear the buffers to begin the scene.
+	m_D3D->BeginScene(background.x, background.y, background.z, 1.0f);
 
 	m_modelManager->Render(m_Camera);
 	m_particleManager->Render(m_Camera, m_Frustum);

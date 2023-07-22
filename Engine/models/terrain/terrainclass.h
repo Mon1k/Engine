@@ -65,7 +65,8 @@ public:
 		addTexture(texture);
 	}
 
-	int GetTtriangleCount() {
+	int GetTriangleCount()
+	{
 		return m_quadTree->GetDrawCount();
 	}
 

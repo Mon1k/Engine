@@ -378,12 +378,6 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void ModelClass::GetBoundingBox(D3DXVECTOR3& _position, D3DXVECTOR3& _size)
-{
-	_size = this->getSize();
-	_position = this->getCenter();
-}
-
 D3DXMATRIX ModelClass::GetWorldMatrix()
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotateMatrix, worldMatrix;

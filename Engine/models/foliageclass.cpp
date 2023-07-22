@@ -170,6 +170,7 @@ bool FoliageClass::InitializeBuffers(ID3D11Device* device)
 
 	// Set the number of vertices in the vertex array.
 	m_vertexCount = 6;
+	m_indexCount = m_vertexCount;
 
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
@@ -255,6 +256,8 @@ bool FoliageClass::InitializeBuffers(ID3D11Device* device)
 	if (FAILED(result)) {
 		return false;
 	}
+
+	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
 	return true;
 }
@@ -444,6 +447,9 @@ bool FoliageClass::GeneratePositionsFromTerrainWithMap(TerrainClass* terrain, st
 		}
 	}
 
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+
 	index = 0;
 	do {
 		for (j = 0; j < bitmapInfoHeader.biHeight; j++) {
@@ -462,6 +468,13 @@ bool FoliageClass::GeneratePositionsFromTerrainWithMap(TerrainClass* terrain, st
 					m_foliageArray[index].x = x;
 					m_foliageArray[index].y = height - 0.3f;
 					m_foliageArray[index].z = z;
+
+					m_Min.x = min(m_Min.x, x);
+					m_Min.y = min(m_Min.y, m_foliageArray[index].y);
+					m_Min.z = min(m_Min.z, z);
+					m_Max.x = max(m_Max.x, x);
+					m_Max.y = max(m_Max.y, m_foliageArray[index].y);
+					m_Max.z = max(m_Max.z, z);
 
 					red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
 					green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;

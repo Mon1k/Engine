@@ -141,6 +141,7 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 	// Calculate the number of vertices in the terrain mesh.
 	m_vertexCount = (m_terrainWidth - 1) * (m_terrainHeight - 1) * 6;
+	m_indexCount = m_vertexCount;
 
 	// Calculate the size of the bitmap image data.
 	imageSize = m_terrainWidth * m_terrainHeight * 3;

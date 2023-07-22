@@ -52,6 +52,11 @@ public:
 		m_windPower = power;
 	}
 
+	int GetTriangleCount()
+	{
+		return m_foliageCount * 2;
+	}
+
 private:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();

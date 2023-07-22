@@ -31,9 +31,6 @@ public:
     {
     }
     virtual void Shutdown() = 0;
-    virtual void GetBoundingBox(D3DXVECTOR3&, D3DXVECTOR3&)
-    {
-    }
 
     virtual void frame(CameraClass* camera, float time)
     {
@@ -53,7 +50,7 @@ public:
         return m_vertexCount;
     }
 
-    int GetIndexCount() {
+    virtual int GetIndexCount() {
         return m_indexCount;
     }
 
@@ -163,6 +160,16 @@ public:
         return size;
     }
 
+    D3DXVECTOR3 getSizeByCenter()
+    {
+        D3DXVECTOR3 size = getSize();;
+        size.x /= 2;
+        size.y /= 2;
+        size.z /= 2;
+
+        return size;
+    }
+
     D3DXVECTOR3 getCenter()
     {
         D3DXVECTOR3 center;
@@ -172,6 +179,12 @@ public:
         center.z = (m_Max.z + m_Min.z) / 2;
 
         return center;
+    }
+
+    virtual void GetBoundingBox(D3DXVECTOR3& _position, D3DXVECTOR3& _size)
+    {
+        _position = this->getCenter();
+        _size = this->getSizeByCenter();
     }
 
     void setAlpha(bool alpha)
