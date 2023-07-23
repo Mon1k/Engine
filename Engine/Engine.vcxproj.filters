@@ -67,6 +67,9 @@
     <Filter Include="reader\xml">
       <UniqueIdentifier>{93c52f26-7dcb-4cbb-bf89-e8d7f83d906b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="models\actor">
+      <UniqueIdentifier>{4ad03cb6-a3a3-4557-a7eb-07be64b884ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -299,6 +302,15 @@
     </ClCompile>
     <ClCompile Include="ui\window.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="models\gridclass.cpp">
+      <Filter>models</Filter>
+    </ClCompile>
+    <ClCompile Include="models\actor\Actor.cpp">
+      <Filter>models\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="models\loader\FbxLoader.cpp">
+      <Filter>models\loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -619,6 +631,15 @@
     </ClInclude>
     <ClInclude Include="map\XmlLoad.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="models\gridclass.h">
+      <Filter>models</Filter>
+    </ClInclude>
+    <ClInclude Include="models\actor\Actor.h">
+      <Filter>models\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="models\loader\FbxLoader.h">
+      <Filter>models\loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

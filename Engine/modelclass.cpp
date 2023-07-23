@@ -2,6 +2,7 @@
 
 #include "models/loader/DsLoader.h"
 #include "models/loader/ObjLoader.h"
+#include "models/loader/FbxLoader.h"
 
 ModelClass::ModelClass(): AbstractModel()
 {
@@ -74,9 +75,11 @@ bool ModelClass::LoadModel(char* filename)
 	if (string.rfind(".ds") != std::string::npos || string.rfind(".txt") != std::string::npos) {
 		DsLoader* loader = new DsLoader;
 		return loader->load(filename, this);
-	}
-	else if (string.rfind(".obj") != std::string::npos) {
+	} else if (string.rfind(".obj") != std::string::npos) {
 		ObjLoader* loader = new ObjLoader;
+		return loader->load(filename, this);
+	} else if (string.rfind(".fbx") != std::string::npos) {
+		FbxLoader* loader = new FbxLoader;
 		return loader->load(filename, this);
 	}
 

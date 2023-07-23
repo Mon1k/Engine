@@ -137,6 +137,10 @@ public:
 
     virtual void SetRotation(D3DXVECTOR3 _rotation)
     {
+        _rotation.x = D3DXToRadian(_rotation.x);
+        _rotation.y = D3DXToRadian(_rotation.y);
+        _rotation.z = D3DXToRadian(_rotation.z);
+
         m_rotation = _rotation;
     }
 

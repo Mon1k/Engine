@@ -4,5 +4,6 @@
 
 class Model : public ModelClass
 {
-
+public:
+	Model();
 };

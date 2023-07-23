@@ -86,7 +86,7 @@ public:
             return;
         }
 
-        int size = m_handlers.size();
+        size_t size = m_handlers.size();
         for (int i = 0; i < size; i++) {
             if (m_handlers[i].event == event) {
                 m_handlers[i].handler();

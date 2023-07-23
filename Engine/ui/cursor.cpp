@@ -43,6 +43,8 @@ bool Cursor::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeigh
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
+
+	return true;
 }
 
 

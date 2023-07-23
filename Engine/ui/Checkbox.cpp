@@ -65,6 +65,8 @@ bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilen
 		MessageBox(NULL, L"Could not initialize the bitmap marked object.", L"Error", MB_OK);
 		return false;
 	}
+
+	return true;
 }
 
 bool Checkbox::isIntersect(int x, int y)

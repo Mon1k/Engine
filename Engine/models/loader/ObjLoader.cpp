@@ -1,8 +1,4 @@
 #include "ObjLoader.h"
-#include "../../modelclass.h"
-
-#include <vector>
-#include <algorithm>
 
 bool ObjLoader::load(char* filename, ModelClass* model)
 {

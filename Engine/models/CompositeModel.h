@@ -21,7 +21,7 @@ public:
 
 	void removeChild(int id)
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs.erase(m_childs.begin() + i);
 		}
@@ -34,7 +34,7 @@ public:
 
 	virtual void Render(CameraClass* camera)
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Render(camera);
 		}
@@ -42,7 +42,7 @@ public:
 
 	virtual void Render()
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Render();
 		}
@@ -50,7 +50,7 @@ public:
 
 	virtual void Shutdown()
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->Shutdown();
 		}
@@ -59,7 +59,7 @@ public:
 	virtual void SetPosition(D3DXVECTOR3 _position)
 	{
 		D3DXVECTOR3 delta;
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			D3DXVECTOR3 newPosition = m_childs[i]->GetPosition();
 			newPosition.x += _position.x - newPosition.x;
@@ -75,7 +75,7 @@ public:
 
 	virtual void SetScale(D3DXVECTOR3 _scale)
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->SetScale(_scale);
 		}
@@ -86,7 +86,7 @@ public:
 
 	virtual void SetRotation(D3DXVECTOR3 _rotation)
 	{
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			m_childs[i]->SetRotation(_rotation);
 		}
@@ -101,7 +101,7 @@ public:
 		m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
 		m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 
-		int size = m_childs.size();
+		size_t size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			min = m_childs[i]->getMinPosition();
 			max = m_childs[i]->getMaxPosition();

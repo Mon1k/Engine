@@ -48,7 +48,7 @@ public:
 	void OutputShaderErrorMessage(ID3D10Blob* errorMessage, WCHAR* shaderFilename)
 	{
 		char* compileErrors;
-		unsigned long bufferSize, i;
+		size_t bufferSize, i;
 		ofstream fout;
 
 
