@@ -220,7 +220,7 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 
 	// restore for normal worldmartix
-	SetScale(D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
 	return true;
 }
