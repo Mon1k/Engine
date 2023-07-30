@@ -18,7 +18,6 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	importer->Destroy();
 
 	FbxNode* rootNode = scene->GetRootNode();
-
 	int countChilds = rootNode->GetChildCount();
 
 
@@ -95,6 +94,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 
 		if (dynamic_cast<const Actor*>(m_model) != nullptr) {
+			ProcessSkeletonHierarchy(rootNode);
 			loadAnimations(scene, mesh, dynamic_cast<Actor*>(linkModel));
 		}
 
@@ -107,97 +107,121 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 {
 	FbxNode* node = mesh->GetNode();
-
-	FbxCriteria criteria;
-	//scene->GetSrcObjectCount(criteria.ObjectType(FbxAnimStack::ClassId));
-	int numAnimations = scene->GetSrcObjectCount<FbxAnimStack>();
-	for (int i = 0; i < numAnimations; i++) {
-		FbxAnimStack* stack = (FbxAnimStack*)scene->GetSrcObject<FbxAnimStack>(i);
-		int numLayers = stack->GetMemberCount();
-
-		Actor::Animation animation;
-		animation.name = stack->GetName();
-		animation.countAnimations = numLayers;
-		
-		FbxTakeInfo* takeInfo = scene->GetTakeInfo(stack->GetName());
-		FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
-		FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
-
-		long countS = start.GetFrameCount(FbxTime::eFrames24);
-		long countE = end.GetFrameCount(FbxTime::eFrames24);
-		animation.currentTime = countS;
-		animation.frameTime = countE;
-		animation.totalTime = countE - countS;
-
-
-		for (int j = 0; j < numLayers; j++) {
-			FbxAnimLayer* layer = (FbxAnimLayer*)stack->GetMember(j);
-
-			FbxAnimCurve* positionCurve = node->LclTranslation.GetCurve(layer);
-			FbxAnimCurve* scalingCurve = node->LclScaling.GetCurve(layer);
-
-			Actor::Joint joint;
-			if (positionCurve != 0) {
-				int numKeys = positionCurve->KeyGetCount();
-				for (int k = 0; k < numKeys; k++) {
-					FbxAnimCurveKey key = positionCurve->KeyGet(k);
-					FbxDouble3 vector = node->EvaluateLocalTranslation(key.GetTime());
-
-					joint.position = D3DXVECTOR3((float)vector[0], (float)vector[1], (float)vector[2]);
-					animation.joints.push_back(joint);
-				}
-			} else {
-				FbxDouble3 vector = node->LclTranslation.Get();
-				joint.position = D3DXVECTOR3((float)vector[0], (float)vector[1], (float)vector[2]);
-				animation.joints.push_back(joint);
-			}
-			if (scalingCurve != 0) {
-				int numKeys = scalingCurve->KeyGetCount();
-				for (int k = 0; k < numKeys; k++) {
-					FbxAnimCurveKey key = scalingCurve->KeyGet(k);
-					FbxDouble3 vector = node->EvaluateLocalScaling(key.GetTime());
-
-					joint.scaling = D3DXVECTOR4((float)vector[0], (float)vector[1], (float)vector[2], 0.0f);
-					animation.joints.push_back(joint);
-				}
-			} else {
-				FbxDouble3 vector = node->LclScaling.Get();
-				joint.scaling = D3DXVECTOR4((float)vector[0], (float)vector[1], (float)vector[2], 0.0f);
-				animation.joints.push_back(joint);
-			}
-		}
-
-		
-
-		actor->addAnimation(animation);
-	}
+	FbxAMatrix geometryTransform = FbxAMatrix(
+		node->GetGeometricTranslation(FbxNode::eSourcePivot),
+		node->GetGeometricRotation(FbxNode::eSourcePivot),
+		node->GetGeometricScaling(FbxNode::eSourcePivot)
+	);
 
 	int numDeformers = mesh->GetDeformerCount();
-	FbxSkin* skin = (FbxSkin*)mesh->GetDeformer(0, FbxDeformer::eSkin);
-	if (skin != 0) {
-		int numBones = skin->GetClusterCount();
-		for (int i = 0; i < numBones; i++) {
-			FbxCluster* cluster = skin->GetCluster(i);
-			FbxNode* bone = cluster->GetLink();
+	for (int deformerIndex = 0; deformerIndex < numDeformers; deformerIndex++) {
+		FbxSkin* skin = (FbxSkin*)mesh->GetDeformer(0, FbxDeformer::eSkin);
+		if (!skin) {
+			continue;
+		}
 
-			FbxAMatrix positionMatrix;
-			cluster->GetTransformLinkMatrix(positionMatrix);
+		int numClusters = skin->GetClusterCount();
+		for (int clusterIndex = 0; clusterIndex < numClusters; clusterIndex++) {
+			FbxCluster* cluster = skin->GetCluster(clusterIndex);
+			std::string jointName = cluster->GetLink()->GetName();
+			unsigned int currJointIndex = FindJointIndexUsingName(jointName);
+
+			FbxAMatrix transformMatrix;
+			FbxAMatrix transformLinkMatrix;
+			FbxAMatrix globalBindposeInverseMatrix;
+
+			cluster->GetTransformMatrix(transformMatrix);
+			cluster->GetTransformLinkMatrix(transformLinkMatrix);
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
+
+
+			m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
+
 
 			int* boneVertexIndicies = cluster->GetControlPointIndices();
 			double* boneVertexWeights = cluster->GetControlPointWeights();
-
 			int numBoneVertexIndicies = cluster->GetControlPointIndicesCount();
 			for (int j = 0; j < numBoneVertexIndicies; j++) {
 				int boneVertexIndex = boneVertexIndicies[j];
 				float boneWeight = (float)boneVertexWeights[j];
-				Actor::Weight weight;
-				weight.bias = boneWeight;
-				weight.joint = boneVertexIndex;
-				actor->addWeight(weight);
+				if (boneWeight > 0.1f) {
+					Actor::Weight weight;
+					weight.bias = boneWeight;
+					weight.joint = boneVertexIndex;
+					actor->addWeight(weight);
+				}
+			}
+
+			//FbxAnimStack* currAnimStack = scene->GetSrcObject<FbxAnimStack>(0);
+			int numAnimations = scene->GetSrcObjectCount<FbxAnimStack>();
+			for (int j = 0; j < numAnimations; j++) {
+				FbxAnimStack* currAnimStack = (FbxAnimStack*)scene->GetSrcObject<FbxAnimStack>(j);
+				FbxString animStackName = currAnimStack->GetName();
+				m_animation.name = animStackName.Buffer();
+				FbxTakeInfo* takeInfo = scene->GetTakeInfo(animStackName);
+				FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+				FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+				m_animation.currentTime = 0;
+				m_animation.totalTime = end.GetFrameCount(FbxTime::eFrames24) - start.GetFrameCount(FbxTime::eFrames24) + 1;
+
+				for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames24); i <= end.GetFrameCount(FbxTime::eFrames24); ++i) {
+					FbxTime currTime;
+					currTime.SetFrame(i, FbxTime::eFrames24);
+
+					Actor::KeyFrame keyFrame;
+					keyFrame.numFrame = (int)i;
+					FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(currTime) * geometryTransform;
+					keyFrame.transform = toD3DXMATRIX(currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime));
+					
+					m_animation.joints[currJointIndex].animation.push_back(keyFrame);
+				}
 			}
 		}
 	}
 
+	actor->addAnimation(m_animation);
+}
 
-	int t = 0;
+unsigned int FbxLoader::FindJointIndexUsingName(const std::string& inJointName)
+{
+	for (unsigned int i = 0; i < m_animation.joints.size(); ++i) {
+		if (m_animation.joints[i].name == inJointName) {
+			return i;
+		}
+	}
+
+	throw std::exception("Skeleton information in FBX file is corrupted.");
+}
+
+void FbxLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode)
+{
+	m_animation.joints.clear();
+	for (int childIndex = 0; childIndex < inRootNode->GetChildCount(); ++childIndex) {
+		FbxNode* currNode = inRootNode->GetChild(childIndex);
+		ProcessSkeletonHierarchyRecursively(currNode, 0, 0, -1);
+	}
+}
+
+void FbxLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex)
+{
+	if (inNode->GetNodeAttribute() && inNode->GetNodeAttribute()->GetAttributeType() && inNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton) {
+		Actor::Joint currJoint;
+		currJoint.parentId = inParentIndex;
+		currJoint.name = inNode->GetName();
+		m_animation.joints.push_back(currJoint);
+	}
+
+	for (int i = 0; i < inNode->GetChildCount(); i++) {
+		ProcessSkeletonHierarchyRecursively(inNode->GetChild(i), inDepth + 1, m_animation.joints.size(), myIndex);
+	}
+}
+
+D3DXMATRIX FbxLoader::toD3DXMATRIX(FbxAMatrix matrix)
+{
+	return D3DXMATRIX(
+		(float)matrix.Get(0, 0), (float)matrix.Get(0, 1), (float)matrix.Get(0, 2), (float)matrix.Get(0, 3),
+		(float)matrix.Get(1, 0), (float)matrix.Get(1, 1), (float)matrix.Get(1, 2), (float)matrix.Get(1, 3),
+		(float)matrix.Get(2, 0), (float)matrix.Get(2, 1), (float)matrix.Get(2, 2), (float)matrix.Get(2, 3),
+		(float)matrix.Get(3, 0), (float)matrix.Get(3, 1), (float)matrix.Get(3, 2), (float)matrix.Get(3, 3)
+	);
 }

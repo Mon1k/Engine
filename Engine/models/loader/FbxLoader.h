@@ -14,7 +14,13 @@ public:
 
 protected:
     void loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor);
+    
+    unsigned int FindJointIndexUsingName(const std::string& inJointName);
+    void FbxLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode);
+    void FbxLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);  
+    D3DXMATRIX toD3DXMATRIX(FbxAMatrix matrix);
 
 protected:
     ModelClass* m_model;
+    Actor::Animation m_animation;
 };

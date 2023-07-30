@@ -8,13 +8,6 @@
 class Actor: public Model
 {
 public:
-	struct Joint
-	{
-		std::string name;
-		D3DXVECTOR3 position;
-		D3DXVECTOR4 scaling;
-	};
-
 	struct Weight
 	{
 		int joint;
@@ -22,11 +15,24 @@ public:
 		D3DXVECTOR3 position;
 	};
 
+	struct KeyFrame
+	{
+		D3DXVECTOR3 position;
+		D3DXVECTOR4 scaling;
+		D3DXMATRIX transform;
+		int numFrame;
+	};
+
+	struct Joint
+	{
+		std::string name;
+		int parentId;
+		D3DXMATRIX inverse;
+		std::vector<KeyFrame> animation;
+	};
+
 	struct Animation
 	{
-		int countAnimations;
-		int countJoints;
-
 		float frameTime;
 		float totalTime;
 		float currentTime;
@@ -48,7 +54,12 @@ public:
 		m_weights.push_back(weight);
 	}
 
+	virtual void frame(CameraClass*, float);
+
 protected:
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
+
+	float m_counter;
+	int m_currentAnimation;
 };
