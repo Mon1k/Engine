@@ -148,6 +148,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 					Actor::Weight weight;
 					weight.bias = boneWeight;
 					weight.joint = boneVertexIndex;
+					weight.index = numBoneVertexIndicies;
 					actor->addWeight(weight);
 				}
 			}

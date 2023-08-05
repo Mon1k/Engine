@@ -26,10 +26,19 @@ void Actor::frame(CameraClass* camera, float time)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	int index = 0;
 
+	
 	for (int vertexIndex = 0; vertexIndex < m_vertexCount; vertexIndex++) {
 		AbstractModel::ModelType vertex = m_model[vertexIndex];
 		std::vector<Actor::Joint> joints;
-		Actor::Weight weight = m_weights[vertexIndex];
+		Actor::Weight weight;
+
+		for (int weightIndex = 0; weightIndex < m_weights.size(); weightIndex++) {
+			if (m_weights[weightIndex].index == vertexIndex) {
+				weight = m_weights[weightIndex];
+				break;
+			}
+		}
+		
 
 		for (int i = 0; i < m_animations[m_currentAnimation].joints.size(); i++) {
 			if (weight.joint == i) {

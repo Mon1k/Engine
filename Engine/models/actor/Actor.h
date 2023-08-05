@@ -12,6 +12,7 @@ public:
 	{
 		int joint;
 		float bias;
+		int index;
 		D3DXVECTOR3 position;
 	};
 
