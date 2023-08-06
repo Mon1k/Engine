@@ -138,10 +138,12 @@ bool ModelClass::InitializeBuffers()
 	}
 
 	// Set up the description of the static vertex buffer.
-    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    //vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vertexBufferDesc.CPUAccessFlags = 0;
+    //vertexBufferDesc.CPUAccessFlags = 0;
+    vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 

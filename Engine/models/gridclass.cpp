@@ -80,8 +80,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 		for (i = 0; i < (m_terrainWidth - 1); i++) {
 			// LINE 1
 			// Upper left.
-			positionX = (float)i + position.x;
-			positionZ = (float)(j + 1) + position.z;
+			positionX = (float)i * scale.x + position.x;
+			positionZ = (float)(j + 1) * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -98,8 +98,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Upper right.
-			positionX = (float)(i + 1) + position.x;
-			positionZ = (float)(j + 1) + position.z;
+			positionX = (float)(i + 1) * scale.x + position.x;
+			positionZ = (float)(j + 1) * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -108,8 +108,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 
 			// LINE 2
 			// Upper right.
-			positionX = (float)(i + 1) + position.x;
-			positionZ = (float)(j + 1) + position.z;
+			positionX = (float)(i + 1) * scale.x + position.x;
+			positionZ = (float)(j + 1) * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -117,8 +117,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Bottom right.
-			positionX = (float)(i + 1) + position.x;
-			positionZ = (float)j + position.z;
+			positionX = (float)(i + 1) * scale.x + position.x;
+			positionZ = (float)j * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -127,8 +127,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 
 			// LINE 3
 			// Bottom right.
-			positionX = (float)(i + 1) + position.x;
-			positionZ = (float)j + position.z;
+			positionX = (float)(i + 1) * scale.x + position.x;
+			positionZ = (float)j * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -136,8 +136,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Bottom left.
-			positionX = (float)i + position.x;
-			positionZ = (float)j + position.z;
+			positionX = (float)i * scale.x + position.x;
+			positionZ = (float)j * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -146,8 +146,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 
 			// LINE 4
 			// Bottom left.
-			positionX = (float)i + position.x;
-			positionZ = (float)j + position.z;
+			positionX = (float)i * scale.x + position.x;
+			positionZ = (float)j * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -155,8 +155,8 @@ bool GridClass::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Upper left.
-			positionX = (float)i + position.x;
-			positionZ = (float)(j + 1) + position.z;
+			positionX = (float)i * scale.x + position.x;
+			positionZ = (float)(j + 1) * scale.z + position.z;
 
 			vertices[index].position = D3DXVECTOR3(positionX, position.y, positionZ);
 			vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);

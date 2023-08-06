@@ -18,12 +18,12 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	importer->Destroy();
 
 	FbxNode* rootNode = scene->GetRootNode();
-	int countChilds = rootNode->GetChildCount();
 
 
 	std::vector<D3DXVECTOR3> vertices, texcoords, normals;
 	int indexModel = 0;
 
+	int countChilds = rootNode->GetChildCount();
 	for (int i = 0; i < countChilds; i++) {
 		FbxMesh* mesh = rootNode->GetChild(i)->GetMesh();
 		if (mesh == NULL) {
@@ -35,7 +35,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		normals.clear();
 
 		int polygonCount = mesh->GetPolygonCount();
-		
+
 		FbxVector4* controlPoints = mesh->GetControlPoints();
 		FbxLayerElementArrayTemplate<FbxVector2>* uvVertices = 0;
 		mesh->GetTextureUV(&uvVertices, FbxLayerElement::eTextureDiffuse);
@@ -113,6 +113,20 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 		node->GetGeometricScaling(FbxNode::eSourcePivot)
 	);
 
+	std::vector<Actor::Weight> weights;
+	weights.resize(actor->getVertexCount());
+
+	std::vector<std::vector<int>> controlPointRemap;
+	controlPointRemap.resize(mesh->GetPolygonCount());
+	int kTriangleVertexCount = 3;
+	for (long lPolygonIndex = 0; lPolygonIndex < mesh->GetPolygonCount(); lPolygonIndex++) {
+		long lPolygonSize = mesh->GetPolygonSize(lPolygonIndex);
+		for (long lVertexIndex = 0; lVertexIndex < lPolygonSize; lVertexIndex++) {
+			long lControlPointIndex = mesh->GetPolygonVertex(lPolygonIndex, lVertexIndex);
+			controlPointRemap[lControlPointIndex].push_back(lPolygonIndex * kTriangleVertexCount + lVertexIndex);
+		}
+	}
+
 	int numDeformers = mesh->GetDeformerCount();
 	for (int deformerIndex = 0; deformerIndex < numDeformers; deformerIndex++) {
 		FbxSkin* skin = (FbxSkin*)mesh->GetDeformer(0, FbxDeformer::eSkin);
@@ -132,24 +146,26 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 
 			cluster->GetTransformMatrix(transformMatrix);
 			cluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;// *geometryTransform;
 
 			m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
 
 
-			int* boneVertexIndicies = cluster->GetControlPointIndices();
+			int* boneVertexIendicies = cluster->GetControlPointIndices();
 			double* boneVertexWeights = cluster->GetControlPointWeights();
 			int numBoneVertexIndicies = cluster->GetControlPointIndicesCount();
 			for (int j = 0; j < numBoneVertexIndicies; j++) {
-				int boneVertexIndex = boneVertexIndicies[j];
 				float boneWeight = (float)boneVertexWeights[j];
 				if (boneWeight > 0.1f) {
-					Actor::Weight weight;
-					weight.bias = boneWeight;
-					weight.joint = boneVertexIndex;
-					weight.index = numBoneVertexIndicies;
-					actor->addWeight(weight);
+					std::vector<int> controlPointIndexes = controlPointRemap[boneVertexIendicies[j]];
+					for (int k = 0; k < controlPointIndexes.size(); k++) {
+						Actor::Weight weight;
+						weight.bias = boneWeight;
+						weight.joint = currJointIndex;
+						weight.index = controlPointIndexes[k];
+						weights[controlPointIndexes[k]] = weight;
+						//actor->addWeight(weight);
+					}
 				}
 			}
 
@@ -171,6 +187,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 
 					Actor::KeyFrame keyFrame;
 					keyFrame.numFrame = (int)i;
+					//scene->GetAnimationEvaluator()->GetNodeLocalTransform();
 					FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(currTime) * geometryTransform;
 					keyFrame.transform = toD3DXMATRIX(currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime));
 					
@@ -181,6 +198,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 	}
 
 	actor->addAnimation(m_animation);
+	actor->addWeights(weights);
 }
 
 unsigned int FbxLoader::FindJointIndexUsingName(const std::string& inJointName)
@@ -225,4 +243,53 @@ D3DXMATRIX FbxLoader::toD3DXMATRIX(FbxAMatrix matrix)
 		(float)matrix.Get(2, 0), (float)matrix.Get(2, 1), (float)matrix.Get(2, 2), (float)matrix.Get(2, 3),
 		(float)matrix.Get(3, 0), (float)matrix.Get(3, 1), (float)matrix.Get(3, 2), (float)matrix.Get(3, 3)
 	);
+}
+
+D3DXMATRIX FbxLoader::toD3DXMATRIX(FbxMatrix matrix)
+{
+	return D3DXMATRIX(
+		(float)matrix.Get(0, 0), (float)matrix.Get(0, 1), (float)matrix.Get(0, 2), (float)matrix.Get(0, 3),
+		(float)matrix.Get(1, 0), (float)matrix.Get(1, 1), (float)matrix.Get(1, 2), (float)matrix.Get(1, 3),
+		(float)matrix.Get(2, 0), (float)matrix.Get(2, 1), (float)matrix.Get(2, 2), (float)matrix.Get(2, 3),
+		(float)matrix.Get(3, 0), (float)matrix.Get(3, 1), (float)matrix.Get(3, 2), (float)matrix.Get(3, 3)
+	);
+}
+
+FbxAMatrix FbxLoader::convertToLeftHanded(FbxAMatrix fbxMatrix)
+{
+	FbxAMatrix convertionMatrix;
+	FbxVector4 rowX(1.0, 0.0, 0.0, 0.0);
+	FbxVector4 rowY(0.0, 1.0, 0.0, 0.0);
+	FbxVector4 rowZ(0.0, 0.0, -1.0, 0.0);
+	FbxVector4 rowW(0.0, 0.0, 0.0, 1.0);
+
+	convertionMatrix.SetRow(0, rowX);
+	convertionMatrix.SetRow(1, rowY);
+	convertionMatrix.SetRow(2, rowZ);
+	convertionMatrix.SetRow(3, rowW);
+
+	FbxAMatrix convertedMatrix = fbxMatrix * convertionMatrix;
+	return convertedMatrix;
+}
+
+FbxMatrix FbxLoader::ConvertMatrix(FbxAMatrix Matrix)
+{
+	FbxMatrix UEMatrix;
+
+	for (int i = 0; i < 4; ++i) {
+		FbxVector4 Row = Matrix.GetRow(i);
+		if (i == 1) {
+			UEMatrix.Set(i, 0, -Row[0]);
+			UEMatrix.Set(i, 1, Row[1]);
+			UEMatrix.Set(i, 2, -Row[2]);
+			UEMatrix.Set(i, 3, -Row[3]);
+		} else {
+			UEMatrix.Set(i, 0, Row[0]);
+			UEMatrix.Set(i, 1, -Row[1]);
+			UEMatrix.Set(i, 2, Row[2]);
+			UEMatrix.Set(i, 3, Row[3]);
+		}
+	}
+
+	return UEMatrix;
 }

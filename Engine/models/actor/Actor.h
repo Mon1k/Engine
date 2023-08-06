@@ -50,9 +50,10 @@ public:
 		m_animations.push_back(animation);
 	}
 
-	void addWeight(Actor::Weight weight)
+	void addWeights(std::vector<Actor::Weight> weights)
 	{
-		m_weights.push_back(weight);
+		m_weights.clear();
+		m_weights = weights;
 	}
 
 	virtual void frame(CameraClass*, float);

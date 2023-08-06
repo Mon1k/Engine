@@ -19,6 +19,9 @@ protected:
     void FbxLoader::ProcessSkeletonHierarchy(FbxNode* inRootNode);
     void FbxLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth, int myIndex, int inParentIndex);  
     D3DXMATRIX toD3DXMATRIX(FbxAMatrix matrix);
+    D3DXMATRIX toD3DXMATRIX(FbxMatrix matrix);
+    FbxAMatrix convertToLeftHanded(FbxAMatrix fbxMatrix);
+    FbxMatrix ConvertMatrix(FbxAMatrix Matrix);
 
 protected:
     ModelClass* m_model;
