@@ -13,7 +13,6 @@ void Actor::frame(CameraClass* camera, float time)
 	if (m_counter < 50) {
 		return;
 	}
-	m_counter = 0;
 
 	struct VertexType
 	{
@@ -57,23 +56,32 @@ void Actor::frame(CameraClass* camera, float time)
 			vertex.y += (joints[i].inverse._42 * joints[i].animation[j].transform._42) * weight.bias;
 			vertex.z += (joints[i].inverse._43 * joints[i].animation[j].transform._43) * weight.bias;*/
 			//D3DXMatrixMultiply(&transformation, &joints[i].inverse, &joints[i].animation[j].transform);
-			//D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z), position2;
+			/*D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z), position2;
+			joints[i].animation[j].transform *= weight.bias;
+			D3DXVec3TransformCoord(&position2, &position, &joints[i].animation[j].transform);*/
+
+			D3DXMATRIX matrix;
+			D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+			D3DXVECTOR3 position2;
+			//matrix = joints[i].animation[j].transform * weight.bias;
 			//D3DXVec3TransformCoord(&position2, &position, &joints[i].animation[j].transform);
-			//position2 *= weight.bias;
 			vertex.x += joints[i].animation[j].transform._41 * weight.bias;
 			vertex.y += joints[i].animation[j].transform._42 * weight.bias;
 			vertex.z += joints[i].animation[j].transform._43 * weight.bias;
+			/*vertex.x += joints[i].animation[j].position.x;
+			vertex.y += joints[i].animation[j].position.y;
+			vertex.z += joints[i].animation[j].position.z;*/
 			/*vertex.x += joints[i].inverse._41 * weight.bias;
 			vertex.y += joints[i].inverse._42 * weight.bias;
 			vertex.z += joints[i].inverse._43 * weight.bias;*/
 
 			
 					
-					vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
-					//vertices[vertexIndex].position = position2;
-					vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
-					vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
-					break;
+			vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+			//vertices[vertexIndex].position = position2;
+			vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+			vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+			break;
 				//}
 			//}
 		}
@@ -95,4 +103,6 @@ void Actor::frame(CameraClass* camera, float time)
 
 	delete[] vertices;
 	vertices = 0;
+
+	m_counter = 0;
 }

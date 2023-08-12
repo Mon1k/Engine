@@ -146,17 +146,16 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 
 			cluster->GetTransformMatrix(transformMatrix);
 			cluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;// *geometryTransform;
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;// * geometryTransform;
 
 			m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
-
 
 			int* boneVertexIendicies = cluster->GetControlPointIndices();
 			double* boneVertexWeights = cluster->GetControlPointWeights();
 			int numBoneVertexIndicies = cluster->GetControlPointIndicesCount();
 			for (int j = 0; j < numBoneVertexIndicies; j++) {
 				float boneWeight = (float)boneVertexWeights[j];
-				if (boneWeight > 0.1f) {
+				if (boneWeight >= 0.1f) {
 					std::vector<int> controlPointIndexes = controlPointRemap[boneVertexIendicies[j]];
 					for (int k = 0; k < controlPointIndexes.size(); k++) {
 						Actor::Weight weight;
@@ -188,8 +187,10 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 					Actor::KeyFrame keyFrame;
 					keyFrame.numFrame = (int)i;
 					//scene->GetAnimationEvaluator()->GetNodeLocalTransform();
-					FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(currTime) * geometryTransform;
+					FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(currTime) *geometryTransform;
 					keyFrame.transform = toD3DXMATRIX(currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime));
+					//keyFrame.transform = toD3DXMATRIX(cluster->GetLink()->EvaluateGlobalTransform(currTime) * currentTransformOffset);
+					//keyFrame.transform = toD3DXMATRIX(cluster->GetLink()->EvaluateGlobalTransform(currTime));
 					
 					m_animation.joints[currJointIndex].animation.push_back(keyFrame);
 				}
