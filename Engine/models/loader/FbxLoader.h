@@ -6,11 +6,13 @@
 #include "AbstractLoader.h"
 #include "../../modelclass.h"
 #include "../actor/Actor.h"
+#include "SingleFbxMesh.h"
 
 class FbxLoader : public AbstractLoader
 {
 public:
     bool load(char*, ModelClass*);
+    SingleFbxMesh* m_fbxMesh;
 
 protected:
     void loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor);
@@ -26,4 +28,5 @@ protected:
 protected:
     ModelClass* m_model;
     Actor::Animation m_animation;
+    
 };

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../Model.h"
+#include "../loader/AbstractLoader.h"
 
 class Actor: public Model
 {
@@ -57,6 +58,8 @@ public:
 	}
 
 	virtual void frame(CameraClass*, float);
+
+	AbstractLoader* m_loader;
 
 protected:
 	std::vector<Actor::Animation> m_animations;

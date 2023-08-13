@@ -1,5 +1,6 @@
 #include "Actor.h"
 #include "../../tool/random.h"
+#include "../loader/FbxLoader.h"
 
 Actor::Actor() : Model()
 {
@@ -14,6 +15,8 @@ void Actor::frame(CameraClass* camera, float time)
 		return;
 	}
 
+
+	///
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
@@ -24,6 +27,72 @@ void Actor::frame(CameraClass* camera, float time)
 	VertexType* vertices = new VertexType[m_vertexCount];
 	VertexType* verticesPtr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	///
+
+
+
+	FbxLoader* loader = static_cast<FbxLoader*>(m_loader);
+	loader->m_fbxMesh->advanceTime();
+
+	for (size_t modelIndex = 0; modelIndex < loader->m_fbxMesh->m_modelVector.size(); ++modelIndex)
+	{
+		for (size_t meshIndex = 0; meshIndex < loader->m_fbxMesh->m_modelVector[modelIndex].meshVector.size(); ++meshIndex)
+		{
+			SingleFbxMesh::tMeshRec& meshRec = loader->m_fbxMesh->m_modelVector[modelIndex].meshVector[meshIndex];
+			loader->m_fbxMesh->_loadBoneMatriceVector(meshRec);
+
+			for (size_t vertexIndex = 0; vertexIndex < meshRec.subverticeVector.size(); vertexIndex++) {
+				AbstractModel::ModelType vertex = m_model[vertexIndex];
+				D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z), position2, position3;
+				position3 = D3DXVECTOR3(0, 0, 0);
+
+				for (int indice = 0; indice < 4; ++indice)
+				{
+					std::string buffer, t;
+
+					if (meshRec.subverticeVector[vertexIndex].boneWeights == 0) {
+						continue;
+					}
+					buffer = std::to_string(meshRec.subverticeVector[vertexIndex].boneWeights);
+					t = buffer[indice];
+					if (std::stoi(t) > buffer.size()) {
+						continue;
+					}
+					float normalizedBoneWeight = std::stof(t);
+
+					if (meshRec.subverticeVector[vertexIndex].boneIndices == 0) {
+						continue;
+					}
+					buffer = std::to_string(meshRec.subverticeVector[vertexIndex].boneIndices);
+					t = buffer[indice];
+					if (std::stoi(t) > buffer.size()) {
+						continue;
+					}
+
+					D3DXMATRIX boneMatrix = loader->m_fbxMesh->m_boneMatrixVector[std::stoi(t)];
+					D3DXVec3TransformCoord(&position2, &position, &boneMatrix);
+					position2 *= normalizedBoneWeight;
+					position3 += position2;
+				}
+
+				vertices[vertexIndex].position = position3;
+				vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+				vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+			}
+		}
+	}
+
+	m_D3D->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	verticesPtr = (VertexType*)mappedResource.pData;
+	memcpy(verticesPtr, (void*)vertices, (sizeof(VertexType)* m_vertexCount));
+
+	m_D3D->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
+
+	return;
+
+
+	
 	
 	for (int vertexIndex = 0; vertexIndex < m_vertexCount; vertexIndex++) {
 		AbstractModel::ModelType vertex = m_model[vertexIndex];
