@@ -30,7 +30,6 @@ void Actor::frame(CameraClass* camera, float time)
 	///
 
 
-
 	FbxLoader* loader = static_cast<FbxLoader*>(m_loader);
 	loader->m_fbxMesh->advanceTime();
 
@@ -43,41 +42,37 @@ void Actor::frame(CameraClass* camera, float time)
 
 			for (size_t vertexIndex = 0; vertexIndex < meshRec.subverticeVector.size(); vertexIndex++) {
 				AbstractModel::ModelType vertex = m_model[vertexIndex];
-				D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z), position2, position3;
+				SingleFbxMesh::tSkinnedVertice vertice = meshRec.subverticeVector[vertexIndex];
+				D3DXVECTOR3 position = D3DXVECTOR3(vertice.point.x, vertice.point.y, vertice.point.z);
+				//D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+				D3DXVECTOR3 position3;
+				D3DXVECTOR3 position2;
 				position3 = D3DXVECTOR3(0, 0, 0);
+
+				SingleFbxMesh::tPackedInt weight;
+				weight.number = meshRec.subverticeVector[vertexIndex].boneWeights;
+
+				SingleFbxMesh::tPackedInt boneIndex;
+				boneIndex.number = meshRec.subverticeVector[vertexIndex].boneIndices;
 
 				for (int indice = 0; indice < 4; ++indice)
 				{
-					std::string buffer, t;
+					float normalizedBoneWeight = weight.bytes[indice];
+					D3DXMATRIX boneMatrix = loader->m_fbxMesh->m_boneMatrixVector[boneIndex.bytes[indice]];
 
-					if (meshRec.subverticeVector[vertexIndex].boneWeights == 0) {
-						continue;
-					}
-					buffer = std::to_string(meshRec.subverticeVector[vertexIndex].boneWeights);
-					t = buffer[indice];
-					if (std::stoi(t) > buffer.size()) {
-						continue;
-					}
-					float normalizedBoneWeight = std::stof(t);
-
-					if (meshRec.subverticeVector[vertexIndex].boneIndices == 0) {
-						continue;
-					}
-					buffer = std::to_string(meshRec.subverticeVector[vertexIndex].boneIndices);
-					t = buffer[indice];
-					if (std::stoi(t) > buffer.size()) {
-						continue;
-					}
-
-					D3DXMATRIX boneMatrix = loader->m_fbxMesh->m_boneMatrixVector[std::stoi(t)];
+					/*position.x += boneMatrix._41;
+					position.y += boneMatrix._42;
+					position.z += boneMatrix._43;*/
 					D3DXVec3TransformCoord(&position2, &position, &boneMatrix);
-					position2 *= normalizedBoneWeight;
-					position3 += position2;
+					//position2 *= normalizedBoneWeight;
+					position3 += D3DXVECTOR3(position2.x, position2.y, position2.z);
 				}
 
 				vertices[vertexIndex].position = position3;
-				vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
-				vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+				/*vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+				vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);*/
+				vertices[vertexIndex].normal = vertice.normal;
+				vertices[vertexIndex].texture = D3DXVECTOR2(vertice.u, vertice.v);
 			}
 		}
 	}
@@ -88,7 +83,7 @@ void Actor::frame(CameraClass* camera, float time)
 	memcpy(verticesPtr, (void*)vertices, (sizeof(VertexType)* m_vertexCount));
 
 	m_D3D->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
-
+	m_counter = 0;
 	return;
 
 
