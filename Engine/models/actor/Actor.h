@@ -59,12 +59,11 @@ public:
 
 	virtual void frame(CameraClass*, float);
 
-	AbstractLoader* m_loader;
-
 protected:
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
 
 	float m_counter;
 	int m_currentAnimation;
+	int m_totalAnimation;
 };

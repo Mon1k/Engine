@@ -4,108 +4,67 @@
 #include "opendbx/src/ofbx.h"
 
 
-
-
 bool FbxLoader::load(char* filename, ModelClass* model)
 {
 	m_model = model;
 
-	m_fbxMesh = new SingleFbxMesh();
-	m_fbxMesh->load(filename, 50000);
+	/*ofbx::IScene* gscene = nullptr;
 
-	int countVertex = 0, countIndex = 0;
+	FILE* fp = fopen(filename, "rb");
+	fseek(fp, 0, SEEK_END);
+	long file_size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	auto* content = new ofbx::u8[file_size];
+	fread(content, 1, file_size, fp);
 
-	SingleFbxMesh::tModelVector vertex = m_fbxMesh->m_modelVector;
-	for (int i = 0; i < vertex.size(); i++) {
-		SingleFbxMesh::tModelRec modelRec = vertex[i];
-		countVertex += modelRec.verticeVector.size();
-		countIndex += modelRec.indexVector.size();
+
+	ofbx::LoadFlags flags =
+		ofbx::LoadFlags::TRIANGULATE |
+		//		ofbx::LoadFlags::IGNORE_MODELS |
+		ofbx::LoadFlags::IGNORE_BLEND_SHAPES |
+		ofbx::LoadFlags::IGNORE_CAMERAS |
+		ofbx::LoadFlags::IGNORE_LIGHTS |
+		//		ofbx::LoadFlags::IGNORE_TEXTURES |
+		ofbx::LoadFlags::IGNORE_SKIN |
+		ofbx::LoadFlags::IGNORE_BONES |
+		ofbx::LoadFlags::IGNORE_PIVOTS |
+		//		ofbx::LoadFlags::IGNORE_MATERIALS |
+		ofbx::LoadFlags::IGNORE_POSES |
+		ofbx::LoadFlags::IGNORE_VIDEOS |
+		ofbx::LoadFlags::IGNORE_LIMBS |
+		//		ofbx::LoadFlags::IGNORE_MESHES |
+		ofbx::LoadFlags::IGNORE_ANIMATIONS;
+
+	gscene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
+
+	int count =	gscene->getMeshCount();
+	const ofbx::Mesh* mesh = gscene->getMesh(0);
+
+	int vertexCount = mesh->getGeometry()->getVertexCount();
+	int indexCount = mesh->getGeometry()->getIndexCount();
+	model->setVertexCount(vertexCount);
+	model->setIndexCount(indexCount);
+
+	const ofbx::Vec3* positions = mesh->getGeometry()->getVertices();
+	const ofbx::Vec3* normals = mesh->getGeometry()->getNormals();
+	const ofbx::Vec2* uvs = mesh->getGeometry()->getUVs();
+
+	for (int i = 0; i < vertexCount; i++) {
+		m_model->m_model[i].x = positions[i].x;
+		// change z === y, as FBX format Z is up orientation format
+		m_model->m_model[i].y = positions[i].z;
+		m_model->m_model[i].z = positions[i].y;
+
+		m_model->m_model[i].nx = normals[i].x;
+		m_model->m_model[i].ny = normals[i].y;
+		m_model->m_model[i].nz = normals[i].z;
+
+		m_model->m_model[i].tu = uvs[i].x;
+		m_model->m_model[i].tv = uvs[i].y;
 	}
-	
-	model->setVertexCount(countVertex);
-	model->setIndexCount(countIndex);
-	Actor* actor;
-	actor = dynamic_cast<Actor*>(model);
-	actor->m_loader = this;
-
-	int index = 0;
-	for (int i = 0; i < vertex.size(); i++) {
-		SingleFbxMesh::tModelRec modelRec = vertex[i];
-
-		for (int j = 0; j < modelRec.verticeVector.size(); j++) {
-			m_model->m_model[index].x = modelRec.verticeVector[j].point.x;
-			m_model->m_model[index].y = modelRec.verticeVector[j].point.z;
-			m_model->m_model[index].z = modelRec.verticeVector[j].point.y;
-
-			m_model->m_model[index].nx = modelRec.verticeVector[j].normal.x;
-			m_model->m_model[index].ny = modelRec.verticeVector[j].normal.y;
-			m_model->m_model[index].nz = modelRec.verticeVector[j].normal.z;
-
-			m_model->m_model[index].tu = modelRec.verticeVector[j].u;
-			m_model->m_model[index].tv = modelRec.verticeVector[j].v;
-
-			index++;
-		}
-	}
-
-	int tt = 1;
-	//ofbx::IScene* gscene = nullptr;
-
-	//FILE* fp = fopen(filename, "rb");
-	//fseek(fp, 0, SEEK_END);
-	//long file_size = ftell(fp);
-	//fseek(fp, 0, SEEK_SET);
-	//auto* content = new ofbx::u8[file_size];
-	//fread(content, 1, file_size, fp);
-
-
-	//ofbx::LoadFlags flags =
-	//	ofbx::LoadFlags::TRIANGULATE |
-	//	//		ofbx::LoadFlags::IGNORE_MODELS |
-	//	ofbx::LoadFlags::IGNORE_BLEND_SHAPES |
-	//	ofbx::LoadFlags::IGNORE_CAMERAS |
-	//	ofbx::LoadFlags::IGNORE_LIGHTS |
-	//	//		ofbx::LoadFlags::IGNORE_TEXTURES |
-	//	ofbx::LoadFlags::IGNORE_SKIN |
-	//	ofbx::LoadFlags::IGNORE_BONES |
-	//	ofbx::LoadFlags::IGNORE_PIVOTS |
-	//	//		ofbx::LoadFlags::IGNORE_MATERIALS |
-	//	ofbx::LoadFlags::IGNORE_POSES |
-	//	ofbx::LoadFlags::IGNORE_VIDEOS |
-	//	ofbx::LoadFlags::IGNORE_LIMBS |
-	//	//		ofbx::LoadFlags::IGNORE_MESHES |
-	//	ofbx::LoadFlags::IGNORE_ANIMATIONS;
-
-	//gscene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
-
-	//int count =	gscene->getMeshCount();
-	//const ofbx::Mesh* mesh = gscene->getMesh(0);
-
-	//int vertexCount = mesh->getGeometry()->getVertexCount();
-	//int indexCount = mesh->getGeometry()->getIndexCount();
-	//model->setVertexCount(vertexCount);
-	//model->setIndexCount(indexCount);
-
-	//const ofbx::Vec3* positions = mesh->getGeometry()->getVertices();
-	//const ofbx::Vec3* normals = mesh->getGeometry()->getNormals();
-	//const ofbx::Vec2* uvs = mesh->getGeometry()->getUVs();
-
-	//for (int i = 0; i < vertexCount; i++) {
-	//	m_model->m_model[i].x = positions[i].x;
-	//	// change z === y, as FBX format Z is up orientation format
-	//	m_model->m_model[i].y = positions[i].z;
-	//	m_model->m_model[i].z = positions[i].y;
-
-	//	m_model->m_model[i].nx = normals[i].x;
-	//	m_model->m_model[i].ny = normals[i].y;
-	//	m_model->m_model[i].nz = normals[i].z;
-
-	//	m_model->m_model[i].tu = uvs[i].x;
-	//	m_model->m_model[i].tv = uvs[i].y;
-	//}
 
 	
-	/*const ofbx::Object* const* objects = gscene->getAllObjects();
+	const ofbx::Object* const* objects = gscene->getAllObjects();
 	int numObjects = gscene->getAllObjectCount();
 	for (int indexObject = 0; indexObject < numObjects; indexObject++) {
 		ofbx::Object::Type type = objects[indexObject]->getType();
@@ -136,7 +95,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 			m_animation.currentTime = 0;
 			m_animation.totalTime = take->local_time_to - take->local_time_from;
 		}
-	}*/
+	}
 
 	//const ofbx::AnimationStack* stack = gscene->getAnimationStack(0);
 	//stack->getGlobalTransform();
@@ -144,103 +103,102 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	int t = 1;
 
 	return true;
+	*/
 
 
-	//FbxManager* manager = FbxManager::Create();
-	//FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
-	//manager->SetIOSettings(ios);
+	/*FbxManager* manager = FbxManager::Create();
+	FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
+	manager->SetIOSettings(ios);
 
-	//FbxImporter* importer = FbxImporter::Create(manager, "");
-	//importer->Initialize(filename, -1, manager->GetIOSettings());
+	FbxImporter* importer = FbxImporter::Create(manager, "");
+	importer->Initialize(filename, -1, manager->GetIOSettings());
 
-	//FbxScene* scene = FbxScene::Create(manager, "tempName");
+	FbxScene* scene = FbxScene::Create(manager, "tempName");
 
-	//importer->Import(scene);
-	//importer->Destroy();
+	importer->Import(scene);
+	importer->Destroy();
 
-	//FbxNode* rootNode = scene->GetRootNode();
-
-
-	//std::vector<D3DXVECTOR3> vertices, texcoords, normals;
-	//int indexModel = 0;
-
-	//int countChilds = rootNode->GetChildCount();
-	//for (int i = 0; i < countChilds; i++) {
-	//	FbxMesh* mesh = rootNode->GetChild(i)->GetMesh();
-	//	if (mesh == NULL) {
-	//		continue;
-	//	}
-
-	//	vertices.clear();
-	//	texcoords.clear();
-	//	normals.clear();
-
-	//	int polygonCount = mesh->GetPolygonCount();
-
-	//	FbxVector4* controlPoints = mesh->GetControlPoints();
-	//	FbxLayerElementArrayTemplate<FbxVector2>* uvVertices = 0;
-	//	mesh->GetTextureUV(&uvVertices, FbxLayerElement::eTextureDiffuse);
-
-	//	for (int j = 0; j < polygonCount; j++) {
-	//		int polygonSize = mesh->GetPolygonSize(i);
-	//		for (int k = 0; k < polygonSize; k++) {
-	//			int index = mesh->GetPolygonVertex(j, k);
-	//			D3DXVECTOR3 vertex3;
-
-	//			FbxVector4 vertex = controlPoints[index];
-	//			vertex3 = D3DXVECTOR3((float)vertex[0], (float)vertex[1], (float)vertex[2]);
-	//			vertices.push_back(vertex3);
-
-	//			FbxVector4 normal;
-	//			mesh->GetPolygonVertexNormal(j, k, normal);
-	//			vertex3 = D3DXVECTOR3((float)normal[0], (float)normal[1], (float)normal[2]);
-	//			normals.push_back(vertex3);
-
-	//			FbxVector2 uv = uvVertices->GetAt(mesh->GetTextureUVIndex(j, k));
-	//			D3DXVECTOR3 vertex2 = D3DXVECTOR3((float)uv[0], (float)uv[1], 1.0f);
-	//			texcoords.push_back(vertex2);
-	//		}
-	//	}
-
-	//	
-	//	AbstractModel::ModelType modelType;
-	//	ModelClass* linkModel;
-	//	if (indexModel == 0) {
-	//		model->setVertexCount(vertices.size());
-	//		model->setIndexCount(vertices.size());
-	//		linkModel = model;
-
-	//	} else {
-	//		ModelClass* subset = new ModelClass;
-	//		subset->setVertexCount(vertices.size());
-	//		subset->setIndexCount(vertices.size());
-	//		model->addSubset(subset);
-	//		linkModel = subset;
-	//	}
-
-	//	for (int j = 0; j < vertices.size(); j++) {
-	//		modelType.x = vertices[j].x;
-	//		// change z === y, as FBX format Z is up orientation format
-	//		modelType.z = vertices[j].y;
-	//		modelType.y = vertices[j].z;
-	//		
-	//		modelType.nx = normals[j].x;
-	//		modelType.ny = normals[j].y;
-	//		modelType.nz = normals[j].z;
-	//		modelType.tu = texcoords[j].x;
-	//		modelType.tv = texcoords[j].y;
-
-	//		linkModel->m_model[j] = modelType;
-	//	}
+	FbxNode* rootNode = scene->GetRootNode();
 
 
-	//	if (dynamic_cast<const Actor*>(m_model) != nullptr) {
-	//		ProcessSkeletonHierarchy(rootNode);
-	//		loadAnimations(scene, mesh, dynamic_cast<Actor*>(linkModel));
-	//	}
+	std::vector<D3DXVECTOR3> vertices, texcoords, normals;
+	int indexModel = 0;
 
-	//	indexModel++;
-	//}
+	int countChilds = rootNode->GetChildCount();
+	for (int i = 0; i < countChilds; i++) {
+		FbxMesh* mesh = rootNode->GetChild(i)->GetMesh();
+		if (mesh == NULL) {
+			continue;
+		}
+
+		vertices.clear();
+		texcoords.clear();
+		normals.clear();
+
+		int polygonCount = mesh->GetPolygonCount();
+
+		FbxVector4* controlPoints = mesh->GetControlPoints();
+		FbxLayerElementArrayTemplate<FbxVector2>* uvVertices = 0;
+		mesh->GetTextureUV(&uvVertices, FbxLayerElement::eTextureDiffuse);
+
+		for (int j = 0; j < polygonCount; j++) {
+			int polygonSize = mesh->GetPolygonSize(i);
+			for (int k = 0; k < polygonSize; k++) {
+				int index = mesh->GetPolygonVertex(j, k);
+				D3DXVECTOR3 vertex3;
+
+				FbxVector4 vertex = controlPoints[index];
+				vertex3 = D3DXVECTOR3((float)vertex[0], (float)vertex[1], (float)vertex[2]);
+				vertices.push_back(vertex3);
+
+				FbxVector4 normal;
+				mesh->GetPolygonVertexNormal(j, k, normal);
+				vertex3 = D3DXVECTOR3((float)normal[0], (float)normal[1], (float)normal[2]);
+				normals.push_back(vertex3);
+
+				FbxVector2 uv = uvVertices->GetAt(mesh->GetTextureUVIndex(j, k));
+				D3DXVECTOR3 vertex2 = D3DXVECTOR3((float)uv[0], (float)uv[1], 1.0f);
+				texcoords.push_back(vertex2);
+			}
+		}
+
+		AbstractModel::ModelType modelType;
+		ModelClass* linkModel;
+		if (indexModel == 0) {
+			model->setVertexCount(vertices.size());
+			model->setIndexCount(vertices.size());
+			linkModel = model;
+
+		} else {
+			ModelClass* subset = new ModelClass;
+			subset->setVertexCount(vertices.size());
+			subset->setIndexCount(vertices.size());
+			model->addSubset(subset);
+			linkModel = subset;
+		}
+
+		for (int j = 0; j < vertices.size(); j++) {
+			modelType.x = vertices[j].x;
+			// change z === y, as FBX format Z is up orientation format
+			modelType.z = vertices[j].y;
+			modelType.y = vertices[j].z;
+			modelType.nx = normals[j].x;
+			modelType.ny = normals[j].y;
+			modelType.nz = normals[j].z;
+			modelType.tu = texcoords[j].x;
+			modelType.tv = texcoords[j].y;
+
+			linkModel->m_model[j] = modelType;
+		}
+
+
+		if (dynamic_cast<const Actor*>(m_model) != nullptr) {
+			ProcessSkeletonHierarchy(rootNode);
+			loadAnimations(scene, mesh, dynamic_cast<Actor*>(linkModel));
+		}
+
+		indexModel++;
+	}*/
 
 	return true;
 }
@@ -287,7 +245,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 
 			cluster->GetTransformMatrix(transformMatrix);
 			cluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;// * geometryTransform;
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
 			m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
 
