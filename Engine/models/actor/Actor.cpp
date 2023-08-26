@@ -10,11 +10,15 @@ Actor::Actor() : Model()
 
 void Actor::frame(CameraClass* camera, float time)
 {
-	return;
+	//return;
 	m_counter += time;
 	if (m_counter < 50) {
 		return;
 	}
+
+	static float StartTimeMillis = time;
+	float CurrentTimeMillis = time;
+	float AnimationTimeSec = ((float)(CurrentTimeMillis - StartTimeMillis)) / 1000.0f;
 
 	///
 	struct VertexType
@@ -28,11 +32,46 @@ void Actor::frame(CameraClass* camera, float time)
 	VertexType* verticesPtr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	
+	for (int boneIndex = 0; boneIndex < m_weights.size(); boneIndex++) {
+		int vertexIndex = boneIndex;
+		AbstractModel::ModelType vertex = m_model[vertexIndex];
 
-	for (int vertexIndex = 0; vertexIndex < m_vertexCount; vertexIndex++) {
+		for (int i = 0; i < m_animations[m_currentAnimation].joints.size(); i++) {
+			Actor::Joint joint = m_animations[m_currentAnimation].joints[i];
+			if (joint.name == m_weights[boneIndex].name) {
+				D3DXVECTOR3 diff = D3DXVECTOR3(0, 0, 0);
+				for (int j = 0; j < joint.animation.size(); j++) {
+					if (AnimationTimeSec < joint.animation[j].time) {
+						diff = joint.animation[j].position;
+						break;
+					}
+				}
+				vertex.x += diff.x;
+				vertex.y += diff.y;
+				vertex.z += diff.z;
+				break;
+			}
+		}
+
+		vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+		vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+		vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+
+	/*for (int vertexIndex = 0; vertexIndex < m_vertexCount; vertexIndex++) {
 		AbstractModel::ModelType vertex = m_model[vertexIndex];
 		D3DXVECTOR3 position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
-		std::vector<Actor::Joint> joints;
+
+
+
+
+
+
+
+		vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+		vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+		vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+
+		/*std::vector<Actor::Joint> joints;
 		Actor::Weight weight = m_weights[vertexIndex];
 		
 
@@ -50,7 +89,7 @@ void Actor::frame(CameraClass* camera, float time)
 				joints.push_back(m_animations[m_currentAnimation].joints[i]);
 			}
 		}*/
-		joints.push_back(m_animations[m_currentAnimation].joints[weight.joint]);
+		/*joints.push_back(m_animations[m_currentAnimation].joints[weight.joint]);
 
 		D3DXMATRIX transformation;
 		D3DXMatrixIdentity(&transformation);
@@ -79,9 +118,9 @@ void Actor::frame(CameraClass* camera, float time)
 			/*vertex.x += joints[i].animation[j].transform._41 * weight.bias;
 			vertex.y += joints[i].animation[j].transform._42 * weight.bias;
 			vertex.z += joints[i].animation[j].transform._43 * weight.bias;*/
-			vertex.x += (m_animations[m_currentAnimation].joints[joints[i].parentId].animation[j].transform._41 * joints[i].animation[j].transform._41) * weight.bias;
+			/*vertex.x += (m_animations[m_currentAnimation].joints[joints[i].parentId].animation[j].transform._41 * joints[i].animation[j].transform._41) * weight.bias;
 			vertex.y += (m_animations[m_currentAnimation].joints[joints[i].parentId].animation[j].transform._42 * joints[i].animation[j].transform._42) * weight.bias;
-			vertex.z += (m_animations[m_currentAnimation].joints[joints[i].parentId].animation[j].transform._43 * joints[i].animation[j].transform._43) * weight.bias;
+			vertex.z += (m_animations[m_currentAnimation].joints[joints[i].parentId].animation[j].transform._43 * joints[i].animation[j].transform._43) * weight.bias;*/
 			/*vertex.x += joints[i].animation[j].position.x;
 			vertex.y += joints[i].animation[j].position.y;
 			vertex.z += joints[i].animation[j].position.z;*/
@@ -91,14 +130,14 @@ void Actor::frame(CameraClass* camera, float time)
 
 			
 					
-			vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
+			/*vertices[vertexIndex].position = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
 			//vertices[vertexIndex].position = position2;
 			vertices[vertexIndex].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
 			vertices[vertexIndex].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
 			break;
 				//}
 			//}
-		}
+		}*/
 	}
 
 
@@ -110,7 +149,7 @@ void Actor::frame(CameraClass* camera, float time)
 	m_D3D->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
 
 
-	m_animations[m_currentAnimation].currentTime++;
+	m_animations[m_currentAnimation].currentTime++;// = AnimationTimeSec;
 	if (m_animations[m_currentAnimation].currentTime >= m_animations[m_currentAnimation].totalTime) {
 		m_animations[m_currentAnimation].currentTime = 0;
 	}

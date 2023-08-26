@@ -3,10 +3,110 @@
 
 #include "opendbx/src/ofbx.h"
 
+#include "assimp/Importer.hpp"
+#include "assimp/ProgressHandler.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
+
 
 bool FbxLoader::load(char* filename, ModelClass* model)
 {
 	m_model = model;
+
+	Assimp::Importer importer;
+	importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_CAMERAS | aiComponent_LIGHTS);
+
+	/*const aiScene* scene = importer.ReadFile(
+		filename, aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals |
+		aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights | aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
+		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
+		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
+	const aiScene* scene = importer.ReadFile(filename,
+			aiProcess_Triangulate);
+
+	int vertexCount = 0, indexCount = 0;
+	for (size_t i = 0; i < scene->mNumMeshes; ++i)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+		vertexCount += mesh->mNumVertices;	
+	}
+	indexCount = vertexCount;
+
+	model->setVertexCount(vertexCount);
+	model->setIndexCount(indexCount);
+
+	std::vector<Actor::Weight> weights;
+	weights.resize(vertexCount);
+
+	int index = 0, index2 = 0;
+	for (size_t i = 0; i < scene->mNumMeshes; ++i) {
+		aiMesh* mesh = scene->mMeshes[i];
+		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
+			m_model->m_model[index].x = mesh->mVertices[j].x;
+			m_model->m_model[index].z = mesh->mVertices[j].y;
+			m_model->m_model[index].y = mesh->mVertices[j].z;
+
+
+			m_model->m_model[index].nx = mesh->mNormals[j].x;
+			m_model->m_model[index].ny = mesh->mNormals[j].y;
+			m_model->m_model[index].nz = mesh->mNormals[j].z;
+
+
+			m_model->m_model[index].tu = mesh->mTextureCoords[0][j].x;
+			m_model->m_model[index].tv = mesh->mTextureCoords[0][j].y;
+
+			index++;
+		}
+
+		for (size_t j = 0; j < mesh->mNumBones; j++) {
+			const aiBone* pBone = mesh->mBones[j];
+			for (size_t k = 0; k < pBone->mNumWeights; k++) {
+				const aiVertexWeight& vw = pBone->mWeights[k];
+				Actor::Weight weight;
+				weight.index = index2;
+				weight.bias = vw.mWeight;
+				weight.name = pBone->mName.C_Str();
+				weights[vw.mVertexId] = weight;
+				index2++;
+			}
+		}
+	}
+
+	std::vector<Actor::Animation> animations;
+	animations.resize(scene->mNumAnimations);
+
+	for (size_t i = 0; i < scene->mNumAnimations; ++i) {
+		const aiAnimation* assimp_anim = scene->mAnimations[i];
+		animations[i].name = assimp_anim->mName.C_Str();
+		animations[i].totalTime = assimp_anim->mDuration * assimp_anim->mTicksPerSecond;
+		animations[i].currentTime = 0;
+
+		animations[i].joints.resize(assimp_anim->mNumChannels);
+		for (size_t j = 0; j < assimp_anim->mNumChannels; ++j) {
+			const aiNodeAnim* assimp_node_anim = assimp_anim->mChannels[j];
+			animations[i].joints[j].name = assimp_node_anim->mNodeName.C_Str();
+
+			animations[i].joints[j].animation.resize(assimp_node_anim->mNumPositionKeys);
+			for (size_t idx = 0; idx < assimp_node_anim->mNumPositionKeys; ++idx) {
+				const auto& anim_key = assimp_node_anim->mPositionKeys[idx];
+				auto& key = animations[i].joints[j].animation[idx];
+
+				key.time = anim_key.mTime;
+				key.position.x = anim_key.mValue.x;
+				key.position.y = anim_key.mValue.y;
+				key.position.z = anim_key.mValue.z;
+			}
+		}
+	}
+
+	Actor* actor = dynamic_cast<Actor*>(model);
+	//actor->addAnimation(animations);
+	//actor->addWeights(weights);
+	actor->m_animations = animations;
+	actor->m_weights = weights;
+	int t69 = 1;
 
 	/*ofbx::IScene* gscene = nullptr;
 
@@ -64,7 +164,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	}
 
 	
-	const ofbx::Object* const* objects = gscene->getAllObjects();
+	/*const ofbx::Object* const* objects = gscene->getAllObjects();
 	int numObjects = gscene->getAllObjectCount();
 	for (int indexObject = 0; indexObject < numObjects; indexObject++) {
 		ofbx::Object::Type type = objects[indexObject]->getType();

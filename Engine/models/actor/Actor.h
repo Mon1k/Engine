@@ -15,6 +15,7 @@ public:
 		float bias;
 		int index;
 		D3DXVECTOR3 position;
+		std::string name;
 	};
 
 	struct KeyFrame
@@ -23,6 +24,7 @@ public:
 		D3DXVECTOR4 scaling;
 		D3DXMATRIX transform;
 		int numFrame;
+		double time;
 	};
 
 	struct Joint
@@ -59,9 +61,10 @@ public:
 
 	virtual void frame(CameraClass*, float);
 
-protected:
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
+protected:
+	
 
 	float m_counter;
 	int m_currentAnimation;
