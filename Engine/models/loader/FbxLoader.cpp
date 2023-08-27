@@ -8,13 +8,13 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
-
 bool FbxLoader::load(char* filename, ModelClass* model)
 {
 	m_model = model;
+	Actor* actor = dynamic_cast<Actor*>(model);
 
 	Assimp::Importer importer;
-	importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_CAMERAS | aiComponent_LIGHTS);
+	//importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_CAMERAS | aiComponent_LIGHTS);
 
 	/*const aiScene* scene = importer.ReadFile(
 		filename, aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals |
@@ -23,8 +23,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
 		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
 		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
-	const aiScene* scene = importer.ReadFile(filename,
-			aiProcess_Triangulate);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_PopulateArmatureData);
 
 	int vertexCount = 0, indexCount = 0;
 	for (size_t i = 0; i < scene->mNumMeshes; ++i)
@@ -41,6 +40,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	weights.resize(vertexCount);
 
 	int index = 0, index2 = 0;
+	int baseVertex = 0;
 	for (size_t i = 0; i < scene->mNumMeshes; ++i) {
 		aiMesh* mesh = scene->mMeshes[i];
 		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
@@ -48,11 +48,9 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 			m_model->m_model[index].z = mesh->mVertices[j].y;
 			m_model->m_model[index].y = mesh->mVertices[j].z;
 
-
 			m_model->m_model[index].nx = mesh->mNormals[j].x;
 			m_model->m_model[index].ny = mesh->mNormals[j].y;
 			m_model->m_model[index].nz = mesh->mNormals[j].z;
-
 
 			m_model->m_model[index].tu = mesh->mTextureCoords[0][j].x;
 			m_model->m_model[index].tv = mesh->mTextureCoords[0][j].y;
@@ -62,16 +60,30 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 		for (size_t j = 0; j < mesh->mNumBones; j++) {
 			const aiBone* pBone = mesh->mBones[j];
+			int boneId = GetBoneId(pBone->mName.C_Str());
+
+			if (boneId == actor->m_BoneInfo.size()) {
+				Actor::BoneInfo bi(toD3DXMATRIX(pBone->mOffsetMatrix));
+				bi.name = pBone->mName.C_Str();
+				bi.parent = pBone->mNode->mParent->mName.C_Str();
+				bi.transformation = toD3DXMATRIX(pBone->mNode->mTransformation);
+				bi.boneId = boneId;
+				actor->m_BoneInfo.push_back(bi);
+			}
+
 			for (size_t k = 0; k < pBone->mNumWeights; k++) {
 				const aiVertexWeight& vw = pBone->mWeights[k];
 				Actor::Weight weight;
-				weight.index = index2;
+				weight.index = boneId;
 				weight.bias = vw.mWeight;
 				weight.name = pBone->mName.C_Str();
-				weights[vw.mVertexId] = weight;
-				index2++;
+				unsigned int GlobalVertexID = baseVertex + vw.mVertexId;
+				weight.AddBoneData(boneId, vw.mWeight);
+				weights[GlobalVertexID] = weight;
 			}
 		}
+
+		baseVertex += mesh->mNumVertices;
 	}
 
 	std::vector<Actor::Animation> animations;
@@ -80,8 +92,16 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	for (size_t i = 0; i < scene->mNumAnimations; ++i) {
 		const aiAnimation* assimp_anim = scene->mAnimations[i];
 		animations[i].name = assimp_anim->mName.C_Str();
-		animations[i].totalTime = assimp_anim->mDuration * assimp_anim->mTicksPerSecond;
+
+		float tickPerSecond = assimp_anim->mTicksPerSecond;
+		if (tickPerSecond < 0.001) {
+			tickPerSecond = 25.0f;
+		}
+
+		animations[i].totalTime = assimp_anim->mDuration;// *tickPerSecond;
+		animations[i].tick = tickPerSecond;
 		animations[i].currentTime = 0;
+		animations[i].globalInverseTransformation = toD3DXMATRIX(scene->mRootNode->mTransformation.Inverse());
 
 		animations[i].joints.resize(assimp_anim->mNumChannels);
 		for (size_t j = 0; j < assimp_anim->mNumChannels; ++j) {
@@ -90,18 +110,28 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 			animations[i].joints[j].animation.resize(assimp_node_anim->mNumPositionKeys);
 			for (size_t idx = 0; idx < assimp_node_anim->mNumPositionKeys; ++idx) {
-				const auto& anim_key = assimp_node_anim->mPositionKeys[idx];
-				auto& key = animations[i].joints[j].animation[idx];
+				const aiVectorKey anim_key = assimp_node_anim->mPositionKeys[idx];
 
+				Actor::KeyFrame key;
 				key.time = anim_key.mTime;
 				key.position.x = anim_key.mValue.x;
 				key.position.y = anim_key.mValue.y;
 				key.position.z = anim_key.mValue.z;
+				animations[i].joints[j].animation[idx] = key;
+			}
+
+			for (size_t idx = 0; idx < assimp_node_anim->mNumScalingKeys; ++idx) {
+				const aiVectorKey anim_key = assimp_node_anim->mScalingKeys[idx];
+
+				Actor::KeyFrame &key = animations[i].joints[j].animation[idx];
+				key.time = anim_key.mTime;
+				key.scaling.x = anim_key.mValue.x;
+				key.scaling.y = anim_key.mValue.y;
+				key.scaling.z = anim_key.mValue.z;
 			}
 		}
 	}
 
-	Actor* actor = dynamic_cast<Actor*>(model);
 	//actor->addAnimation(animations);
 	//actor->addWeights(weights);
 	actor->m_animations = animations;
@@ -303,6 +333,22 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	return true;
 }
 
+int FbxLoader::GetBoneId(std::string boneName)
+{
+	int BoneIndex = 0;
+
+	if (m_BoneNameToIndexMap.find(boneName) == m_BoneNameToIndexMap.end()) {
+		// Allocate an index for a new bone
+		BoneIndex = (int)m_BoneNameToIndexMap.size();
+		m_BoneNameToIndexMap[boneName] = BoneIndex;
+	}
+	else {
+		BoneIndex = m_BoneNameToIndexMap[boneName];
+	}
+
+	return BoneIndex;
+}
+
 void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 {
 	FbxNode* node = mesh->GetNode();
@@ -347,7 +393,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 			cluster->GetTransformLinkMatrix(transformLinkMatrix);
 			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
-			m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
+			//m_animation.joints[currJointIndex].inverse = toD3DXMATRIX(globalBindposeInverseMatrix);
 
 			int* boneVertexIendicies = cluster->GetControlPointIndices();
 			double* boneVertexWeights = cluster->GetControlPointWeights();
@@ -387,7 +433,7 @@ void FbxLoader::loadAnimations(FbxScene* scene, FbxMesh* mesh, Actor* actor)
 					keyFrame.numFrame = (int)i;
 					//scene->GetAnimationEvaluator()->GetNodeLocalTransform();
 					FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(currTime) *geometryTransform;
-					keyFrame.transform = toD3DXMATRIX(currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime));
+					//keyFrame.transform = toD3DXMATRIX(currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(currTime));
 					//keyFrame.transform = toD3DXMATRIX(cluster->GetLink()->EvaluateGlobalTransform(currTime) * currentTransformOffset);
 					//keyFrame.transform = toD3DXMATRIX(currentTransformOffset);
 					
@@ -435,61 +481,18 @@ void FbxLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth
 	}
 }
 
-D3DXMATRIX FbxLoader::toD3DXMATRIX(FbxAMatrix matrix)
+D3DXMATRIX FbxLoader::toD3DXMATRIX(aiMatrix4x4 matrix)
 {
 	return D3DXMATRIX(
-		(float)matrix.Get(0, 0), (float)matrix.Get(0, 1), (float)matrix.Get(0, 2), (float)matrix.Get(0, 3),
-		(float)matrix.Get(1, 0), (float)matrix.Get(1, 1), (float)matrix.Get(1, 2), (float)matrix.Get(1, 3),
-		(float)matrix.Get(2, 0), (float)matrix.Get(2, 1), (float)matrix.Get(2, 2), (float)matrix.Get(2, 3),
-		(float)matrix.Get(3, 0), (float)matrix.Get(3, 1), (float)matrix.Get(3, 2), (float)matrix.Get(3, 3)
+		(float)matrix.a1, (float)matrix.b1, (float)matrix.c1, (float)matrix.d1,
+		(float)matrix.a2, (float)matrix.b2, (float)matrix.c2, (float)matrix.d2,
+		(float)matrix.a3, (float)matrix.b3, (float)matrix.c3, (float)matrix.d3,
+		(float)matrix.a4, (float)matrix.b4, (float)matrix.c4, (float)matrix.d4
 	);
-}
-
-D3DXMATRIX FbxLoader::toD3DXMATRIX(FbxMatrix matrix)
-{
-	return D3DXMATRIX(
-		(float)matrix.Get(0, 0), (float)matrix.Get(0, 1), (float)matrix.Get(0, 2), (float)matrix.Get(0, 3),
-		(float)matrix.Get(1, 0), (float)matrix.Get(1, 1), (float)matrix.Get(1, 2), (float)matrix.Get(1, 3),
-		(float)matrix.Get(2, 0), (float)matrix.Get(2, 1), (float)matrix.Get(2, 2), (float)matrix.Get(2, 3),
-		(float)matrix.Get(3, 0), (float)matrix.Get(3, 1), (float)matrix.Get(3, 2), (float)matrix.Get(3, 3)
-	);
-}
-
-FbxAMatrix FbxLoader::convertToLeftHanded(FbxAMatrix fbxMatrix)
-{
-	FbxAMatrix convertionMatrix;
-	FbxVector4 rowX(1.0, 0.0, 0.0, 0.0);
-	FbxVector4 rowY(0.0, 1.0, 0.0, 0.0);
-	FbxVector4 rowZ(0.0, 0.0, -1.0, 0.0);
-	FbxVector4 rowW(0.0, 0.0, 0.0, 1.0);
-
-	convertionMatrix.SetRow(0, rowX);
-	convertionMatrix.SetRow(1, rowY);
-	convertionMatrix.SetRow(2, rowZ);
-	convertionMatrix.SetRow(3, rowW);
-
-	FbxAMatrix convertedMatrix = fbxMatrix * convertionMatrix;
-	return convertedMatrix;
-}
-
-FbxMatrix FbxLoader::ConvertMatrix(FbxAMatrix Matrix)
-{
-	FbxMatrix UEMatrix;
-
-	for (int i = 0; i < 4; ++i) {
-		FbxVector4 Row = Matrix.GetRow(i);
-		if (i == 1) {
-			UEMatrix.Set(i, 0, -Row[0]);
-			UEMatrix.Set(i, 1, Row[1]);
-			UEMatrix.Set(i, 2, -Row[2]);
-			UEMatrix.Set(i, 3, -Row[3]);
-		} else {
-			UEMatrix.Set(i, 0, Row[0]);
-			UEMatrix.Set(i, 1, -Row[1]);
-			UEMatrix.Set(i, 2, Row[2]);
-			UEMatrix.Set(i, 3, Row[3]);
-		}
-	}
-
-	return UEMatrix;
+	/*return D3DXMATRIX(
+		(float)matrix.a1, (float)matrix.a2, (float)matrix.a3, (float)matrix.a4,
+		(float)matrix.b1, (float)matrix.b2, (float)matrix.b3, (float)matrix.b4,
+		(float)matrix.c1, (float)matrix.c2, (float)matrix.c3, (float)matrix.c4,
+		(float)matrix.d1, (float)matrix.d2, (float)matrix.d3, (float)matrix.d4
+	);*/
 }

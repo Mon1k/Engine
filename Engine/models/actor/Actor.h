@@ -16,15 +16,33 @@ public:
 		int index;
 		D3DXVECTOR3 position;
 		std::string name;
+
+		int BoneIDs[4] = { 0 };
+		float Weights[4] = { 0.0f };
+
+		Weight()
+		{
+		}
+
+		void AddBoneData(int BoneID, float Weight)
+		{
+			for (int i = 0; i < 4; i++) {
+				if (Weights[i] == 0.0f) {
+					BoneIDs[i] = BoneID;
+					Weights[i] = Weight;
+					return;
+				}
+			}
+		}
 	};
 
 	struct KeyFrame
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR4 scaling;
+		D3DXVECTOR3 scaling;
 		D3DXMATRIX transform;
 		int numFrame;
-		double time;
+		float time;
 	};
 
 	struct Joint
@@ -40,10 +58,37 @@ public:
 		float frameTime;
 		float totalTime;
 		float currentTime;
+		float tick;
 		std::string name;
+		D3DXMATRIX globalInverseTransformation;
 
 		std::vector<Joint> joints;
 	};
+
+	struct BoneInfo
+	{
+		D3DXMATRIX OffsetMatrix;
+		D3DXMATRIX FinalTransformation;
+		D3DXMATRIX transformation;
+		D3DXMATRIX globalTansformation;
+		std::string name;
+		std::string parent;
+		int boneId;
+		
+		BoneInfo() {
+			boneId = 0;
+			D3DXMatrixIdentity(&globalTansformation);
+		}
+
+		BoneInfo(const D3DXMATRIX& Offset)
+		{
+			OffsetMatrix = Offset;
+			D3DXMatrixIdentity(&globalTansformation);
+			D3DXMatrixIdentity(&FinalTransformation);
+		}
+	};
+
+	
 
 public:
 	Actor();
@@ -63,10 +108,13 @@ public:
 
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
+	std::vector<BoneInfo> m_BoneInfo;
 protected:
 	
 
 	float m_counter;
+	float m_counterTotal;
 	int m_currentAnimation;
 	int m_totalAnimation;
+
 };
