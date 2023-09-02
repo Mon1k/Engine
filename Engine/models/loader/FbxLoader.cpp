@@ -23,7 +23,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
 		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
 		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
-	const aiScene* scene = importer.ReadFile(filename, aiProcess_PopulateArmatureData);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_PopulateArmatureData);
 
 	int vertexCount = 0, indexCount = 0;
 	for (size_t i = 0; i < scene->mNumMeshes; ++i)
@@ -48,9 +48,16 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 			m_model->m_model[index].z = mesh->mVertices[j].y;
 			m_model->m_model[index].y = mesh->mVertices[j].z;
 
-			m_model->m_model[index].nx = mesh->mNormals[j].x;
-			m_model->m_model[index].ny = mesh->mNormals[j].y;
-			m_model->m_model[index].nz = mesh->mNormals[j].z;
+			if (mesh->mNormals) {
+				m_model->m_model[index].nx = mesh->mNormals[j].x;
+				m_model->m_model[index].ny = mesh->mNormals[j].y;
+				m_model->m_model[index].nz = mesh->mNormals[j].z;
+			}
+			else {
+				m_model->m_model[index].nx = 0.0f;
+				m_model->m_model[index].ny = 1.0f;
+				m_model->m_model[index].nz = 0.0f;
+			}
 
 			m_model->m_model[index].tu = mesh->mTextureCoords[0][j].x;
 			m_model->m_model[index].tv = mesh->mTextureCoords[0][j].y;
@@ -64,7 +71,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 			if (boneId == actor->m_BoneInfo.size()) {
 				Actor::BoneInfo bi(toD3DXMATRIX(pBone->mOffsetMatrix));
-				bi.name = pBone->mName.C_Str();
+				bi.name = pBone->mNode->mName.C_Str();
 				bi.parent = pBone->mNode->mParent->mName.C_Str();
 				bi.transformation = toD3DXMATRIX(pBone->mNode->mTransformation);
 				bi.boneId = boneId;
@@ -128,6 +135,17 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 				key.scaling.x = anim_key.mValue.x;
 				key.scaling.y = anim_key.mValue.y;
 				key.scaling.z = anim_key.mValue.z;
+			}
+
+			for (size_t idx = 0; idx < assimp_node_anim->mNumRotationKeys; ++idx) {
+				const aiQuatKey anim_key = assimp_node_anim->mRotationKeys[idx];
+
+				Actor::KeyFrame& key = animations[i].joints[j].animation[idx];
+				key.time = anim_key.mTime;
+				key.rotation.x = anim_key.mValue.x;
+				key.rotation.y = anim_key.mValue.y;
+				key.rotation.z = anim_key.mValue.z;
+				key.rotation.w = anim_key.mValue.w;
 			}
 		}
 	}
@@ -483,16 +501,16 @@ void FbxLoader::ProcessSkeletonHierarchyRecursively(FbxNode* inNode, int inDepth
 
 D3DXMATRIX FbxLoader::toD3DXMATRIX(aiMatrix4x4 matrix)
 {
-	return D3DXMATRIX(
+	/*return D3DXMATRIX(
 		(float)matrix.a1, (float)matrix.b1, (float)matrix.c1, (float)matrix.d1,
 		(float)matrix.a2, (float)matrix.b2, (float)matrix.c2, (float)matrix.d2,
 		(float)matrix.a3, (float)matrix.b3, (float)matrix.c3, (float)matrix.d3,
 		(float)matrix.a4, (float)matrix.b4, (float)matrix.c4, (float)matrix.d4
-	);
-	/*return D3DXMATRIX(
+	);*/
+	return D3DXMATRIX(
 		(float)matrix.a1, (float)matrix.a2, (float)matrix.a3, (float)matrix.a4,
 		(float)matrix.b1, (float)matrix.b2, (float)matrix.b3, (float)matrix.b4,
 		(float)matrix.c1, (float)matrix.c2, (float)matrix.c3, (float)matrix.c4,
 		(float)matrix.d1, (float)matrix.d2, (float)matrix.d3, (float)matrix.d4
-	);*/
+	);
 }

@@ -40,6 +40,7 @@ public:
 	{
 		D3DXVECTOR3 position;
 		D3DXVECTOR3 scaling;
+		D3DXQUATERNION rotation;
 		D3DXMATRIX transform;
 		int numFrame;
 		float time;
@@ -77,12 +78,14 @@ public:
 		
 		BoneInfo() {
 			boneId = 0;
+			D3DXMatrixIdentity(&transformation);
 			D3DXMatrixIdentity(&globalTansformation);
 		}
 
 		BoneInfo(const D3DXMATRIX& Offset)
 		{
 			OffsetMatrix = Offset;
+			D3DXMatrixIdentity(&transformation);
 			D3DXMatrixIdentity(&globalTansformation);
 			D3DXMatrixIdentity(&FinalTransformation);
 		}

@@ -53,12 +53,13 @@ void Actor::frame(CameraClass* camera, float time)
 		}
 
 		if (parentBone.boneId == 0) {
+			D3DXMatrixIdentity(&m_BoneInfo[i].globalTansformation);
 			continue;
 		}
 
-		D3DXVECTOR3 out;
-		D3DXMATRIX nodeTransformation, translation, scale, rotation;
+		D3DXMATRIX nodeTransformation, translation, scaling, rotation;
 		nodeTransformation = bone.transformation;
+		//D3DXMatrixIdentity(&nodeTransformation);
 
 		for (size_t j = 0; j < m_animations[m_currentAnimation].joints.size(); j++) {
 			Actor::Joint joint = m_animations[m_currentAnimation].joints[j];
@@ -76,7 +77,7 @@ void Actor::frame(CameraClass* camera, float time)
 				float factor = (AnimationTimeTicks - t1) / (t2 - t1);
 				D3DXVECTOR3 start = joint.animation[positionIndex].position;
 				D3DXVECTOR3 end = joint.animation[positionIndex + 1].position;
-				out = start + factor * (end - start);
+				D3DXVECTOR3 out = start + factor * (end - start);
 				D3DXMatrixIdentity(&translation);
 				D3DXMatrixTranslation(&translation, out.x, out.y, out.z);
 
@@ -84,30 +85,27 @@ void Actor::frame(CameraClass* camera, float time)
 				start = joint.animation[positionIndex].scaling;
 				end = joint.animation[positionIndex + 1].scaling;
 				out = start + factor * (end - start);
-				D3DXMatrixIdentity(&scale);
-				D3DXMatrixScaling(&scale, out.x, out.y, out.z);
+				D3DXMatrixIdentity(&scaling);
+				D3DXMatrixScaling(&scaling, out.x, out.y, out.z);
 
-				// later add scale and rotation
 
-				nodeTransformation = /*scale * */translation;
+				D3DXQUATERNION start4 = joint.animation[positionIndex].rotation;
+				D3DXQUATERNION end4 = joint.animation[positionIndex + 1].rotation;
+				D3DXQUATERNION quat;
+				D3DXQuaternionSlerp(&quat, &start4, &end4, factor);
+				D3DXMatrixIdentity(&rotation);
+				D3DXMatrixRotationQuaternion(&rotation, &quat);
+
+				//nodeTransformation = scaling * rotation * translation;
 				break;
 			}
 		}
 
-		D3DXMATRIX globalTransformation;
-		globalTransformation = parentBone.globalTansformation * nodeTransformation;
+		D3DXMATRIX globalTransformation = parentBone.globalTansformation * nodeTransformation;
 
 		m_BoneInfo[i].globalTansformation = globalTransformation;
 		m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation;// *bone.OffsetMatrix;
 	}
-
-
-	/*std::vector<D3DXMATRIX> transforms;
-	transforms.resize(m_BoneInfo.size());
-	for (size_t i = 0; i < m_BoneInfo.size(); i++) {
-		transforms[i] = m_BoneInfo[i].FinalTransformation;
-	}*/
-
 
 	for (size_t i = 0; i < m_weights.size(); i++) {
 		AbstractModel::ModelType vertex = m_model[i];

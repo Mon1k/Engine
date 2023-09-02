@@ -78,7 +78,7 @@ bool ModelClass::LoadModel(char* filename)
 	} else if (string.rfind(".obj") != std::string::npos) {
 		ObjLoader* loader = new ObjLoader;
 		return loader->load(filename, this);
-	} else if (string.rfind(".fbx") != std::string::npos) {
+	} else/* if (string.rfind(".fbx") != std::string::npos) */{
 		FbxLoader* loader = new FbxLoader;
 		return loader->load(filename, this);
 	}
