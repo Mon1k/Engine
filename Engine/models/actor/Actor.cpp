@@ -52,7 +52,7 @@ void Actor::frame(CameraClass* camera, float time)
 			}
 		}
 
-		if (parentBone.boneId == 0) {
+		if (parentBone.boneId < 0) {
 			D3DXMatrixIdentity(&m_BoneInfo[i].globalTansformation);
 			continue;
 		}
@@ -61,59 +61,101 @@ void Actor::frame(CameraClass* camera, float time)
 		nodeTransformation = bone.transformation;
 		//D3DXMatrixIdentity(&nodeTransformation);
 
+		int found = 0;
 		for (size_t j = 0; j < m_animations[m_currentAnimation].joints.size(); j++) {
 			Actor::Joint joint = m_animations[m_currentAnimation].joints[j];
 			if (joint.name == bone.name) {
 				int positionIndex = 0;
-				for (size_t k = 0; k < joint.animation.size() - 1; k++) {
-					if (AnimationTimeTicks < joint.animation[k + 1].time) {
-						positionIndex = k;
-						break;
-					}
-				}
+				D3DXVECTOR3 out, start, end;
+				float t1, t2, factor;
 
-				float t1 = joint.animation[positionIndex].time;
-				float t2 = joint.animation[positionIndex + 1].time;
-				float factor = (AnimationTimeTicks - t1) / (t2 - t1);
-				D3DXVECTOR3 start = joint.animation[positionIndex].position;
-				D3DXVECTOR3 end = joint.animation[positionIndex + 1].position;
-				D3DXVECTOR3 out = start + factor * (end - start);
+
+				if (joint.position.size() > 1) {
+					for (size_t k = 0; k < joint.position.size() - 1; k++) {
+						if (AnimationTimeTicks < joint.position[k + 1].time) {
+							positionIndex = k;
+							break;
+						}
+					}
+					t1 = joint.position[positionIndex].time;
+					t2 = joint.position[positionIndex + 1].time;
+					factor = (AnimationTimeTicks - t1) / (t2 - t1);
+					start = joint.position[positionIndex].position;
+					end = joint.position[positionIndex + 1].position;
+					out = start + factor * (end - start);
+				}
+				else {
+					out = joint.position[0].position;
+				}
 				D3DXMatrixIdentity(&translation);
 				D3DXMatrixTranslation(&translation, out.x, out.y, out.z);
 
-
-				start = joint.animation[positionIndex].scaling;
-				end = joint.animation[positionIndex + 1].scaling;
-				out = start + factor * (end - start);
+				if (joint.scaling.size() > 1) {
+					positionIndex = 0;
+					for (size_t k = 0; k < joint.scaling.size() - 1; k++) {
+						if (AnimationTimeTicks < joint.scaling[k + 1].time) {
+							positionIndex = k;
+							break;
+						}
+					}
+					t1 = joint.scaling[positionIndex].time;
+					t2 = joint.scaling[positionIndex + 1].time;
+					factor = (AnimationTimeTicks - t1) / (t2 - t1);
+					start = joint.scaling[positionIndex].scaling;
+					end = joint.scaling[positionIndex + 1].scaling;
+					out = start + factor * (end - start);
+				}
+				else {
+					out = joint.scaling[0].scaling;
+				}
 				D3DXMatrixIdentity(&scaling);
 				D3DXMatrixScaling(&scaling, out.x, out.y, out.z);
 
-
-				D3DXQUATERNION start4 = joint.animation[positionIndex].rotation;
-				D3DXQUATERNION end4 = joint.animation[positionIndex + 1].rotation;
 				D3DXQUATERNION quat;
-				D3DXQuaternionSlerp(&quat, &start4, &end4, factor);
+				if (joint.rotation.size() > 1) {
+					positionIndex = 0;
+					for (size_t k = 0; k < joint.rotation.size() - 1; k++) {
+						if (AnimationTimeTicks < joint.rotation[k + 1].time) {
+							positionIndex = k;
+							break;
+						}
+					}
+					t1 = joint.rotation[positionIndex].time;
+					t2 = joint.rotation[positionIndex + 1].time;
+					factor = (AnimationTimeTicks - t1) / (t2 - t1);
+					D3DXQUATERNION start4 = joint.rotation[positionIndex].rotation;
+					D3DXQUATERNION end4 = joint.rotation[positionIndex + 1].rotation;
+					D3DXQuaternionSlerp(&quat, &start4, &end4, factor);
+					D3DXQuaternionNormalize(&quat, &quat);
+				}
+				else {
+					quat = joint.rotation[0].rotation;
+				}
 				D3DXMatrixIdentity(&rotation);
 				D3DXMatrixRotationQuaternion(&rotation, &quat);
 
-				//nodeTransformation = scaling * rotation * translation;
+				nodeTransformation = scaling * rotation * translation;
+				//nodeTransformation = translation * rotation * scaling;
+				found = 1;
 				break;
 			}
 		}
 
-		D3DXMATRIX globalTransformation = parentBone.globalTansformation * nodeTransformation;
+		D3DXMATRIX globalTransformation = parentBone.globalTansformation *nodeTransformation;
 
 		m_BoneInfo[i].globalTansformation = globalTransformation;
-		m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation;// *bone.OffsetMatrix;
+		if (found != 0) {
+			m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation;// *bone.OffsetMatrix;
+		}
 	}
 
 	for (size_t i = 0; i < m_weights.size(); i++) {
 		AbstractModel::ModelType vertex = m_model[i];
 
 		D3DXMATRIX boneTransform;
-		D3DXMatrixIdentity(&boneTransform);
-		for (int j = 0; j < 4; j++) {
-			boneTransform += m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation;// *m_weights[i].Weights[j];
+		boneTransform = m_BoneInfo[m_weights[i].BoneIDs[0]].FinalTransformation *m_weights[i].Weights[0];
+		for (int j = 1; j < 4; j++) {
+			boneTransform += m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation *m_weights[i].Weights[j];
 		}
 
 		D3DXVECTOR3 position, from = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);

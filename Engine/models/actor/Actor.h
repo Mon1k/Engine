@@ -52,6 +52,9 @@ public:
 		int parentId;
 		D3DXMATRIX inverse;
 		std::vector<KeyFrame> animation;
+		std::vector<KeyFrame> position;
+		std::vector<KeyFrame> scaling;
+		std::vector<KeyFrame> rotation;
 	};
 
 	struct Animation
@@ -77,7 +80,7 @@ public:
 		int boneId;
 		
 		BoneInfo() {
-			boneId = 0;
+			boneId = -1;
 			D3DXMatrixIdentity(&transformation);
 			D3DXMatrixIdentity(&globalTansformation);
 		}
