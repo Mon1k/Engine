@@ -53,7 +53,6 @@ void Actor::frame(CameraClass* camera, float time)
 		}
 
 		if (parentBone.boneId < 0) {
-			D3DXMatrixIdentity(&m_BoneInfo[i].globalTansformation);
 			continue;
 		}
 
@@ -125,6 +124,7 @@ void Actor::frame(CameraClass* camera, float time)
 					factor = (AnimationTimeTicks - t1) / (t2 - t1);
 					D3DXQUATERNION start4 = joint.rotation[positionIndex].rotation;
 					D3DXQUATERNION end4 = joint.rotation[positionIndex + 1].rotation;
+					D3DXQuaternionIdentity(&quat);
 					D3DXQuaternionSlerp(&quat, &start4, &end4, factor);
 					D3DXQuaternionNormalize(&quat, &quat);
 				}
@@ -134,7 +134,7 @@ void Actor::frame(CameraClass* camera, float time)
 				D3DXMatrixIdentity(&rotation);
 				D3DXMatrixRotationQuaternion(&rotation, &quat);
 
-				nodeTransformation = scaling * rotation * translation;
+				nodeTransformation = rotation * translation;
 				//nodeTransformation = translation * rotation * scaling;
 				found = 1;
 				break;
@@ -153,6 +153,7 @@ void Actor::frame(CameraClass* camera, float time)
 		AbstractModel::ModelType vertex = m_model[i];
 
 		D3DXMATRIX boneTransform;
+		D3DXMatrixIdentity(&boneTransform);
 		boneTransform = m_BoneInfo[m_weights[i].BoneIDs[0]].FinalTransformation *m_weights[i].Weights[0];
 		for (int j = 1; j < 4; j++) {
 			boneTransform += m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation *m_weights[i].Weights[j];

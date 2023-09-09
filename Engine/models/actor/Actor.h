@@ -44,6 +44,10 @@ public:
 		D3DXMATRIX transform;
 		int numFrame;
 		float time;
+
+		KeyFrame() {
+			time = 0;
+		}
 	};
 
 	struct Joint
@@ -85,7 +89,7 @@ public:
 			D3DXMatrixIdentity(&globalTansformation);
 		}
 
-		BoneInfo(const D3DXMATRIX& Offset)
+		BoneInfo(D3DXMATRIX Offset)
 		{
 			OffsetMatrix = Offset;
 			D3DXMatrixIdentity(&transformation);

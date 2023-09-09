@@ -98,13 +98,13 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 	for (size_t i = 0; i < scene->mNumAnimations; ++i) {
 		const aiAnimation* assimp_anim = scene->mAnimations[i];
-		animations[i].name = assimp_anim->mName.C_Str();
 
 		float tickPerSecond = assimp_anim->mTicksPerSecond;
 		if (tickPerSecond < 0.001) {
 			tickPerSecond = 25.0f;
 		}
 
+		animations[i].name = assimp_anim->mName.C_Str();
 		animations[i].totalTime = assimp_anim->mDuration;
 		animations[i].tick = tickPerSecond;
 		animations[i].currentTime = 0;
