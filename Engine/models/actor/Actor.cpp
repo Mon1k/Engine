@@ -141,7 +141,7 @@ void Actor::frame(CameraClass* camera, float time)
 			}
 		}
 
-		D3DXMATRIX globalTransformation = parentBone.globalTansformation *nodeTransformation;
+		D3DXMATRIX globalTransformation = parentBone.globalTansformation * nodeTransformation;
 
 		m_BoneInfo[i].globalTansformation = globalTransformation;
 		if (found != 0) {
