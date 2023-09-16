@@ -23,7 +23,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
 		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
 		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
-	const aiScene* scene = importer.ReadFile(filename, aiProcess_GenSmoothNormals | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_Triangulate | aiProcess_PopulateArmatureData/*aiProcess_Triangulate | aiProcess_PopulateArmatureData*/);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_ConvertToLeftHanded | aiProcess_GenSmoothNormals | aiProcess_SortByPType | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_Triangulate | aiProcess_PopulateArmatureData/*aiProcess_Triangulate | aiProcess_PopulateArmatureData*/);
 
 	int vertexCount = 0, indexCount = 0;
 	for (size_t i = 0; i < scene->mNumMeshes; ++i)
