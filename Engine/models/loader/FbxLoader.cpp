@@ -23,7 +23,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
 		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
 		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
-	const aiScene* scene = importer.ReadFile(filename, aiProcess_ConvertToLeftHanded | aiProcess_GenSmoothNormals | aiProcess_SortByPType | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_Triangulate | aiProcess_PopulateArmatureData/*aiProcess_Triangulate | aiProcess_PopulateArmatureData*/);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_SortByPType | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_PopulateArmatureData/*aiProcess_Triangulate | aiProcess_PopulateArmatureData*/);
 
 	int vertexCount = 0, indexCount = 0;
 	for (size_t i = 0; i < scene->mNumMeshes; ++i)
@@ -47,8 +47,8 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiMesh* mesh = scene->mMeshes[i];
 		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
 			m_model->m_model[index].x = mesh->mVertices[j].x;
-			m_model->m_model[index].z = mesh->mVertices[j].y;
-			m_model->m_model[index].y = mesh->mVertices[j].z;
+			m_model->m_model[index].y = mesh->mVertices[j].y;
+			m_model->m_model[index].z = mesh->mVertices[j].z;
 
 			if (mesh->mNormals) {
 				m_model->m_model[index].nx = mesh->mNormals[j].x;
@@ -79,10 +79,11 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 				bi.transformation = toD3DXMATRIX(pBone->mNode->mTransformation);
 				bi.boneId = boneId;
 				actor->m_BoneInfo.push_back(bi);
+				CalculateGlobalTransform(actor, bi.name);
 			}
 
 			for (size_t k = 0; k < pBone->mNumWeights; k++) {
-				const aiVertexWeight& vw = pBone->mWeights[k];
+				const aiVertexWeight vw = pBone->mWeights[k];
 				unsigned int GlobalVertexID = baseVertex + vw.mVertexId;
 
 				weights[GlobalVertexID].AddBoneData(boneId, vw.mWeight);
@@ -193,4 +194,34 @@ D3DXMATRIX FbxLoader::toD3DXMATRIX(aiMatrix4x4 matrix)
 		(float)matrix.c1, (float)matrix.c2, (float)matrix.c3, (float)matrix.c4,
 		(float)matrix.d1, (float)matrix.d2, (float)matrix.d3, (float)matrix.d4
 	);
+}
+
+void FbxLoader::CalculateGlobalTransform(Actor* actor, std::string boneName)
+{
+	Actor::BoneInfo* bone;
+	for (size_t i = 0; i < actor->m_BoneInfo.size(); i++) {
+		if (actor->m_BoneInfo[i].name == boneName) {
+			bone = &actor->m_BoneInfo[i];
+			break;
+		}
+	}
+
+	bone->globalTansformation = bone->transformation;
+	std::string name = bone->parent;
+	do {
+		Actor::BoneInfo parentBone;
+		for (size_t i = 0; i < actor->m_BoneInfo.size(); i++) {
+			if (actor->m_BoneInfo[i].name == name) {
+				parentBone = actor->m_BoneInfo[i];
+				break;
+			}
+		}
+
+		if (parentBone.boneId == -1) {
+			break;
+		}
+
+		bone->globalTansformation = parentBone.transformation * bone->globalTansformation;
+		name = parentBone.parent;
+	} while (true);
 }

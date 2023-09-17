@@ -21,6 +21,7 @@ protected:
     D3DXMATRIX toD3DXMATRIX(aiMatrix4x4 matrix);
 
     int FbxLoader::GetBoneId(std::string boneName);
+    void FbxLoader::CalculateGlobalTransform(Actor *actor, std::string boneName);
 
 protected:
     ModelClass* m_model;

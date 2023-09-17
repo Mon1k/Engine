@@ -57,7 +57,7 @@ void Actor::frame(CameraClass* camera, float time)
 		}
 
 		D3DXMATRIX nodeTransformation, translation, scaling, rotation;
-		nodeTransformation = bone.transformation;
+		nodeTransformation = bone.globalTansformation;
 		//D3DXMatrixIdentity(&nodeTransformation);
 
 		int found = 0;
@@ -141,9 +141,9 @@ void Actor::frame(CameraClass* camera, float time)
 			}
 		}
 
-		D3DXMATRIX globalTransformation = parentBone.globalTansformation *nodeTransformation;
+		D3DXMATRIX globalTransformation = nodeTransformation;// parentBone.globalTansformation* nodeTransformation;
 
-		m_BoneInfo[i].globalTansformation = globalTransformation;
+		//m_BoneInfo[i].globalTansformation = globalTransformation;
 		//if (found != 0) {
 		m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation *bone.OffsetMatrix;
 		//}
@@ -154,14 +154,25 @@ void Actor::frame(CameraClass* camera, float time)
 
 		D3DXMATRIX boneTransform;
 		D3DXMatrixIdentity(&boneTransform);
-		boneTransform = m_BoneInfo[m_weights[i].BoneIDs[0]].FinalTransformation;// *m_weights[i].Weights[0];
+		boneTransform = m_BoneInfo[m_weights[i].BoneIDs[0]].FinalTransformation *m_weights[i].Weights[0];
 		for (int j = 1; j < 4; j++) {
-			boneTransform += m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation;// *m_weights[i].Weights[j];
+			boneTransform += m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation *m_weights[i].Weights[j];
 		}
 
 		D3DXVECTOR3 position, from = D3DXVECTOR3(vertex.x, vertex.y, vertex.z);
-		D3DXVec3TransformCoord(&position, &from, &boneTransform);
-		vertices[i].position = position;
+		D3DXVECTOR4 position4, from4 = D3DXVECTOR4(vertex.x, vertex.y, vertex.z, 1.0f);
+		D3DXVec4Transform(&position4, &from4, &boneTransform);
+
+		/*D3DXVECTOR4 position4, out4, from4 = D3DXVECTOR4(vertex.x, vertex.y, vertex.z, 1.0f);
+		D3DXVec4Transform(&out4, &from4, &m_BoneInfo[m_weights[i].BoneIDs[0]].FinalTransformation);
+		position4 = out4 * m_weights[i].Weights[0];
+		for (int j = 1; j < 4; j++) {
+			D3DXVec4Transform(&out4, &from4, &m_BoneInfo[m_weights[i].BoneIDs[j]].FinalTransformation);
+			position4 += out4 * m_weights[i].Weights[j];
+		}*/
+
+
+		vertices[i].position = D3DXVECTOR3(position4.x, position4.y, position4.z);
 		vertices[i].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
 		vertices[i].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
 	}
