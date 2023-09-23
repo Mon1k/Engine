@@ -115,6 +115,7 @@ public:
 	}
 
 	virtual void frame(CameraClass*, float);
+	D3DXMATRIX CalculateGlobalTransform(std::string boneName, D3DXMATRIX transform);
 
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;

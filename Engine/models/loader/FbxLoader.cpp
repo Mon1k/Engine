@@ -159,7 +159,6 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	//actor->addWeights(weights);
 	actor->m_animations = animations;
 	actor->m_weights = weights;
-	int t69 = 1;
 
 	return true;
 }

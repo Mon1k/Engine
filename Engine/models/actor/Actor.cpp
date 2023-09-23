@@ -88,6 +88,7 @@ void Actor::frame(CameraClass* camera, float time)
 				}
 				D3DXMatrixIdentity(&translation);
 				D3DXMatrixTranslation(&translation, out.x, out.y, out.z);
+				D3DXVECTOR3 translationV = out;
 
 				if (joint.scaling.size() > 1) {
 					positionIndex = 0;
@@ -126,7 +127,7 @@ void Actor::frame(CameraClass* camera, float time)
 					D3DXQUATERNION end4 = joint.rotation[positionIndex + 1].rotation;
 					D3DXQuaternionIdentity(&quat);
 					D3DXQuaternionSlerp(&quat, &start4, &end4, factor);
-					D3DXQuaternionNormalize(&quat, &quat);
+					//D3DXQuaternionNormalize(&quat, &quat);
 				}
 				else {
 					quat = joint.rotation[0].rotation;
@@ -134,8 +135,16 @@ void Actor::frame(CameraClass* camera, float time)
 				D3DXMatrixIdentity(&rotation);
 				D3DXMatrixRotationQuaternion(&rotation, &quat);
 
-				//nodeTransformation = rotation * translation;
+				nodeTransformation = scaling * rotation * translation;
 				//nodeTransformation = translation * rotation * scaling;
+				/*nodeTransformation = rotation;
+				nodeTransformation._41 = translationV.x;
+				nodeTransformation._42 = translationV.y;
+				nodeTransformation._43 = translationV.z;*/
+
+				m_BoneInfo[i].transformation = nodeTransformation;
+				nodeTransformation = CalculateGlobalTransform(bone.name, nodeTransformation);
+				m_BoneInfo[i].globalTansformation = nodeTransformation;
 				found = 1;
 				break;
 			}
@@ -144,9 +153,9 @@ void Actor::frame(CameraClass* camera, float time)
 		D3DXMATRIX globalTransformation = nodeTransformation;// parentBone.globalTansformation* nodeTransformation;
 
 		//m_BoneInfo[i].globalTansformation = globalTransformation;
-		//if (found != 0) {
-		m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation *bone.OffsetMatrix;
-		//}
+		if (found != 0) {
+			m_BoneInfo[i].FinalTransformation = m_animations[m_currentAnimation].globalInverseTransformation * globalTransformation *bone.OffsetMatrix;
+		}
 	}
 
 	for (size_t i = 0; i < m_weights.size(); i++) {
@@ -189,4 +198,37 @@ void Actor::frame(CameraClass* camera, float time)
 	vertices = 0;
 
 	m_counter = 0;
+}
+
+D3DXMATRIX Actor::CalculateGlobalTransform(std::string boneName, D3DXMATRIX transform)
+{
+	Actor::BoneInfo bone;
+	for (size_t i = 0; i < m_BoneInfo.size(); i++) {
+		if (m_BoneInfo[i].name == boneName) {
+			bone = m_BoneInfo[i];
+			break;
+		}
+	}
+
+	bone.transformation = transform;
+	bone.globalTansformation = bone.transformation;
+	std::string name = bone.parent;
+	do {
+		Actor::BoneInfo parentBone;
+		for (size_t i = 0; i < m_BoneInfo.size(); i++) {
+			if (m_BoneInfo[i].name == name) {
+				parentBone = m_BoneInfo[i];
+				break;
+			}
+		}
+
+		if (parentBone.boneId == -1) {
+			break;
+		}
+
+		bone.globalTansformation = parentBone.transformation * bone.globalTansformation;
+		name = parentBone.parent;
+	} while (true);
+
+	return bone.globalTansformation;
 }
