@@ -47,8 +47,8 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiMesh* mesh = scene->mMeshes[i];
 		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
 			m_model->m_model[index].x = mesh->mVertices[j].x;
-			m_model->m_model[index].y = mesh->mVertices[j].y;
-			m_model->m_model[index].z = mesh->mVertices[j].z;
+			m_model->m_model[index].y = -mesh->mVertices[j].z;
+			m_model->m_model[index].z = mesh->mVertices[j].y;
 
 			if (mesh->mNormals) {
 				m_model->m_model[index].nx = mesh->mNormals[j].x;
