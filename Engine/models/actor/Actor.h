@@ -98,6 +98,24 @@ public:
 		}
 	};
 
+	struct NodeInfo
+	{
+		D3DXMATRIX transformation;
+		D3DXMATRIX globalTansformation;
+		std::string name;
+
+		NodeInfo* parent;
+		std::vector<NodeInfo*> childs;
+
+		NodeInfo() {
+			parent = nullptr;
+			childs.clear();
+
+			D3DXMatrixIdentity(&transformation);
+			D3DXMatrixIdentity(&globalTansformation);
+		}
+	};
+
 	
 
 public:
@@ -120,6 +138,7 @@ public:
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
 	std::vector<BoneInfo> m_BoneInfo;
+	std::vector<NodeInfo> m_NodeInfo;
 protected:
 	
 
