@@ -106,6 +106,11 @@ public:
 
 		NodeInfo* parent;
 		std::vector<NodeInfo*> childs;
+		
+
+		typedef std::vector<BoneInfo*> mesh;
+		std::vector<mesh> meshs;
+
 
 		NodeInfo() {
 			parent = nullptr;
@@ -134,11 +139,12 @@ public:
 
 	virtual void frame(CameraClass*, float);
 	D3DXMATRIX CalculateGlobalTransform(std::string boneName, D3DXMATRIX transform);
+	void CalculateGlobalTransform(Actor::NodeInfo* node);
 
 	std::vector<Actor::Animation> m_animations;
 	std::vector<Actor::Weight> m_weights;
 	std::vector<BoneInfo> m_BoneInfo;
-	std::vector<NodeInfo> m_NodeInfo;
+	NodeInfo* m_NodeInfo;
 protected:
 	
 

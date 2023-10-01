@@ -222,3 +222,13 @@ D3DXMATRIX Actor::CalculateGlobalTransform(std::string boneName, D3DXMATRIX tran
 
 	return bone.globalTansformation;
 }
+
+void Actor::CalculateGlobalTransform(Actor::NodeInfo* node)
+{
+	node->globalTansformation = node->transformation;
+	Actor::NodeInfo* parent = node->parent;
+	while (parent) {
+		node->globalTansformation = parent->transformation * node->globalTansformation;
+		parent = parent->parent;
+	};
+}

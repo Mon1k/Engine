@@ -4,6 +4,7 @@
 //#include <fbxsdk.h>
 
 #include "assimp/matrix4x4.h"
+#include "assimp/scene.h"
 
 #include <map>
 
@@ -20,12 +21,15 @@ protected:
     unsigned int FindJointIndexUsingName(const std::string& inJointName);
     D3DXMATRIX toD3DXMATRIX(aiMatrix4x4 matrix);
 
-    int FbxLoader::GetBoneId(std::string boneName);
-    void FbxLoader::CalculateGlobalTransform(Actor *actor, std::string boneName);
+    int GetBoneId(std::string boneName);
+    void CalculateGlobalTransform(Actor *actor, std::string boneName);
+    void CalculateGlobalTransform(Actor::NodeInfo* node);
+    Actor::NodeInfo* createTreeNode(aiNode* node, Actor::NodeInfo* parent);
 
 protected:
     ModelClass* m_model;
     Actor::Animation m_animation;
+    const aiScene* m_Scene;
 
     std::map<string, int> m_BoneNameToIndexMap;
     
