@@ -210,7 +210,7 @@ bool SystemClass::frame()
 	if (!m_Graphics->getUiManager()->isFocused()) {
 		int mouseX, mouseY;
 		D3DXVECTOR3 position, rotation;
-		float mouseSensivityX = 4.0f, mouseSensivityY = 18.0f, cameraSensivity = 1.0f;
+		float mouseSensivityX = 18.0f, mouseSensivityY = 18.0f, cameraSensivity = 1.0f;
 		int mouseButtonPress = m_Input->getMouseButtonPress();
 
 		m_Input->GetMouseLocation(mouseX, mouseY);
