@@ -22,9 +22,8 @@ protected:
     D3DXMATRIX toD3DXMATRIX(aiMatrix4x4 matrix);
 
     int GetBoneId(std::string boneName);
-    void CalculateGlobalTransform(Actor *actor, std::string boneName);
-    void CalculateGlobalTransform(Actor::NodeInfo* node);
-    Actor::NodeInfo* createTreeNode(aiNode* node, Actor::NodeInfo* parent);
+    void createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* parent);
+    Actor::NodeInfo* FindNode(Actor* actor, Actor::BoneInfo bone);
 
 protected:
     ModelClass* m_model;

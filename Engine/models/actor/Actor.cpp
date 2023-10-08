@@ -40,8 +40,94 @@ void Actor::frame(CameraClass* camera, float time)
 	VertexType* verticesPtr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
+	D3DXVECTOR3 Z = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	for (size_t i = 0; i < m_NodeInfo.size(); i++) {
+		Actor::NodeInfo* node = m_NodeInfo[i];
+		D3DXMATRIX transform = node->localTransformation;
 
-	for (size_t i = 0; i < m_BoneInfo.size(); i++) {
+		// update animation for all nodes
+		for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {
+			Actor::AnimationNode* aniNode = &m_animations[m_currentAnimation].nodes[j];
+			//D3DXMatrixIdentity(&aniNode->transform);
+
+			for (size_t k = 0; k < aniNode->frames.size() - 1; k++) {
+				Actor::KeyFrame* key = &aniNode->frames[k];
+				Actor::KeyFrame* keyNext = &aniNode->frames[k + 1];
+				if (AnimationTimeTicks >= key->time && AnimationTimeTicks <= keyNext->time) {
+					float lerp = (AnimationTimeTicks - key->time) / (keyNext->time - key->time);
+
+					D3DXVECTOR3 s1 = key->scaling;
+					D3DXVECTOR3 s2 = keyNext->scaling;
+
+					D3DXVECTOR3 p1 = key->position;
+					D3DXVECTOR3 p2 = keyNext->position;
+
+					D3DXQUATERNION r1 = key->rotation;
+					D3DXQUATERNION r2 = keyNext->rotation;
+
+					D3DXVECTOR3 S, P;
+					D3DXQUATERNION R;
+
+					D3DXVec3Lerp(&S, &s1, &s2, lerp);
+					D3DXVec3Lerp(&P, &p1, &p2, lerp);
+					D3DXQuaternionSlerp(&R, &r1, &r2, lerp);
+
+					D3DXMatrixAffineTransformation(&aniNode->transform, S.x, &Z, &R, &P);
+					break;
+				}
+			}
+		}
+
+		// search concret node for get matrix
+		for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {
+			Actor::AnimationNode* aniNode = &m_animations[m_currentAnimation].nodes[j];
+			if (aniNode->name == node->name) {
+				transform = aniNode->transform;
+				break;
+			}
+		}
+
+		node->globalTransformation = transform;
+		if (node->parent) {
+			node->globalTransformation = transform * node->parent->globalTransformation;
+		}
+	}
+
+	std::vector<Actor::BoneInfo*> bones;
+	for (size_t i = 0; i < m_Mesh.size(); i++) {
+		Actor::HierarchyMesh* mesh = m_Mesh[i];
+		for (size_t j = 0; j < mesh->bones.size(); j++) {
+			Actor::BoneInfo* bone = &mesh->bones[j];
+			bone->t = bone->OffsetMatrix * bone->node->globalTransformation;
+			D3DXMatrixTranspose(&bone->t, &bone->t);
+			bones.push_back(bone);
+		}
+	}
+
+	// inside vertex shader must
+	for (size_t i = 0; i < m_weights.size(); i++) {
+		AbstractModel::ModelType vertex = m_model[i];
+		float finalWeight = 1 - (m_weights[i].Weights[0] + m_weights[i].Weights[1] + m_weights[i].Weights[2]);
+
+		Actor::BoneInfo* bone = bones[m_weights[i].BoneIDs[0]];
+		D3DXMATRIX boneTransform = bone->t * m_weights[i].Weights[0];
+
+		bone = bones[m_weights[i].BoneIDs[1]];
+		boneTransform += bone->t * m_weights[i].Weights[1];
+		bone = bones[m_weights[i].BoneIDs[2]];
+		boneTransform += bone->t * m_weights[i].Weights[2];
+		bone = bones[m_weights[i].BoneIDs[3]];
+		boneTransform += bone->t * finalWeight;
+
+		D3DXVECTOR4 position4, from4 = D3DXVECTOR4(vertex.x, vertex.y, vertex.z, 1.0f);
+		D3DXVec4Transform(&position4, &from4, &boneTransform);
+
+		vertices[i].position = D3DXVECTOR3(position4.x, position4.y, position4.z);
+		vertices[i].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
+		vertices[i].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+	}
+
+	/*for (size_t i = 0; i < m_BoneInfo.size(); i++) {
 		Actor::BoneInfo bone = m_BoneInfo[i];
 		Actor::BoneInfo parentBone;
 
@@ -137,14 +223,10 @@ void Actor::frame(CameraClass* camera, float time)
 
 				//nodeTransformation = rotation * scaling * translation;
 				//nodeTransformation = translation * rotation * scaling;
-				/*nodeTransformation = rotation;
-				nodeTransformation._41 = translationV.x;
-				nodeTransformation._42 = translationV.y;
-				nodeTransformation._43 = translationV.z;*/
 
-				//m_BoneInfo[i].transformation = nodeTransformation;
-				//nodeTransformation = CalculateGlobalTransform(bone.name, nodeTransformation);
-				//m_BoneInfo[i].globalTansformation = nodeTransformation;
+				m_BoneInfo[i].transformation = nodeTransformation;
+				nodeTransformation = CalculateGlobalTransform(bone.name, nodeTransformation);
+				m_BoneInfo[i].globalTansformation = nodeTransformation;
 				found = 1;
 				break;
 			}
@@ -175,7 +257,7 @@ void Actor::frame(CameraClass* camera, float time)
 		vertices[i].position = D3DXVECTOR3(position4.x, position4.y, position4.z);
 		vertices[i].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
 		vertices[i].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
-	}
+	}*/
 
 	m_D3D->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
@@ -189,46 +271,4 @@ void Actor::frame(CameraClass* camera, float time)
 	vertices = 0;
 
 	m_counter = 0;
-}
-
-D3DXMATRIX Actor::CalculateGlobalTransform(std::string boneName, D3DXMATRIX transform)
-{
-	Actor::BoneInfo bone;
-	for (size_t i = 0; i < m_BoneInfo.size(); i++) {
-		if (m_BoneInfo[i].name == boneName) {
-			bone = m_BoneInfo[i];
-			break;
-		}
-	}
-
-	bone.globalTansformation = transform;
-	std::string name = bone.parent;
-	do {
-		Actor::BoneInfo parentBone;
-		for (size_t i = 0; i < m_BoneInfo.size(); i++) {
-			if (m_BoneInfo[i].name == name) {
-				parentBone = m_BoneInfo[i];
-				break;
-			}
-		}
-
-		if (parentBone.boneId == -1) {
-			break;
-		}
-
-		bone.globalTansformation = parentBone.transformation * bone.globalTansformation;
-		name = parentBone.parent;
-	} while (true);
-
-	return bone.globalTansformation;
-}
-
-void Actor::CalculateGlobalTransform(Actor::NodeInfo* node)
-{
-	node->globalTansformation = node->transformation;
-	Actor::NodeInfo* parent = node->parent;
-	while (parent) {
-		node->globalTansformation = parent->transformation * node->globalTansformation;
-		parent = parent->parent;
-	};
 }

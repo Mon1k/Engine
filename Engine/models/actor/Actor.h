@@ -11,10 +11,6 @@ class Actor: public Model
 public:
 	struct Weight
 	{
-		int joint;
-		float bias;
-		int index;
-		D3DXVECTOR3 position;
 		std::string name;
 
 		int BoneIDs[4] = { 0 };
@@ -41,24 +37,28 @@ public:
 		D3DXVECTOR3 position;
 		D3DXVECTOR3 scaling;
 		D3DXQUATERNION rotation;
-		D3DXMATRIX transform;
 		int numFrame;
 		float time;
 
 		KeyFrame() {
 			time = 0;
+			numFrame = 0;
+			position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			scaling = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			rotation = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	};
 
-	struct Joint
+	struct AnimationNode
 	{
 		std::string name;
-		int parentId;
-		D3DXMATRIX inverse;
-		std::vector<KeyFrame> animation;
-		std::vector<KeyFrame> position;
-		std::vector<KeyFrame> scaling;
-		std::vector<KeyFrame> rotation;
+		std::vector<KeyFrame> frames;
+
+		D3DXMATRIX transform;
+
+		AnimationNode() {
+			D3DXMatrixIdentity(&transform);
+		}
 	};
 
 	struct Animation
@@ -68,60 +68,53 @@ public:
 		float currentTime;
 		float tick;
 		std::string name;
-		D3DXMATRIX globalInverseTransformation;
-
-		std::vector<Joint> joints;
-	};
-
-	struct BoneInfo
-	{
-		D3DXMATRIX OffsetMatrix;
-		D3DXMATRIX FinalTransformation;
-		D3DXMATRIX transformation;
-		D3DXMATRIX globalTansformation;
-		std::string name;
-		std::string parent;
-		int boneId;
-		
-		BoneInfo() {
-			boneId = -1;
-			D3DXMatrixIdentity(&transformation);
-			D3DXMatrixIdentity(&globalTansformation);
-		}
-
-		BoneInfo(D3DXMATRIX Offset)
-		{
-			OffsetMatrix = Offset;
-			D3DXMatrixIdentity(&transformation);
-			D3DXMatrixIdentity(&globalTansformation);
-			D3DXMatrixIdentity(&FinalTransformation);
-		}
+		std::vector<AnimationNode> nodes;
 	};
 
 	struct NodeInfo
 	{
-		D3DXMATRIX transformation;
-		D3DXMATRIX globalTansformation;
-		std::string name;
+		D3DXMATRIX localTransformation;
+		D3DXMATRIX globalTransformation;
+		std::string name = "none";
 
 		NodeInfo* parent;
-		std::vector<NodeInfo*> childs;
-		
-
-		typedef std::vector<BoneInfo*> mesh;
-		std::vector<mesh> meshs;
-
 
 		NodeInfo() {
 			parent = nullptr;
-			childs.clear();
+			D3DXMatrixIdentity(&localTransformation);
+			D3DXMatrixIdentity(&globalTransformation);
+		}
 
-			D3DXMatrixIdentity(&transformation);
-			D3DXMatrixIdentity(&globalTansformation);
+		void setParent(NodeInfo* parentLink) {
+			parent = parentLink;
+			if (parent) {
+				globalTransformation = localTransformation * parent->globalTransformation;
+			}
 		}
 	};
 
-	
+	struct BoneInfo
+	{
+		std::string name = "none";
+		D3DXMATRIX OffsetMatrix;
+		NodeInfo* node;
+
+		D3DXMATRIX t;	
+
+		BoneInfo() {
+			D3DXMatrixIdentity(&OffsetMatrix);
+		}
+	};
+
+	struct HierarchyMesh
+	{
+		std::string name;
+		int baseVertex;
+
+		NodeInfo* node;
+		std::vector<BoneInfo> bones;
+	};
+
 
 public:
 	Actor();
@@ -138,19 +131,15 @@ public:
 	}
 
 	virtual void frame(CameraClass*, float);
-	D3DXMATRIX CalculateGlobalTransform(std::string boneName, D3DXMATRIX transform);
-	void CalculateGlobalTransform(Actor::NodeInfo* node);
 
-	std::vector<Actor::Animation> m_animations;
-	std::vector<Actor::Weight> m_weights;
-	std::vector<BoneInfo> m_BoneInfo;
-	NodeInfo* m_NodeInfo;
+	std::vector<Animation> m_animations;
+	std::vector<Weight> m_weights;
+	std::vector<NodeInfo*> m_NodeInfo;
+	std::vector<HierarchyMesh*> m_Mesh;
 protected:
 	
-
 	float m_counter;
 	float m_counterTotal;
 	int m_currentAnimation;
 	int m_totalAnimation;
-
 };
