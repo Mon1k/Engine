@@ -13,20 +13,25 @@ void Actor::frame(CameraClass* camera, float time)
 {
 	//return;
 	m_counter += time;
-	m_counterTotal += time;
+	
 	// 1000 / 25 = 40 ms = 25 fps
 	if (m_counter < 40) {
 		return;
 	}
 
-	m_animations[m_currentAnimation].currentTime += m_counter / 1000.0f * m_animations[m_currentAnimation].tick;
-	if (m_animations[m_currentAnimation].currentTime >= m_animations[m_currentAnimation].totalTime) {
-		m_animations[m_currentAnimation].currentTime = 0;
-	}
+	m_counterTotal += fmod(m_counter / 100 * m_animations[m_currentAnimation].tick, m_animations[m_currentAnimation].totalTime);
 
 	float AnimationTimeSec = m_counterTotal / 1000.0f;
 	float TimeInTicks = AnimationTimeSec * m_animations[m_currentAnimation].tick;
 	float AnimationTimeTicks = fmod(TimeInTicks, m_animations[m_currentAnimation].totalTime);
+
+	m_animations[m_currentAnimation].currentTime = m_counterTotal;
+	//m_animations[m_currentAnimation].currentTime += m_counter / 1000.0f * m_animations[m_currentAnimation].tick;
+	if (m_animations[m_currentAnimation].currentTime >= m_animations[m_currentAnimation].maxTime) {
+		m_animations[m_currentAnimation].currentTime = 0;
+		m_counterTotal = 0;
+	}
+	AnimationTimeTicks = m_counterTotal;	
 
 	///
 	struct VertexType
@@ -40,43 +45,43 @@ void Actor::frame(CameraClass* camera, float time)
 	VertexType* verticesPtr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
+
+	// update animation for all nodes
 	D3DXVECTOR3 Z = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {
+		Actor::AnimationNode* aniNode = &m_animations[m_currentAnimation].nodes[j];
+
+		for (size_t k = 0; k < aniNode->frames.size() - 1; k++) {
+			Actor::KeyFrame* key = &aniNode->frames[k];
+			Actor::KeyFrame* keyNext = &aniNode->frames[k + 1];
+			if (AnimationTimeTicks >= key->time && AnimationTimeTicks <= keyNext->time) {
+				float lerp = (AnimationTimeTicks - key->time) / (keyNext->time - key->time);
+
+				D3DXVECTOR3 s1 = key->scaling;
+				D3DXVECTOR3 s2 = keyNext->scaling;
+
+				D3DXVECTOR3 p1 = key->position;
+				D3DXVECTOR3 p2 = keyNext->position;
+
+				D3DXQUATERNION r1 = key->rotation;
+				D3DXQUATERNION r2 = keyNext->rotation;
+
+				D3DXVECTOR3 S, P;
+				D3DXQUATERNION R;
+
+				D3DXVec3Lerp(&S, &s1, &s2, lerp);
+				D3DXVec3Lerp(&P, &p1, &p2, lerp);
+				D3DXQuaternionSlerp(&R, &r1, &r2, lerp);
+
+				D3DXMatrixAffineTransformation(&aniNode->transform, S.x, &Z, &R, &P);
+				break;
+			}
+		}
+	}
+
 	for (size_t i = 0; i < m_NodeInfo.size(); i++) {
 		Actor::NodeInfo* node = m_NodeInfo[i];
 		D3DXMATRIX transform = node->localTransformation;
-
-		// update animation for all nodes
-		for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {
-			Actor::AnimationNode* aniNode = &m_animations[m_currentAnimation].nodes[j];
-			//D3DXMatrixIdentity(&aniNode->transform);
-
-			for (size_t k = 0; k < aniNode->frames.size() - 1; k++) {
-				Actor::KeyFrame* key = &aniNode->frames[k];
-				Actor::KeyFrame* keyNext = &aniNode->frames[k + 1];
-				if (AnimationTimeTicks >= key->time && AnimationTimeTicks <= keyNext->time) {
-					float lerp = (AnimationTimeTicks - key->time) / (keyNext->time - key->time);
-
-					D3DXVECTOR3 s1 = key->scaling;
-					D3DXVECTOR3 s2 = keyNext->scaling;
-
-					D3DXVECTOR3 p1 = key->position;
-					D3DXVECTOR3 p2 = keyNext->position;
-
-					D3DXQUATERNION r1 = key->rotation;
-					D3DXQUATERNION r2 = keyNext->rotation;
-
-					D3DXVECTOR3 S, P;
-					D3DXQUATERNION R;
-
-					D3DXVec3Lerp(&S, &s1, &s2, lerp);
-					D3DXVec3Lerp(&P, &p1, &p2, lerp);
-					D3DXQuaternionSlerp(&R, &r1, &r2, lerp);
-
-					D3DXMatrixAffineTransformation(&aniNode->transform, S.x, &Z, &R, &P);
-					break;
-				}
-			}
-		}
 
 		// search concret node for get matrix
 		for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {

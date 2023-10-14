@@ -66,6 +66,7 @@ public:
 		float frameTime;
 		float totalTime;
 		float currentTime;
+		float maxTime;
 		float tick;
 		std::string name;
 		std::vector<AnimationNode> nodes;

@@ -114,11 +114,12 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		const aiAnimation* assimp_anim = m_Scene->mAnimations[i];
 
 		float tickPerSecond = assimp_anim->mTicksPerSecond;
-		if (tickPerSecond < 0.001) {
+		if (tickPerSecond < 0.001f) {
 			tickPerSecond = 25.0f;
 		}
 
 		animations[i].name = assimp_anim->mName.C_Str();
+		animations[i].maxTime = 0;
 		animations[i].totalTime = assimp_anim->mDuration;
 		animations[i].tick = tickPerSecond;
 		animations[i].currentTime = 0;
@@ -143,15 +144,6 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 					key.position.z = anim_key_position.mValue.z;
 				}
 
-				if (assimp_node_anim->mNumScalingKeys > idx) {
-					const aiVectorKey anim_key_scale = assimp_node_anim->mScalingKeys[idx];
-
-					key.time = anim_key_scale.mTime;
-					key.scaling.x = anim_key_scale.mValue.x;
-					key.scaling.y = anim_key_scale.mValue.y;
-					key.scaling.z = anim_key_scale.mValue.z;
-				}
-
 				if (assimp_node_anim->mNumRotationKeys > idx) {
 					const aiQuatKey anim_key_rotate = assimp_node_anim->mRotationKeys[idx];
 
@@ -162,6 +154,16 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 					key.rotation.w = anim_key_rotate.mValue.w;
 				}
 
+				if (assimp_node_anim->mNumScalingKeys > idx) {
+					const aiVectorKey anim_key_scale = assimp_node_anim->mScalingKeys[idx];
+
+					key.time = anim_key_scale.mTime;
+					key.scaling.x = anim_key_scale.mValue.x;
+					key.scaling.y = anim_key_scale.mValue.y;
+					key.scaling.z = anim_key_scale.mValue.z;
+				}
+
+				animations[i].maxTime = max(animations[i].maxTime, key.time);
 				animationNode.frames.push_back(key);
 			}
 
