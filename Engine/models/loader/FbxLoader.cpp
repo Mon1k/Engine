@@ -79,7 +79,9 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	}
 
 	// process node
-	createTreeNode(m_Scene->mRootNode, actor, nullptr);
+	createTreeNode(m_Scene->mRootNode, actor, nullptr, 0);
+	sort(actor->m_NodeInfo.begin(), actor->m_NodeInfo.end(),
+		[](const Actor::NodeInfo* a, const Actor::NodeInfo* b)->bool {	return a->depth < b->depth; });
 
 	// process skin
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
@@ -209,7 +211,7 @@ D3DXMATRIX FbxLoader::toD3DXMATRIX(aiMatrix4x4 matrix)
 	);
 }
 
-void FbxLoader::createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* parent)
+void FbxLoader::createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* parent, int depth)
 {
 	Actor::NodeInfo* internalNode = new Actor::NodeInfo;
 	internalNode->name = node->mName.C_Str();
@@ -217,6 +219,7 @@ void FbxLoader::createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* pare
 	D3DXMatrixTranspose(&internalNode->localTransformation, &internalNode->localTransformation);
 	internalNode->globalTransformation = internalNode->localTransformation;
 	internalNode->setParent(parent);
+	internalNode->depth = depth;
 
 	actor->m_NodeInfo.push_back(internalNode);
 
@@ -226,7 +229,7 @@ void FbxLoader::createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* pare
 	}
 
 	for (size_t i = 0; i < node->mNumChildren; i++) {
-		createTreeNode(node->mChildren[i], actor, internalNode);
+		createTreeNode(node->mChildren[i], actor, internalNode, depth + 1);
 	}
 }
 

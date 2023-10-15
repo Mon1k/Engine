@@ -79,6 +79,7 @@ public:
 		std::string name = "none";
 
 		NodeInfo* parent;
+		int depth = 0;
 
 		NodeInfo() {
 			parent = nullptr;
