@@ -1,6 +1,8 @@
 #ifndef _ABSTRACTMODEL_H_
 #define _ABSTRACTMODEL_H_
 
+#include <vector>
+
 #include "../AbstractNode.h"
 #include "../d3dclass.h"
 #include "../shaders/AbstractShader.h"
@@ -18,6 +20,7 @@ public:
         float bx, by, bz;
     };
     ModelType* m_model;
+    std::vector<int> m_ModelIndices;
 
 public:
     AbstractModel()

@@ -11,9 +11,7 @@ class Actor: public Model
 public:
 	struct Weight
 	{
-		std::string name;
-
-		int BoneIDs[4] = { 0 };
+		unsigned int BoneIDs[4] = { 0 };
 		float Weights[4] = { 0.0f };
 
 		Weight()
@@ -138,8 +136,8 @@ public:
 	std::vector<Weight> m_weights;
 	std::vector<NodeInfo*> m_NodeInfo;
 	std::vector<HierarchyMesh*> m_Mesh;
+
 protected:
-	
 	float m_counter;
 	float m_counterTotal;
 	int m_currentAnimation;

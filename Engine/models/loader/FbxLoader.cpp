@@ -24,22 +24,20 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
 		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
 	/*m_Scene = importer.ReadFile(filename, aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_SortByPType | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_PopulateArmatureData);*/
-	m_Scene = importer.ReadFile(filename, aiProcess_FlipWindingOrder | aiProcess_MakeLeftHanded | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+	m_Scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_OptimizeMeshes | aiProcess_FlipUVs | aiProcess_FlipWindingOrder | aiProcess_MakeLeftHanded | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
 
-	int vertexCount = 0, indexCount = 0;
+	int vertexCount = 0;
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
 		aiMesh* mesh = m_Scene->mMeshes[i];
 		vertexCount += mesh->mNumVertices;	
 	}
-	indexCount = vertexCount;
 
 	model->setVertexCount(vertexCount);
-	model->setIndexCount(indexCount);
 
 	std::vector<Actor::Weight> weights;
 	weights.resize(vertexCount);
 
-	int index = 0, index2 = 0;
+	int index = 0;
 	int baseVertex = 0;
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
@@ -47,6 +45,8 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	// process mesh
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
 		aiMesh* mesh = m_Scene->mMeshes[i];
+
+		// fill vertices
 		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
 			m_model->m_model[index].x = mesh->mVertices[j].x;
 			m_model->m_model[index].y = mesh->mVertices[j].y;
@@ -70,6 +70,16 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 			index++;
 		}
 
+		// fill indices
+		for (size_t j = 0; j < mesh->mNumFaces; j++) {
+			aiFace face = mesh->mFaces[j];
+			for (size_t k = 0; k < face.mNumIndices; k++) {
+				m_model->m_ModelIndices.push_back(face.mIndices[k]);
+				m_model->m_ModelIndices.back() += baseVertex;
+			}
+		}
+
+		// create mesh
 		Actor::HierarchyMesh* hiearchyMesh = new Actor::HierarchyMesh;
 		hiearchyMesh->name = mesh->mName.C_Str();
 		hiearchyMesh->baseVertex = baseVertex;
@@ -77,6 +87,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 		baseVertex += mesh->mNumVertices;
 	}
+	model->setIndexCount(m_model->m_ModelIndices.size());
 
 	// process node
 	createTreeNode(m_Scene->mRootNode, actor, nullptr, 0);
@@ -86,8 +97,11 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	// process skin
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
 		aiMesh* mesh = m_Scene->mMeshes[i];
-		Actor::HierarchyMesh* hiearchyMesh = actor->m_Mesh[i];
+		if (!mesh->HasBones()) {
+			continue;
+		}
 
+		Actor::HierarchyMesh* hiearchyMesh = actor->m_Mesh[i];
 		for (size_t j = 0; j < mesh->mNumBones; j++) {
 			const aiBone* pBone = mesh->mBones[j];
 
@@ -104,7 +118,6 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 				unsigned int GlobalVertexID = hiearchyMesh->baseVertex + vw.mVertexId;
 
 				weights[GlobalVertexID].AddBoneData(j, vw.mWeight);
-				weights[GlobalVertexID].name = pBone->mName.C_Str();
 			}
 		}
 	}
@@ -136,11 +149,15 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 			for (size_t idx = 0; idx < keyCount; ++idx) {
 				Actor::KeyFrame key;
+				key.position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				key.scaling = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+				key.rotation = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 0.0f);
+				key.time = 0.0f;
 
 				if (assimp_node_anim->mNumPositionKeys > idx) {
 					const aiVectorKey anim_key_position = assimp_node_anim->mPositionKeys[idx];
 
-					key.time = anim_key_position.mTime;
+					key.time = (float)anim_key_position.mTime;
 					key.position.x = anim_key_position.mValue.x;
 					key.position.y = anim_key_position.mValue.y;
 					key.position.z = anim_key_position.mValue.z;
@@ -149,7 +166,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 				if (assimp_node_anim->mNumRotationKeys > idx) {
 					const aiQuatKey anim_key_rotate = assimp_node_anim->mRotationKeys[idx];
 
-					key.time = anim_key_rotate.mTime;
+					key.time = (float)anim_key_rotate.mTime;
 					key.rotation.x = anim_key_rotate.mValue.x;
 					key.rotation.y = anim_key_rotate.mValue.y;
 					key.rotation.z = anim_key_rotate.mValue.z;
@@ -159,7 +176,7 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 				if (assimp_node_anim->mNumScalingKeys > idx) {
 					const aiVectorKey anim_key_scale = assimp_node_anim->mScalingKeys[idx];
 
-					key.time = anim_key_scale.mTime;
+					key.time = (float)anim_key_scale.mTime;
 					key.scaling.x = anim_key_scale.mValue.x;
 					key.scaling.y = anim_key_scale.mValue.y;
 					key.scaling.z = anim_key_scale.mValue.z;
@@ -177,38 +194,6 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 	actor->m_weights = weights;
 
 	return true;
-}
-
-int FbxLoader::GetBoneId(std::string boneName)
-{
-	int BoneIndex = 0;
-
-	if (m_BoneNameToIndexMap.find(boneName) == m_BoneNameToIndexMap.end()) {
-		// Allocate an index for a new bone
-		BoneIndex = (int)m_BoneNameToIndexMap.size();
-		m_BoneNameToIndexMap[boneName] = BoneIndex;
-	}
-	else {
-		BoneIndex = m_BoneNameToIndexMap[boneName];
-	}
-
-	return BoneIndex;
-}
-
-D3DXMATRIX FbxLoader::toD3DXMATRIX(aiMatrix4x4 matrix)
-{
-	/*return D3DXMATRIX(
-		(float)matrix.a1, (float)matrix.b1, (float)matrix.c1, (float)matrix.d1,
-		(float)matrix.a2, (float)matrix.b2, (float)matrix.c2, (float)matrix.d2,
-		(float)matrix.a3, (float)matrix.b3, (float)matrix.c3, (float)matrix.d3,
-		(float)matrix.a4, (float)matrix.b4, (float)matrix.c4, (float)matrix.d4
-	);*/
-	return D3DXMATRIX(
-		(float)matrix.a1, (float)matrix.a2, (float)matrix.a3, (float)matrix.a4,
-		(float)matrix.b1, (float)matrix.b2, (float)matrix.b3, (float)matrix.b4,
-		(float)matrix.c1, (float)matrix.c2, (float)matrix.c3, (float)matrix.c4,
-		(float)matrix.d1, (float)matrix.d2, (float)matrix.d3, (float)matrix.d4
-	);
 }
 
 void FbxLoader::createTreeNode(aiNode* node, Actor* actor, Actor::NodeInfo* parent, int depth)

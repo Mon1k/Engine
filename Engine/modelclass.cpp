@@ -9,7 +9,10 @@ ModelClass::ModelClass(): AbstractModel()
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_TextureArray = 0;
+	
 	m_model = 0;
+	m_ModelIndices.clear();
+
 	m_shader = 0;
 	m_isAlpha = false;
 	m_isShadow = false;
@@ -78,7 +81,8 @@ bool ModelClass::LoadModel(char* filename)
 	} else if (string.rfind(".obj") != std::string::npos) {
 		ObjLoader* loader = new ObjLoader;
 		return loader->load(filename, this);
-	} else/* if (string.rfind(".fbx") != std::string::npos) */{
+	} else {
+		// load with assimp
 		FbxLoader* loader = new FbxLoader;
 		return loader->load(filename, this);
 	}
@@ -134,7 +138,13 @@ bool ModelClass::InitializeBuffers()
 		vertices[i].texture = D3DXVECTOR2(m_model[i].tu, m_model[i].tv);
 		vertices[i].normal = D3DXVECTOR3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
 
-		indices[i] = i;
+		if (!m_ModelIndices.size()) {
+			indices[i] = i;
+		}
+	}
+
+	for (i = 0; i < m_indexCount; i++) {
+		indices[i] = m_ModelIndices[i];
 	}
 
 	// Set up the description of the static vertex buffer.
@@ -309,6 +319,7 @@ void ModelClass::ReleaseModel()
 		delete[] m_model;
 		m_model = 0;
 	}
+	m_ModelIndices.clear();
 
 	if (m_subsets) {
 		m_subsets->Shutdown();
