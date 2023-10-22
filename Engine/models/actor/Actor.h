@@ -132,6 +132,19 @@ public:
 
 	virtual void frame(CameraClass*, float);
 
+	int getCurrentAnimation() {
+		return m_currentAnimation;
+	}
+
+	void setCurrentAnimation(int animation) {
+		if (animation >= 0 && animation < m_animations.size()) {
+			m_currentAnimation = animation;
+		}
+		else {
+			m_currentAnimation = 0;
+		}
+	}
+
 	std::vector<Animation> m_animations;
 	std::vector<Weight> m_weights;
 	std::vector<NodeInfo*> m_NodeInfo;

@@ -10,21 +10,45 @@
 
 bool FbxLoader::load(char* filename, ModelClass* model)
 {
-	m_model = model;
 	Actor* actor = dynamic_cast<Actor*>(model);
 
 	Assimp::Importer importer;
-	//importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_CAMERAS | aiComponent_LIGHTS);
-
-	/*const aiScene* scene = importer.ReadFile(
-		filename, aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals |
-		aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality |
-		aiProcess_LimitBoneWeights | aiProcess_RemoveRedundantMaterials |
-		aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_GenUVCoords |
-		aiProcess_SortByPType | aiProcess_FindDegenerates | aiProcess_FindInvalidData |
-		aiProcess_FindInstances | aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes);*/
-	/*m_Scene = importer.ReadFile(filename, aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes | aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_SortByPType | aiProcess_CalcTangentSpace | aiProcess_FindDegenerates | aiProcess_GenUVCoords | aiProcess_TransformUVCoords | aiProcess_PopulateArmatureData);*/
 	m_Scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_OptimizeMeshes | aiProcess_FlipUVs | aiProcess_FlipWindingOrder | aiProcess_MakeLeftHanded | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
+
+	////
+	// 0 - x, 1 - y, 2 - z
+	int32_t upAxis = 1;
+	int32_t upAxisSign = 1;
+	int32_t frontAxis = 2;
+	int32_t frontAxisSign = 1;
+	int32_t coordAxis = 0;
+	int32_t coordAxisSign = 1;
+
+	// values will only be populated if key exists
+	bool reqMetadataExists = true;
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("UpAxis", upAxis);
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("UpAxisSign", upAxisSign);
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("FrontAxis", frontAxis);
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("FrontAxisSign", frontAxisSign);
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("CoordAxis", coordAxis);
+	reqMetadataExists &= m_Scene->mMetaData->Get<int32_t>("CoordAxisSign", coordAxisSign);
+	if (reqMetadataExists) {
+		aiVector3D uV;
+		aiVector3D fV;
+		aiVector3D rV;
+		uV[upAxis] = upAxisSign;
+		fV[frontAxis] = frontAxisSign;
+		rV[coordAxis] = coordAxisSign;
+		aiMatrix4x4 orientationCorrection = aiMatrix4x4(
+			rV.x, rV.y, rV.z, 0.0f,
+			uV.x, uV.y, uV.z, 0.0f,
+			fV.x, fV.y, fV.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f);
+
+		m_Scene->mRootNode->mTransformation *= orientationCorrection;
+	}
+	////
+
 
 	int vertexCount = 0;
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
@@ -48,24 +72,24 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 		// fill vertices
 		for (size_t j = 0; j < mesh->mNumVertices; ++j) {
-			m_model->m_model[index].x = mesh->mVertices[j].x;
-			m_model->m_model[index].y = mesh->mVertices[j].y;
-			m_model->m_model[index].z = mesh->mVertices[j].z;
+			model->m_model[index].x = mesh->mVertices[j].x;
+			model->m_model[index].y = mesh->mVertices[j].y;
+			model->m_model[index].z = mesh->mVertices[j].z;
 
 			if (mesh->mNormals) {
-				m_model->m_model[index].nx = mesh->mNormals[j].x;
-				m_model->m_model[index].ny = mesh->mNormals[j].y;
-				m_model->m_model[index].nz = mesh->mNormals[j].z;
+				model->m_model[index].nx = mesh->mNormals[j].x;
+				model->m_model[index].ny = mesh->mNormals[j].y;
+				model->m_model[index].nz = mesh->mNormals[j].z;
 			}
 			else {
-				m_model->m_model[index].nx = 0.0f;
-				m_model->m_model[index].ny = 1.0f;
-				m_model->m_model[index].nz = 0.0f;
+				model->m_model[index].nx = 0.0f;
+				model->m_model[index].ny = 1.0f;
+				model->m_model[index].nz = 0.0f;
 			}
 
 			const aiVector3D& pTexCoord = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][j] : Zero3D;
-			m_model->m_model[index].tu = pTexCoord.x;
-			m_model->m_model[index].tv = pTexCoord.y;
+			model->m_model[index].tu = pTexCoord.x;
+			model->m_model[index].tv = pTexCoord.y;
 
 			index++;
 		}
@@ -74,8 +98,8 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 		for (size_t j = 0; j < mesh->mNumFaces; j++) {
 			aiFace face = mesh->mFaces[j];
 			for (size_t k = 0; k < face.mNumIndices; k++) {
-				m_model->m_ModelIndices.push_back(face.mIndices[k]);
-				m_model->m_ModelIndices.back() += baseVertex;
+				model->m_ModelIndices.push_back(face.mIndices[k]);
+				model->m_ModelIndices.back() += baseVertex;
 			}
 		}
 
@@ -87,12 +111,14 @@ bool FbxLoader::load(char* filename, ModelClass* model)
 
 		baseVertex += mesh->mNumVertices;
 	}
-	model->setIndexCount(m_model->m_ModelIndices.size());
+	model->setIndexCount(model->m_ModelIndices.size());
 
 	// process node
 	createTreeNode(m_Scene->mRootNode, actor, nullptr, 0);
 	sort(actor->m_NodeInfo.begin(), actor->m_NodeInfo.end(),
-		[](const Actor::NodeInfo* a, const Actor::NodeInfo* b)->bool {	return a->depth < b->depth; });
+		[](const Actor::NodeInfo* a, const Actor::NodeInfo* b)->bool {
+			return a->depth < b->depth; 
+		});
 
 	// process skin
 	for (size_t i = 0; i < m_Scene->mNumMeshes; ++i) {
