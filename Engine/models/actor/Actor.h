@@ -4,11 +4,11 @@
 #include <string>
 
 #include "../Model.h"
-#include "../loader/AbstractLoader.h"
 
 class Actor: public Model
 {
 public:
+	// wight per vertex
 	struct Weight
 	{
 		unsigned int BoneIDs[4] = { 0 };
@@ -30,6 +30,7 @@ public:
 		}
 	};
 
+	// frame per anim node with matrix transformation
 	struct KeyFrame
 	{
 		D3DXVECTOR3 position;
@@ -47,6 +48,7 @@ public:
 		}
 	};
 
+	// anim node
 	struct AnimationNode
 	{
 		std::string name;
@@ -59,6 +61,7 @@ public:
 		}
 	};
 
+	// animation
 	struct Animation
 	{
 		float frameTime;
@@ -70,6 +73,7 @@ public:
 		std::vector<AnimationNode> nodes;
 	};
 
+	// node
 	struct NodeInfo
 	{
 		D3DXMATRIX localTransformation;
@@ -93,23 +97,26 @@ public:
 		}
 	};
 
+	// bone
 	struct BoneInfo
 	{
 		std::string name = "none";
 		D3DXMATRIX OffsetMatrix;
 		NodeInfo* node;
 
-		D3DXMATRIX t;	
+		D3DXMATRIX transformation;	
 
 		BoneInfo() {
 			D3DXMatrixIdentity(&OffsetMatrix);
 		}
 	};
 
-	struct HierarchyMesh
+	// mesh
+	struct MeshInfo
 	{
 		std::string name;
 		int baseVertex;
+		int count;
 
 		NodeInfo* node;
 		std::vector<BoneInfo> bones;
@@ -124,19 +131,40 @@ public:
 		m_animations.push_back(animation);
 	}
 
-	void addWeights(std::vector<Actor::Weight> weights)
+	void setWeights(std::vector<Actor::Weight> weights)
 	{
-		m_weights.clear();
 		m_weights = weights;
+	}
+
+	void addNode(Actor::NodeInfo* node)
+	{
+		m_NodeInfo.push_back(node);
+	}
+
+	std::vector<Actor::NodeInfo*> getNodes()
+	{
+		return m_NodeInfo;
+	}
+
+	void addMesh(Actor::MeshInfo* mesh)
+	{
+		m_Mesh.push_back(mesh);
+	}
+
+	Actor::MeshInfo* getMesh(int index)
+	{
+		return m_Mesh[index];
 	}
 
 	virtual void frame(CameraClass*, float);
 
-	int getCurrentAnimation() {
+	int getCurrentAnimation()
+	{
 		return m_currentAnimation;
 	}
 
-	void setCurrentAnimation(int animation) {
+	void setCurrentAnimation(int animation)
+	{
 		if (animation >= 0 && animation < m_animations.size()) {
 			m_currentAnimation = animation;
 		}
@@ -145,14 +173,14 @@ public:
 		}
 	}
 
-	std::vector<Animation> m_animations;
-	std::vector<Weight> m_weights;
-	std::vector<NodeInfo*> m_NodeInfo;
-	std::vector<HierarchyMesh*> m_Mesh;
-
 protected:
 	float m_counter;
 	float m_counterTotal;
 	int m_currentAnimation;
 	int m_totalAnimation;
+
+	std::vector<Animation> m_animations;
+	std::vector<Weight> m_weights;
+	std::vector<NodeInfo*> m_NodeInfo;
+	std::vector<MeshInfo*> m_Mesh;
 };

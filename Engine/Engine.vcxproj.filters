@@ -312,6 +312,9 @@
     <ClCompile Include="models\loader\FbxLoader.cpp">
       <Filter>models\loader</Filter>
     </ClCompile>
+    <ClCompile Include="models\loader\AssimpLoader.cpp">
+      <Filter>models\loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -639,6 +642,9 @@
       <Filter>models\actor</Filter>
     </ClInclude>
     <ClInclude Include="models\loader\FbxLoader.h">
+      <Filter>models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="models\loader\AssimpLoader.h">
       <Filter>models\loader</Filter>
     </ClInclude>
   </ItemGroup>

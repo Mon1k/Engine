@@ -2,7 +2,7 @@
 
 #include "models/loader/DsLoader.h"
 #include "models/loader/ObjLoader.h"
-#include "models/loader/FbxLoader.h"
+#include "models/loader/AssimpLoader.h"
 
 ModelClass::ModelClass(): AbstractModel()
 {
@@ -82,8 +82,7 @@ bool ModelClass::LoadModel(char* filename)
 		ObjLoader* loader = new ObjLoader;
 		return loader->load(filename, this);
 	} else {
-		// load with assimp
-		FbxLoader* loader = new FbxLoader;
+		AssimpLoader* loader = new AssimpLoader;
 		return loader->load(filename, this);
 	}
 
@@ -143,8 +142,10 @@ bool ModelClass::InitializeBuffers()
 		}
 	}
 
-	for (i = 0; i < m_indexCount; i++) {
-		indices[i] = m_ModelIndices[i];
+	if (m_ModelIndices.size()) {
+		for (i = 0; i < m_indexCount; i++) {
+			indices[i] = m_ModelIndices[i];
+		}
 	}
 
 	// Set up the description of the static vertex buffer.

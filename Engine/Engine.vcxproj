@@ -106,6 +106,7 @@
     <ClCompile Include="models\foliageclass.cpp" />
     <ClCompile Include="models\Glass.cpp" />
     <ClCompile Include="models\gridclass.cpp" />
+    <ClCompile Include="models\loader\AssimpLoader.cpp" />
     <ClCompile Include="models\loader\DsLoader.cpp" />
     <ClCompile Include="models\loader\FbxLoader.cpp" />
     <ClCompile Include="models\loader\ObjLoader.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="models\Glass.h" />
     <ClInclude Include="models\gridclass.h" />
     <ClInclude Include="models\loader\AbstractLoader.h" />
+    <ClInclude Include="models\loader\AssimpLoader.h" />
     <ClInclude Include="models\loader\DsLoader.h" />
     <ClInclude Include="models\loader\FbxLoader.h" />
     <ClInclude Include="models\loader\ObjLoader.h" />

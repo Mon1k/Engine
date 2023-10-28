@@ -121,6 +121,16 @@ public:
 		}
 	}
 
+	virtual ID3D11Buffer* getVertexBuffer()
+	{
+		return m_vertexBuffer;
+	}
+
+	virtual ID3D11Buffer* getIndexBuffer()
+	{
+		return m_indexBuffer;
+	}
+
 protected:
 	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);

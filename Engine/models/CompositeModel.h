@@ -120,6 +120,11 @@ public:
 		return m_childs;
 	}
 
+	AbstractModel* getByIndex(int index)
+	{
+		return m_childs[index];
+	}
+
 	int GetIndexCount()
 	{
 		int count = 0;
