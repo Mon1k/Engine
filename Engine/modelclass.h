@@ -81,6 +81,10 @@ public:
 	virtual void frame(CameraClass*, float);
 
 	void addSubset(ModelClass* subset);
+	CompositeModel* getSubset()
+	{
+		return m_subsets;
+	}
 
 	virtual int GetTriangleCount()
 	{

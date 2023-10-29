@@ -29,7 +29,8 @@ public:
         m_indexCount = 0;
     }
 
-    virtual void Render(CameraClass* = 0) = 0;
+    virtual void Render() = 0;
+    virtual void Render(CameraClass*) = 0;
     virtual void PreRender(CameraClass*)
     {
     }
@@ -37,7 +38,6 @@ public:
 
     virtual void frame(CameraClass* camera, float time)
     {
-
     }
 
     void setVertexCount(int vertexCount) {

@@ -116,7 +116,8 @@ public:
 		}
 	}
 
-	std::vector<AbstractModel*> getChilds() {
+	std::vector<AbstractModel*> getChilds()
+	{
 		return m_childs;
 	}
 
