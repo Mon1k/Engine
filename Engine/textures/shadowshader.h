@@ -16,28 +16,12 @@ class ShadowShader : public AbstractShader
 private:
 	struct MatrixBufferType
 	{
-		D3DXMATRIX world;
-		D3DXMATRIX view;
-		D3DXMATRIX projection;
-		D3DXMATRIX lightView;
-		D3DXMATRIX lightProjection;
-	};
-
-	struct LightBufferType
-	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
-		float lightIntensity;
-		float isSoftShadow;
-		float isDirection;
-		D3DXVECTOR2 padding;
-	};
-
-	struct LightBufferType2
-	{
-		D3DXVECTOR3 lightPosition;
-		float padding;
+		D3DXMATRIX  f4x4WorldViewProjection;      // World * View * Projection matrix  
+		D3DXMATRIX  f4x4WorldViewProjLight;       // World * ViewLight * Projection Light matrix  
+		D3DXVECTOR4 vShadowMapDimensions;
+		D3DXVECTOR4 vLightDir;
+		float       fSunWidth;
+		float       f3Pad[3];
 	};
 
 public:
@@ -46,8 +30,7 @@ public:
 
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
-		ID3D11ShaderResourceView*, LightClass*);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*);
 
 	void addLights(std::vector<LightClass*>);
 	LightClass* getLight(int index)
@@ -55,13 +38,16 @@ public:
 		return m_lights[index];
 	}
 
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
+	void RenderShader(ID3D11DeviceContext*, int);
+	void RenderShaderDepth(ID3D11DeviceContext*, int);
+
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
-		ID3D11ShaderResourceView*, LightClass*);
-	void RenderShader(ID3D11DeviceContext*, int);
+	
+	
 
 private:
 	ID3D11VertexShader* m_vertexShader2;
@@ -69,10 +55,9 @@ private:
 	
 	ID3D11SamplerState* m_sampleStateWrap;
 	ID3D11SamplerState* m_sampleStateClamp;
+	ID3D11SamplerState* m_sampleStateLinear;
 
 	ID3D11Buffer* m_matrixBuffer;
-	ID3D11Buffer* m_lightBuffer;
-	ID3D11Buffer* m_lightBuffer2;
 
 	std::vector<LightClass*> m_lights;
 };

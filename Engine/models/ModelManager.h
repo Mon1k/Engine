@@ -20,6 +20,7 @@ using namespace std;
 #include "../textureshaderclass.h"
 #include "../textures/blurshaderclass.h"
 #include "../textures/softshadowshaderclass.h"
+#include "../textures/shadowshader.h"
 #include "2d/DebugWindow.h"
 
 #include "../lightshaderclass.h"
@@ -95,6 +96,7 @@ private:
     int m_TriangleCount;
 
     //// for shadow and soft shadow - ugly
+    ShadowShader* m_ShadowShader2;
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
     TextureShaderClass* m_TextureShader;

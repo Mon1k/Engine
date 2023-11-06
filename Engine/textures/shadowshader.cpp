@@ -7,12 +7,11 @@ ShadowShader::ShadowShader()
 	m_vertexShader2 = 0;
 	m_pixelShader = 0;
 	m_layout = 0;
+	
 	m_sampleStateWrap = 0;
-
 	m_sampleStateClamp = 0;
+
 	m_matrixBuffer = 0;
-	m_lightBuffer = 0;
-	m_lightBuffer2 = 0;
 }
 
 ShadowShader::~ShadowShader()
@@ -33,13 +32,12 @@ void ShadowShader::Shutdown()
 
 bool ShadowShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, LightClass* light)
+	LightClass* light)
 {
 	bool result;
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, texture,
-		depthMapTexture, light);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL);
 	if (!result) {
 		return false;
 	}
@@ -116,14 +114,12 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 
 	// Create the vertex shader from the buffer.
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
 	result = device->CreateVertexShader(vertexShaderBuffer2->GetBufferPointer(), vertexShaderBuffer2->GetBufferSize(), NULL, &m_vertexShader2);
-	if (FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -142,21 +138,22 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "TEXCOORD";
+	polygonLayout[1].SemanticName = "NORMAL";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[1].AlignedByteOffset = 12;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticName = "TEXTURE";
 	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].AlignedByteOffset = 24;
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[2].InstanceDataStepRate = 0;
+
 
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -172,11 +169,38 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	vertexShaderBuffer->Release();
 	vertexShaderBuffer = 0;
 
+	vertexShaderBuffer2->Release();
+	vertexShaderBuffer2 = 0;
+
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
 
 	// Create a wrap texture sampler state description.
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	D3D11_SAMPLER_DESC SamDesc;
+	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.MipLODBias = 0.0f;
+	SamDesc.MaxAnisotropy = 1;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
+	SamDesc.MinLOD = 0;
+	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&SamDesc, &m_sampleStateWrap);
+
+	// Point
+	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	device->CreateSamplerState(&SamDesc, &m_sampleStateClamp);
+
+	// Linear
+	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	device->CreateSamplerState(&SamDesc, &m_sampleStateLinear);
+	/*samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -205,7 +229,7 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	result = device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
 	if (FAILED(result)) {
 		return false;
-	}
+	}*/
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -221,51 +245,12 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 		return false;
 	}
 
-	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Setup the description of the light dynamic constant buffer that is in the vertex shader.
-	lightBufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc2.ByteWidth = sizeof(LightBufferType2);
-	lightBufferDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc2.MiscFlags = 0;
-	lightBufferDesc2.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc2, NULL, &m_lightBuffer2);
-	if (FAILED(result)) {
-		return false;
-	}
-
 	return true;
 }
 
 
 void ShadowShader::ShutdownShader()
 {
-	// Release the light constant buffers.
-	if (m_lightBuffer) {
-		m_lightBuffer->Release();
-		m_lightBuffer = 0;
-	}
-
-	if (m_lightBuffer2) {
-		m_lightBuffer2->Release();
-		m_lightBuffer2 = 0;
-	}
-
 	// Release the matrix constant buffer.
 	if (m_matrixBuffer) {
 		m_matrixBuffer->Release();
@@ -295,23 +280,21 @@ void ShadowShader::ShutdownShader()
 
 bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, LightClass* light)
+	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
-	LightBufferType* dataPtr2;
-	LightBufferType2* dataPtr3;
 
 
 	// Transpose the matrices to prepare them for the shader.
-	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
+	/*D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
-	D3DXMatrixTranspose(&lightProjectionMatrix, &lightProjectionMatrix);
+	D3DXMatrixTranspose(&lightProjectionMatrix, &lightProjectionMatrix);*/
 
 	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -323,12 +306,28 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	dataPtr = (MatrixBufferType*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->world = worldMatrix;
-	dataPtr->view = viewMatrix;
-	dataPtr->projection = projectionMatrix;
+	if (texture) {
+		dataPtr->f4x4WorldViewProjection = worldMatrix * viewMatrix * projectionMatrix;
+		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
 
-	dataPtr->lightView = lightViewMatrix;
-	dataPtr->lightProjection = lightProjectionMatrix;
+		D3DXVECTOR3 vLightDir = light->GetDirection();// -light->GetPosition();
+		dataPtr->vLightDir = D3DXVECTOR4(vLightDir.x, vLightDir.y, vLightDir.z, 0.0f);
+		dataPtr->fSunWidth = 2.0f;
+	}
+	else {
+		dataPtr->f4x4WorldViewProjection = worldMatrix * lightViewMatrix * lightProjectionMatrix;
+		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
+	}
+	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjection, &dataPtr->f4x4WorldViewProjection);
+	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
+
+	float g_fShadowMapWidth = 1024.0f;
+	float g_fShadowMapHeight = 1024.0f;
+	dataPtr->vShadowMapDimensions = D3DXVECTOR4(g_fShadowMapWidth,
+		g_fShadowMapHeight,
+		1.0f / g_fShadowMapWidth,
+		1.0f / g_fShadowMapHeight);
+
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_matrixBuffer, 0);
@@ -338,64 +337,36 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-
-	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-
-	deviceContext->PSSetShaderResources(1, 1, &depthMapTexture);
-
-	// Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result)) {
-		return false;
+	if (texture) {
+		deviceContext->PSSetShaderResources(0, 1, &texture);
+		deviceContext->PSSetShaderResources(1, 1, &textureTarget);
 	}
 
-	// Get a pointer to the data in the constant buffer.
-	dataPtr2 = (LightBufferType*)mappedResource.pData;
-
-	// Copy the lighting variables into the constant buffer.
-	dataPtr2->ambientColor = light->GetAmbientColor();
-	dataPtr2->diffuseColor = light->GetDiffuseColor();
-	dataPtr2->lightDirection = light->GetDirection();
-	dataPtr2->lightIntensity = light->getIntensity();
-	dataPtr2->isSoftShadow = (float)Options::soft_shadow;
-	dataPtr2->isDirection = (float)light->isDirection();
-	dataPtr2->padding = D3DXVECTOR2(0.0f, 0.0f);
-
-	// Unlock the constant buffer.
-	deviceContext->Unmap(m_lightBuffer, 0);
-
-	// Set the position of the light constant buffer in the pixel shader.
-	bufferNumber = 0;
-
-	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
-
-	// Lock the second light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer2, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Get a pointer to the data in the constant buffer.
-	dataPtr3 = (LightBufferType2*)mappedResource.pData;
-
-	// Copy the lighting variables into the constant buffer.
-	dataPtr3->lightPosition = light->GetPosition();
-	dataPtr3->padding = 0.0f;
-
-	// Unlock the constant buffer.
-	deviceContext->Unmap(m_lightBuffer2, 0);
-
-	// Set the position of the light constant buffer in the vertex shader.
-	bufferNumber = 1;
-
-	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer2);
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	return true;
 }
 
+
+void ShadowShader::RenderShaderDepth(ID3D11DeviceContext* deviceContext, int indexCount)
+{
+	// Set the vertex input layout.
+	deviceContext->IASetInputLayout(m_layout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	deviceContext->VSSetShader(m_vertexShader2, NULL, 0);
+	deviceContext->PSSetShader(NULL, NULL, 0);
+
+	// Set the sampler states in the pixel shader.
+	/*deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
+	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);*/
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
+	deviceContext->PSSetSamplers(1, 1, &m_sampleStateLinear);
+	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);
+
+	// Render the triangle.
+	deviceContext->DrawIndexed(indexCount, 0, 0);
+}
 
 void ShadowShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
@@ -408,7 +379,9 @@ void ShadowShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 
 	// Set the sampler states in the pixel shader.
 	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
-	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(1, 1, &m_sampleStateLinear);
+	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);
+	
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);

@@ -129,7 +129,6 @@ void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPl
 	D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
 }
 
-
 void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {
 	orthoMatrix = m_orthoMatrix;

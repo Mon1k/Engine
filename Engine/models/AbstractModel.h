@@ -29,7 +29,9 @@ public:
         m_indexCount = 0;
     }
 
-    virtual void Render() = 0;
+    virtual void Render()
+    {
+    }
     virtual void Render(CameraClass*) = 0;
     virtual void PreRender(CameraClass*)
     {

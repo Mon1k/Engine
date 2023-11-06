@@ -20,6 +20,9 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_D3D = d3d;
     m_frustum = frustum;
 
+    m_ShadowShader2 = new ShadowShader;
+    m_ShadowShader2->Initialize(m_D3D->GetDevice());
+
     m_DepthShader = new DepthShaderClass;
     m_DepthShader->Initialize(m_D3D->GetDevice());
 
@@ -71,6 +74,12 @@ void ModelManager::clear()
 void ModelManager::Shutdown()
 {
     clear();
+
+    if (m_ShadowShader2) {
+        m_ShadowShader2->Shutdown();
+        delete m_ShadowShader2;
+        m_ShadowShader2 = 0;
+    }
 
     if (m_DepthShader) {
         m_DepthShader->Shutdown();
@@ -194,6 +203,50 @@ void ModelManager::PreRender(CameraClass* camera)
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
+    size_t size = m_modelsShadow.size();
+    if (size < 1) {
+        return;
+    }
+
+    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
+
+
+    viewMatrix = camera->getViewMatrix();
+    m_D3D->GetProjectionMatrix(projectionMatrix);
+
+
+    // Set the render target to be the render to texture.
+    m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+
+    // Clear the render to texture.
+    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    LightClass* light;
+    for (int i = 0; i < size; i++) {
+        ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
+        // @todo - later calculation for per light
+        light = model->getLight(0);
+        light->GenerateViewMatrix();
+        
+        light->GetViewMatrix(lightViewMatrix);
+        light->GetProjectionMatrix(lightProjectionMatrix);
+        //light->GetOrthoMatrix(lightProjectionMatrix);
+
+        model->Render();
+        /*m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL);
+        m_ShadowShader2->RenderShaderDepth(m_D3D->GetDeviceContext(), model->GetIndexCount());*/
+        m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
+    }
+
+    // Reset the render target back to the original back buffer and not the render to texture anymore.
+    m_D3D->SetBackBufferRenderTarget();
+
+    // Reset the viewport back to the original.
+    m_D3D->ResetViewport();
+}
+
+/*void ModelManager::RenderShadowDepth(CameraClass* camera)
+{
     int size = m_modelsShadow.size();
     if (size < 1) {
         return;
@@ -233,7 +286,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
     // Reset the viewport back to the original.
     m_D3D->ResetViewport();
-}
+}*/
 
 void ModelManager::RenderShadowShader(CameraClass* camera)
 {
@@ -369,13 +422,16 @@ void ModelManager::Render(CameraClass* camera)
             if (m_modelsRender[i]->getAlpha() && !m_modelsRender[i]->isShadow()) {
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
-                if (Options::shadow_enabled && m_modelsRender[i]->isShadow()) {
-                    ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
+                ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
+                if (Options::shadow_enabled && model && model->getLights().size() > 0/* && m_modelsRender[i]->isShadow()*/) {
+                    
                     LightClass* light = model->getLight(0);
                     light->GenerateViewMatrix();
+
                     light->GetViewMatrix(lightViewMatrix);
                     light->GetProjectionMatrix(lightProjectionMatrix);
-
+                    //light->GetOrthoMatrix(lightProjectionMatrix);
+                    
                     if (m_modelsRender[i]->getAlpha()) {
                         m_D3D->TurnOnAlphaBlending();
                     }
@@ -396,7 +452,9 @@ void ModelManager::Render(CameraClass* camera)
                         }
                     }
                     else {
-                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                        m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderTexture->GetShaderResourceView());
+                        m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), model->GetIndexCount());
+                        /*m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
                             
                         // @todo
                         CompositeModel* subset = model->getSubset();
@@ -406,7 +464,7 @@ void ModelManager::Render(CameraClass* camera)
                                 modelSubset->Render();
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
                             }
-                        }
+                        }*/
                     }
 
                     if (m_modelsRender[i]->getAlpha()) {
