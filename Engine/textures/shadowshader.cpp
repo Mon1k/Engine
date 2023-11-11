@@ -138,19 +138,19 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "NORMAL";
+	polygonLayout[1].SemanticName = "TEXTURE";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = 12;
+	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "TEXTURE";
+	polygonLayout[2].SemanticName = "NORMAL";
 	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = 24;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[2].InstanceDataStepRate = 0;
 
@@ -195,6 +195,7 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	device->CreateSamplerState(&SamDesc, &m_sampleStateClamp);
 
 	// Linear
+	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -277,7 +278,6 @@ void ShadowShader::ShutdownShader()
 	AbstractShader::Shutdown();
 }
 
-
 bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
 	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget)
@@ -335,15 +335,15 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
-	// Now set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	if (texture) {
 		deviceContext->PSSetShaderResources(0, 1, &texture);
 		deviceContext->PSSetShaderResources(1, 1, &textureTarget);
+		deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	}
 
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-
+	// Now set the constant buffer in the vertex shader with the updated values.
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	
 	return true;
 }
 
@@ -381,7 +381,6 @@ void ShadowShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &m_sampleStateLinear);
 	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);
-	
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
