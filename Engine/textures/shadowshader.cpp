@@ -37,7 +37,7 @@ bool ShadowShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3
 	bool result;
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL, 1.0f);
 	if (!result) {
 		return false;
 	}
@@ -280,7 +280,7 @@ void ShadowShader::ShutdownShader()
 
 bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget)
+	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget, bool isShadow)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -321,6 +321,7 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjection, &dataPtr->f4x4WorldViewProjection);
 	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 
+	dataPtr->fDepthPower = !isShadow ? 0.0f : 1.0f;
 	float g_fShadowMapWidth = 1024.0f;
 	float g_fShadowMapHeight = 1024.0f;
 	dataPtr->vShadowMapDimensions = D3DXVECTOR4(g_fShadowMapWidth,

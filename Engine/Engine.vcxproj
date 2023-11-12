@@ -157,6 +157,7 @@
     <ClCompile Include="ui\button.cpp" />
     <ClCompile Include="ui\checkbox.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
+    <ClCompile Include="ui\image.cpp" />
     <ClCompile Include="ui\input.cpp" />
     <ClCompile Include="ui\label.cpp" />
     <ClCompile Include="ui\UIManager.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="ui\checkbox.h" />
     <ClInclude Include="ui\cursor.h" />
     <ClInclude Include="ui\group.h" />
+    <ClInclude Include="ui\image.h" />
     <ClInclude Include="ui\input.h" />
     <ClInclude Include="ui\label.h" />
     <ClInclude Include="ui\UIManager.h" />

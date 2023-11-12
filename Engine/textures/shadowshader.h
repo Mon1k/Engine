@@ -21,7 +21,8 @@ private:
 		D3DXVECTOR4 vShadowMapDimensions;
 		D3DXVECTOR4 vLightDir;
 		float       fSunWidth;
-		float       f3Pad[3];
+		float		fDepthPower;
+		float       f3Pad[2];
 	};
 
 public:
@@ -38,7 +39,7 @@ public:
 		return m_lights[index];
 	}
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*);
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, LightClass*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, bool);
 	void RenderShader(ID3D11DeviceContext*, int);
 	void RenderShaderDepth(ID3D11DeviceContext*, int);
 

@@ -53,6 +53,17 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_RenderTextureBlur = new RenderTextureClass;
     m_RenderTextureBlur->Initialize(m_D3D->GetDevice(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight());
 
+
+    D3D11_BLEND_DESC BlendState;
+    ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
+    BlendState.IndependentBlendEnable = FALSE;
+    BlendState.RenderTarget[0].BlendEnable = FALSE;
+    BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    m_D3D->GetDevice()->CreateBlendState(&BlendState, &g_pBlendStateNoBlend);
+
+    BlendState.RenderTarget[0].RenderTargetWriteMask = 0;
+    m_D3D->GetDevice()->CreateBlendState(&BlendState, &g_pBlendStateColorWritesOff);
+
     return true;
 }
 
@@ -214,12 +225,13 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     viewMatrix = camera->getViewMatrix();
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
-
     // Set the render target to be the render to texture.
     m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
     // Clear the render to texture.
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+
+    //m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateColorWritesOff, 0, 0xffffffff);
 
     LightClass* light;
     for (int i = 0; i < size; i++) {
@@ -236,7 +248,18 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL);
         //m_ShadowShader2->RenderShaderDepth(m_D3D->GetDeviceContext(), model->GetIndexCount());
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
+        CompositeModel* subset = model->getSubset();
+        if (subset) {
+            for (int j = 0; j < subset->getChilds().size(); j++) {
+                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
+                modelSubset->Render();
+                m_DepthShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture());
+            }
+        }
     }
+
+
+    //m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateNoBlend, 0, 0xffffffff);
 
     // Reset the render target back to the original back buffer and not the render to texture anymore.
     m_D3D->SetBackBufferRenderTarget();
@@ -423,7 +446,7 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                if (Options::shadow_enabled && model && model->getLights().size() > 0/* && m_modelsRender[i]->isShadow()*/) {
+                if (Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0/* && m_modelsRender[i]->isShadow()*/) {
                     
                     LightClass* light = model->getLight(0);
                     light->GenerateViewMatrix();
@@ -452,9 +475,9 @@ void ModelManager::Render(CameraClass* camera)
                         }
                     }
                     else {
-                        m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderTexture->GetShaderResourceView());
+                        m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), model->isShadow());
                         m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), model->GetIndexCount());
-                        /*m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                        /*m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);*/
                             
                         // @todo
                         CompositeModel* subset = model->getSubset();
@@ -462,9 +485,11 @@ void ModelManager::Render(CameraClass* camera)
                             for (int j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                                /*m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);*/
+                                m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), model->isShadow());
+                                m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount());
                             }
-                        }*/
+                        }
                     }
 
                     if (m_modelsRender[i]->getAlpha()) {

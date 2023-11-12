@@ -315,6 +315,9 @@
     <ClCompile Include="models\loader\AssimpLoader.cpp">
       <Filter>models\loader</Filter>
     </ClCompile>
+    <ClCompile Include="ui\image.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -646,6 +649,9 @@
     </ClInclude>
     <ClInclude Include="models\loader\AssimpLoader.h">
       <Filter>models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\image.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

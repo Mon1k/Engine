@@ -33,11 +33,19 @@ public:
     bool Initialize(D3DClass*, FrustumClass*);
     bool Add(AbstractModel* model);
     void PreRender(CameraClass*);
+    void Render(CameraClass*);
+
+    ////
     void RenderShadowDepth(CameraClass*);
     void RenderShadowShader(CameraClass*);
     void RenderBlurTexture(CameraClass*);
     void RenderBlur(CameraClass*);
-    void Render(CameraClass*);
+    ID3D11ShaderResourceView* getRenderToTexture()
+    {
+        return m_RenderTexture->GetShaderResourceView();
+    }
+    ////
+    
     
     void clear();
     void Shutdown();
@@ -109,6 +117,10 @@ private:
     RenderTextureClass* m_RenderTextureBlurTexture;
     RenderTextureClass* m_RenderTextureBlur;
     std::vector<AbstractModel *> m_modelsShadow;
+
+
+    ID3D11BlendState* g_pBlendStateNoBlend;
+    ID3D11BlendState* g_pBlendStateColorWritesOff;
     ////
 };
 

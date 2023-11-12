@@ -41,9 +41,11 @@ bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHe
 	}
 
 	// Load the texture for this model.
-	result = LoadTexture(device, textureFilename);
-	if (!result) {
-		return false;
+	if (textureFilename) {
+		result = LoadTexture(device, textureFilename);
+		if (!result) {
+			return false;
+		}
 	}
 
 	return true;
@@ -56,8 +58,6 @@ void BitmapClass::Shutdown()
 
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
-
-	return;
 }
 
 bool BitmapClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY)
@@ -298,6 +298,14 @@ bool BitmapClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 	if (!result) {
 		return false;
 	}
+
+	return true;
+}
+
+bool BitmapClass::LoadTextureByResource(ID3D11ShaderResourceView* texture)
+{
+	m_Texture = new TextureClass;
+	m_Texture->setTexture(texture);
 
 	return true;
 }

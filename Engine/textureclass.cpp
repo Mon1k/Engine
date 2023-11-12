@@ -28,6 +28,11 @@ bool TextureClass::Initialize(ID3D11Device* device, WCHAR* filename)
 	return true;
 }
 
+void TextureClass::setTexture(ID3D11ShaderResourceView* texture)
+{
+	m_texture = texture;
+}
+
 void TextureClass::Shutdown()
 {
 	// Release the texture resource.

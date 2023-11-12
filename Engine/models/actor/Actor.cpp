@@ -17,7 +17,7 @@ void Actor::frame(CameraClass* camera, float time)
 
 	// @todo - correct time shift
 	// update time animation
-	m_counterTotal += fmod(m_counter / 50 * m_animations[m_currentAnimation].tick, m_animations[m_currentAnimation].totalTime);
+	m_counterTotal += fmod(m_counter / 1000 * m_animations[m_currentAnimation].tick, m_animations[m_currentAnimation].totalTime);
 
 	float AnimationTimeSec = m_counterTotal / 1000.0f;
 	float TimeInTicks = AnimationTimeSec * m_animations[m_currentAnimation].tick;
