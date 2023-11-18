@@ -37,7 +37,7 @@ bool ShadowShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3
 	bool result;
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL, 1.0f);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, NULL, NULL);
 	if (!result) {
 		return false;
 	}
@@ -195,7 +195,6 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	device->CreateSamplerState(&SamDesc, &m_sampleStateClamp);
 
 	// Linear
-	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -280,7 +279,7 @@ void ShadowShader::ShutdownShader()
 
 bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
-	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget, bool isShadow)
+	LightClass* light, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* textureTarget)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -306,7 +305,7 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	dataPtr = (MatrixBufferType*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	if (texture) {
+	if (textureTarget) {
 		dataPtr->f4x4WorldViewProjection = worldMatrix * viewMatrix * projectionMatrix;
 		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
 
@@ -321,7 +320,6 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjection, &dataPtr->f4x4WorldViewProjection);
 	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 
-	dataPtr->fDepthPower = !isShadow ? 0.0f : 1.0f;
 	float g_fShadowMapWidth = 1024.0f;
 	float g_fShadowMapHeight = 1024.0f;
 	dataPtr->vShadowMapDimensions = D3DXVECTOR4(g_fShadowMapWidth,
@@ -336,13 +334,13 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
-	if (texture) {
+	if (textureTarget) {
 		deviceContext->PSSetShaderResources(0, 1, &texture);
 		deviceContext->PSSetShaderResources(1, 1, &textureTarget);
-		deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+		
 	}
 
-	// Now set the constant buffer in the vertex shader with the updated values.
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	
 	return true;
@@ -361,9 +359,11 @@ void ShadowShader::RenderShaderDepth(ID3D11DeviceContext* deviceContext, int ind
 	// Set the sampler states in the pixel shader.
 	/*deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);*/
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
+	/*deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &m_sampleStateLinear);
-	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);*/
+	ID3D11SamplerState* ppSamplerStates[3] = { m_sampleStateClamp, m_sampleStateLinear, m_sampleStateWrap };
+	deviceContext->PSSetSamplers(0, 3, ppSamplerStates);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
@@ -379,9 +379,11 @@ void ShadowShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
 
 	// Set the sampler states in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
+	/*deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &m_sampleStateLinear);
-	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &m_sampleStateWrap);*/
+	ID3D11SamplerState* ppSamplerStates[3] = { m_sampleStateClamp, m_sampleStateLinear, m_sampleStateWrap };
+	deviceContext->PSSetSamplers(0, 3, ppSamplerStates);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
