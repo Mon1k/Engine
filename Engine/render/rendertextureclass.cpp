@@ -79,7 +79,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 	}*/
 
 	// Initialize the description of the depth buffer.
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+	//ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
 	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = textureWidth;
@@ -95,13 +95,13 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	result = device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
+	result = device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 	if (FAILED(result)) {
 		return false;
 	}
 
 	// Initailze the depth stencil view description.
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+	//ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
 	// Set up the depth stencil view description.
 	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;// DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -150,14 +150,12 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 void RenderTextureClass::Shutdown()
 {
-	if (m_depthStencilView)
-	{
+	if (m_depthStencilView) {
 		m_depthStencilView->Release();
 		m_depthStencilView = 0;
 	}
 
-	if (m_depthStencilBuffer)
-	{
+	if (m_depthStencilBuffer) {
 		m_depthStencilBuffer->Release();
 		m_depthStencilBuffer = 0;
 	}
@@ -184,6 +182,7 @@ void RenderTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
 	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 	ID3D11RenderTargetView* pRTVs[2] = { 0,0 };
 	deviceContext->OMSetRenderTargets(2, pRTVs, m_depthStencilView);
+	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Set the viewport.
 	deviceContext->RSSetViewports(1, &m_viewport);
@@ -199,7 +198,7 @@ void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
 	color[3] = alpha;
 
 	// Clear the back buffer.
-	//deviceContext->ClearRenderTargetView(m_renderTargetView, color);
+	deviceContext->ClearRenderTargetView(m_renderTargetView, color);
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);

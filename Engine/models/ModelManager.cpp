@@ -226,17 +226,21 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     viewMatrix = camera->getViewMatrix();
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
-
-   // m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateColorWritesOff, 0, 0xffffffff);
+    m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateColorWritesOff, 0, 0xffffffff);
 
     // Set the render target to be the render to texture.
     m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
+    D3D11_RECT oldrects[1];
+    UINT num = 1;
+    m_D3D->GetDeviceContext()->RSGetScissorRects(&num, oldrects);
+    num = 1;
+    D3D11_RECT rects[1] = { { 0, UINT(1024), 0, UINT(1024) } };
+    m_D3D->GetDeviceContext()->RSSetScissorRects(1, rects);
+
     // Clear the render to texture.
     //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
-
-    
+    //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.25f, 0.25f, 0.55f);
 
     LightClass* light;
     for (int i = 0; i < size; i++) {
@@ -248,6 +252,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         light->GetViewMatrix(lightViewMatrix);
         light->GetProjectionMatrix(lightProjectionMatrix);
         //light->GetOrthoMatrix(lightProjectionMatrix);
+
 
         model->Render();
         m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), NULL);
@@ -263,13 +268,14 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         }*/
     }
 
+    m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateNoBlend, 0, 0xffffffff);
+
     // Reset the render target back to the original back buffer and not the render to texture anymore.
     m_D3D->SetBackBufferRenderTarget();
 
     // Reset the viewport back to the original.
     m_D3D->ResetViewport();
-
-    //m_D3D->GetDeviceContext()->OMSetBlendState(g_pBlendStateNoBlend, 0, 0xffffffff);
+    m_D3D->GetDeviceContext()->RSSetScissorRects(1, oldrects);
 }
 
 /*void ModelManager::RenderShadowDepth(CameraClass* camera)

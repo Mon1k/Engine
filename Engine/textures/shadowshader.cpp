@@ -237,7 +237,7 @@ bool ShadowShader::InitializeShader(ID3D11Device* device, WCHAR* filename, WCHAR
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
+	//matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
@@ -305,20 +305,25 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	dataPtr = (MatrixBufferType*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	if (textureTarget) {
+	if (texture && textureTarget) {
 		dataPtr->f4x4WorldViewProjection = worldMatrix * viewMatrix * projectionMatrix;
 		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
 
 		D3DXVECTOR3 vLightDir = light->GetDirection();// -light->GetPosition();
 		dataPtr->vLightDir = D3DXVECTOR4(vLightDir.x, vLightDir.y, vLightDir.z, 0.0f);
 		dataPtr->fSunWidth = 2.0f;
+
+		D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjection, &dataPtr->f4x4WorldViewProjection);
+		D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 	}
 	else {
+		D3DXMATRIX worldMatrix2;
+		D3DXMatrixIdentity(&worldMatrix2);
 		dataPtr->f4x4WorldViewProjection = worldMatrix * lightViewMatrix * lightProjectionMatrix;
-		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
+		dataPtr->f4x4WorldViewProjLight = lightViewMatrix * lightProjectionMatrix;
+		//D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 	}
-	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjection, &dataPtr->f4x4WorldViewProjection);
-	D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
+	
 
 	float g_fShadowMapWidth = 1024.0f;
 	float g_fShadowMapHeight = 1024.0f;
@@ -334,10 +339,9 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
-	if (textureTarget) {
+	if (texture && textureTarget) {
 		deviceContext->PSSetShaderResources(0, 1, &texture);
 		deviceContext->PSSetShaderResources(1, 1, &textureTarget);
-		
 	}
 
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
