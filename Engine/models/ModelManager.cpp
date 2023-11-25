@@ -239,7 +239,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     m_D3D->GetDeviceContext()->RSSetScissorRects(1, rects);
 
     // Clear the render to texture.
-    //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
     //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.25f, 0.25f, 0.55f);
 
     LightClass* light;

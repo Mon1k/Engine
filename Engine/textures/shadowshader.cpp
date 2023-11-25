@@ -317,10 +317,7 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 		D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 	}
 	else {
-		D3DXMATRIX worldMatrix2;
-		D3DXMatrixIdentity(&worldMatrix2);
-		dataPtr->f4x4WorldViewProjection = worldMatrix * lightViewMatrix * lightProjectionMatrix;
-		dataPtr->f4x4WorldViewProjLight = lightViewMatrix * lightProjectionMatrix;
+		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
 		//D3DXMatrixTranspose(&dataPtr->f4x4WorldViewProjLight, &dataPtr->f4x4WorldViewProjLight);
 	}
 	
