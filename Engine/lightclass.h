@@ -59,9 +59,10 @@ private:
 	D3DXVECTOR4 m_specularColor;
 	float m_specularPower;
 	float m_intensity;
-	D3DXVECTOR3 m_position;
 
+	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_lookAt;
+
 	D3DXMATRIX m_viewMatrix;
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_orthoMatrix;

@@ -309,7 +309,8 @@ bool ShadowShader::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXM
 		dataPtr->f4x4WorldViewProjection = worldMatrix * viewMatrix * projectionMatrix;
 		dataPtr->f4x4WorldViewProjLight = worldMatrix * lightViewMatrix * lightProjectionMatrix;
 
-		D3DXVECTOR3 vLightDir = light->GetDirection();// -light->GetPosition();
+		D3DXVECTOR3 vLightDir = light->getLookAt() - light->GetPosition();
+		//D3DXVECTOR3 vLightDir = light->GetDirection();
 		dataPtr->vLightDir = D3DXVECTOR4(vLightDir.x, vLightDir.y, vLightDir.z, 0.0f);
 		dataPtr->fSunWidth = 2.0f;
 
