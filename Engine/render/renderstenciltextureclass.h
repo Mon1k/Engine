@@ -1,15 +1,15 @@
-#ifndef _RENDERTEXTURECLASS_H_
-#define _RENDERTEXTURECLASS_H_
+#ifndef _RenderStencilTextureClass_H_
+#define _RenderStencilTextureClass_H_
 
 #include <d3d11.h>
 #include <d3dx10math.h>
 
-class RenderTextureClass
+class RenderStencilTextureClass
 {
 public:
-	RenderTextureClass();
-	RenderTextureClass(const RenderTextureClass&);
-	~RenderTextureClass();
+	RenderStencilTextureClass();
+	RenderStencilTextureClass(const RenderStencilTextureClass&);
+	~RenderStencilTextureClass();
 
 	bool Initialize(ID3D11Device*, int, int);
 	bool InitializeFull(ID3D11Device*, int, int, float, float);

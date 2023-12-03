@@ -1,6 +1,6 @@
-#include "rendertextureclass.h"
+#include "RenderStencilTextureClass.h"
 
-RenderTextureClass::RenderTextureClass()
+RenderStencilTextureClass::RenderStencilTextureClass()
 {
 	m_renderTargetTexture = 0;
 	m_renderTargetView = 0;
@@ -9,21 +9,21 @@ RenderTextureClass::RenderTextureClass()
 }
 
 
-RenderTextureClass::RenderTextureClass(const RenderTextureClass& other)
+RenderStencilTextureClass::RenderStencilTextureClass(const RenderStencilTextureClass& other)
 {
 }
 
 
-RenderTextureClass::~RenderTextureClass()
+RenderStencilTextureClass::~RenderStencilTextureClass()
 {
 }
 
-bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight)
+bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight)
 {
 	return InitializeFull(device, textureWidth, textureHeight, 1000.0f, 0.1f);
 }
 
-bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
+bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
@@ -66,21 +66,6 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 		return false;
 	}
 
-	// Setup the description of the shader resource view.
-	/*shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-	// Create the shader resource view.
-	result = device->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
-	if (FAILED(result)) {
-		return false;
-	}*/
-
-	// Initialize the description of the depth buffer.
-	//ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-
 	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
@@ -100,8 +85,6 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 		return false;
 	}
 
-	// Initailze the depth stencil view description.
-	//ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
 	// Set up the depth stencil view description.
 	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;// DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -129,8 +112,6 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 
 
-
-
 	// Setup the viewport for rendering.
 	m_viewport.Width = (float)textureWidth;
 	m_viewport.Height = (float)textureHeight;
@@ -148,7 +129,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 	return true;
 }
 
-void RenderTextureClass::Shutdown()
+void RenderStencilTextureClass::Shutdown()
 {
 	if (m_depthStencilView) {
 		m_depthStencilView->Release();
@@ -176,7 +157,7 @@ void RenderTextureClass::Shutdown()
 	}
 }
 
-void RenderTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
+void RenderStencilTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
@@ -188,7 +169,7 @@ void RenderTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
 	deviceContext->RSSetViewports(1, &m_viewport);
 }
 
-void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
+void RenderStencilTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
 	float red, float green, float blue, float alpha)
 {
 	float color[4];
@@ -204,17 +185,17 @@ void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
 	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-ID3D11ShaderResourceView* RenderTextureClass::GetShaderResourceView()
+ID3D11ShaderResourceView* RenderStencilTextureClass::GetShaderResourceView()
 {
 	return m_shaderResourceView;
 }
 
-void RenderTextureClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
+void RenderStencilTextureClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {
 	projectionMatrix = m_projectionMatrix;
 }
 
-void RenderTextureClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
+void RenderStencilTextureClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {
 	orthoMatrix = m_orthoMatrix;
 }
