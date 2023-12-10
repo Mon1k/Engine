@@ -204,6 +204,19 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 		return false;
 	}
 
+	D3D11_SAMPLER_DESC SamDesc;
+	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.MipLODBias = 0.0f;
+	SamDesc.MaxAnisotropy = 1;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
+	SamDesc.MinLOD = 0;
+	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&SamDesc, &m_SamplePointCmp);
+
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
@@ -406,6 +419,7 @@ void ShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int ind
 	// Set the sampler states in the pixel shader.
 	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &m_SamplePointCmp);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
