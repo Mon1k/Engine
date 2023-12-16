@@ -3,6 +3,18 @@ Texture2D depthMapTexture : register(t1);
 
 SamplerState SampleTypeClamp : register(s0);
 SamplerState SampleTypeWrap : register(s1);
+SamplerComparisonState SamplePointCmp : register(s2);
+
+SamplerComparisonState cmpSampler
+{
+   // sampler state
+    Filter = COMPARISON_MIN_MAG_MIP_LINEAR;
+    AddressU = MIRROR;
+    AddressV = MIRROR;
+ 
+   // sampler comparison state
+    ComparisonFunc = LESS_EQUAL;
+};
 
 cbuffer LightBuffer
 {
@@ -24,17 +36,101 @@ struct PixelInputType
     float3 lightPos : TEXCOORD2;
 };
 
+float4 shadow2DProj(Texture2D samp, float4 s)
+{
+    return samp.SampleCmp(SamplePointCmp, s.xy / s.w, s.z / s.w);
+}
 
 float lookup(float2 offSet, float4 ShadowCoord)
 {
     float xPixelOffset = 1 / 1024;
     float yPixelOffset = 1 / 1024;
     
-	// Values are multiplied by ShadowCoord.w because shadow2DProj does a W division for us.
-    return tex2Dproj(depthMapTexture, ShadowCoord + float4(offSet.x * xPixelOffset * ShadowCoord.w, offSet.y * yPixelOffset * ShadowCoord.w, 0.05, 0.0)).w;
+    return shadow2DProj(depthMapTexture, ShadowCoord + float4(offSet.x * xPixelOffset * ShadowCoord.w, offSet.y * yPixelOffset * ShadowCoord.w, 0.05, 0.0)).w;
+}
+
+float2 texOffset(int u, int v)
+{
+    return float2(u * 1.0f / 1024, v * 1.0f / 1024);
 }
 
 float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
+{
+    float bias;
+    float4 color;
+    float2 projectTexCoord;
+    float depthValue;
+    float lightDepthValue;
+    float intensity;
+    float4 textureColor;
+    float shadow;
+
+    bias = 0.000001f;
+    color = ambientColor;
+
+    projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+
+     // Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y)) {
+        // Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
+        depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
+
+        // Calculate the depth of the light.
+        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+        lightDepthValue = lightDepthValue - bias;
+        
+        intensity = saturate(dot(input.normal, -lightDirection));
+        
+
+        // Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this pixel.
+        // If the light is in front of the object then light the pixel, if not then shadow this pixel since an object (occluder) is casting a shadow on it.
+        if (lightDepthValue < depthValue) {
+            if (intensity > 0.0f) {
+                // object with shadow but not shadow
+                // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+                color += (diffuseColor * intensity * lightIntensity);
+                color = saturate(color);
+            }
+        } else {
+            // frustum view light
+            // outside view frustum light as normal light
+            if (depthValue == 0.0f) {
+                color += (diffuseColor * intensity * lightIntensity);
+                color = saturate(color);
+                
+            // shadow
+            } else {
+                shadow = 0;
+                float x, y;
+                for (y = -1.5; y <= 1.5;  y += 1.0) {
+                    for (x = -1.5; x <= 1.5; x += 1.0) {
+                        shadow += depthMapTexture.SampleCmpLevelZero(cmpSampler, input.lightViewPosition.xy + texOffset(x, y), lightDepthValue);
+                    }
+                }
+                shadow /= 16;
+                //depthMapTexture.SampleCmpLevelZero(cmpSampler, input.lightViewPosition.xy, depthValue);
+                color += shadow;
+                //color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+            }
+        }
+        
+    // outside frustum light view
+    } else {
+        intensity = saturate(dot(input.normal, -lightDirection));
+        if (intensity > 0.0f) {
+            color += (diffuseColor * intensity * lightIntensity);
+            color = saturate(color);
+        }
+    }
+
+    textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
+    color = color * textureColor;
+
+    return color;
+}
+
+float4 ShadowPixelShader2(PixelInputType input) : SV_TARGET
 {
     float bias;
     float4 color;
@@ -73,13 +169,16 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
             intensity = saturate(dot(input.normal, input.lightPos));
         }
         
-        float x, y; 
+        /*float x, y;
+        float shadow;
         for (y = -3.5; y <= 3.5; y += 1.0) {
             for (x = -3.5; x <= 3.5; x += 1.0) {
-                intensity += lookup(float2(x, y), input.lightViewPosition);
+                shadow += lookup(float2(x, y), input.lightViewPosition);
             }
         }
-        //intensity /= 64.0;
+        shadow /= 64.0;*/
+        //depthMapTexture.SampleCmpLevelZero(SamplePointCmp, input.lightViewPosition.xy, input.lightViewPosition.z);
+        
 
         // Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this pixel.
         // If the light is in front of the object then light the pixel, if not then shadow this pixel since an object (occluder) is casting a shadow on it.
@@ -88,19 +187,29 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
                 if (isSoftShadow) {
                     color = float4(1.0f, 1.0f, 1.0f, 1.0f);
                 } else {
+                    // object with shadow but not shadow
                     // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
                     color += (diffuseColor * intensity * lightIntensity);
                     color = saturate(color);
+                    
                 }
+            } else {
+                return color;
             }
         } else {
+            // frustum view light
             // outside view frustum light as normal light
             if (depthValue == 0.0f) {
                 color += (diffuseColor * intensity * lightIntensity);
                 color = saturate(color);
                 
+            // shadow
+            } else {
+                //color = float4(1.0f, 0.0f, 0.0f, 1.0f);
             }
         }
+        
+    // outside frustum light view
     } else {
         // If this is outside the area of shadow map range then draw things normally with regular lighting.
         intensity = saturate(dot(input.normal, -lightDirection));
