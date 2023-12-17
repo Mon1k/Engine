@@ -230,7 +230,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
     // Clear the render to texture.
     //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
+    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
 
     LightClass* light;
     for (int i = 0; i < size; i++) {

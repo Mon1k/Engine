@@ -205,13 +205,13 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	}
 
 	D3D11_SAMPLER_DESC SamDesc;
-	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
 	SamDesc.MipLODBias = 0.0f;
 	SamDesc.MaxAnisotropy = 1;
-	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.MinLOD = 0;
 	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;

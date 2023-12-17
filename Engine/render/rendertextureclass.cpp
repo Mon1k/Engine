@@ -50,8 +50,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 	// Create the render target texture.
 	result = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
-	if(FAILED(result))
-	{
+	if(FAILED(result)) {
 		return false;
 	}
 
@@ -62,8 +61,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 	// Create the render target view.
 	result = device->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
-	if(FAILED(result))
-	{
+	if(FAILED(result)) {
 		return false;
 	}
 
@@ -75,8 +73,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 	// Create the shader resource view.
 	result = device->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
-	if(FAILED(result))
-	{
+	if(FAILED(result)) {
 		return false;
 	}
 
@@ -98,8 +95,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 	// Create the texture for the depth buffer using the filled out description.
 	result = device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
-	if(FAILED(result))
-	{
+	if(FAILED(result)) {
 		return false;
 	}
 
@@ -113,8 +109,7 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 	// Create the depth stencil view.
 	result = device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	if(FAILED(result))
-	{
+	if(FAILED(result)) {
 		return false;
 	}
 
@@ -137,14 +132,12 @@ bool RenderTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, 
 
 void RenderTextureClass::Shutdown()
 {
-	if (m_depthStencilView)
-	{
+	if (m_depthStencilView) {
 		m_depthStencilView->Release();
 		m_depthStencilView = 0;
 	}
 
-	if (m_depthStencilBuffer)
-	{
+	if (m_depthStencilBuffer) {
 		m_depthStencilBuffer->Release();
 		m_depthStencilBuffer = 0;
 	}
@@ -189,7 +182,7 @@ void RenderTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
 	deviceContext->ClearRenderTargetView(m_renderTargetView, color);
 
 	// Clear the depth buffer.
-	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 ID3D11ShaderResourceView* RenderTextureClass::GetShaderResourceView()

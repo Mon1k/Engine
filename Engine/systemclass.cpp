@@ -49,19 +49,6 @@ bool SystemClass::init()
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
-	// Create the input object. This object will be used to handle reading the keyboard input from the user.
-	m_Input = new InputClass;
-	if (!m_Input) {
-		return false;
-	}
-
-	// Initialize the input object.
-	result = m_Input->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
-		return false;
-	}
-
 	// Create the graphics object. This object will handle rendering all the graphics for this application.
 	m_Graphics = new GraphicsClass;
 	if (!m_Graphics) {
@@ -93,6 +80,19 @@ bool SystemClass::init()
 	result = m_Timer->Initialize();
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the input object. This object will be used to handle reading the keyboard input from the user.
+	m_Input = new InputClass;
+	if (!m_Input) {
+		return false;
+	}
+
+	// Initialize the input object.
+	result = m_Input->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
 		return false;
 	}
 
