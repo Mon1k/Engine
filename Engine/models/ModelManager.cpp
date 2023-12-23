@@ -44,6 +44,9 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_RenderTexture = new RenderTextureClass;
     m_RenderTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
 
+    m_RenderStencilTexture = new RenderStencilTextureClass;
+    m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
+
     m_RenderTextureShadow = new RenderTextureClass;
     m_RenderTextureShadow->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
 
@@ -226,11 +229,14 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
     // Set the render target to be the render to texture.
-    m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-
+    //m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+    
     // Clear the render to texture.
     //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+
+    m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 0.0f);
+    
 
     LightClass* light;
     for (int i = 0; i < size; i++) {
@@ -247,16 +253,16 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), NULL);
         //m_ShadowShader2->RenderShaderDepth(m_D3D->GetDeviceContext(), model->GetIndexCount());
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
-        CompositeModel* subset = model->getSubset();
+        /*CompositeModel* subset = model->getSubset();
         if (subset) {
             for (int j = 0; j < subset->getChilds().size(); j++) {
                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                 modelSubset->Render();
                 m_DepthShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture());
             }
-        }
+        }*/
     }
-
+    
     // Reset the render target back to the original back buffer and not the render to texture anymore.
     m_D3D->SetBackBufferRenderTarget();
 
@@ -428,7 +434,7 @@ void ModelManager::Render(CameraClass* camera)
                     else {
                         //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderTexture->GetShaderResourceView());
                         //m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), model->GetIndexCount());
-                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                             
                         // @todo
                         CompositeModel* subset = model->getSubset();
@@ -436,7 +442,7 @@ void ModelManager::Render(CameraClass* camera)
                             for (int j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                                 /*m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView());
                                 m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount());*/
                             }

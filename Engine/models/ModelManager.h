@@ -15,6 +15,7 @@ using namespace std;
 #include "Model.h"
 
 #include "../render/rendertextureclass.h"
+#include "../render/renderstenciltextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
 #include "../textureshaderclass.h"
@@ -42,7 +43,8 @@ public:
     void RenderBlur(CameraClass*);
     ID3D11ShaderResourceView* getRenderToTexture()
     {
-        return m_RenderTexture->GetShaderResourceView();
+        return m_RenderStencilTexture->GetShaderResourceView();
+        //return m_RenderTexture->GetShaderResourceView();
     }
     ////
     
@@ -113,6 +115,7 @@ private:
     DebugWindowClass* m_WindowTexture;
     
     RenderTextureClass* m_RenderTexture;
+    RenderStencilTextureClass* m_RenderStencilTexture;
     RenderTextureClass* m_RenderTextureShadow;
     RenderTextureClass* m_RenderTextureBlurTexture;
     RenderTextureClass* m_RenderTextureBlur;

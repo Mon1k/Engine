@@ -66,16 +66,20 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 		return false;
 	}
 
+
+
+	//// for stencil
+	
 	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R16_TYPELESS;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.Format = DXGI_FORMAT_R16_TYPELESS;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;// D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
@@ -85,12 +89,11 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 		return false;
 	}
 
-
 	// Set up the depth stencil view description.
-	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;// DXGI_FORMAT_R32_TYPELESS;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Flags = 0;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
-	depthStencilViewDesc.Flags = 0; // del
 
 	// Create the depth stencil view.
 	result = device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
@@ -98,18 +101,16 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 		return false;
 	}
 
-
-
-
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R16_UNORM;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R16_UNORM;// DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	result = device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView);
 	if (FAILED(result)) {
 		return false;
 	}
 
+	////
 
 
 	// Setup the viewport for rendering.
