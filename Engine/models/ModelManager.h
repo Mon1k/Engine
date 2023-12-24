@@ -43,8 +43,8 @@ public:
     void RenderBlur(CameraClass*);
     ID3D11ShaderResourceView* getRenderToTexture()
     {
-        return m_RenderStencilTexture->GetShaderResourceView();
-        //return m_RenderTexture->GetShaderResourceView();
+        //return m_RenderStencilTexture->GetShaderResourceView();
+        return m_RenderTexture->GetShaderResourceView();
     }
     ////
     
