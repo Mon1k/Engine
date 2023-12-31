@@ -71,7 +71,6 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	//// for stencil
 	
 	// Set up the description of the depth buffer.
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
 	depthBufferDesc.MipLevels = 1;
@@ -83,35 +82,20 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
-
-	// Create the texture for the depth buffer using the filled out description.
-	result = device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
+	device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 
 	// Set up the depth stencil view description.
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Flags = 0;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
+	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 
-	// Create the depth stencil view.
-	result = device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	ZeroMemory(&shaderResourceViewDesc, sizeof(shaderResourceViewDesc));
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R16_UNORM;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	result = device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView);
-	if (FAILED(result)) {
-		return false;
-	}
+	device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView);
 
 	////
 

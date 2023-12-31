@@ -225,11 +225,11 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     viewMatrix = camera->getViewMatrix();
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
-    m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+    //m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+    //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
 
-    //m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    //m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 0.55f);
+    m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
     
 
     LightClass* light;
@@ -426,9 +426,9 @@ void ModelManager::Render(CameraClass* camera)
                         }
                     }
                     else {
-                        //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderTexture->GetShaderResourceView());
+                        //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView());
                         //m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), model->GetIndexCount());
-                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                             
                         // @todo
                         CompositeModel* subset = model->getSubset();
@@ -436,7 +436,7 @@ void ModelManager::Render(CameraClass* camera)
                             for (int j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
+                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                                 /*m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView());
                                 m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount());*/
                             }

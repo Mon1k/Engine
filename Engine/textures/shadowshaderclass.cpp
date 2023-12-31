@@ -172,6 +172,8 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
 
+
+	// 1 wrap - linear - texture
 	// Create a wrap texture sampler state description.
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -180,38 +182,40 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1.0;
+	/*samplerDesc.BorderColor[0] = 0;
 	samplerDesc.BorderColor[1] = 0;
 	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.BorderColor[3] = 0;*/
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
 
-	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
-	if (FAILED(result)) {
-		return false;
-	}
-
+	// 0 clamp = shadow
 	// Create a clamp texture sampler state description.
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	/*samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;*/
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
 
-	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
-	if (FAILED(result)) {
-		return false;
-	}
-
+	// 2 PointCmp - cmp
 	D3D11_SAMPLER_DESC SamDesc;
 	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
-	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
-	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	//SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+	//SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+	//SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
 	SamDesc.MipLODBias = 0.0f;
 	SamDesc.MaxAnisotropy = 1;
-	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	//SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.MinLOD = 0;
 	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
