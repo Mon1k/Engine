@@ -14,15 +14,9 @@ using namespace std;
 
 #include "Model.h"
 
-#include "../render/rendertextureclass.h"
 #include "../render/renderstenciltextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
-#include "../textureshaderclass.h"
-#include "../textures/blurshaderclass.h"
-#include "../textures/softshadowshaderclass.h"
-#include "../textures/shadowshader.h"
-#include "2d/DebugWindow.h"
 
 #include "../lightshaderclass.h"
 #include "../lightclass.h"
@@ -35,19 +29,7 @@ public:
     bool Add(AbstractModel* model);
     void PreRender(CameraClass*);
     void Render(CameraClass*);
-
-    ////
     void RenderShadowDepth(CameraClass*);
-    void RenderShadowShader(CameraClass*);
-    void RenderBlurTexture(CameraClass*);
-    void RenderBlur(CameraClass*);
-    ID3D11ShaderResourceView* getRenderToTexture()
-    {
-        //return m_RenderTexture->GetShaderResourceView();
-        return m_RenderStencilTexture->GetShaderResourceView();
-    }
-    ////
-    
     
     void clear();
     void Shutdown();
@@ -105,26 +87,11 @@ private:
     int m_RenderCount;
     int m_TriangleCount;
 
-    //// for shadow and soft shadow - ugly
-    ShadowShader* m_ShadowShader2;
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
-    TextureShaderClass* m_TextureShader;
-    BlurShaderClass* m_BlurShader;
-    SoftShadowShaderClass* m_SoftShadowShader;
-    DebugWindowClass* m_WindowTexture;
-    
-    RenderTextureClass* m_RenderTexture;
     RenderStencilTextureClass* m_RenderStencilTexture;
-    RenderTextureClass* m_RenderTextureShadow;
-    RenderTextureClass* m_RenderTextureBlurTexture;
-    RenderTextureClass* m_RenderTextureBlur;
+
     std::vector<AbstractModel *> m_modelsShadow;
-
-
-    ID3D11BlendState* g_pBlendStateNoBlend;
-    ID3D11BlendState* g_pBlendStateColorWritesOff;
-    ////
 };
 
 #endif

@@ -787,12 +787,6 @@
     <None Include="data\shaders\depth.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="data\shaders\shadow.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="data\shaders\shadow.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="data\shaders\softshadow.ps">
       <Filter>Shader Files</Filter>
     </None>
@@ -803,12 +797,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\projection.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="data\shaders\terrain.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="data\shaders\terrain.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\skydome.ps">
@@ -832,6 +820,12 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="data\shaders\shadow.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\shadow_common.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\terrain.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
   </ItemGroup>

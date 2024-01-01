@@ -789,7 +789,7 @@ void TerrainClass::CopyVertexArray(void* vertexList)
 	memcpy(vertexList, m_vertices, sizeof(VertexType) * m_vertexCount);
 }
 
-void TerrainClass::Render(CameraClass* camera)
+void TerrainClass::Render(CameraClass* camera, ID3D11ShaderResourceView* texture)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
 
@@ -797,6 +797,6 @@ void TerrainClass::Render(CameraClass* camera)
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	TerrainShaderClass* shader = dynamic_cast<TerrainShaderClass*>(m_shader);
-	shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), m_TextureArray);
+	shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), m_TextureArray, texture);
 	m_quadTree->Render(m_shader);
 }

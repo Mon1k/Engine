@@ -315,8 +315,6 @@
     <None Include="data\shaders\reflection.vs" />
     <None Include="data\shaders\refraction.ps" />
     <None Include="data\shaders\refraction.vs" />
-    <None Include="data\shaders\shadow.ps" />
-    <None Include="data\shaders\shadow.vs" />
     <None Include="data\shaders\skydome.ps" />
     <None Include="data\shaders\skydome.vs" />
     <None Include="data\shaders\skyplane.ps" />
@@ -325,8 +323,6 @@
     <None Include="data\shaders\softshadow.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
-    <None Include="data\shaders\terrain.ps" />
-    <None Include="data\shaders\terrain.vs" />
     <None Include="data\shaders\texture.ps" />
     <None Include="data\shaders\texture.vs" />
     <None Include="data\shaders\translate.ps" />
@@ -338,6 +334,8 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="data\shaders\shadow.hlsl" />
+    <FxCompile Include="data\shaders\shadow_common.hlsl" />
+    <FxCompile Include="data\shaders\terrain.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

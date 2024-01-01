@@ -1,354 +1,186 @@
-//--------------------------------------------------------------------------------------
-// File: ContactHardeningShadows11.hlsl
-//
-// These shaders demonstrate the use of the DX11 sm5 instructions
-// for fast high quality contact hardening shadows
-//
-// Contributed by AMD Developer Relations Team
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
+#include "shadow_common.hlsl"
+/*
+Texture2D shaderTexture : register(t0);
+Texture2D depthMapTexture : register(t1);
 
-cbuffer cbConstants : register(b0)
+SamplerState SampleTypeClamp : register(s0);
+SamplerState SampleTypeWrap : register(s1);
+SamplerComparisonState SamplePointCmp : register(s2);*/
+
+cbuffer LightBuffer
 {
-    float4x4 g_f4x4WorldViewProjection; // World * View * Projection matrix
-    float4x4 g_f4x4WorldViewProjLight; // World * ViewLight * Projection Light matrix
-    float4 g_vShadowMapDimensions;
-    float4 g_f4LightDir;
-    float g_fSunWidth;
-    float3 g_f3Padding;
+    float4 m_ambientColor;
+    float4 m_diffuseColor;
+    float3 m_lightDirection;
+    float m_lightIntensity;
+    float m_isSoftShadow;
+    float m_isDirection;
+    float m_ShadowSize;
+    float m_padding;
+};
+
+cbuffer MatrixBuffer
+{
+    matrix worldMatrix;
+    matrix viewMatrix;
+    matrix projectionMatrix;
+    matrix lightViewMatrix;
+    matrix lightProjectionMatrix;
+};
+
+cbuffer LightBuffer2
+{
+    float3 lightPosition;
+    float padding;
+};
+
+
+struct VertexInputType
+{
+    float4 position : POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL;
+};
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL;
+    float4 lightViewPosition : TEXCOORD1;
+    float3 lightPos : TEXCOORD2;
+};
+
+/*
+float2 texOffset(int u, int v)
+{
+    return float2(u * 1.0f / m_ShadowSize, v * 1.0f / m_ShadowSize);
 }
 
-// Textures and Samplers
-
-// Textures
-Texture2D g_txScene : register(t0);
-Texture2D<float> g_txShadowMap : register(t1);
-
-// Samplers
-SamplerState g_SamplePoint : register(s0);
-SamplerState g_SampleLinear : register(s1);
-SamplerComparisonState g_SamplePointCmp : register(s2);
-
-// Vertex & Pixel shader structures
-
-struct VS_RenderSceneInput
+float4 calcShadow(float4 lightViewPosition, float4 defaultColor, float intensity)
 {
-    float3 f3Position : POSITION;
-    float3 f3Normal : NORMAL;
-    float2 f2TexCoord : TEXTURE0;
-};
+    float4 color = 0;
+    float shadow = 0;
+    float bias = 0.000001f;
+    float depthValue;
+    float lightDepthValue;
+    float2 projectTexCoord;
+    
+    projectTexCoord.x = lightViewPosition.x / lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w / 2.0f + 0.5f;
+    
+    // Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y)) {
+        // Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
+        depthValue = 1.0f - depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
 
-struct PS_RenderSceneInput
-{
-    float4 f4Position : SV_Position;
-    float4 f4Diffuse : COLOR0;
-    float2 f2TexCoord : TEXTURE0;
-    float4 f4SMC : TEXTURE1;
-};
-
-struct PS_RenderOutput
-{
-    float4 f4Color : SV_Target0;
-};
-
-#define FILTER_SIZE    11
-#define FS  FILTER_SIZE
-#define FS2 ( FILTER_SIZE / 2 )
-
-// 4 control matrices for a dynamic cubic bezier filter weights matrix
-static const float C3[11][11] =
-{
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-    { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
-};
-
-static const float C2[11][11] =
-{
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0 },
-    { 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-};
-
-static const float C1[11][11] =
-{
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-};
-
-static const float C0[11][11] =
-{
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.8, 1.0, 0.8, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-};
-
-// compute dynamic weight at a certain row, column of the matrix
-float Fw(int r, int c, float fL)
-{
-    return (1.0 - fL) * (1.0 - fL) * (1.0 - fL) * C0[r][c] +
-           fL * fL * fL * C3[r][c] +
-           3.0f * (1.0 - fL) * (1.0 - fL) * fL * C1[r][c] +
-           3.0f * fL * fL * (1.0 - fL) * C2[r][c];
-}
-
-#define BLOCKER_FILTER_SIZE    11
-#define BFS  BLOCKER_FILTER_SIZE
-#define BFS2 ( BLOCKER_FILTER_SIZE / 2 )
-
-#define SUN_WIDTH g_fSunWidth
-   
-// This shader computes the contact hardening shadow filter
-float shadow(float3 tc)
-{
-    float s = 0.0f;
-    float2 stc = (g_vShadowMapDimensions.xy * tc.xy) + float2(0.5, 0.5);
-    float2 tcs = floor(stc);
-    float2 fc;
-    int row;
-    int col;
-    float w = 0.0;
-    float avgBlockerDepth = 0;
-    float blockerCount = 0;
-    float fRatio;
-    float4 v1[FS2 + 1];
-    float2 v0[FS2 + 1];
-    float2 off;
-
-    fc = stc - tcs;
-    tc.xy = tc - (fc * g_vShadowMapDimensions.zw);
-
-    // find number of blockers and sum up blocker depth
-    for (row = -BFS2; row <= BFS2; row += 2)
-    {
-        for (col = -BFS2; col <= BFS2; col += 2)
-        {
-            float4 d4 = g_txShadowMap.GatherRed(g_SamplePoint, tc.xy, int2(col, row));
-            float4 b4 = (tc.zzzz <= d4) ? (0.0).xxxx : (1.0).xxxx;
-
-            blockerCount += dot(b4, (1.0).xxxx);
-            avgBlockerDepth += dot(d4, b4);
-        }
-    }
-
-    // compute ratio using formulas from PCSS
-    if (blockerCount > 0.0)
-    {
-        avgBlockerDepth /= blockerCount;
-        fRatio = saturate(((tc.z - avgBlockerDepth) * SUN_WIDTH) / avgBlockerDepth);
-        fRatio *= fRatio;
-    }
-    else
-    {
-        fRatio = 0.0;
-    }
-
-    // sum up weights of dynamic filter matrix
-    for (row = 0; row < FS; ++row)
-    {
-        for (col = 0; col < FS; ++col)
-        {
-            w += Fw(row, col, fRatio);
-        }
-    }
-
-    // filter shadow map samples using the dynamic weights
-    [unroll(FILTER_SIZE)]
-    for (row = -FS2; row <= FS2; row += 2)
-    {
-        for (col = -FS2; col <= FS2; col += 2)
-        {
-            v1[(col + FS2) / 2] = g_txShadowMap.GatherCmpRed(g_SamplePointCmp, tc.xy, tc.z,
-                                                          int2(col, row));
-          
-            if (col == -FS2)
-            {
-                s += (1 - fc.y) * (v1[0].w * (Fw(row + FS2, 0, fRatio) -
-                                      Fw(row + FS2, 0, fRatio) * fc.x) + v1[0].z *
-                                    (fc.x * (Fw(row + FS2, 0, fRatio) -
-                                      Fw(row + FS2, 1, fRatio)) +
-                                      Fw(row + FS2, 1, fRatio)));
-                s += (fc.y) * (v1[0].x * (Fw(row + FS2, 0, fRatio) -
-                                      Fw(row + FS2, 0, fRatio) * fc.x) +
-                                      v1[0].y * (fc.x * (Fw(row + FS2, 0, fRatio) -
-                                      Fw(row + FS2, 1, fRatio)) +
-                                      Fw(row + FS2, 1, fRatio)));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[0].x * (Fw(row + FS2 - 1, 0, fRatio) -
-                                          Fw(row + FS2 - 1, 0, fRatio) * fc.x) + v0[0].y *
-                                        (fc.x * (Fw(row + FS2 - 1, 0, fRatio) -
-                                          Fw(row + FS2 - 1, 1, fRatio)) +
-                                          Fw(row + FS2 - 1, 1, fRatio)));
-                    s += (fc.y) * (v1[0].w * (Fw(row + FS2 - 1, 0, fRatio) -
-                                          Fw(row + FS2 - 1, 0, fRatio) * fc.x) + v1[0].z *
-                                        (fc.x * (Fw(row + FS2 - 1, 0, fRatio) -
-                                          Fw(row + FS2 - 1, 1, fRatio)) +
-                                          Fw(row + FS2 - 1, 1, fRatio)));
-                }
+        // Calculate the depth of the light.
+        lightDepthValue = lightViewPosition.z / lightViewPosition.w;
+        lightDepthValue -= bias;
+        
+        // inside light frustum
+        // Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this pixel.
+        // If the light is in front of the object then light the pixel, if not then shadow this pixel since an object (occluder) is casting a shadow on it.
+        if (lightDepthValue < depthValue) {
+            if (intensity > 0.0f) {
+                // object with shadow but not shadow
+                // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+                color += defaultColor;
             }
-            else if (col == FS2)
-            {
-                s += (1 - fc.y) * (v1[FS2].w * (fc.x * (Fw(row + FS2, FS - 2, fRatio) -
-                                      Fw(row + FS2, FS - 1, fRatio)) +
-                                      Fw(row + FS2, FS - 1, fRatio)) + v1[FS2].z * fc.x *
-                                      Fw(row + FS2, FS - 1, fRatio));
-                s += (fc.y) * (v1[FS2].x * (fc.x * (Fw(row + FS2, FS - 2, fRatio) -
-                                      Fw(row + FS2, FS - 1, fRatio)) +
-                                      Fw(row + FS2, FS - 1, fRatio)) + v1[FS2].y * fc.x *
-                                      Fw(row + FS2, FS - 1, fRatio));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[FS2].x * (fc.x *
-                                        (Fw(row + FS2 - 1, FS - 2, fRatio) -
-                                          Fw(row + FS2 - 1, FS - 1, fRatio)) +
-                                          Fw(row + FS2 - 1, FS - 1, fRatio)) +
-                                          v0[FS2].y * fc.x * Fw(row + FS2 - 1, FS - 1, fRatio));
-                    s += (fc.y) * (v1[FS2].w * (fc.x *
-                                        (Fw(row + FS2 - 1, FS - 2, fRatio) -
-                                          Fw(row + FS2 - 1, FS - 1, fRatio)) +
-                                          Fw(row + FS2 - 1, FS - 1, fRatio)) +
-                                          v1[FS2].z * fc.x * Fw(row + FS2 - 1, FS - 1, fRatio));
+        } else {
+            // frustum view light
+            // outside shadow but in view frustum light as normal light
+            if (depthValue == 0.0f) {
+                color += defaultColor;
+                
+            // shadow
+            } else /* if (m_lightDirection.z > 0 && input.normal.z <= 0)* {
+                int gradientShadowSize = 7;
+                float gradientShadowSizeLimit = gradientShadowSize / 2;
+                int gradientShadowSizeDelimiter = (gradientShadowSize + 1) * 4;
+    
+                if (!m_isSoftShadow) {
+                    gradientShadowSizeLimit = 0.5;
+                    gradientShadowSizeDelimiter = 1;
                 }
-            }
-            else
-            {
-                s += (1 - fc.y) * (v1[(col + FS2) / 2].w * (fc.x *
-                                    (Fw(row + FS2, col + FS2 - 1, fRatio) -
-                                      Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                                      Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                                      v1[(col + FS2) / 2].z * (fc.x *
-                                    (Fw(row + FS2, col + FS2 - 0, fRatio) -
-                                      Fw(row + FS2, col + FS2 + 1, fRatio)) +
-                                      Fw(row + FS2, col + FS2 + 1, fRatio)));
-                s += (fc.y) * (v1[(col + FS2) / 2].x * (fc.x *
-                                    (Fw(row + FS2, col + FS2 - 1, fRatio) -
-                                      Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                                      Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                                      v1[(col + FS2) / 2].y * (fc.x *
-                                    (Fw(row + FS2, col + FS2 - 0, fRatio) -
-                                      Fw(row + FS2, col + FS2 + 1, fRatio)) +
-                                      Fw(row + FS2, col + FS2 + 1, fRatio)));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[(col + FS2) / 2].x * (fc.x *
-                                        (Fw(row + FS2 - 1, col + FS2 - 1, fRatio) -
-                                          Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                          Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                          v0[(col + FS2) / 2].y * (fc.x *
-                                        (Fw(row + FS2 - 1, col + FS2 - 0, fRatio) -
-                                          Fw(row + FS2 - 1, col + FS2 + 1, fRatio)) +
-                                          Fw(row + FS2 - 1, col + FS2 + 1, fRatio)));
-                    s += (fc.y) * (v1[(col + FS2) / 2].w * (fc.x *
-                                        (Fw(row + FS2 - 1, col + FS2 - 1, fRatio) -
-                                          Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                          Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                          v1[(col + FS2) / 2].z * (fc.x *
-                                        (Fw(row + FS2 - 1, col + FS2 - 0, fRatio) -
-                                          Fw(row + FS2 - 1, col + FS2 + 1, fRatio)) +
-                                          Fw(row + FS2 - 1, col + FS2 + 1, fRatio)));
+                
+                float x, y;
+                for (y = -gradientShadowSizeLimit; y <= gradientShadowSizeLimit; y += 1.0) {
+                    for (x = -gradientShadowSizeLimit; x <= gradientShadowSizeLimit; x += 1.0) {
+                        shadow += depthMapTexture.SampleCmpLevelZero(SamplePointCmp, projectTexCoord.xy + texOffset(x, y), lightDepthValue);
+                    }
                 }
-            }
-            
-            if (row != FS2)
-            {
-                v0[(col + FS2) / 2] = v1[(col + FS2) / 2].xy;
+                shadow /= gradientShadowSizeDelimiter;
+                color += shadow;
             }
         }
+        
+    // outside frustum light view
+    } else if (intensity > 0.0f) {
+        color += defaultColor;
     }
+    
+    return color;
+}*/
 
-    return s / w;
+PixelInputType ShadowVertexShader(VertexInputType input)
+{
+    PixelInputType output;
+    float4 worldPosition;
+    
+    // Change the position vector to be 4 units for proper matrix calculations.
+    input.position.w = 1.0f;
+
+    // Calculate the position of the vertex against the world, view, and projection matrices.
+    output.position = mul(input.position, worldMatrix);
+    output.position = mul(output.position, viewMatrix);
+    output.position = mul(output.position, projectionMatrix);
+
+    // Calculate the position of the vertice as viewed by the light source.
+    output.lightViewPosition = mul(input.position, worldMatrix);
+    output.lightViewPosition = mul(output.lightViewPosition, lightViewMatrix);
+    output.lightViewPosition = mul(output.lightViewPosition, lightProjectionMatrix);
+
+    // Store the texture coordinates for the pixel shader.
+    output.tex = input.tex;
+    
+    // Calculate the normal vector against the world matrix only.
+    output.normal = mul(input.normal, (float3x3) worldMatrix);
+	
+    // Normalize the normal vector.
+    output.normal = normalize(output.normal);
+
+    // Calculate the position of the vertex in the world.
+    worldPosition = mul(input.position, worldMatrix);
+
+    // Determine the light position based on the position of the light and the position of the vertex in the world.
+    output.lightPos = lightPosition.xyz - worldPosition.xyz;
+
+    // Normalize the light position vector.
+    output.lightPos = normalize(output.lightPos);
+
+    return output;
 }
 
-// This shader outputs the pixel's color by passing through the lit 
-// diffuse material color and by evaluating the shadow function
-PS_RenderOutput PS_RenderScene(PS_RenderSceneInput I)
+float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
 {
-    PS_RenderOutput O;
-    float3 LSp = I.f4SMC.xyz / I.f4SMC.w;
-    
-    //transform from RT space to texture space.
-    float2 ShadowTexC = 0.5 * LSp.xy + float2(0.5, 0.5);
-    ShadowTexC.y = 1.0f - ShadowTexC.y;
-    
-    float3 f3TC = float3(ShadowTexC, LSp.z - 0.005f);
-    float fShadow = shadow(f3TC);
+    float4 color;
+    float intensity;
 
-    O.f4Color = (saturate(float4(0.3, 0.3, 0.3, 0.0) +
-                 (fShadow * I.f4Diffuse)) * g_txScene.Sample(g_SampleLinear,
-                                                                 I.f2TexCoord));
+    if (m_isDirection) {
+        intensity = saturate(dot(input.normal, -m_lightDirection));
+    } else {
+        intensity = saturate(dot(input.normal, input.lightPos));
+    }
     
-    return O;
-}
-
-// This shader is a simplified vertex shader used for shadow map rendering
-PS_RenderSceneInput VS_RenderSceneSM(VS_RenderSceneInput I)
-{
-    PS_RenderSceneInput O;
+    float4 defaultColor = m_diffuseColor * intensity * m_lightIntensity;
+    float4 textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex); 
     
-    // Transform the position from object space to homogeneous projection space
-    O.f4Position = mul(float4(I.f3Position, 1.0f), g_f4x4WorldViewProjLight);
-    O.f4Diffuse = (0.0f).xxxx;
-    O.f2TexCoord = I.f2TexCoord;
-
-    return O;
-}
-
-// This shader computes standard transform and lighting
-PS_RenderSceneInput VS_RenderScene(VS_RenderSceneInput I)
-{
-    PS_RenderSceneInput O;
-    float3 f3NormalWorldSpace;
+    g_ShadowSize = m_ShadowSize;
+    g_isSoftShadow = m_isSoftShadow;
     
-    // Transform the position from object space to homogeneous projection space
-    O.f4Position = mul(float4(I.f3Position, 1.0f), g_f4x4WorldViewProjection);
-    
-    // Transform the normal from object space to world space    
-    f3NormalWorldSpace = normalize(I.f3Normal);
-            
-    // Calc diffuse color
-    float3 f3LightDir = normalize(-g_f4LightDir.xyz);
-    O.f4Diffuse = float4(saturate(dot(f3NormalWorldSpace, f3LightDir)).xxx,
-                                1.0f);
-    
-    // pass through tex coords    
-    O.f2TexCoord = I.f2TexCoord;
+    color = m_ambientColor + calcShadow(input.lightViewPosition, defaultColor, intensity, true);
+    color = saturate(color) * textureColor;
 
-    // output position in light space
-    O.f4SMC = mul(float4(I.f3Position, 1), g_f4x4WorldViewProjLight);
-
-    return O;
+    return color;
 }

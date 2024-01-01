@@ -12,7 +12,7 @@ public:
 
 		Options::shadow_depth = 50.0f;
 		Options::shadow_near = 1.0f;
-		Options::soft_shadow = false;
+		Options::soft_shadow = true;
 		Options::shadow_enabled = true;
 
 		Options::full_screen = false;

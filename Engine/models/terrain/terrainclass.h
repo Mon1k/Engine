@@ -45,7 +45,7 @@ public:
 
 	bool Initialize(D3DClass*, FrustumClass*, char*, std::string, ::string);
 	virtual void Shutdown();
-	virtual void Render(CameraClass*);
+	virtual void Render(CameraClass*, ID3D11ShaderResourceView*);
 
 	float getTextureRepeat()
 	{

@@ -1,6 +1,7 @@
 #include "ModelManager.h"
 #include "../Options.h"
 #include "AbstractTarget.h"
+#include "terrain/terrainclass.h"
 
 ModelManager::ModelManager()
 {
@@ -8,11 +9,7 @@ ModelManager::ModelManager()
     m_D3D = 0;
     m_DepthShader = 0;
     m_ShadowShader = 0;
-    m_SoftShadowShader = 0;
-    m_BlurShader = 0;
-    m_RenderTexture = 0;
-    m_RenderTextureShadow = 0;
-    m_RenderTextureBlur = 0;
+    m_RenderStencilTexture = 0;
 }
 
 bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
@@ -20,52 +17,14 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_D3D = d3d;
     m_frustum = frustum;
 
-    m_ShadowShader2 = new ShadowShader;
-    m_ShadowShader2->Initialize(m_D3D->GetDevice());
-
     m_DepthShader = new DepthShaderClass;
     m_DepthShader->Initialize(m_D3D->GetDevice());
 
     m_ShadowShader = new ShadowShaderClass;
     m_ShadowShader->Initialize(m_D3D->GetDevice());
 
-    m_TextureShader = new TextureShaderClass;
-    m_TextureShader->Initialize(m_D3D->GetDevice());
-
-    m_BlurShader = new BlurShaderClass;
-    m_BlurShader->Initialize(m_D3D->GetDevice());
-
-    m_SoftShadowShader = new SoftShadowShaderClass;
-    m_SoftShadowShader->Initialize(m_D3D->GetDevice());
-
-    m_WindowTexture = new DebugWindowClass();
-    m_WindowTexture->Initialize(m_D3D, m_D3D->getScreenWidth(), m_D3D->getScreenHeight(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight());
-
-    m_RenderTexture = new RenderTextureClass;
-    m_RenderTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
-
     m_RenderStencilTexture = new RenderStencilTextureClass;
     m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
-
-    m_RenderTextureShadow = new RenderTextureClass;
-    m_RenderTextureShadow->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height);
-
-    m_RenderTextureBlurTexture = new RenderTextureClass;
-    m_RenderTextureBlurTexture->Initialize(m_D3D->GetDevice(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight());
-
-    m_RenderTextureBlur = new RenderTextureClass;
-    m_RenderTextureBlur->Initialize(m_D3D->GetDevice(), m_D3D->getScreenWidth(), m_D3D->getScreenHeight());
-
-
-    D3D11_BLEND_DESC BlendState;
-    ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
-    BlendState.IndependentBlendEnable = FALSE;
-    BlendState.RenderTarget[0].BlendEnable = FALSE;
-    BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-    m_D3D->GetDevice()->CreateBlendState(&BlendState, &g_pBlendStateNoBlend);
-
-    BlendState.RenderTarget[0].RenderTargetWriteMask = 0;
-    m_D3D->GetDevice()->CreateBlendState(&BlendState, &g_pBlendStateColorWritesOff);
 
     return true;
 }
@@ -89,12 +48,6 @@ void ModelManager::Shutdown()
 {
     clear();
 
-    if (m_ShadowShader2) {
-        m_ShadowShader2->Shutdown();
-        delete m_ShadowShader2;
-        m_ShadowShader2 = 0;
-    }
-
     if (m_DepthShader) {
         m_DepthShader->Shutdown();
         delete m_DepthShader;
@@ -107,54 +60,10 @@ void ModelManager::Shutdown()
         m_ShadowShader = 0;
     }
 
-    if (m_TextureShader) {
-        m_TextureShader->Shutdown();
-        delete m_TextureShader;
-        m_TextureShader = 0;
-    }
-
-    if (m_BlurShader) {
-        m_BlurShader->Shutdown();
-        delete m_BlurShader;
-        m_BlurShader = 0;
-    }
-
-    if (m_SoftShadowShader) {
-        m_SoftShadowShader->Shutdown();
-        delete m_SoftShadowShader;
-        m_SoftShadowShader = 0;
-    }
-
-    if (m_WindowTexture) {
-        m_WindowTexture->Shutdown();
-        delete m_WindowTexture;
-        m_WindowTexture = 0;
-    }
-
-    
-
-    if (m_RenderTexture) {
-        m_RenderTexture->Shutdown();
-        delete m_RenderTexture;
-        m_RenderTexture = 0;
-    }
-
-    if (m_RenderTextureShadow) {
-        m_RenderTextureShadow->Shutdown();
-        delete m_RenderTextureShadow;
-        m_RenderTextureShadow = 0;
-    }
-
-    if (m_RenderTextureBlurTexture) {
-        m_RenderTextureBlurTexture->Shutdown();
-        delete m_RenderTextureBlurTexture;
-        m_RenderTextureBlurTexture = 0;
-    }
-
-    if (m_RenderTextureBlur) {
-        m_RenderTextureBlur->Shutdown();
-        delete m_RenderTextureBlur;
-        m_RenderTextureBlur = 0;
+    if (m_RenderStencilTexture) {
+        m_RenderStencilTexture->Shutdown();
+        delete m_RenderStencilTexture;
+        m_RenderStencilTexture = 0;
     }
 }
 
@@ -208,11 +117,6 @@ void ModelManager::PreRender(CameraClass* camera)
 
     if (m_modelsShadow.size() > 0) {
         RenderShadowDepth(camera);
-        if (Options::soft_shadow) {
-            RenderShadowShader(camera);
-            RenderBlurTexture(camera);
-            RenderBlur(camera);
-        }
     }
 }
 
@@ -224,9 +128,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
     viewMatrix = camera->getViewMatrix();
     m_D3D->GetProjectionMatrix(projectionMatrix);
-
-    //m_RenderTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    //m_RenderTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
 
     m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
     m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
@@ -244,8 +145,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
 
         model->Render();
-        //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), NULL);
-        //m_ShadowShader2->RenderShaderDepth(m_D3D->GetDeviceContext(), model->GetIndexCount());
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         CompositeModel* subset = model->getSubset();
         if (subset) {
@@ -257,119 +156,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         }
     }
     
-    // Reset the render target back to the original back buffer and not the render to texture anymore.
-    m_D3D->SetBackBufferRenderTarget();
-
-    // Reset the viewport back to the original.
-    m_D3D->ResetViewport();
-}
-
-void ModelManager::RenderShadowShader(CameraClass* camera)
-{
-    int size = m_modelsShadow.size();
-    if (size < 1) {
-        return;
-    }
-
-    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
-
-    // Set the render target to be the render to texture.
-    m_RenderTextureShadow->SetRenderTarget(m_D3D->GetDeviceContext());
-
-    // Clear the render to texture.
-    m_RenderTextureShadow->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-    camera->Render();
-
-    camera->GetViewMatrix(viewMatrix);
-    m_D3D->GetProjectionMatrix(projectionMatrix);
-
-    LightClass* light;
-    for (int i = 0; i < size; i++) {
-        ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
-        light = model->getLight(0);
-        light->GenerateViewMatrix();
-        light->GetViewMatrix(lightViewMatrix);
-        light->GetProjectionMatrix(lightProjectionMatrix);
-
-        model->Render();
-        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
-        CompositeModel* subset = model->getSubset();
-        if (subset) {
-            for (int j = 0; j < subset->getChilds().size(); j++) {
-                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
-                modelSubset->Render();
-                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView(), light);
-            }
-        }
-    }
-
-    // Reset the render target back to the original back buffer and not the render to texture anymore.
-    m_D3D->SetBackBufferRenderTarget();
-
-    // Reset the viewport back to the original.
-    m_D3D->ResetViewport();
-}
-
-void ModelManager::RenderBlurTexture(CameraClass* camera)
-{
-    if (m_modelsShadow.size() < 1) {
-        return;
-    }
-
-    D3DXMATRIX baseViewMatrix, orthoMatrix, worldMatrix;
-
-    // Set the render target to be the render to texture.
-    m_RenderTextureBlurTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-
-    // Clear the render to texture.
-    m_RenderTextureBlurTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-    m_D3D->GetWorldMatrix(worldMatrix);
-    baseViewMatrix = camera->getBaseViewMatrix();
-    m_RenderTextureBlurTexture->GetOrthoMatrix(orthoMatrix);
-
-    m_D3D->TurnZBufferOff();
-
-    m_WindowTexture->Render(0, 0);
-    m_TextureShader->Render(m_D3D->GetDeviceContext(), m_WindowTexture->GetIndexCount(), worldMatrix, baseViewMatrix, orthoMatrix,
-        m_RenderTextureShadow->GetShaderResourceView());
-
-    m_D3D->TurnZBufferOn();
-
-    // Reset the render target back to the original back buffer and not the render to texture anymore.
-    m_D3D->SetBackBufferRenderTarget();
-
-    // Reset the viewport back to the original.
-    m_D3D->ResetViewport();
-}
-
-void ModelManager::RenderBlur(CameraClass* camera)
-{
-    if (m_modelsShadow.size() < 1) {
-        return;
-    }
-
-    D3DXMATRIX orthoMatrix, baseViewMatrix, worldMatrix;
-
-    // Set the render target to be the render to texture.
-    m_RenderTextureBlur->SetRenderTarget(m_D3D->GetDeviceContext());
-
-    // Clear the render to texture.
-    m_RenderTextureBlur->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-    baseViewMatrix = camera->getBaseViewMatrix();
-    m_D3D->GetWorldMatrix(worldMatrix);
-    m_RenderTextureBlur->GetOrthoMatrix(orthoMatrix);
-
-    m_D3D->TurnZBufferOff();
-
-    m_WindowTexture->Render(0, 0);
-    m_BlurShader->Render(m_D3D->GetDeviceContext(), m_WindowTexture->GetIndexCount(), worldMatrix, baseViewMatrix,
-        orthoMatrix, m_RenderTextureBlurTexture->GetShaderResourceView(), m_D3D->getScreenWidth() / 4, m_D3D->getScreenHeight() / 4);
-
-    m_D3D->TurnZBufferOn();
-
     // Reset the render target back to the original back buffer and not the render to texture anymore.
     m_D3D->SetBackBufferRenderTarget();
 
@@ -399,52 +185,36 @@ void ModelManager::Render(CameraClass* camera)
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
                 if (Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) {
-                    
-                    LightClass* light = model->getLight(0);
-                    light->GenerateViewMatrix();
-
-                    light->GetViewMatrix(lightViewMatrix);
-                    light->GetProjectionMatrix(lightProjectionMatrix);
-                    
-                    if (m_modelsRender[i]->getAlpha()) {
-                        m_D3D->TurnOnAlphaBlending();
-                    }
-
-                    model->Render();
-                    if (Options::soft_shadow) {
-                        m_SoftShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix,
-                            model->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
-
-                        CompositeModel* subset = model->getSubset();
-                        if (subset) {
-                            for (int j = 0; j < subset->getChilds().size(); j++) {
-                                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
-                                modelSubset->Render();
-                                m_SoftShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix,
-                                    modelSubset->GetTexture(), m_RenderTextureBlur->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
-                            }
-                        }
+                    if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
+                        TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
+                        terrain->Render(camera, m_RenderStencilTexture->GetShaderResourceView());
                     }
                     else {
-                        //m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView());
-                        //m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), model->GetIndexCount());
+                        LightClass* light = model->getLight(0);
+                        light->GenerateViewMatrix();
+
+                        light->GetViewMatrix(lightViewMatrix);
+                        light->GetProjectionMatrix(lightProjectionMatrix);
+
+                        if (m_modelsRender[i]->getAlpha()) {
+                            m_D3D->TurnOnAlphaBlending();
+                        }
+
+                        model->Render();
                         m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-                            
-                        // @todo
+
                         CompositeModel* subset = model->getSubset();
                         if (subset) {
                             for (int j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-                                /*m_ShadowShader2->SetShaderParameters(m_D3D->GetDeviceContext(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, light, modelSubset->GetTexture(), m_RenderTexture->GetShaderResourceView());
-                                m_ShadowShader2->RenderShader(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount());*/
                             }
                         }
-                    }
 
-                    if (m_modelsRender[i]->getAlpha()) {
-                        m_D3D->TurnOffAlphaBlending();
+                        if (m_modelsRender[i]->getAlpha()) {
+                            m_D3D->TurnOffAlphaBlending();
+                        }
                     }
                 }
                 else {

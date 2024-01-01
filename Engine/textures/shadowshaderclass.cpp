@@ -27,15 +27,7 @@ ShadowShaderClass::~ShadowShaderClass()
 
 bool ShadowShaderClass::Initialize(ID3D11Device* device)
 {
-	bool result;
-
-	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, L"./data/shaders/shadow.vs", L"./data/shaders/shadow.ps");
-	if (!result) {
-		return false;
-	}
-
-	return true;
+	return InitializeShader(device, L"./data/shaders/shadow.hlsl", L"./data/shaders/shadow.hlsl");
 }
 
 
@@ -183,10 +175,6 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1.0;
-	/*samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;*/
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
@@ -198,9 +186,6 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	/*samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;*/
 	device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
 
 	// 2 PointCmp - cmp
@@ -209,13 +194,9 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	//SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
-	//SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
-	//SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
 	SamDesc.MipLODBias = 0.0f;
 	SamDesc.MaxAnisotropy = 1;
 	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	//SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.MinLOD = 0;
 	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -354,9 +335,8 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-
-	deviceContext->PSSetShaderResources(1, 1, &depthMapTexture);
+	deviceContext->PSSetShaderResources(0, 1, &depthMapTexture);
+	deviceContext->PSSetShaderResources(1, 1, &texture);
 
 	// Lock the light constant buffer so it can be written to.
 	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -374,7 +354,8 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr2->lightIntensity = light->getIntensity();
 	dataPtr2->isSoftShadow = (float)Options::soft_shadow;
 	dataPtr2->isDirection = (float)light->isDirection();
-	dataPtr2->padding = D3DXVECTOR2(0.0f, 0.0f);
+	dataPtr2->shadowSize = Options::shadow_width;
+	dataPtr2->padding = 0.0f;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

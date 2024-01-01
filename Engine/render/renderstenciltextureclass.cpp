@@ -33,11 +33,7 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 
 
-
-	// Initialize the render target texture description.
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
-
-	// Setup the render target texture description.
 	textureDesc.Width = textureWidth;
 	textureDesc.Height = textureHeight;
 	textureDesc.MipLevels = 1;
@@ -67,15 +63,13 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	}
 
 
-
 	//// for stencil
-	
 	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R16_TYPELESS;
+	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // better than r16 as correct depth fot shadow
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -85,19 +79,17 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 
 	// Set up the depth stencil view description.
-	depthStencilViewDesc.Format = DXGI_FORMAT_D16_UNORM;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Flags = 0;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R16_UNORM;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView);
-
-	////
 
 
 	// Setup the viewport for rendering.

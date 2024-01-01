@@ -1,12 +1,14 @@
 #include "terrainshaderclass.h"
-
+#include "../Options.h"
 
 TerrainShaderClass::TerrainShaderClass()
 {
 	m_vertexShader = 0;
 	m_pixelShader = 0;
 	m_layout = 0;
-	m_sampleState = 0;
+	m_sampleStateWrap = 0;
+	m_sampleStateClamp = 0;
+	m_SamplePointCmp = 0;
 	m_matrixBuffer = 0;
 	m_lightBuffer = 0;
 
@@ -27,16 +29,7 @@ TerrainShaderClass::~TerrainShaderClass()
 
 bool TerrainShaderClass::Initialize(ID3D11Device* device)
 {
-	bool result;
-
-
-	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, L"./data/shaders/terrain.vs", L"./data/shaders/terrain.ps");
-	if (!result) {
-		return false;
-	}
-
-	return true;
+	return InitializeShader(device, L"./data/shaders/terrain.hlsl", L"./data/shaders/terrain.hlsl");
 }
 
 
@@ -48,13 +41,13 @@ void TerrainShaderClass::Shutdown()
 
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures)
+	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures, ID3D11ShaderResourceView* shadow)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, textures);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, light, textures, shadow);
 	if (!result) {
 		return false;
 	}
@@ -194,7 +187,8 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
 
-	// Create a texture sampler state description.
+	// 1 wrap - linear - texture
+	// Create a wrap texture sampler state description.
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -202,18 +196,33 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilenam
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1.0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
 
-	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
-	if (FAILED(result)) {
-		return false;
-	}
+	// 0 clamp = shadow
+	// Create a clamp texture sampler state description.
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
+
+	// 2 PointCmp - cmp
+	D3D11_SAMPLER_DESC SamDesc;
+	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.MipLODBias = 0.0f;
+	SamDesc.MaxAnisotropy = 1;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
+	SamDesc.MinLOD = 0;
+	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&SamDesc, &m_SamplePointCmp);
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -263,9 +272,19 @@ void TerrainShaderClass::ShutdownShader()
 	}
 
 	// Release the sampler state.
-	if (m_sampleState) {
-		m_sampleState->Release();
-		m_sampleState = 0;
+	if (m_sampleStateWrap) {
+		m_sampleStateWrap->Release();
+		m_sampleStateWrap = 0;
+	}
+	
+	if (m_sampleStateClamp) {
+		m_sampleStateClamp->Release();
+		m_sampleStateClamp = 0;
+	}
+
+	if (m_SamplePointCmp) {
+		m_SamplePointCmp->Release();
+		m_SamplePointCmp = 0;
 	}
 
 	// Release the layout.
@@ -279,7 +298,7 @@ void TerrainShaderClass::ShutdownShader()
 
 
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures)
+	D3DXMATRIX projectionMatrix, LightClass* light, TextureArrayClass* textures, ID3D11ShaderResourceView* shadow)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -288,11 +307,19 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	LightBufferType* dataPtr2;
 	int i, size;
 
+	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
+
 
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
+
+	light->GenerateViewMatrix();
+	light->GetViewMatrix(lightViewMatrix);
+	light->GetProjectionMatrix(lightProjectionMatrix);
+	D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
+	D3DXMatrixTranspose(&lightProjectionMatrix, &lightProjectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -307,6 +334,9 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr->world = worldMatrix;
 	dataPtr->view = viewMatrix;
 	dataPtr->projection = projectionMatrix;
+	
+	dataPtr->lightView = lightViewMatrix;
+	dataPtr->lightProjection = lightProjectionMatrix;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_matrixBuffer, 0);
@@ -334,6 +364,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->lightDetailIntensity = m_lightDetailIntensity;
 	dataPtr2->distanceIntensity = m_distanceIntensity;
 	dataPtr2->countLayers = (float)textures->getTextures().size() - 1;
+	dataPtr2->shadowSize = Options::shadow_enabled ? Options::shadow_width : 0;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
@@ -346,8 +377,9 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Set shader texture resource in the pixel shader.
 	size = textures->getTextures().size();
-	for (i = 0; i < size; i++) {
-		deviceContext->PSSetShaderResources(i, 1, &textures->getTextures()[i]);
+	deviceContext->PSSetShaderResources(0, 1, &shadow);
+	for (i = 1; i <= size; i++) {
+		deviceContext->PSSetShaderResources(i, 1, &textures->getTextures()[i - 1]);
 	}
 
 	return true;
@@ -364,7 +396,9 @@ void TerrainShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int in
 	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
 
 	// Set the sampler state in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
+	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &m_SamplePointCmp);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);

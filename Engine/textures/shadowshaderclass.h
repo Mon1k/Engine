@@ -32,7 +32,8 @@ private:
 		float lightIntensity;
 		float isSoftShadow;
 		float isDirection;
-		D3DXVECTOR2 padding;
+		float shadowSize;
+		float padding;
 	};
 
 	struct LightBufferType2
