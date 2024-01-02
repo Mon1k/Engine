@@ -19,7 +19,7 @@ public:
 		Options::screen_width = 1980;
 		Options::screen_height = 1080;
 
-		Options::reflectionLevel = 0;
+		Options::reflectionLevel = 0; // 0 - all, 1 - only object, 2 - disable
 	}
 
 	static int shadow_width;

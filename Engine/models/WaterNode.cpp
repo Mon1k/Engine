@@ -125,7 +125,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the reflection render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.8f, 1.0f, 0.5f);
 
 	// Use the camera to render the reflection and create a reflection view matrix.
 	camera->RenderReflection(m_waterHeight);

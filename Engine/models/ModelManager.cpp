@@ -84,8 +84,7 @@ void ModelManager::PreRender(CameraClass* camera)
         }
         else {
             m_models[i]->GetBoundingBox(position, size);
-            // @todo
-            if (1 || m_frustum->CheckRectangle(position, size)) {
+            if (m_frustum->CheckRectangle(position, size)) {
                 m_modelsRender.push_back(m_models[i]);
             }
         }
@@ -188,6 +187,9 @@ void ModelManager::Render(CameraClass* camera)
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
                         terrain->Render(camera, m_RenderStencilTexture->GetShaderResourceView());
+                    }
+                    else if (dynamic_cast<const AbstractTarget*>(model) != nullptr) {
+                        model->Render(camera);
                     }
                     else {
                         LightClass* light = model->getLight(0);
