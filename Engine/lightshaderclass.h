@@ -29,6 +29,7 @@ private:
 		D3DXVECTOR4 ambientColor;
 		D3DXVECTOR4 diffuseColor;
 		D3DXVECTOR3 lightDirection;
+		float lightIntencity;
 		float specularPower;
 		D3DXVECTOR4 specularColor;
 	};

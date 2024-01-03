@@ -363,6 +363,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 		light[i].ambientColor = this->m_lights[i]->GetAmbientColor();
 		light[i].diffuseColor = this->m_lights[i]->GetDiffuseColor();
 		light[i].lightDirection = this->m_lights[i]->GetDirection();
+		light[i].lightIntencity = this->m_lights[i]->getIntensity();
 		light[i].specularPower= this->m_lights[i]->GetSpecularPower();
 		light[i].specularColor= this->m_lights[i]->GetSpecularColor();
 		dataPtr2->light[i] = light[i];

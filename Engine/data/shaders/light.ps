@@ -8,6 +8,7 @@ struct PointLight
     float4 ambientColor;
     float4 diffuseColor;
     float3 lightDirection;
+    float m_lightIntencity;
     float specularPower;
     float4 specularColor;
 };
@@ -59,7 +60,7 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 
     // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
     for (int i = 0; i < NUM_LIGHTS; i++) {
-        color += (light[i].diffuseColor * lightIntensity[i]);
+        color += (light[i].diffuseColor * lightIntensity[i] * light[i].m_lightIntencity);
 
         // Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
         if (light[i].specularPower > 0.0f) {
@@ -71,11 +72,8 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
     }
 
 
-    // Saturate the ambient and diffuse color.
-    color = saturate(color);
-
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
-    color *= textureColor;
+    color = saturate(color) * textureColor;
 
     // Add the specular component last to the output color.
     if (specular.x > 0.0f) {
