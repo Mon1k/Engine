@@ -828,5 +828,8 @@
     <FxCompile Include="data\shaders\terrain.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
+    <FxCompile Include="data\shaders\VolumetricClouds.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

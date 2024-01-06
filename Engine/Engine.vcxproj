@@ -336,6 +336,7 @@
     <FxCompile Include="data\shaders\shadow.hlsl" />
     <FxCompile Include="data\shaders\shadow_common.hlsl" />
     <FxCompile Include="data\shaders\terrain.hlsl" />
+    <FxCompile Include="data\shaders\VolumetricClouds.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
