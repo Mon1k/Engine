@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <d3d11.h>
 #include <d3dx10math.h>
 #include <d3dx11async.h>
@@ -64,6 +63,7 @@ private:
 	ID3D11Buffer* m_cloudsBuffer;
 	ID3D11SamplerState* m_sampleStateWrap;
 
+	ID3D11Texture3D* m_prevClouds;
 	ID3D11Texture3D* m_cloudShapeNoise;
 	ID3D11Texture3D* m_cloudDetailNoise;
 	ID3D11Texture2D* m_cloudType;

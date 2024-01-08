@@ -1,4 +1,4 @@
-#include "../Noise.hlsli"
+#include "Noise.hlsl"
 
 struct CloudNoiseConstants
 {

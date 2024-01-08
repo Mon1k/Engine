@@ -333,10 +333,12 @@
     <None Include="data\shaders\water.vs" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="data\shaders\Noise.hlsl" />
     <FxCompile Include="data\shaders\shadow.hlsl" />
     <FxCompile Include="data\shaders\shadow_common.hlsl" />
     <FxCompile Include="data\shaders\terrain.hlsl" />
     <FxCompile Include="data\shaders\VolumetricClouds.hlsl" />
+    <FxCompile Include="data\shaders\VolumetricCloudsNoise.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,27 @@
-#include "../CommonResources.hlsli"
 #define BLOCK_SIZE 16
+
+SamplerState LinearWrapSampler : register(s0);
+
+struct FrameCBuffer
+{
+    row_major matrix inverseView;
+    row_major matrix inverseProjection;
+    float4 cameraPosition;
+	
+    float4 windParams;
+    float totalTime;
+    float4 sunDirection;
+    float4 sunColor;
+	
+    float2 renderResolution;
+};
+ConstantBuffer<FrameCBuffer> FrameCB : register(b0);
+
+struct CloudsCombineConstants
+{
+    uint inputIdx;
+};
+ConstantBuffer<CloudsCombineConstants> CombineCB : register(b1);
 
 struct CloudsConstants
 {
@@ -281,30 +303,6 @@ void CloudsCS(CSInput input)
 	uint2 resolution = uint2(FrameCB.renderResolution) >> PassCB.resolutionFactor;
 	float2 uv = ((float2) threadId.xy + 0.5f) * 1.0f / resolution;
 
-#if REPROJECTION
-	float4 prevPos = float4(ToClipSpaceCoord(uv), 1.0);
-	prevPos = mul(prevPos, FrameCB.inverseProjection);
-	prevPos = prevPos / prevPos.w;
-	prevPos.xyz = mul(prevPos.xyz, (float3x3) FrameCB.inverseView);
-	prevPos.xyz = mul(prevPos.xyz, (float3x3) FrameCB.prevView);
-	float4 reproj = mul(prevPos, FrameCB.prevProjection);
-	reproj /= reproj.w;
-	float2 prevUv = reproj.xy * 0.5 + 0.5;
-	prevUv.y = 1.0f - prevUv.y;
-
-	Texture2D<float4> prevOutputTx = ResourceDescriptorHeap[PassCB.prevOutputIdx];
-	float4 prevColor = prevOutputTx.Sample(LinearClampSampler, prevUv);
-
-	uint index = FrameCB.frameCount % 16;
-	bool shouldUpdate = (((threadId.x + 4 * threadId.y) % 16) == BayerFilter[index]);
-
-	if (!shouldUpdate && all(prevUv <= 1.0f) && all(prevUv >= 0.0f))
-	{
-		outputTx[threadId.xy] = prevColor;
-		return;
-	}
-#endif
-
 	float4 rayClipSpace = float4(ToClipSpaceCoord(uv), 1.0);
 	float4 rayView = mul(rayClipSpace, FrameCB.inverseProjection);
 	rayView = float4(rayView.xy, 1.0, 0.0);
@@ -358,12 +356,6 @@ VSToPS CloudsCombineVS(uint vertexId : SV_VERTEXID)
 	output.Tex.y = 1.0f - v.y * 2.0f;
 	return output;
 }
-
-struct CloudsCombineConstants
-{
-	uint inputIdx;
-};
-ConstantBuffer<CloudsCombineConstants> CombineCB : register(b1);
 
 float4 CloudsCombinePS(VSToPS input) : SV_Target0
 {
