@@ -42,13 +42,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Frustum = new FrustumClass;
 
 	m_uiManager = new UIManager;
-	m_uiManager->Initialize(m_D3D, m_Camera->getBaseViewMatrix());
+	if (!m_uiManager->Initialize(m_D3D, m_Camera->getBaseViewMatrix())) {
+		return false;
+	}
 
 	m_modelManager = new ModelManager;
-	m_modelManager->Initialize(m_D3D, m_Frustum);
+	if (!m_modelManager->Initialize(m_D3D, m_Frustum)) {
+		//return false;
+	}
 
 	m_particleManager = new ParticleManager;
-	m_particleManager->Initialize(m_D3D);
+	if (!m_particleManager->Initialize(m_D3D)) {
+		return false;
+	}
 
 	return true;
 }

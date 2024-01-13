@@ -4,6 +4,16 @@ VolumetricClouds::VolumetricClouds()
 {
 	m_layout = 0;
 	m_cloudsBuffer = 0;
+
+	m_cloudShapeNoiseShader = 0;
+	m_cloudDetailNoiseShader = 0;
+	m_cloudTypeShader = 0;
+
+	m_cloudsBufferNoise = 0;
+	m_cloudsBufferNoiseUnorderer = 0;
+	m_cloudsUnorderedView = 0;
+	m_cloudsReadBackBuffer = 0;
+	m_resourceShapeNoise = 0;
 }
 
 VolumetricClouds::~VolumetricClouds()
@@ -44,6 +54,7 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
+	ID3D10Blob* computeShaderBuffer;
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 	unsigned int numElements;
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -53,9 +64,10 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	errorMessage = 0;
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
+	computeShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	/*result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
@@ -97,7 +109,95 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result)) {
 		return false;
+	}*/
+
+	// compile compute shaders
+	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricCloudsNoise.hlsl", NULL, NULL, "CloudShapeCS", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+		&computeShaderBuffer, &errorMessage, NULL);
+	if (FAILED(result)) {
+		if (errorMessage) {
+			OutputShaderErrorMessage(errorMessage, psFilename);
+		}
+		return false;
 	}
+	result = device->CreateComputeShader(computeShaderBuffer->GetBufferPointer(), computeShaderBuffer->GetBufferSize(), NULL, &m_cloudShapeNoiseShader);
+	if (FAILED(result)) {
+		return false;
+	}
+	computeShaderBuffer->Release();
+	computeShaderBuffer = 0;
+
+	// compute shader buffer
+	struct CloudNoiseConstants
+	{
+		float resolution_inv;
+		int frequency;
+		int output_idx;
+		float padding;
+	};
+
+	CloudNoiseConstants params;
+	params.resolution_inv = 1 / m_params.shape_noise_resolution;
+	params.frequency = m_params.shape_noise_frequency;
+	params.output_idx = 0;
+
+	D3D11_BUFFER_DESC constant_buffer_desc = {};
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+	constant_buffer_desc.ByteWidth = sizeof(CloudNoiseConstants);
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constant_buffer_desc.CPUAccessFlags = 0;
+	result = device->CreateBuffer(&constant_buffer_desc, NULL, &m_cloudsBufferNoise);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	D3D11_BUFFER_DESC buffer_desc;
+	ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+	buffer_desc.ByteWidth = sizeof(D3DXVECTOR4);
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	buffer_desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	buffer_desc.StructureByteStride = sizeof(D3DXVECTOR4);
+	result = device->CreateBuffer(&buffer_desc, NULL, &m_cloudsBufferNoiseUnorderer);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// create resource view for compute shader
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvbuffer_desc;
+	ZeroMemory(&srvbuffer_desc, sizeof(srvbuffer_desc));
+	srvbuffer_desc.Format = DXGI_FORMAT_UNKNOWN;
+	srvbuffer_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvbuffer_desc.Buffer.ElementWidth = 1;
+	result = device->CreateShaderResourceView(m_cloudsBufferNoiseUnorderer, &srvbuffer_desc, &m_resourceShapeNoise);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// create unordered and back buffer
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavbuffer_desc;
+	ZeroMemory(&uavbuffer_desc, sizeof(uavbuffer_desc));
+	uavbuffer_desc.Format = DXGI_FORMAT_UNKNOWN;
+	uavbuffer_desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavbuffer_desc.Buffer.NumElements = 1;
+	result = device->CreateUnorderedAccessView(m_cloudsBufferNoiseUnorderer, &uavbuffer_desc, &m_cloudsUnorderedView);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// create readback buffer
+	D3D11_BUFFER_DESC readback_buffer_desc;
+	ZeroMemory(&readback_buffer_desc, sizeof(readback_buffer_desc));
+	readback_buffer_desc.ByteWidth = sizeof(UINT);
+	readback_buffer_desc.Usage = D3D11_USAGE_STAGING;
+	readback_buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	readback_buffer_desc.StructureByteStride = sizeof(UINT);
+	result = device->CreateBuffer(&readback_buffer_desc, NULL, &m_cloudsReadBackBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+
 
 	// Create the vertex input layout description.
 	polygonLayout[0].SemanticName = "POSITION";
@@ -128,7 +228,7 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
+	/*result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
 		&m_layout);
 	if (FAILED(result)) {
 		return false;
@@ -139,7 +239,7 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	vertexShaderBuffer = 0;
 
 	pixelShaderBuffer->Release();
-	pixelShaderBuffer = 0;
+	pixelShaderBuffer = 0;*/
 
 
 	// 1 wrap - linear - texture
@@ -199,6 +299,45 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	return true;
 }
 
+void VolumetricClouds::computeShaders()
+{
+	D3DXVECTOR4 texture, texture2;
+
+	struct CloudNoiseConstants
+	{
+		float resolution_inv;
+		int frequency;
+		int output_idx;
+		float padding;
+	} params, params2;
+
+	params.resolution_inv = 1 / m_params.shape_noise_resolution;
+	params.frequency = m_params.shape_noise_frequency;
+	params.output_idx = 0;
+
+	// upload data, read write var
+	m_D3D->GetDeviceContext()->UpdateSubresource(m_cloudsBufferNoiseUnorderer, 0, NULL, &texture, 0, 0);
+
+	// set constant
+	m_D3D->GetDeviceContext()->UpdateSubresource(m_cloudsBufferNoise, 0, NULL, &params, 0, 0);
+	m_D3D->GetDeviceContext()->CSSetConstantBuffers(0, 1, &m_cloudsBufferNoise);
+
+	// 
+	m_D3D->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &m_cloudsUnorderedView, 0);
+	m_D3D->GetDeviceContext()->CSSetShader(m_cloudShapeNoiseShader, NULL, 0);
+
+	// execute
+	m_D3D->GetDeviceContext()->Dispatch(8, 8, 8);
+
+	// download data
+	D3D11_MAPPED_SUBRESOURCE MappedResource = { 0 };
+	m_D3D->GetDeviceContext()->CopyResource(m_cloudsReadBackBuffer, m_cloudsBufferNoiseUnorderer);
+	m_D3D->GetDeviceContext()->Map(m_cloudsReadBackBuffer, 0, D3D11_MAP_READ, 0, &MappedResource);
+	memcpy(&texture2, MappedResource.pData, sizeof(D3DXVECTOR4));
+	int t = 1;
+	m_D3D->GetDeviceContext()->Unmap(m_cloudsReadBackBuffer, 0);
+
+}
 
 void VolumetricClouds::ShutdownShader()
 {
@@ -210,6 +349,21 @@ void VolumetricClouds::ShutdownShader()
 	if (m_cloudsBuffer) {
 		m_cloudsBuffer->Release();
 		m_cloudsBuffer = 0;
+	}
+
+	if (m_cloudShapeNoiseShader) {
+		m_cloudShapeNoiseShader->Release();
+		m_cloudShapeNoiseShader = 0;
+	}
+
+	if (m_cloudDetailNoiseShader) {
+		m_cloudDetailNoiseShader->Release();
+		m_cloudDetailNoiseShader = 0;
+	}
+
+	if (m_cloudTypeShader) {
+		m_cloudTypeShader->Release();
+		m_cloudTypeShader = 0;
 	}
 
 	AbstractShader::Shutdown();
@@ -245,8 +399,8 @@ bool VolumetricClouds::SetShaderParameters(ID3D11DeviceContext* deviceContext)
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cloudsBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &depthMapTexture);
-	deviceContext->PSSetShaderResources(1, 1, &texture);
+	//deviceContext->PSSetShaderResources(0, 1, &depthMapTexture);
+	//deviceContext->PSSetShaderResources(1, 1, &texture);
 
 	return true;
 }

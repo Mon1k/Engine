@@ -18,13 +18,25 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_frustum = frustum;
 
     m_DepthShader = new DepthShaderClass;
-    m_DepthShader->Initialize(m_D3D->GetDevice());
+    if (!m_DepthShader->Initialize(m_D3D->GetDevice())) {
+        return false;
+    }
 
     m_ShadowShader = new ShadowShaderClass;
-    m_ShadowShader->Initialize(m_D3D->GetDevice());
+    if (!m_ShadowShader->Initialize(m_D3D->GetDevice())) {
+        return false;
+    }
 
     m_RenderStencilTexture = new RenderStencilTextureClass;
-    m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near);
+    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near)) {
+        return false;
+    }
+
+    m_volumetricClouds = new VolumetricClouds;
+    m_volumetricClouds->setD3D(m_D3D);
+    if (!m_volumetricClouds->Initialize(m_D3D->GetDevice())) {
+        return false;
+    }
 
     return true;
 }
@@ -117,6 +129,10 @@ void ModelManager::PreRender(CameraClass* camera)
     if (m_modelsShadow.size() > 0) {
         RenderShadowDepth(camera);
     }
+
+
+    //// clouds pass later queues pass from rendering
+    m_volumetricClouds->computeShaders();
 }
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)

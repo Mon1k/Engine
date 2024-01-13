@@ -50,6 +50,13 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int);
 
+	ID3D11ShaderResourceView* getShapeNoiseResource()
+	{
+		return m_resourceShapeNoise;
+	}
+
+	void computeShaders();
+
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
@@ -62,6 +69,15 @@ private:
 
 	ID3D11Buffer* m_cloudsBuffer;
 	ID3D11SamplerState* m_sampleStateWrap;
+
+	ID3D11ComputeShader* m_cloudShapeNoiseShader;
+	ID3D11ComputeShader* m_cloudDetailNoiseShader;
+	ID3D11ComputeShader* m_cloudTypeShader;
+	ID3D11Buffer* m_cloudsBufferNoise;
+	ID3D11Buffer* m_cloudsBufferNoiseUnorderer; // buffer 1
+	ID3D11UnorderedAccessView* m_cloudsUnorderedView;
+	ID3D11Buffer* m_cloudsReadBackBuffer;
+	ID3D11ShaderResourceView* m_resourceShapeNoise;
 
 	ID3D11Texture3D* m_prevClouds;
 	ID3D11Texture3D* m_cloudShapeNoise;

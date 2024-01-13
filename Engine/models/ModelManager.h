@@ -17,6 +17,7 @@ using namespace std;
 #include "../render/renderstenciltextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
+#include "../render/passes/VolumetricClouds.h"
 
 #include "../lightshaderclass.h"
 #include "../lightclass.h"
@@ -77,6 +78,11 @@ public:
         return m_frustum;
     }
 
+    VolumetricClouds* getCloud()
+    {
+        return m_volumetricClouds;
+    }
+
 private:
     std::vector<AbstractModel *> m_models;
     std::vector<AbstractModel *> m_modelsRender;
@@ -90,6 +96,8 @@ private:
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
     RenderStencilTextureClass* m_RenderStencilTexture;
+
+    VolumetricClouds* m_volumetricClouds;
 
     std::vector<AbstractModel *> m_modelsShadow;
 };
