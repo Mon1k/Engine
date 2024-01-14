@@ -53,6 +53,18 @@ public:
 	ID3D11ShaderResourceView* getShapeNoiseResource()
 	{
 		return m_resourceShapeNoise;
+
+		ID3D11ShaderResourceView* texture;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
+		ZeroMemory(&srDesc, sizeof(srDesc));
+		srDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srDesc.Texture2D.MostDetailedMip = 0;
+		srDesc.Texture2D.MipLevels = 1;
+
+		m_D3D->GetDevice()->CreateShaderResourceView(m_cloudType, &srDesc, &texture);
+
+		return texture;
 	}
 
 	void computeShaders();
