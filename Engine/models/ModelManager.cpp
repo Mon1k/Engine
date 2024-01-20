@@ -131,8 +131,6 @@ void ModelManager::PreRender(CameraClass* camera)
     }
 
 
-    //// clouds pass later queues pass from rendering
-    m_volumetricClouds->computeShaders();
 }
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
@@ -182,6 +180,9 @@ void ModelManager::Render(CameraClass* camera)
 {
     std::vector<AbstractModel*> modelsAlpha;
     D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix, baseViewMatrix, lightViewMatrix, lightProjectionMatrix;
+
+    //// clouds pass later queues pass from rendering
+    m_volumetricClouds->computeShaders();
 
     modelsAlpha.clear();
     

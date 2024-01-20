@@ -40,6 +40,8 @@ private:
 		float sun_light_factor = 0.7f;
 		float henyey_greenstein_g_forward = 0.4f;
 		float henyey_greenstein_g_backward = 0.179f;
+
+		float padding;
 	};
 
 public:
@@ -50,21 +52,14 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int);
 
-	ID3D11ShaderResourceView* getShapeNoiseResource()
+	ID3D11ShaderResourceView* getShapeNoise()
 	{
 		return m_resourceShapeNoise;
+	}
 
-		ID3D11ShaderResourceView* texture;
-		D3D11_SHADER_RESOURCE_VIEW_DESC srDesc;
-		ZeroMemory(&srDesc, sizeof(srDesc));
-		srDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srDesc.Texture2D.MostDetailedMip = 0;
-		srDesc.Texture2D.MipLevels = 1;
-
-		m_D3D->GetDevice()->CreateShaderResourceView(m_cloudType, &srDesc, &texture);
-
-		return texture;
+	ID3D11ShaderResourceView* getShapeTypeCloud()
+	{
+		return m_resourceCloudType;
 	}
 
 	void computeShaders();
@@ -85,11 +80,14 @@ private:
 	ID3D11ComputeShader* m_cloudShapeNoiseShader;
 	ID3D11ComputeShader* m_cloudDetailNoiseShader;
 	ID3D11ComputeShader* m_cloudTypeShader;
+
 	ID3D11Buffer* m_cloudsBufferNoise;
-	ID3D11Buffer* m_cloudsBufferNoiseUnorderer; // buffer 1
+
 	ID3D11UnorderedAccessView* m_cloudsUnorderedView;
-	ID3D11Buffer* m_cloudsReadBackBuffer;
+	ID3D11UnorderedAccessView* m_cloudsUnordered3DView;
+
 	ID3D11ShaderResourceView* m_resourceShapeNoise;
+	ID3D11ShaderResourceView* m_resourceCloudType;
 
 	ID3D11Texture3D* m_prevClouds;
 	ID3D11Texture3D* m_cloudShapeNoise;

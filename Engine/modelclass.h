@@ -60,7 +60,6 @@ public:
 	void ReleaseTexture();
 
 	void ReleaseModel();
-	
 
 	virtual D3DXMATRIX GetWorldMatrix();	
 
