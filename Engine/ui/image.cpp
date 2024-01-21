@@ -20,6 +20,8 @@ bool Image::Initialize(int width, int height, int x, int y)
 	m_x = x;
 	m_y = y;
 
+	m_is3D = false;
+
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
 	if (!m_TextureShader) {
@@ -30,6 +32,17 @@ bool Image::Initialize(int width, int height, int x, int y)
 	result = m_TextureShader->Initialize(m_D3D->GetDevice());
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+
+	m_Texture3DShader = new Texture3DShaderClass;
+	if (!m_Texture3DShader) {
+		return false;
+	}
+	result = m_Texture3DShader->Initialize(m_D3D->GetDevice());
+	if (!result) {
+		MessageBox(NULL, L"Could not initialize the texture 3D shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -67,6 +80,11 @@ void Image::Shutdown()
 		delete m_TextureShader;
 		m_TextureShader = 0;
 	}
+	if (m_Texture3DShader) {
+		m_Texture3DShader->Shutdown();
+		delete m_TextureShader;
+		m_Texture3DShader = 0;
+	}
 }
 
 bool Image::Render()
@@ -83,10 +101,12 @@ bool Image::Render()
 
 	m_Bitmap->Render(m_D3D->GetDeviceContext(), m_x, m_y);
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	if (!result) {
-		return false;
+	if (m_is3D) {
+		result = m_Texture3DShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	}
+	else {
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, m_baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	}
 
-	return true;
+	return result;
 }

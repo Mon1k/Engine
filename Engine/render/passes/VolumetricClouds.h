@@ -56,6 +56,11 @@ public:
 	{
 		return m_resourceShapeNoise;
 	}
+	
+	ID3D11ShaderResourceView* getDetailNoise()
+	{
+		return m_resourceDetailNoise;
+	}
 
 	ID3D11ShaderResourceView* getShapeTypeCloud()
 	{
@@ -83,10 +88,12 @@ private:
 
 	ID3D11Buffer* m_cloudsBufferNoise;
 
+	ID3D11UnorderedAccessView* m_cloudsUnorderedViewShapeNoise;
+	ID3D11UnorderedAccessView* m_cloudsUnorderedViewDetailNoise;
 	ID3D11UnorderedAccessView* m_cloudsUnorderedView;
-	ID3D11UnorderedAccessView* m_cloudsUnordered3DView;
-
+	
 	ID3D11ShaderResourceView* m_resourceShapeNoise;
+	ID3D11ShaderResourceView* m_resourceDetailNoise;
 	ID3D11ShaderResourceView* m_resourceCloudType;
 
 	ID3D11Texture3D* m_prevClouds;

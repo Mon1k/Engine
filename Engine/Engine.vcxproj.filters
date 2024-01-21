@@ -318,6 +318,9 @@
     <ClCompile Include="ui\image.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="textures\Texture3DShaderClass.cpp">
+      <Filter>textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -653,6 +656,9 @@
     <ClInclude Include="ui\image.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="textures\Texture3DShaderClass.h">
+      <Filter>textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture.vs">
@@ -835,6 +841,9 @@
       <Filter>Shader Files</Filter>
     </FxCompile>
     <FxCompile Include="data\shaders\VolumetricCloudsNoise.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\texture3d.hlsl">
       <Filter>Shader Files</Filter>
     </FxCompile>
   </ItemGroup>

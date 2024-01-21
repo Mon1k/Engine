@@ -149,6 +149,7 @@
     <ClCompile Include="textures\skyplaneshaderclass.cpp" />
     <ClCompile Include="textures\softshadowshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
+    <ClCompile Include="textures\Texture3DShaderClass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
     <ClCompile Include="textures\translateshaderclass.cpp" />
     <ClCompile Include="textures\transparentshaderclass.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="textures\skyplaneshaderclass.h" />
     <ClInclude Include="textures\softshadowshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
+    <ClInclude Include="textures\Texture3DShaderClass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
     <ClInclude Include="textures\translateshaderclass.h" />
     <ClInclude Include="textures\transparentshaderclass.h" />
@@ -337,6 +339,7 @@
     <FxCompile Include="data\shaders\shadow.hlsl" />
     <FxCompile Include="data\shaders\shadow_common.hlsl" />
     <FxCompile Include="data\shaders\terrain.hlsl" />
+    <FxCompile Include="data\shaders\texture3d.hlsl" />
     <FxCompile Include="data\shaders\VolumetricClouds.hlsl" />
     <FxCompile Include="data\shaders\VolumetricCloudsNoise.hlsl" />
   </ItemGroup>

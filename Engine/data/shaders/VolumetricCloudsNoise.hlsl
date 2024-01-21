@@ -1,46 +1,47 @@
 #include "Noise.hlsl"
 
-struct CloudNoiseConstants
+cbuffer PassCB : register(b0)
 {
 	float resolutionInv;
-	uint frequency;
-	uint outputIdx;
+	int frequency;
+	int outputIdx;
+    float padding;
 };
-ConstantBuffer<CloudNoiseConstants> PassCB : register(b1);
+
+RWTexture3D<float4> outputTx : register(u0);
+RWTexture2D<float4> outputTx3 : register(u0);
+
 
 [numthreads(8, 8, 8)]
 void CloudShapeCS(uint3 threadId : SV_DispatchThreadID)
 {
-	float3 uvw = (threadId.xyz + 0.5f) * (float)PassCB.resolutionInv;
+    float3 uvw = (threadId.xyz + 0.5f) * (float) resolutionInv;
 
 	float perlin = lerp(1.0f, PerlinFBM(uvw, 4.0f, 7), 0.5f);
 	perlin = abs(perlin * 2.0f - 1.0f);
 
 	float4 noise = 0;
-	noise.y = WorleyFBM(uvw, PassCB.frequency);
-	noise.z = WorleyFBM(uvw, PassCB.frequency * 2);
-	noise.w = WorleyFBM(uvw, PassCB.frequency * 4);
+	noise.y = WorleyFBM(uvw, frequency);
+	noise.z = WorleyFBM(uvw, frequency * 2);
+	noise.w = WorleyFBM(uvw, frequency * 4);
 	noise.x = Remap(perlin, 0.0f, 1.0f, noise.y, 1.0f);
-
-	RWTexture3D<float4> outputTx = ResourceDescriptorHeap[PassCB.outputIdx];
-	outputTx[threadId.xyz] = noise;
+	
+    outputTx[threadId.xyz] = noise;
 }
 
 [numthreads(8, 8, 8)]
 void CloudDetailCS(uint3 threadId : SV_DispatchThreadID)
 {
-	float3 uvw = (threadId.xyz + 0.5f) * (float)PassCB.resolutionInv;
+	float3 uvw = (threadId.xyz + 0.5f) * (float)resolutionInv;
 
 	float4 noise = 0;
-	noise.x = WorleyFBM(uvw, PassCB.frequency);
-	noise.y = WorleyFBM(uvw, PassCB.frequency * 2);
-	noise.z = WorleyFBM(uvw, PassCB.frequency * 4);
-	noise.w = WorleyFBM(uvw, PassCB.frequency * 8);
+	noise.x = WorleyFBM(uvw, frequency);
+	noise.y = WorleyFBM(uvw, frequency * 2);
+	noise.z = WorleyFBM(uvw, frequency * 4);
+	noise.w = WorleyFBM(uvw, frequency * 8);
 
-	RWTexture3D<float4> outputTx = ResourceDescriptorHeap[PassCB.outputIdx];
 	outputTx[threadId.xyz] = noise;
 }
-
 
 float GetRatio(float value, float minValue, float maxValue)
 {
@@ -50,7 +51,7 @@ float GetRatio(float value, float minValue, float maxValue)
 [numthreads(8, 8, 8)]
 void CloudTypeCS(uint3 threadId : SV_DispatchThreadID)
 {
-	float3 uvw = (threadId.xyz + 0.5f) * PassCB.resolutionInv;
+	float3 uvw = (threadId.xyz + 0.5f) * resolutionInv;
 	float cloudType = uvw.x;
 	float height = uvw.y;
 
@@ -67,7 +68,5 @@ void CloudTypeCS(uint3 threadId : SV_DispatchThreadID)
 	float v2 = saturate(GetRatio(height, gradient.w, gradient.z));
 	float v = v1 * v2;
 
-	RWTexture2D<float4> outputTx = ResourceDescriptorHeap[PassCB.outputIdx];
-	outputTx[threadId.xy] = v;
+	outputTx3[threadId.xy] = v;
 }
-
