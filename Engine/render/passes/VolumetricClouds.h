@@ -8,6 +8,8 @@
 using namespace std;
 
 #include "../../shaders/AbstractShader.h"
+#include "../../cameraclass.h"
+#include "../../lightclass.h"
 
 class VolumetricClouds : public AbstractShader
 {
@@ -44,6 +46,54 @@ private:
 		float padding;
 	};
 
+	struct CloudsConstants
+	{
+		float		cloud_type;
+		float 	    cloud_min_height;
+		float 	    cloud_max_height;
+
+		float 	    shape_noise_scale;
+		float 	    detail_noise_scale;
+		float 	    detail_noise_modifier;
+		float       global_density;
+
+		float 	    cloud_coverage;
+		D3DXVECTOR3 cloud_base_color;
+		D3DXVECTOR3 cloud_top_color;
+		int	        max_num_steps;
+
+		D3DXVECTOR3 planet_center;
+		float 	    planetRadius;
+
+		float 	    light_step_length;
+		float 	    light_cone_radius;
+		float 	    precipitation;
+		float 	    ambient_light_factor;
+
+		float 	    sun_light_factor;
+		float 	    henyey_greenstein_g_forward;
+		float 	    henyey_greenstein_g_backward;
+		int			resolution_factor;
+
+		float		padding;
+	};
+
+	struct FrameBuffer
+	{
+		D3DXMATRIX	inverseView;
+		D3DXMATRIX	inverseProjection;
+		D3DXVECTOR4 cameraPosition;
+
+		D3DXVECTOR4 windParams = { 0.75, 0.0f, 0.5f, 0.0f };
+		float		totalTime = 10;
+		D3DXVECTOR4 sunDirection = {0.0f, -0.5f, 1.0f, 0.0f};
+		D3DXVECTOR4 sunColor = { 0.25, 0.15f, 0.15f, 1.0f };
+
+		D3DXVECTOR2 renderResolution = { 512, 512 };
+
+		float		padding;
+	};
+
 public:
 	VolumetricClouds();
 	~VolumetricClouds();
@@ -67,7 +117,15 @@ public:
 		return m_resourceCloudType;
 	}
 
-	void computeShaders();
+	ID3D11ShaderResourceView* getPrevClouds()
+	{
+		return m_resourcePrevClouds;
+	}
+
+	void computeNoiseShaders();
+	void computeVolumetricCloudsShaders(CameraClass* camera);
+
+	LightClass* m_lights;
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
@@ -85,21 +143,28 @@ private:
 	ID3D11ComputeShader* m_cloudShapeNoiseShader;
 	ID3D11ComputeShader* m_cloudDetailNoiseShader;
 	ID3D11ComputeShader* m_cloudTypeShader;
+	ID3D11ComputeShader* m_prevCloudShader;
 
 	ID3D11Buffer* m_cloudsBufferNoise;
+	ID3D11Buffer* m_prevCloudsBufferNoise;
+	ID3D11Buffer* m_frameBufferNoise;
 
 	ID3D11UnorderedAccessView* m_cloudsUnorderedViewShapeNoise;
 	ID3D11UnorderedAccessView* m_cloudsUnorderedViewDetailNoise;
 	ID3D11UnorderedAccessView* m_cloudsUnorderedView;
+	ID3D11UnorderedAccessView* m_prevCloudsUnorderedView;
 	
 	ID3D11ShaderResourceView* m_resourceShapeNoise;
 	ID3D11ShaderResourceView* m_resourceDetailNoise;
 	ID3D11ShaderResourceView* m_resourceCloudType;
+	ID3D11ShaderResourceView* m_resourcePrevClouds;
 
-	ID3D11Texture3D* m_prevClouds;
 	ID3D11Texture3D* m_cloudShapeNoise;
 	ID3D11Texture3D* m_cloudDetailNoise;
 	ID3D11Texture2D* m_cloudType;
+	ID3D11Texture2D* m_prevClouds;
 
+	float m_width, m_height;
 	CloudParameters m_params{};
+	FrameBuffer m_frameBuffer{};
 };

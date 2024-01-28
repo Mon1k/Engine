@@ -10,16 +10,21 @@ VolumetricClouds::VolumetricClouds()
 	m_cloudShapeNoiseShader = 0;
 	m_cloudDetailNoiseShader = 0;
 	m_cloudTypeShader = 0;
+	m_prevCloudShader = 0;
 
 	m_cloudsBufferNoise = 0;
+	m_prevCloudsBufferNoise = 0;
+	m_frameBufferNoise;
 
 	m_cloudsUnorderedViewShapeNoise = 0;
 	m_cloudsUnorderedViewDetailNoise = 0;
 	m_cloudsUnorderedView = 0;
+	m_prevCloudsUnorderedView = 0;
 
 	m_resourceShapeNoise = 0;
 	m_resourceDetailNoise = 0;
 	m_resourceCloudType = 0;
+	m_resourcePrevClouds = 0;
 }
 
 VolumetricClouds::~VolumetricClouds()
@@ -29,7 +34,18 @@ VolumetricClouds::~VolumetricClouds()
 
 bool VolumetricClouds::Initialize(ID3D11Device* device)
 {
-	return InitializeShader(device, L"./data/shaders/VolumetricClouds.hlsl", L"./data/shaders/VolumetricClouds.hlsl");
+	m_width = 1024;
+	m_height = 768;
+
+	bool result = InitializeShader(device, L"./data/shaders/VolumetricClouds.hlsl", L"./data/shaders/VolumetricClouds.hlsl");
+	
+	if (!result) {
+		return false;
+	}
+
+	computeNoiseShaders();
+
+	return true;
 }
 
 
@@ -170,6 +186,24 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 		return false;
 	}
 
+	D3D11_TEXTURE2D_DESC prevCloudsDesc{};
+	ZeroMemory(&prevCloudsDesc, sizeof(prevCloudsDesc));
+	prevCloudsDesc.Width = m_width;
+	prevCloudsDesc.Height = m_height;
+	prevCloudsDesc.MipLevels = 1;
+	prevCloudsDesc.ArraySize = 1;
+	prevCloudsDesc.SampleDesc.Count = 1;
+	prevCloudsDesc.SampleDesc.Quality = 0;
+	prevCloudsDesc.Usage = D3D11_USAGE_DEFAULT;
+	prevCloudsDesc.CPUAccessFlags = 0;
+	prevCloudsDesc.MiscFlags = 0;
+	prevCloudsDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	prevCloudsDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	result = device->CreateTexture2D(&prevCloudsDesc, NULL, &m_prevClouds);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	//// compile compute shaders
 	// shape noise
 	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricCloudsNoise.hlsl", NULL, NULL, "CloudShapeCS", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
@@ -219,6 +253,22 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	computeShaderBuffer->Release();
 	computeShaderBuffer = 0;
 
+	// prev clouds
+	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricClouds.hlsl", NULL, NULL, "CloudsCS", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+		&computeShaderBuffer, &errorMessage, NULL);
+	if (FAILED(result)) {
+		if (errorMessage) {
+			OutputShaderErrorMessage(errorMessage, psFilename);
+		}
+		return false;
+	}
+	result = device->CreateComputeShader(computeShaderBuffer->GetBufferPointer(), computeShaderBuffer->GetBufferSize(), NULL, &m_prevCloudShader);
+	if (FAILED(result)) {
+		return false;
+	}
+	computeShaderBuffer->Release();
+	computeShaderBuffer = 0;
+
 	// compute shader buffer
 	struct CloudNoiseConstants
 	{
@@ -235,6 +285,29 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	constant_buffer_desc.CPUAccessFlags = 0;
 	result = device->CreateBuffer(&constant_buffer_desc, NULL, &m_cloudsBufferNoise);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// compute shader prev clouds buffer
+	constant_buffer_desc = {};
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+	constant_buffer_desc.ByteWidth = sizeof(FrameBuffer);
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constant_buffer_desc.CPUAccessFlags = 0;
+	result = device->CreateBuffer(&constant_buffer_desc, NULL, &m_frameBufferNoise);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	constant_buffer_desc = {};
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+	constant_buffer_desc.ByteWidth = sizeof(CloudsConstants);
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constant_buffer_desc.CPUAccessFlags = 0;
+	result = device->CreateBuffer(&constant_buffer_desc, NULL, &m_prevCloudsBufferNoise);
 	if (FAILED(result)) {
 		return false;
 	}
@@ -271,6 +344,16 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 		return false;
 	}
 
+	ZeroMemory(&srvbuffer_desc, sizeof(srvbuffer_desc));
+	srvbuffer_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	srvbuffer_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvbuffer_desc.Texture2D.MostDetailedMip = 0;
+	srvbuffer_desc.Texture2D.MipLevels = 1;
+	result = device->CreateShaderResourceView(m_prevClouds, &srvbuffer_desc, &m_resourcePrevClouds);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	// create unordered
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavbuffer_desc;
 	ZeroMemory(&uavbuffer_desc, sizeof(uavbuffer_desc));
@@ -296,10 +379,19 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	}
 
 	ZeroMemory(&uavbuffer_desc, sizeof(uavbuffer_desc));
-	uavbuffer_desc.Format = DXGI_FORMAT_UNKNOWN;// D3D11_UAV_DIMENSION_BUFFER;
-	uavbuffer_desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;// D3D11_SRV_DIMENSION_BUFFER;
+	uavbuffer_desc.Format = DXGI_FORMAT_UNKNOWN;
+	uavbuffer_desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 	uavbuffer_desc.Texture2D.MipSlice = 0;
 	result = device->CreateUnorderedAccessView(m_cloudType, &uavbuffer_desc, &m_cloudsUnorderedView);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	ZeroMemory(&uavbuffer_desc, sizeof(uavbuffer_desc));
+	uavbuffer_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	uavbuffer_desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	uavbuffer_desc.Texture2D.MipSlice = 0;
+	result = device->CreateUnorderedAccessView(m_prevClouds, &uavbuffer_desc, &m_prevCloudsUnorderedView);
 	if (FAILED(result)) {
 		return false;
 	}
@@ -379,7 +471,7 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	return true;
 }
 
-void VolumetricClouds::computeShaders()
+void VolumetricClouds::computeNoiseShaders()
 {
 	ID3D11DeviceContext* context = m_D3D->GetDeviceContext();
 	int dispatch;
@@ -440,6 +532,83 @@ void VolumetricClouds::computeShaders()
 	// execute
 	dispatch = m_params.shape_noise_resolution / 8;
 	context->Dispatch(dispatch, dispatch, dispatch);
+
+	// reset uav
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	ID3D11UnorderedAccessView* nullUAV = nullptr;
+	context->CSSetUnorderedAccessViews(0, 1, &nullUAV, 0);
+	context->CSSetShaderResources(0, 1, &nullSRV);
+	context->CSSetShader(nullptr, nullptr, 0);
+}
+
+void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
+{
+	ID3D11DeviceContext* context = m_D3D->GetDeviceContext();
+	D3DXMATRIX view, project;
+	D3DXMATRIX invertView, invertProject;
+	
+	CloudsConstants params;
+	float noise_scale = 0.00001f + m_params.shape_noise_scale * 0.0004f;
+	int resolution = 0; // full
+
+	params.cloud_type = m_params.cloud_type;
+	params.cloud_min_height = m_params.cloud_min_height;
+	params.cloud_max_height = m_params.cloud_max_height;
+
+	params.shape_noise_scale = noise_scale;
+	params.detail_noise_scale = m_params.detail_noise_scale * noise_scale;
+	params.detail_noise_modifier = m_params.detail_noise_modifier;
+	params.global_density = m_params.global_density;
+
+	params.cloud_coverage = m_params.cloud_coverage;
+	params.cloud_base_color = D3DXVECTOR3(m_params.cloud_base_color);
+	params.cloud_top_color = D3DXVECTOR3(m_params.cloud_top_color);
+	params.max_num_steps = m_params.max_num_steps;
+
+	params.planet_center = D3DXVECTOR3(0.0f, -m_params.planet_radius, 0.0f);
+	params.planetRadius = m_params.planet_radius;
+
+	params.light_step_length = m_params.light_step_length;
+	params.light_cone_radius = m_params.light_cone_radius;
+	params.precipitation = m_params.precipitation * 0.01f;
+	params.ambient_light_factor = m_params.ambient_light_factor;
+
+	params.sun_light_factor = m_params.sun_light_factor;
+	params.henyey_greenstein_g_forward = m_params.henyey_greenstein_g_forward;
+	params.henyey_greenstein_g_backward = m_params.henyey_greenstein_g_backward;
+	params.resolution_factor = (int)resolution;
+
+
+	m_D3D->GetProjectionMatrix(project);
+	D3DXMatrixInverse(&invertProject, NULL, &project);
+	camera->GetViewMatrix(view);
+	D3DXMatrixInverse(&invertView, NULL, &view);
+
+	//// pass volumetric clouds
+	// set constant
+	m_frameBuffer.inverseProjection = invertProject;
+	m_frameBuffer.inverseView = invertView;
+	m_frameBuffer.cameraPosition = D3DXVECTOR4( camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z, 1.0f );
+	m_frameBuffer.renderResolution = { m_width, m_height };
+
+	context->UpdateSubresource(m_frameBufferNoise, 0, NULL, &m_frameBuffer, 0, 0);
+	context->CSSetConstantBuffers(0, 1, &m_frameBufferNoise);
+	context->UpdateSubresource(m_prevCloudsBufferNoise, 0, NULL, &params, 0, 0);
+	context->CSSetConstantBuffers(1, 1, &m_prevCloudsBufferNoise);
+	// set params
+	context->CSSetUnorderedAccessViews(0, 1, &m_prevCloudsUnorderedView, 0);
+	context->CSSetShaderResources(0, 1, &m_resourcePrevClouds);
+
+	context->CSSetShaderResources(1, 1, &m_resourceShapeNoise);
+	context->CSSetShaderResources(2, 1, &m_resourceDetailNoise);
+	context->CSSetShaderResources(3, 1, &m_resourceCloudType);
+	context->CSSetSamplers(0, 1, &m_sampleStateWrap);
+
+	context->VSSetShader(NULL, NULL, 0);
+	context->PSSetShader(NULL, NULL, 0);
+	context->CSSetShader(m_prevCloudShader, NULL, 0);
+	// execute
+	context->Dispatch(m_width / 16.0f, m_height / 16.0f, 1);
 
 	// reset uav
 	ID3D11ShaderResourceView* nullSRV = nullptr;

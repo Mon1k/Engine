@@ -37,7 +37,6 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     if (!m_volumetricClouds->Initialize(m_D3D->GetDevice())) {
         return false;
     }
-    m_volumetricClouds->computeShaders();
 
     return true;
 }
@@ -181,6 +180,8 @@ void ModelManager::Render(CameraClass* camera)
 {
     std::vector<AbstractModel*> modelsAlpha;
     D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix, baseViewMatrix, lightViewMatrix, lightProjectionMatrix;
+
+    m_volumetricClouds->computeVolumetricCloudsShaders(camera);
 
     modelsAlpha.clear();
     

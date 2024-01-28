@@ -46,22 +46,21 @@ bool Image::Initialize(int width, int height, int x, int y)
 		return false;
 	}
 
+	m_Bitmap = new BitmapClass;
+	m_Bitmap->Shutdown();
+	m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", m_width, m_height);
+
 	return true;
 }
 
 void Image::loadTextureByString(std::string path)
 {
-	m_Bitmap = new BitmapClass;
-	m_Bitmap->Shutdown();
 	wstring wide_string = wstring(path.begin(), path.end());
-	m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, &wide_string[0], m_width, m_height);
+	m_Bitmap->LoadTexture(m_D3D->GetDevice(), &wide_string[0]);
 }
 
 void Image::loadTextureByResource(ID3D11ShaderResourceView* texture)
 {
-	m_Bitmap = new BitmapClass;
-	m_Bitmap->Shutdown();
-	m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", m_width, m_height);
 	m_Bitmap->LoadTextureByResource(texture);
 }
 
