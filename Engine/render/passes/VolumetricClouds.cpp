@@ -547,7 +547,7 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	D3DXMATRIX view, project;
 	D3DXMATRIX invertView, invertProject;
 	
-	CloudsConstants params;
+	CloudsConstants params{};
 	float noise_scale = 0.00001f + m_params.shape_noise_scale * 0.0004f;
 	int resolution = 0; // full
 
@@ -566,7 +566,7 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.max_num_steps = m_params.max_num_steps;
 
 	params.planet_center = D3DXVECTOR3(0.0f, -m_params.planet_radius, 0.0f);
-	params.planetRadius = m_params.planet_radius;
+	params.planet_radius = m_params.planet_radius;
 
 	params.light_step_length = m_params.light_step_length;
 	params.light_cone_radius = m_params.light_cone_radius;
@@ -576,7 +576,9 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.sun_light_factor = m_params.sun_light_factor;
 	params.henyey_greenstein_g_forward = m_params.henyey_greenstein_g_forward;
 	params.henyey_greenstein_g_backward = m_params.henyey_greenstein_g_backward;
-	params.resolution_factor = (int)resolution;
+	params.resolution_factor = resolution;
+
+	params.padding = 0.0f;
 
 
 	m_D3D->GetProjectionMatrix(project);
@@ -586,15 +588,19 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 
 	//// pass volumetric clouds
 	// set constant
+	static float totalTime = 10;
+	totalTime += 0.1f;
+	m_frameBuffer.totalTime = totalTime;
 	m_frameBuffer.inverseProjection = invertProject;
 	m_frameBuffer.inverseView = invertView;
 	m_frameBuffer.cameraPosition = D3DXVECTOR4( camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z, 1.0f );
-	m_frameBuffer.renderResolution = { m_width, m_height };
+	m_frameBuffer.renderResolution = D3DXVECTOR2(m_width, m_height);
 
-	context->UpdateSubresource(m_frameBufferNoise, 0, NULL, &m_frameBuffer, 0, 0);
-	context->CSSetConstantBuffers(0, 1, &m_frameBufferNoise);
 	context->UpdateSubresource(m_prevCloudsBufferNoise, 0, NULL, &params, 0, 0);
-	context->CSSetConstantBuffers(1, 1, &m_prevCloudsBufferNoise);
+	context->CSSetConstantBuffers(0, 1, &m_prevCloudsBufferNoise);
+	context->UpdateSubresource(m_frameBufferNoise, 0, NULL, &m_frameBuffer, 0, 0);
+	context->CSSetConstantBuffers(1, 1, &m_frameBufferNoise);
+	
 	// set params
 	context->CSSetUnorderedAccessViews(0, 1, &m_prevCloudsUnorderedView, 0);
 	context->CSSetShaderResources(0, 1, &m_resourcePrevClouds);

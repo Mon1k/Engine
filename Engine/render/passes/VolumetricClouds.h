@@ -35,8 +35,8 @@ private:
 		float light_step_length = 64.0f;
 		float light_cone_radius = 0.4f;
 
-		float cloud_base_color[3] = { 0.78f, 0.86f, 1.0f };
-		float cloud_top_color[3] = { 1.0f, 1.0f, 1.0f };
+		D3DXVECTOR3 cloud_base_color = { 0.78f, 0.86f, 1.0f };
+		D3DXVECTOR3 cloud_top_color = { 1.0f, 1.0f, 1.0f };
 		float precipitation = 1.78f;
 		float ambient_light_factor = 0.12f;
 		float sun_light_factor = 0.7f;
@@ -51,6 +51,7 @@ private:
 		float		cloud_type;
 		float 	    cloud_min_height;
 		float 	    cloud_max_height;
+		float		padding;
 
 		float 	    shape_noise_scale;
 		float 	    detail_noise_scale;
@@ -63,7 +64,7 @@ private:
 		int	        max_num_steps;
 
 		D3DXVECTOR3 planet_center;
-		float 	    planetRadius;
+		float 	    planet_radius;
 
 		float 	    light_step_length;
 		float 	    light_cone_radius;
@@ -74,8 +75,6 @@ private:
 		float 	    henyey_greenstein_g_forward;
 		float 	    henyey_greenstein_g_backward;
 		int			resolution_factor;
-
-		float		padding;
 	};
 
 	struct FrameBuffer
@@ -84,13 +83,12 @@ private:
 		D3DXMATRIX	inverseProjection;
 		D3DXVECTOR4 cameraPosition;
 
-		D3DXVECTOR4 windParams = { 0.75, 0.0f, 0.5f, 0.0f };
-		float		totalTime = 10;
+		D3DXVECTOR4 windParams = { 0.75, 0.0f, 0.5f, 10.0f };
 		D3DXVECTOR4 sunDirection = {0.0f, -0.5f, 1.0f, 0.0f};
 		D3DXVECTOR4 sunColor = { 0.25, 0.15f, 0.15f, 1.0f };
 
 		D3DXVECTOR2 renderResolution = { 512, 512 };
-
+		float		totalTime = 10;
 		float		padding;
 	};
 
