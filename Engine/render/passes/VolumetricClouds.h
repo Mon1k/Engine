@@ -83,13 +83,20 @@ private:
 		D3DXMATRIX	inverseProjection;
 		D3DXVECTOR4 cameraPosition;
 
-		D3DXVECTOR4 windParams = { 0.75, 0.0f, 0.5f, 10.0f };
-		D3DXVECTOR4 sunDirection = {0.0f, -0.5f, 1.0f, 0.0f};
-		D3DXVECTOR4 sunColor = { 0.25, 0.15f, 0.15f, 1.0f };
+		D3DXVECTOR4 windParams = { 1.0f, 0.0f, 1.0f, 10.0f };
+		D3DXVECTOR4 sunDirection = {-0.2f, 1.0f, -0.33f, 0.0f};
+		D3DXVECTOR4 sunColor = { 4.0f, 3.6f, 3.96f, 4.0f };
 
 		D3DXVECTOR2 renderResolution = { 512, 512 };
 		float		totalTime = 10;
 		float		padding;
+	};
+
+	enum CloudResolution
+	{
+		CloudResolution_Full = 0,
+		CloudResolution_Half = 1,
+		CloudResolution_Quarter = 2
 	};
 
 public:
@@ -135,7 +142,6 @@ private:
 private:
 	ID3D11InputLayout* m_layout;
 
-	ID3D11Buffer* m_cloudsBuffer;
 	ID3D11SamplerState* m_sampleStateWrap;
 
 	ID3D11ComputeShader* m_cloudShapeNoiseShader;

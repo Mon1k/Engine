@@ -54,10 +54,15 @@ public:
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3);
+	
 	void addLights(std::vector<LightClass*>);
 	LightClass* getLight(int index)
 	{
 		return m_lights[index];
+	}
+	void clearLights()
+	{
+		m_lights.clear();
 	}
 
 private:

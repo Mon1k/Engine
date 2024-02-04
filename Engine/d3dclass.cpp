@@ -188,7 +188,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	UINT flagsDevice = 0;
-#ifdef DEBUG
+#if defined _DEBUG
 	flagsDevice |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 

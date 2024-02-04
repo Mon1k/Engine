@@ -15,6 +15,7 @@ using namespace std;
 #include "Model.h"
 
 #include "../render/renderstenciltextureclass.h"
+#include "../render/rendertextureclass.h"
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
 #include "../render/passes/VolumetricClouds.h"
@@ -98,6 +99,8 @@ private:
     RenderStencilTextureClass* m_RenderStencilTexture;
 
     VolumetricClouds* m_volumetricClouds;
+    RenderStencilTextureClass* m_RenderStencilTexture2;
+    RenderTextureClass* m_RenderTexture3;
 
     std::vector<AbstractModel *> m_modelsShadow;
 };

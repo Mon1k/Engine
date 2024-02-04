@@ -1,11 +1,12 @@
 #include "VolumetricClouds.h"
+#include "../../Options.h"
 #include <time.h>
 #include <stdio.h>
+
 
 VolumetricClouds::VolumetricClouds()
 {
 	m_layout = 0;
-	m_cloudsBuffer = 0;
 
 	m_cloudShapeNoiseShader = 0;
 	m_cloudDetailNoiseShader = 0;
@@ -34,8 +35,8 @@ VolumetricClouds::~VolumetricClouds()
 
 bool VolumetricClouds::Initialize(ID3D11Device* device)
 {
-	m_width = 1024;
-	m_height = 768;
+	m_width = Options::screen_width;
+	m_height = Options::screen_height;
 
 	bool result = InitializeShader(device, L"./data/shaders/VolumetricClouds.hlsl", L"./data/shaders/VolumetricClouds.hlsl");
 	
@@ -51,7 +52,7 @@ bool VolumetricClouds::Initialize(ID3D11Device* device)
 
 void VolumetricClouds::Shutdown()
 {
-	VolumetricClouds();
+	ShutdownShader();
 }
 
 bool VolumetricClouds::Render(ID3D11DeviceContext* deviceContext, int indexCount)
@@ -77,7 +78,7 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
 	ID3D10Blob* computeShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 	unsigned int numElements;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC cloudsBufferDesc;
@@ -88,54 +89,8 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	pixelShaderBuffer = 0;
 	computeShaderBuffer = 0;
 
-	// Compile the vertex shader code.
-	/*result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-		&vertexShaderBuffer, &errorMessage, NULL);
-	if (FAILED(result)) {
-		// If the shader failed to compile it should have writen something to the error message.
-		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, vsFilename);
-		}
-		// If there was nothing in the error message then it simply could not find the shader file itself.
-		else {
-			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
-		}
 
-		return false;
-	}
-
-	// Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "ShadowPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-		&pixelShaderBuffer, &errorMessage, NULL);
-	if (FAILED(result)) {
-		// If the shader failed to compile it should have writen something to the error message.
-		if (errorMessage) {
-			OutputShaderErrorMessage(errorMessage, psFilename);
-		}
-		// If there was nothing in the error message then it simply could not find the file itself.
-		else {
-			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
-		}
-
-		return false;
-	}
-
-	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
-	if (FAILED(result)) {
-		return false;
-	}*/
-
-
-	////
-
+	// textures
 	D3D11_TEXTURE3D_DESC cloudShapeNoiseDesc{};
 	ZeroMemory(&cloudShapeNoiseDesc, sizeof(cloudShapeNoiseDesc));
 	cloudShapeNoiseDesc.Width = m_params.shape_noise_resolution;
@@ -205,6 +160,46 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	}
 
 	//// compile compute shaders
+	// vertex
+	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricClouds.hlsl", NULL, NULL, "CloudsCombineVS", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+		&vertexShaderBuffer, &errorMessage, NULL);
+	if (FAILED(result)) {
+		// If the shader failed to compile it should have writen something to the error message.
+		if (errorMessage) {
+			OutputShaderErrorMessage(errorMessage, vsFilename);
+		}
+		// If there was nothing in the error message then it simply could not find the shader file itself.
+		else {
+			MessageBox(NULL, vsFilename, L"Missing Shader File", MB_OK);
+		}
+
+		return false;
+	}
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	if (FAILED(result)) {
+		return false;
+	}
+
+	// pixel
+	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricClouds.hlsl", NULL, NULL, "CloudsCombinePS", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+		&pixelShaderBuffer, &errorMessage, NULL);
+	if (FAILED(result)) {
+		// If the shader failed to compile it should have writen something to the error message.
+		if (errorMessage) {
+			OutputShaderErrorMessage(errorMessage, psFilename);
+		}
+		// If there was nothing in the error message then it simply could not find the file itself.
+		else {
+			MessageBox(NULL, psFilename, L"Missing Shader File", MB_OK);
+		}
+
+		return false;
+	}
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	if (FAILED(result)) {
+		return false;
+	}
+
 	// shape noise
 	result = D3DX11CompileFromFile(L"./data/shaders/VolumetricCloudsNoise.hlsl", NULL, NULL, "CloudShapeCS", "cs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&computeShaderBuffer, &errorMessage, NULL);
@@ -414,30 +409,20 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
 	// Get a count of the elements in the layout.
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	/*result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
+	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
 		&m_layout);
 	if (FAILED(result)) {
 		return false;
 	}
 
-	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	vertexShaderBuffer = 0;
-
 	pixelShaderBuffer->Release();
-	pixelShaderBuffer = 0;*/
+	pixelShaderBuffer = 0;
 
 
 	// 1 wrap - linear - texture
@@ -449,24 +434,10 @@ bool VolumetricClouds::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1.0;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0.0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
-
-	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
-	cloudsBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cloudsBufferDesc.ByteWidth = sizeof(CloudParameters);
-	cloudsBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cloudsBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cloudsBufferDesc.MiscFlags = 0;
-	cloudsBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&cloudsBufferDesc, NULL, &m_cloudsBuffer);
-	if (FAILED(result)) {
-		return false;
-	}
 
 	return true;
 }
@@ -549,11 +520,12 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	
 	CloudsConstants params{};
 	float noise_scale = 0.00001f + m_params.shape_noise_scale * 0.0004f;
-	int resolution = 0; // full
+	int resolution = CloudResolution_Full;
 
 	params.cloud_type = m_params.cloud_type;
 	params.cloud_min_height = m_params.cloud_min_height;
 	params.cloud_max_height = m_params.cloud_max_height;
+	params.padding = 0.0f;
 
 	params.shape_noise_scale = noise_scale;
 	params.detail_noise_scale = m_params.detail_noise_scale * noise_scale;
@@ -578,21 +550,20 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.henyey_greenstein_g_backward = m_params.henyey_greenstein_g_backward;
 	params.resolution_factor = resolution;
 
-	params.padding = 0.0f;
-
-
 	m_D3D->GetProjectionMatrix(project);
-	D3DXMatrixInverse(&invertProject, NULL, &project);
 	camera->GetViewMatrix(view);
+
+	D3DXMatrixInverse(&invertProject, NULL, &project);
 	D3DXMatrixInverse(&invertView, NULL, &view);
+
+	D3DXMatrixTranspose(&invertProject, &invertProject);
+	D3DXMatrixTranspose(&invertView, &invertView);
 
 	//// pass volumetric clouds
 	// set constant
-	static float totalTime = 10;
-	totalTime += 0.1f;
-	m_frameBuffer.totalTime = totalTime;
-	m_frameBuffer.inverseProjection = invertProject;
+	m_frameBuffer.totalTime += 0.2f;
 	m_frameBuffer.inverseView = invertView;
+	m_frameBuffer.inverseProjection = invertProject;
 	m_frameBuffer.cameraPosition = D3DXVECTOR4( camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z, 1.0f );
 	m_frameBuffer.renderResolution = D3DXVECTOR2(m_width, m_height);
 
@@ -631,11 +602,6 @@ void VolumetricClouds::ShutdownShader()
 		m_layout = 0;
 	}
 
-	if (m_cloudsBuffer) {
-		m_cloudsBuffer->Release();
-		m_cloudsBuffer = 0;
-	}
-
 	if (m_cloudShapeNoiseShader) {
 		m_cloudShapeNoiseShader->Release();
 		m_cloudShapeNoiseShader = 0;
@@ -651,57 +617,30 @@ void VolumetricClouds::ShutdownShader()
 		m_cloudTypeShader = 0;
 	}
 
+	if (m_prevCloudShader) {
+		m_prevCloudShader->Release();
+		m_prevCloudShader = 0;
+	}
+
 	AbstractShader::Shutdown();
 }
 
 
 bool VolumetricClouds::SetShaderParameters(ID3D11DeviceContext* deviceContext)
 {
-	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	unsigned int bufferNumber;
-	CloudParameters* dataPtr;
-	
-
-	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_cloudsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Get a pointer to the data in the constant buffer.
-	dataPtr = (CloudParameters*)mappedResource.pData;
-
-	dataPtr = &m_params;
-
-	// Unlock the constant buffer.
-	deviceContext->Unmap(m_cloudsBuffer, 0);
-
-	// Set the position of the constant buffer in the vertex shader.
-	bufferNumber = 0;
-
-	// Now set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cloudsBuffer);
-
-	// Set shader texture resource in the pixel shader.
-	//deviceContext->PSSetShaderResources(0, 1, &depthMapTexture);
-	//deviceContext->PSSetShaderResources(1, 1, &texture);
-
 	return true;
 }
-
 
 void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
 
-	// Set the vertex and pixel shaders that will be used to render this triangle.
+	deviceContext->PSSetShaderResources(0, 1, &m_resourcePrevClouds);
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
+
 	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
 	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
-
-	// Set the sampler states in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
