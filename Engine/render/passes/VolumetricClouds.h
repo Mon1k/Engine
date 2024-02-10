@@ -13,7 +13,7 @@ using namespace std;
 
 class VolumetricClouds : public AbstractShader
 {
-private:
+public:
 	struct CloudParameters
 	{
 		int shape_noise_frequency = 4;
@@ -85,7 +85,7 @@ private:
 
 		D3DXVECTOR4 windParams = { 1.0f, 0.0f, 1.0f, 10.0f };
 		D3DXVECTOR4 sunDirection = {-0.2f, 1.0f, -0.33f, 0.0f};
-		D3DXVECTOR4 sunColor = { 4.0f, 3.6f, 3.96f, 4.0f };
+		D3DXVECTOR4 sunColor = { 18.0f, 17.6f, 17.96f, 4.0f };
 
 		D3DXVECTOR2 renderResolution = { 512, 512 };
 		float		totalTime = 10;
@@ -106,6 +106,15 @@ public:
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int);
+
+	CloudParameters getParams()
+	{
+		return m_params;
+	}
+	void setParams(CloudParameters params)
+	{
+		m_params = params;
+	}
 
 	ID3D11ShaderResourceView* getShapeNoise()
 	{

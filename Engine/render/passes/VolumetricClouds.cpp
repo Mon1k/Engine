@@ -520,7 +520,6 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	
 	CloudsConstants params{};
 	float noise_scale = 0.00001f + m_params.shape_noise_scale * 0.0004f;
-	int resolution = CloudResolution_Full;
 
 	params.cloud_type = m_params.cloud_type;
 	params.cloud_min_height = m_params.cloud_min_height;
@@ -548,7 +547,8 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.sun_light_factor = m_params.sun_light_factor;
 	params.henyey_greenstein_g_forward = m_params.henyey_greenstein_g_forward;
 	params.henyey_greenstein_g_backward = m_params.henyey_greenstein_g_backward;
-	params.resolution_factor = resolution;
+	params.resolution_factor = CloudResolution_Full;
+
 
 	m_D3D->GetProjectionMatrix(project);
 	camera->GetViewMatrix(view);
@@ -636,7 +636,7 @@ void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
 
-	deviceContext->PSSetShaderResources(0, 1, &m_resourcePrevClouds);
+	deviceContext->PSSetShaderResources(3, 1, &m_resourcePrevClouds);
 	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
 
 	deviceContext->VSSetShader(m_vertexShader, NULL, 0);

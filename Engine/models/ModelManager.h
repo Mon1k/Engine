@@ -19,6 +19,7 @@ using namespace std;
 #include "../textures/depthshaderclass.h"
 #include "../textures/shadowshaderclass.h"
 #include "../render/passes/VolumetricClouds.h"
+#include "../models/sky/WeatherManager.h"
 
 #include "../lightshaderclass.h"
 #include "../lightclass.h"
@@ -101,6 +102,7 @@ private:
     VolumetricClouds* m_volumetricClouds;
     RenderStencilTextureClass* m_RenderStencilTexture2;
     RenderTextureClass* m_RenderTexture3;
+    WeatherManager* m_WeatherManager;
 
     std::vector<AbstractModel *> m_modelsShadow;
 };

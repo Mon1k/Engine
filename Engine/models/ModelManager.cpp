@@ -2,6 +2,7 @@
 #include "../Options.h"
 #include "AbstractTarget.h"
 #include "terrain/terrainclass.h"
+#include "sky/skydomeclass.h"
 #include "sky/skyplaneclass.h"
 #include "sky/SkyPlaneVolumetric.h"
 #include "../ui/image.h"
@@ -47,6 +48,8 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     if (!m_RenderTexture3->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near)) {
         return false;
     }
+    m_WeatherManager = new WeatherManager(m_volumetricClouds);
+    m_WeatherManager->setNextTarget();
 
     return true;
 }
@@ -203,7 +206,7 @@ void ModelManager::Render(CameraClass* camera)
     bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);
 
     m_RenderTexture3->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 0.0f);
+    m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 0.5f);
 
     m_volumetricClouds->computeVolumetricCloudsShaders(camera);
     bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
@@ -219,12 +222,12 @@ void ModelManager::Render(CameraClass* camera)
     image->Initialize(Options::screen_width, Options::screen_height, 0, 0);
     image->loadTextureByResource(m_RenderTexture3->GetShaderResourceView());
     //image->loadTextureByResource(m_volumetricClouds->getPrevClouds());
-    m_D3D->TurnZBufferOff();
+
+    //m_D3D->TurnZBufferOff();
     m_D3D->TurnOnAlphaBlending();
     image->Render();
     m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();
-
+    //m_D3D->TurnZBufferOn();
     
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -333,4 +336,6 @@ void ModelManager::frame(CameraClass* camera, float time)
     for (int i = 0; i < m_modelsRender.size(); i++) {
         m_modelsRender[i]->frame(camera, time);
     }
+
+    //m_WeatherManager->frame(time);
 }
