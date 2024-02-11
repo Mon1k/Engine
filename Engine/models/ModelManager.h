@@ -85,6 +85,11 @@ public:
         return m_volumetricClouds;
     }
 
+    ID3D11ShaderResourceView* getResource3()
+    {
+        return m_RenderTexture3->GetShaderResourceView();
+    }
+
 private:
     std::vector<AbstractModel *> m_models;
     std::vector<AbstractModel *> m_modelsRender;

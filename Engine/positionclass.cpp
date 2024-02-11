@@ -203,7 +203,7 @@ void PositionClass::MoveUpward(bool keydown)
 	}
 
 	// Update the height position.
-	m_positionY += m_upwardSpeed;
+	m_positionY += m_upwardSpeed * m_sensivity;
 }
 
 void PositionClass::MoveDownward(bool keydown)
@@ -225,7 +225,7 @@ void PositionClass::MoveDownward(bool keydown)
 	}
 
 	// Update the height position.
-	m_positionY -= m_downwardSpeed;
+	m_positionY -= m_downwardSpeed * m_sensivity;
 }
 
 

@@ -636,11 +636,11 @@ void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
 
-	deviceContext->PSSetShaderResources(3, 1, &m_resourcePrevClouds);
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
-
 	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
 	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+
+	deviceContext->PSSetShaderResources(4, 1, &m_resourcePrevClouds);
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
