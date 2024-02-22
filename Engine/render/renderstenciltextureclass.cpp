@@ -69,7 +69,7 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	depthBufferDesc.Height = textureHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // better than r16 as correct depth fot shadow
+	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // better than r16 as correct depth for shadow
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;

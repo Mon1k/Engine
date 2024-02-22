@@ -51,7 +51,7 @@ float GetRatio(float value, float minValue, float maxValue)
 [numthreads(8, 8, 8)]
 void CloudTypeCS(uint3 threadId : SV_DispatchThreadID)
 {
-	float3 uvw = (threadId.xyz + 0.5f) * resolutionInv;
+    float3 uvw = (threadId.xyz + 0.5f) * resolutionInv;
 	float cloudType = uvw.x;
 	float height = uvw.y;
 

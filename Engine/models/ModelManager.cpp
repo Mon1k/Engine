@@ -209,13 +209,13 @@ void ModelManager::Render(CameraClass* camera)
     m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
 
     m_D3D->TurnZBufferOff();
-    m_D3D->TurnOnAlphaBlending();
+    //m_D3D->TurnOnAlphaBlending();
 
     m_volumetricClouds->computeVolumetricCloudsShaders(camera);
     bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
     m_volumetricClouds->Render(m_D3D->GetDeviceContext(), bitmap->GetIndexCount());
     
-    m_D3D->TurnOffAlphaBlending();
+    //m_D3D->TurnOffAlphaBlending();
     m_D3D->TurnZBufferOn();
 
     m_D3D->SetBackBufferRenderTarget();
@@ -230,9 +230,9 @@ void ModelManager::Render(CameraClass* camera)
     //image->loadTextureByResource(m_volumetricClouds->getPrevClouds());
 
     m_D3D->TurnZBufferOff();
-    m_D3D->TurnOnAlphaBlending();
+    //m_D3D->TurnOnAlphaBlending();
     image->Render();
-    m_D3D->TurnOffAlphaBlending();
+    //m_D3D->TurnOffAlphaBlending();
     m_D3D->TurnZBufferOn();
 
     camera->GetViewMatrix(viewMatrix);

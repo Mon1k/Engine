@@ -550,7 +550,9 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.resolution_factor = CloudResolution_Full;
 
 
-	m_D3D->GetProjectionMatrix(project);
+	//m_D3D->GetProjectionMatrix(project);
+	D3DXMatrixPerspectiveFovLH(&project, D3DX_PI / 3.0f, (float)Options::screen_width / (float)Options::screen_height, 0.1f, 10000.0f);
+	//D3DXMatrixOrthoLH(&project, (float)Options::screen_width, (float)Options::screen_height, 0.1f, 10000.0f);
 	camera->GetViewMatrix(view);
 
 	D3DXMatrixInverse(&invertProject, NULL, &project);
