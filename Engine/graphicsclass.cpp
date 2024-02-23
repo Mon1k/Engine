@@ -127,7 +127,6 @@ bool GraphicsClass::Render()
 
 	m_modelManager->Render(m_Camera);
 	m_particleManager->Render(m_Camera, m_Frustum);
-
 	m_uiManager->Render();
 
 	// Present the rendered scene to the screen.

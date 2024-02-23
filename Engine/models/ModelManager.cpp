@@ -205,21 +205,21 @@ void ModelManager::Render(CameraClass* camera)
     bitmap = new BitmapClass();
     bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);
 
-    m_RenderTexture3->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
+    //m_RenderTexture3->SetRenderTarget(m_D3D->GetDeviceContext());
+    //m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
 
-    m_D3D->TurnZBufferOff();
-    //m_D3D->TurnOnAlphaBlending();
+    //m_D3D->TurnZBufferOff();
+    m_D3D->TurnOnAlphaBlending();
 
     m_volumetricClouds->computeVolumetricCloudsShaders(camera);
     bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
     m_volumetricClouds->Render(m_D3D->GetDeviceContext(), bitmap->GetIndexCount());
     
-    //m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();
+    m_D3D->TurnOffAlphaBlending();
+    //m_D3D->TurnZBufferOn();
 
-    m_D3D->SetBackBufferRenderTarget();
-    m_D3D->ResetViewport();
+    //m_D3D->SetBackBufferRenderTarget();
+    //m_D3D->ResetViewport();
 
     //m_volumetricClouds->computeVolumetricCloudsShaders(camera);
     Image* image = new Image();
@@ -231,7 +231,7 @@ void ModelManager::Render(CameraClass* camera)
 
     m_D3D->TurnZBufferOff();
     //m_D3D->TurnOnAlphaBlending();
-    image->Render();
+    //image->Render();
     //m_D3D->TurnOffAlphaBlending();
     m_D3D->TurnZBufferOn();
 
