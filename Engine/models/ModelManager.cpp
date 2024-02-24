@@ -5,8 +5,8 @@
 #include "sky/skydomeclass.h"
 #include "sky/skyplaneclass.h"
 #include "sky/SkyPlaneVolumetric.h"
+
 #include "../ui/image.h"
-#include "../bitmapclass.h"
 
 ModelManager::ModelManager()
 {
@@ -50,6 +50,9 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     }
     m_WeatherManager = new WeatherManager(m_volumetricClouds);
     m_WeatherManager->setNextTarget();
+
+    m_bitmapClouds = new BitmapClass();
+    m_bitmapClouds->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);
 
     return true;
 }
@@ -200,40 +203,32 @@ void ModelManager::Render(CameraClass* camera)
     m_TriangleCount = 0;
 
 
-    
-    BitmapClass* bitmap;
-    bitmap = new BitmapClass();
-    bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);
 
-    //m_RenderTexture3->SetRenderTarget(m_D3D->GetDeviceContext());
-    //m_RenderTexture3->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
-
-    //m_D3D->TurnZBufferOff();
-    m_D3D->TurnOnAlphaBlending();
+    m_D3D->TurnOnAlphaFalseBlending();
 
     m_volumetricClouds->computeVolumetricCloudsShaders(camera);
-    bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
-    m_volumetricClouds->Render(m_D3D->GetDeviceContext(), bitmap->GetIndexCount());
+    m_bitmapClouds->Render(m_D3D->GetDeviceContext(), 0, 0);
+    m_volumetricClouds->Render(m_D3D->GetDeviceContext(), m_bitmapClouds->GetIndexCount());
     
     m_D3D->TurnOffAlphaBlending();
-    //m_D3D->TurnZBufferOn();
 
-    //m_D3D->SetBackBufferRenderTarget();
-    //m_D3D->ResetViewport();
+    Image* image1 = new Image;
+    image1->m_D3D = m_D3D;
+    image1->Initialize(320, 320, 10, 760);
+    image1->setId(10);
+    image1->loadTextureByResource(m_volumetricClouds->getPrevClouds());
+    Image* image2 = new Image;
+    image2->m_D3D = m_D3D;
+    image2->Initialize(320, 320, 10, 760);
+    image2->setId(10);
+    image2->loadTextureByResource(m_volumetricClouds->getPrevClouds());
+    Image* image3 = new Image;
+    image3->m_D3D = m_D3D;
+    image3->Initialize(320, 320, 10, 760);
+    image3->setId(10);
+    image3->loadTextureByResource(m_volumetricClouds->getPrevClouds());
 
-    //m_volumetricClouds->computeVolumetricCloudsShaders(camera);
-    Image* image = new Image();
-    image->m_D3D = m_D3D;
-    image->m_baseViewMatrix = camera->getBaseViewMatrix();
-    image->Initialize(Options::screen_width, Options::screen_height, 0, 0);
-    image->loadTextureByResource(m_RenderTexture3->GetShaderResourceView());
-    //image->loadTextureByResource(m_volumetricClouds->getPrevClouds());
 
-    m_D3D->TurnZBufferOff();
-    //m_D3D->TurnOnAlphaBlending();
-    //image->Render();
-    //m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();
 
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -309,16 +304,6 @@ void ModelManager::Render(CameraClass* camera)
             modelsAlpha[i]->Render(camera);
         }
     }
-
-
-    // post process
-    /*m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
-
-    m_volumetricClouds->computeVolumetricCloudsShaders(camera);
-
-    m_D3D->SetBackBufferRenderTarget();
-    m_D3D->ResetViewport();*/
 }
 
 int ModelManager::getNextId()

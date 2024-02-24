@@ -44,6 +44,7 @@ public:
 	void TurnZBufferOn();
 	void TurnZBufferOff();
 	void TurnOnAlphaBlending();
+	void TurnOnAlphaFalseBlending();
 	void TurnOffAlphaBlending();
 	void TurnOnCulling();
 	void TurnOffCulling();
@@ -88,6 +89,7 @@ private:
 	ID3D11DepthStencilState* m_depthDisabledStencilState;
 
 	ID3D11BlendState* m_alphaEnableBlendingState;
+	ID3D11BlendState* m_alphaEnableAlphaBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
 	ID3D11BlendState* m_alphaBlendState2;
 };
