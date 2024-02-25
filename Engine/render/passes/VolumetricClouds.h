@@ -139,7 +139,7 @@ public:
 	void computeNoiseShaders();
 	void computeVolumetricCloudsShaders(CameraClass* camera);
 
-	LightClass* m_lights;
+	void frame(CameraClass* camera, float frameTime);
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
@@ -178,6 +178,7 @@ private:
 	ID3D11Texture2D* m_prevClouds;
 
 	float m_width, m_height;
+	int m_counter = 0;
 	CloudParameters m_params{};
 	FrameBuffer m_frameBuffer{};
 };

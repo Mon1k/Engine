@@ -563,7 +563,6 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 
 	//// pass volumetric clouds
 	// set constant
-	m_frameBuffer.totalTime += 0.2f;
 	m_frameBuffer.inverseView = invertView;
 	m_frameBuffer.inverseProjection = invertProject;
 	m_frameBuffer.cameraPosition = D3DXVECTOR4( camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z, 1.0f );
@@ -646,4 +645,14 @@ void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
+}
+
+void VolumetricClouds::frame(CameraClass* camera, float frameTime)
+{
+	m_counter += frameTime;
+	if (m_counter > 10.0f) {
+		m_frameBuffer.totalTime += m_frameBuffer.windParams.w / 100.0f;
+		m_counter = 0;
+		computeVolumetricCloudsShaders(camera);
+	}
 }

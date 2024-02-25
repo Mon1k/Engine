@@ -87,14 +87,10 @@ public:
         return m_volumetricClouds;
     }
 
-    ID3D11ShaderResourceView* getResource3()
-    {
-        return m_RenderTexture3->GetShaderResourceView();
-    }
-
 private:
     std::vector<AbstractModel *> m_models;
     std::vector<AbstractModel *> m_modelsRender;
+    std::vector<AbstractModel*> m_modelsShadow;
 
     D3DClass* m_D3D;
     FrustumClass* m_frustum;
@@ -107,12 +103,8 @@ private:
     RenderStencilTextureClass* m_RenderStencilTexture;
 
     VolumetricClouds* m_volumetricClouds;
-    RenderStencilTextureClass* m_RenderStencilTexture2;
-    RenderTextureClass* m_RenderTexture3;
     WeatherManager* m_WeatherManager;
     BitmapClass* m_bitmapClouds;
-
-    std::vector<AbstractModel *> m_modelsShadow;
 };
 
 #endif

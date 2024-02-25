@@ -4,9 +4,6 @@
 #include "terrain/terrainclass.h"
 #include "sky/skydomeclass.h"
 #include "sky/skyplaneclass.h"
-#include "sky/SkyPlaneVolumetric.h"
-
-#include "../ui/image.h"
 
 ModelManager::ModelManager()
 {
@@ -40,14 +37,7 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_volumetricClouds = new VolumetricClouds();
     m_volumetricClouds->setD3D(m_D3D);
     m_volumetricClouds->Initialize(m_D3D->GetDevice());
-    m_RenderStencilTexture2 = new RenderStencilTextureClass;
-    if (!m_RenderStencilTexture2->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near)) {
-        return false;
-    }
-    m_RenderTexture3 = new RenderTextureClass;
-    if (!m_RenderTexture3->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::shadow_depth, Options::shadow_near)) {
-        return false;
-    }
+    
     m_WeatherManager = new WeatherManager(m_volumetricClouds);
     m_WeatherManager->setNextTarget();
 
@@ -202,34 +192,6 @@ void ModelManager::Render(CameraClass* camera)
     m_RenderCount = 0;
     m_TriangleCount = 0;
 
-
-
-    m_D3D->TurnOnAlphaFalseBlending();
-
-    m_volumetricClouds->computeVolumetricCloudsShaders(camera);
-    m_bitmapClouds->Render(m_D3D->GetDeviceContext(), 0, 0);
-    m_volumetricClouds->Render(m_D3D->GetDeviceContext(), m_bitmapClouds->GetIndexCount());
-    
-    m_D3D->TurnOffAlphaBlending();
-
-    Image* image1 = new Image;
-    image1->m_D3D = m_D3D;
-    image1->Initialize(320, 320, 10, 760);
-    image1->setId(10);
-    image1->loadTextureByResource(m_volumetricClouds->getPrevClouds());
-    Image* image2 = new Image;
-    image2->m_D3D = m_D3D;
-    image2->Initialize(320, 320, 10, 760);
-    image2->setId(10);
-    image2->loadTextureByResource(m_volumetricClouds->getPrevClouds());
-    Image* image3 = new Image;
-    image3->m_D3D = m_D3D;
-    image3->Initialize(320, 320, 10, 760);
-    image3->setId(10);
-    image3->loadTextureByResource(m_volumetricClouds->getPrevClouds());
-
-
-
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
@@ -241,13 +203,17 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                if (Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) {
+                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
                         terrain->Render(camera, m_RenderStencilTexture->GetShaderResourceView());
                     }
-                    else if (dynamic_cast<const SkyPlaneClass*>(model) != nullptr || dynamic_cast<const SkyPlaneVolumetric*>(model) != nullptr) {
+                    else if (dynamic_cast<const SkyPlaneClass*>(model) != nullptr || dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                         m_modelsRender[i]->Render(camera);
+                        m_D3D->TurnOnAlphaFalseBlending();
+                        m_bitmapClouds->Render(m_D3D->GetDeviceContext(), 0, 0);
+                        m_volumetricClouds->Render(m_D3D->GetDeviceContext(), m_bitmapClouds->GetIndexCount());
+                        m_D3D->TurnOffAlphaBlending();
                     }
                     else if (dynamic_cast<const AbstractTarget*>(model) != nullptr) {
                         model->Render(camera);
@@ -328,5 +294,6 @@ void ModelManager::frame(CameraClass* camera, float time)
         m_modelsRender[i]->frame(camera, time);
     }
 
-    //m_WeatherManager->frame(time);
+    m_volumetricClouds->frame(camera, time);
+    m_WeatherManager->frame(time);
 }
