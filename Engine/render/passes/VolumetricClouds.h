@@ -84,7 +84,7 @@ public:
 		D3DXVECTOR4 cameraPosition;
 
 		D3DXVECTOR4 windParams = { 1.0f, 0.0f, 1.0f, 10.0f };
-		D3DXVECTOR4 sunDirection = {-0.2f, 1.0f, -0.33f, 0.0f};
+		D3DXVECTOR4 sunDirection = { -0.2f, 1.0f, -0.33f, 0.0f };
 		D3DXVECTOR4 sunColor = { 18.0f, 17.6f, 17.96f, 4.0f };
 
 		D3DXVECTOR2 renderResolution = { 512, 512 };
@@ -139,13 +139,12 @@ public:
 	void computeNoiseShaders();
 	void computeVolumetricCloudsShaders(CameraClass* camera);
 
-	void frame(CameraClass* camera, float frameTime);
+	void frame(CameraClass* camera, float time);
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:

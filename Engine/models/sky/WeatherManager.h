@@ -45,8 +45,6 @@ public:
 			m_currentParams.global_density += m_dir * time * m_powerChange;
 			m_clouds->setParams(m_currentParams);
 		}
-
-		
 	}
 
 protected:

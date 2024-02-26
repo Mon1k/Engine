@@ -8,7 +8,6 @@ class PositionClass
 {
 public:
 	PositionClass();
-	PositionClass(const PositionClass&);
 	~PositionClass();
 
 	void SetFrameTime(float);
@@ -42,6 +41,10 @@ public:
 	void setSensivity(float sensivity) {
 		m_sensivity = sensivity;
 	}
+
+	void setFreeLook(bool isFreeLook) {
+		m_isFreeLook = isFreeLook;
+	}
 private:
 	float m_frameTime;
 
@@ -55,6 +58,7 @@ private:
 	float m_lookUpSpeed, m_lookDownSpeed;
 
 	float m_sensivity;
+	bool m_isFreeLook;
 };
 
 #endif

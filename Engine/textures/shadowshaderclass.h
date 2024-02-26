@@ -52,12 +52,6 @@ public:
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
 		ID3D11ShaderResourceView*, LightClass*);
 
-	void addLights(std::vector<LightClass*>);
-	LightClass* getLight(int index)
-	{
-		return m_lights[index];
-	}
-
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
@@ -76,8 +70,6 @@ private:
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11Buffer* m_lightBuffer;
 	ID3D11Buffer* m_lightBuffer2;
-
-	std::vector<LightClass*> m_lights;
 };
 
 #endif

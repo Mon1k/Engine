@@ -57,15 +57,6 @@ void VolumetricClouds::Shutdown()
 
 bool VolumetricClouds::Render(ID3D11DeviceContext* deviceContext, int indexCount)
 {
-	bool result;
-
-	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext);
-	if (!result) {
-		return false;
-	}
-
-	// Now render the prepared buffers with the shader.
 	RenderShader(deviceContext, indexCount);
 
 	return true;
@@ -550,9 +541,7 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 	params.resolution_factor = CloudResolution_Full;
 
 
-	//m_D3D->GetProjectionMatrix(project);
-	D3DXMatrixPerspectiveFovLH(&project, D3DX_PI / 3.0f, (float)Options::screen_width / (float)Options::screen_height, 0.1f, 10000.0f);
-	//D3DXMatrixOrthoLH(&project, (float)Options::screen_width, (float)Options::screen_height, 0.1f, 10000.0f);
+	m_D3D->GetProjectionMatrix(project);
 	camera->GetViewMatrix(view);
 
 	D3DXMatrixInverse(&invertProject, NULL, &project);
@@ -626,15 +615,8 @@ void VolumetricClouds::ShutdownShader()
 	AbstractShader::Shutdown();
 }
 
-
-bool VolumetricClouds::SetShaderParameters(ID3D11DeviceContext* deviceContext)
-{
-	return true;
-}
-
 void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
-	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(m_layout);
 
 	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
@@ -643,13 +625,12 @@ void VolumetricClouds::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 	deviceContext->PSSetShaderResources(4, 1, &m_resourcePrevClouds);
 	deviceContext->PSSetSamplers(0, 1, &m_sampleStateWrap);
 
-	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
-void VolumetricClouds::frame(CameraClass* camera, float frameTime)
+void VolumetricClouds::frame(CameraClass* camera, float time)
 {
-	m_counter += frameTime;
+	m_counter += time;
 	if (m_counter > 10.0f) {
 		m_frameBuffer.totalTime += m_frameBuffer.windParams.w / 100.0f;
 		m_counter = 0;

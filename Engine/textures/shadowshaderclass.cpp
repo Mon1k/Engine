@@ -409,11 +409,3 @@ void ShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int ind
 	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
-
-void ShadowShaderClass::addLights(std::vector<LightClass*> lights)
-{
-	this->m_lights.clear();
-	for (int i = 0; i < lights.size(); i++) {
-		this->m_lights.push_back(lights[i]);
-	}
-}

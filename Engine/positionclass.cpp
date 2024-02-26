@@ -24,11 +24,7 @@ PositionClass::PositionClass()
 	m_lookDownSpeed = 0.0f;
 
 	m_sensivity = 1.0f;
-}
-
-
-PositionClass::PositionClass(const PositionClass& other)
-{
+	m_isFreeLook = true;
 }
 
 
@@ -89,24 +85,26 @@ void PositionClass::MoveForward(bool keydown)
 		}
 	}
 
-	/*float radiansY = m_rotationY * 0.0174532925f;
-	m_positionX += sinf(radiansY) * m_forwardSpeed * m_sensivity;
-	m_positionZ += cosf(radiansY) * m_forwardSpeed * m_sensivity;*/
-
 	if (m_forwardSpeed != 0.0f) {
-		float pitchRadian = m_rotationX * 0.0174532925f;
 		float yawRadian = m_rotationY * 0.0174532925f;
-		
-		m_positionX += sinf(yawRadian) * cosf(pitchRadian) * m_forwardSpeed * m_sensivity;
-		m_positionY -= sinf(pitchRadian) * m_forwardSpeed * m_sensivity;
-		m_positionZ += cosf(yawRadian) * cosf(pitchRadian) * m_forwardSpeed * m_sensivity;
+
+		if (m_isFreeLook) {
+			float pitchRadian = m_rotationX * 0.0174532925f;
+
+			m_positionX += sinf(yawRadian) * cosf(pitchRadian) * m_forwardSpeed * m_sensivity;
+			m_positionY -= sinf(pitchRadian) * m_forwardSpeed * m_sensivity;
+			m_positionZ += cosf(yawRadian) * cosf(pitchRadian) * m_forwardSpeed * m_sensivity;
+		}
+		else {
+			m_positionX += sinf(yawRadian) * m_forwardSpeed * m_sensivity;
+			m_positionZ += cosf(yawRadian) * m_forwardSpeed * m_sensivity;
+		}
 	}
 }
 
 
 void PositionClass::MoveLeft(bool keydown)
 {
-
 	// Update the forward speed movement based on the frame time and whether the user is holding the key down or not.
 	if (keydown) {
 		m_strafeLeftSpeed += m_frameTime * 0.001f;
@@ -179,18 +177,20 @@ void PositionClass::MoveBackward(bool keydown)
 		}
 	}
 
-
-	/*float radians = m_rotationY * 0.0174532925f;
-	m_positionX -= sinf(radians) * m_backwardSpeed * m_sensivity;
-	m_positionZ -= cosf(radians) * m_backwardSpeed * m_sensivity;*/
-
 	if (m_backwardSpeed != 0.0f) {
-		float pitchRadian = m_rotationX * 0.0174532925f;
 		float yawRadian = m_rotationY * 0.0174532925f;
 
-		m_positionX -= sinf(yawRadian) * cosf(pitchRadian) * m_backwardSpeed * m_sensivity;
-		m_positionY += sinf(pitchRadian) * m_backwardSpeed * m_sensivity;
-		m_positionZ -= cosf(yawRadian) * cosf(pitchRadian) * m_backwardSpeed * m_sensivity;
+		if (m_isFreeLook) {
+			float pitchRadian = m_rotationX * 0.0174532925f;
+		
+			m_positionX -= sinf(yawRadian) * cosf(pitchRadian) * m_backwardSpeed * m_sensivity;
+			m_positionY += sinf(pitchRadian) * m_backwardSpeed * m_sensivity;
+			m_positionZ -= cosf(yawRadian) * cosf(pitchRadian) * m_backwardSpeed * m_sensivity;
+		}
+		else {
+			m_positionX -= sinf(yawRadian) * m_backwardSpeed * m_sensivity;
+			m_positionZ -= cosf(yawRadian) * m_backwardSpeed * m_sensivity;
+		}
 	}
 }
 

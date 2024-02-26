@@ -320,7 +320,6 @@ void CloudsCS(uint3 DispatchThreadId : SV_DispatchThreadID)
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
 #define CLOUDS_DEPTH 0.99999f
 
 struct VertexInputType
@@ -334,7 +333,6 @@ struct PixelInputType
     float2 tex : TEXCOORD0;
 };
 PixelInputType CloudsCombineVS(VertexInputType input, uint vertexId : SV_VERTEXID)
-//PixelInputType CloudsCombineVS(VertexInputType input)
 {
     PixelInputType output = (PixelInputType) 0;
 
@@ -343,16 +341,12 @@ PixelInputType CloudsCombineVS(VertexInputType input, uint vertexId : SV_VERTEXI
     output.position = float4(4.0f * float2(v) - 1.0f, CLOUDS_DEPTH, 1.0f);
     output.tex.x = v.x * 2.0f;
     output.tex.y = 1.0f - v.y * 2.0f;
-    /*output.position = input.position;
-    output.tex = input.tex;*/
 	
 	return output;
 }
 
 float4 CloudsCombinePS(PixelInputType input) : SV_TARGET
 {
-    //return float4(1.0f, 0.5f, 0.0f, 1.0f);
-	
     float4 color = inputTx.Sample(LinearWrapSampler, input.tex);
     if (!any(color.xyz) || color.a < 0.03f) {
         discard;

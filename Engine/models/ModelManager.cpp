@@ -83,6 +83,17 @@ void ModelManager::Shutdown()
         delete m_RenderStencilTexture;
         m_RenderStencilTexture = 0;
     }
+
+    if (m_volumetricClouds) {
+        m_volumetricClouds->Shutdown();
+        delete m_volumetricClouds;
+        m_volumetricClouds = 0;
+    }
+    if (m_bitmapClouds) {
+        m_bitmapClouds->Shutdown();
+        delete m_bitmapClouds;
+        m_bitmapClouds = 0;
+    }
 }
 
 void ModelManager::PreRender(CameraClass* camera)
@@ -92,7 +103,7 @@ void ModelManager::PreRender(CameraClass* camera)
     m_modelsShadow.clear();
     m_modelsRender.clear();
 
-    for (int i = 0; i < m_models.size(); i++) {
+    for (size_t i = 0; i < m_models.size(); i++) {
         if (!m_models[i]->isVisible()) {
             continue;
         }
@@ -108,11 +119,11 @@ void ModelManager::PreRender(CameraClass* camera)
         }
     }
 
-    for (int i = 0; i < m_modelsRender.size(); i++) {
+    for (size_t i = 0; i < m_modelsRender.size(); i++) {
         if (Options::reflectionLevel < 2 && dynamic_cast<const AbstractTarget*>(m_modelsRender[i]) != nullptr) {
             AbstractTarget* targetScopes = dynamic_cast<AbstractTarget*>(m_modelsRender[i]);
             targetScopes->clearTargets();
-            for (int j = 0; j < m_modelsRender.size(); j++) {
+            for (size_t j = 0; j < m_modelsRender.size(); j++) {
                 if (i != j && dynamic_cast<const AbstractTarget*>(m_modelsRender[j]) == nullptr) {
                     if (Options::reflectionLevel == 1) {
                         if (dynamic_cast<const Model*>(m_modelsRender[j]) != nullptr) {
@@ -120,6 +131,9 @@ void ModelManager::PreRender(CameraClass* camera)
                         }
                     }
                     else {
+                        if (dynamic_cast<const SkyDomeClass*>(m_modelsRender[j]) != nullptr) {
+                            continue;
+                        }
                         targetScopes->addTarget(m_modelsRender[j]);
                     }
                 }
@@ -135,8 +149,6 @@ void ModelManager::PreRender(CameraClass* camera)
     if (m_modelsShadow.size() > 0) {
         RenderShadowDepth(camera);
     }
-
-
 }
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
@@ -153,7 +165,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     
 
     LightClass* light;
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
         ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
         // @todo - later calculation for per light
         light = model->getLight(0);
@@ -185,7 +197,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 void ModelManager::Render(CameraClass* camera)
 {
     std::vector<AbstractModel*> modelsAlpha;
-    D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, worldMatrix, baseViewMatrix, lightViewMatrix, lightProjectionMatrix;
+    D3DXMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 
     modelsAlpha.clear();
     
@@ -195,7 +207,7 @@ void ModelManager::Render(CameraClass* camera)
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
-    for (int i = 0; i < m_modelsRender.size(); i++) {
+    for (size_t i = 0; i < m_modelsRender.size(); i++) {
         if (m_modelsRender[i]->GetIndexCount() == 0) {
             m_modelsRender[i]->Render(camera);
         } else {
@@ -234,7 +246,7 @@ void ModelManager::Render(CameraClass* camera)
 
                         CompositeModel* subset = model->getSubset();
                         if (subset) {
-                            for (int j = 0; j < subset->getChilds().size(); j++) {
+                            for (size_t j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
@@ -257,7 +269,7 @@ void ModelManager::Render(CameraClass* camera)
     }
 
 
-    int size = modelsAlpha.size();
+    size_t size = modelsAlpha.size();
     // sort alpha model for render
     if (size > 0) {
         std::sort(begin(modelsAlpha), end(modelsAlpha), [&camera](AbstractModel* modelLeft, AbstractModel* modelRight) {
@@ -266,7 +278,7 @@ void ModelManager::Render(CameraClass* camera)
             float zModelRight = modelRight->GetPosition().z;
             return abs(zCamera - zModelLeft) > abs(zCamera - zModelRight);
         });
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             modelsAlpha[i]->Render(camera);
         }
     }
