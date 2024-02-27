@@ -12,8 +12,22 @@ BBox::BBox()
 
 void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 _position, D3DXVECTOR3 _size)
 {
-    ID3D11Device* device = d3d->GetDevice();
     m_D3D = d3d;
+
+    fillValues(_position, _size);
+
+    m_vertexCount = 12;
+    m_indexCount = m_vertexCount;
+
+
+    ColorShaderClass* shader = new ColorShaderClass;
+    shader->Initialize(m_D3D->GetDevice());
+    addShader(shader);
+}
+
+void BBox::fillValues(D3DXVECTOR3 _position, D3DXVECTOR3 _size)
+{
+    ID3D11Device* device = m_D3D->GetDevice();
 
     m_ModelColor[0] = new ModelColorClass;
     m_ModelColor[0]->SetPoint(D3DXVECTOR3(_position.x - _size.x, _position.y - _size.y, _position.z - _size.z), D3DXVECTOR3(_position.x + _size.x, _position.y - _size.y, _position.z - _size.z));
@@ -45,7 +59,7 @@ void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 _position, D3DXVECTOR3 _size)
     m_ModelColor[5]->SetPoint(D3DXVECTOR3(_position.x + _size.x, _position.y + _size.y, _position.z + _size.z), D3DXVECTOR3(_position.x - _size.x, _position.y + _size.y, _position.z + _size.z));
     m_ModelColor[5]->SetColor(color);
     m_ModelColor[5]->Initialize(device);
-    
+
     m_ModelColor[6] = new ModelColorClass;
     m_ModelColor[6]->SetPoint(D3DXVECTOR3(_position.x - _size.x, _position.y - _size.y, _position.z + _size.z), D3DXVECTOR3(_position.x + _size.x, _position.y - _size.y, _position.z + _size.z));
     m_ModelColor[6]->SetColor(color);
@@ -77,16 +91,8 @@ void BBox::CreateBox(D3DClass* d3d, D3DXVECTOR3 _position, D3DXVECTOR3 _size)
     m_ModelColor[11]->SetColor(color);
     m_ModelColor[11]->Initialize(device);
 
-    m_vertexCount = 12;
-    m_indexCount = m_vertexCount;
-
     m_Min = D3DXVECTOR3(_position.x - _size.x, _position.y - _size.y, _position.z - _size.z);
     m_Max = D3DXVECTOR3(_position.x + _size.x, _position.y + _size.y, _position.z + _size.z);
-
-
-    ColorShaderClass* shader = new ColorShaderClass;
-    shader->Initialize(device);
-    addShader(shader);
 }
 
 void BBox::Shutdown()
@@ -117,4 +123,17 @@ void BBox::Render(CameraClass* camera)
         m_ModelColor[i]->Render(m_D3D->GetDeviceContext());
         m_shader->Render(m_D3D->GetDeviceContext(), 2, worldMatrix, viewMatrix, projectionMatrix);
     }
+}
+
+void BBox::reCreate(D3DXVECTOR3 position, D3DXVECTOR3 size)
+{
+    for (int i = 0; i < 12; i++) {
+        if (m_ModelColor[i]) {
+            m_ModelColor[i]->Shutdown();
+            delete m_ModelColor[i];
+            m_ModelColor[i] = 0;
+        }
+    }
+
+    fillValues(position, size);
 }

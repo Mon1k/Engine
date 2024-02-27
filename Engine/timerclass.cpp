@@ -34,14 +34,11 @@ bool TimerClass::Initialize()
 void TimerClass::Frame()
 {
 	INT64 currentTime;
-	float timeDifference;
-
 	QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
 
-	timeDifference = (float)(currentTime - m_startTime);
-	m_frameTime = timeDifference / m_ticksPerMs;
+	m_differenceTime = currentTime - m_startTime;
+	m_frameTime = m_differenceTime / m_ticksPerMs;
 	m_startTime = currentTime;
-	m_differenceTime = timeDifference;
 }
 
 float TimerClass::GetTime()

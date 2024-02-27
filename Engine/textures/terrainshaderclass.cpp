@@ -364,7 +364,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->lightDetailIntensity = m_lightDetailIntensity;
 	dataPtr2->distanceIntensity = m_distanceIntensity;
 	dataPtr2->countLayers = (float)textures->getTextures().size() - 1;
-	dataPtr2->shadowSize = Options::shadow_enabled ? Options::shadow_width : 0;
+	dataPtr2->shadowSize = shadow ? (Options::shadow_enabled ? Options::shadow_width : 0) : 0;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

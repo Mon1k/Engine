@@ -16,7 +16,7 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 
 	//// @todo - correct rotation for fbx
 	// 0 - x, 1 - y, 2 - z
-	int32_t upAxis = 1;
+	/*int32_t upAxis = 1;
 	int32_t upAxisSign = 1;
 	int32_t frontAxis = 2;
 	int32_t frontAxisSign = 1;
@@ -45,7 +45,7 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 			0.0f, 0.0f, 0.0f, 1.0f);
 
 		m_Scene->mRootNode->mTransformation *= orientationCorrection;
-	}
+	}*/
 	////
 
 
@@ -168,6 +168,7 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 	actor->setWeights(weights);
 
 	// process animation
+	std::string filenameStd = string(filename);
 	for (size_t i = 0; i < m_Scene->mNumAnimations; ++i) {
 		const aiAnimation* assimp_anim = m_Scene->mAnimations[i];
 
@@ -182,6 +183,10 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 		animation.totalTime = assimp_anim->mDuration;
 		animation.tick = tickPerSecond;
 		animation.currentTime = 0;
+		// @see - https://github.com/assimp/assimp/issues/4556 https://github.com/assimp/assimp/issues/3698
+		if (filenameStd.substr(filenameStd.find_last_of(".") + 1) == "fbx") {
+			animation.tick *= animation.tick;
+		}
 
 
 		// fill anim nodes for current animation

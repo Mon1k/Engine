@@ -10,27 +10,19 @@ Actor::Actor() : Model()
 void Actor::frame(CameraClass* camera, float time)
 {
 	m_counter += time;
-	// 1000 / 25 = 40 ms = 25 fps
+	// 1000 / 25 = 40 ms ~ 25 fps
 	if (m_counter < 40) {
 		return;
 	}
 
-	// @todo - correct time shift
 	// update time animation
 	m_counterTotal += fmod(m_counter / 1000 * m_animations[m_currentAnimation].tick, m_animations[m_currentAnimation].totalTime);
-
-	float AnimationTimeSec = m_counterTotal / 1000.0f;
-	float TimeInTicks = AnimationTimeSec * m_animations[m_currentAnimation].tick;
-	float AnimationTimeTicks = fmod(TimeInTicks, m_animations[m_currentAnimation].totalTime);
-
 	m_animations[m_currentAnimation].currentTime = m_counterTotal;
-	//m_animations[m_currentAnimation].currentTime += m_counter / 1000.0f * m_animations[m_currentAnimation].tick;
 	if (m_animations[m_currentAnimation].currentTime >= m_animations[m_currentAnimation].maxTime) {
 		m_animations[m_currentAnimation].currentTime = 0;
 		m_counterTotal = 0;
 	}
-	AnimationTimeTicks = m_counterTotal;	
-
+	m_counter = 0;
 
 	struct VertexType
 	{
@@ -46,7 +38,7 @@ void Actor::frame(CameraClass* camera, float time)
 	for (size_t j = 0; j < m_animations[m_currentAnimation].nodes.size(); j++) {
 		Actor::AnimationNode* aniNode = &m_animations[m_currentAnimation].nodes[j];
 
-		if (aniNode->frames.front().time >= AnimationTimeTicks) {
+		if (aniNode->frames.front().time >= m_counterTotal) {
 			D3DXVECTOR3 P = aniNode->frames.front().position;
 			D3DXVECTOR3 S = aniNode->frames.front().scaling;
 			D3DXQUATERNION R = aniNode->frames.front().rotation;
@@ -54,7 +46,7 @@ void Actor::frame(CameraClass* camera, float time)
 			D3DXMatrixAffineTransformation(&aniNode->transform, 1.0f, &Z, &R, &P);
 			//D3DXMatrixTransformation(&aniNode->transform, &Z, NULL, &S, &Z, &R, &P);
 		}
-		else if (aniNode->frames.back().time <= AnimationTimeSec) {
+		else if (aniNode->frames.back().time <= m_counterTotal) {
 			D3DXVECTOR3 P = aniNode->frames.back().position;
 			D3DXVECTOR3 S = aniNode->frames.back().scaling;
 			D3DXQUATERNION R = aniNode->frames.back().rotation;
@@ -66,8 +58,8 @@ void Actor::frame(CameraClass* camera, float time)
 			for (size_t k = 0; k < aniNode->frames.size() - 1; k++) {
 				Actor::KeyFrame* key = &aniNode->frames[k];
 				Actor::KeyFrame* keyNext = &aniNode->frames[k + 1];
-				if (AnimationTimeTicks >= key->time && AnimationTimeTicks <= keyNext->time) {
-					float lerp = (AnimationTimeTicks - key->time) / (keyNext->time - key->time);
+				if (m_counterTotal >= key->time && m_counterTotal <= keyNext->time) {
+					float lerp = (m_counterTotal - key->time) / (keyNext->time - key->time);
 
 					D3DXVECTOR3 s1 = key->scaling;
 					D3DXVECTOR3 s2 = keyNext->scaling;
@@ -114,6 +106,8 @@ void Actor::frame(CameraClass* camera, float time)
 	}
 
 	// collect bones with final matrix
+	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 	for (size_t i = 0; i < m_Mesh.size(); i++) {
 		Actor::MeshInfo* mesh = m_Mesh[i];
 
@@ -160,6 +154,7 @@ void Actor::frame(CameraClass* camera, float time)
 			Actor::BoneInfo* bone = bones[m_weights[k].BoneIDs[0]];
 			D3DXMATRIX boneTransform = bone->transformation * m_weights[k].Weights[0];
 
+			// @todo - later to vertex shader
 			bone = bones[m_weights[k].BoneIDs[1]];
 			boneTransform += bone->transformation * m_weights[k].Weights[1];
 			bone = bones[m_weights[k].BoneIDs[2]];
@@ -173,7 +168,15 @@ void Actor::frame(CameraClass* camera, float time)
 			vertices[index].position = D3DXVECTOR3(position4.x, position4.y, position4.z);
 			vertices[index].normal = D3DXVECTOR3(vertex.nx, vertex.ny, vertex.nz);
 			vertices[index].texture = D3DXVECTOR2(vertex.tu, vertex.tv);
+
+			m_Min.x = min(m_Min.x, position4.x);
+			m_Min.y = min(m_Min.y, position4.y);
+			m_Min.z = min(m_Min.z, position4.z);
+			m_Max.x = max(m_Max.x, position4.x);
+			m_Max.y = max(m_Max.y, position4.y);
+			m_Max.z = max(m_Max.z, position4.z);
 		}
+		
 
 		// update vertex buffer for current mesh
 		m_D3D->GetDeviceContext()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -185,5 +188,18 @@ void Actor::frame(CameraClass* camera, float time)
 		vertices = 0;
 	}
 
-	m_counter = 0;
+	// update bbox
+	if (m_BBox) {
+		D3DXVECTOR3 position, size;
+		D3DXVECTOR4 bboxnew;
+		D3DXMATRIX world = GetWorldMatrix();
+
+		D3DXVec3Transform(&bboxnew, &m_Min, &world);
+		m_Min = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
+		D3DXVec3Transform(&bboxnew, &m_Max, &world);
+		m_Max = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
+		
+		GetBoundingBox(position, size);
+		m_BBox->reCreate(position, size);
+	}
 }

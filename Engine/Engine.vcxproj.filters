@@ -264,9 +264,6 @@
     <ClCompile Include="textures\shadowshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
-    <ClCompile Include="textures\softshadowshaderclass.cpp">
-      <Filter>textures</Filter>
-    </ClCompile>
     <ClCompile Include="textures\projectionshaderclass.cpp">
       <Filter>textures</Filter>
     </ClCompile>
@@ -548,9 +545,6 @@
     <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="textures\softshadowshaderclass.h">
-      <Filter>textures</Filter>
-    </ClInclude>
     <ClInclude Include="textures\projectionshaderclass.h">
       <Filter>textures</Filter>
     </ClInclude>
@@ -658,6 +652,9 @@
     </ClInclude>
     <ClInclude Include="textures\Texture3DShaderClass.h">
       <Filter>textures</Filter>
+    </ClInclude>
+    <ClInclude Include="models\sky\WeatherManager.h">
+      <Filter>models\sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -791,12 +788,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\depth.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="data\shaders\softshadow.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="data\shaders\softshadow.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="data\shaders\projection.ps">

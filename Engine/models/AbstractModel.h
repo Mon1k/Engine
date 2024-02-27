@@ -171,7 +171,7 @@ public:
 
     D3DXVECTOR3 getSizeByCenter()
     {
-        D3DXVECTOR3 size = getSize();;
+        D3DXVECTOR3 size = getSize();
         size.x /= 2;
         size.y /= 2;
         size.z /= 2;

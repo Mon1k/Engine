@@ -113,7 +113,8 @@ void ModelManager::PreRender(CameraClass* camera)
         }
         else {
             m_models[i]->GetBoundingBox(position, size);
-            if (m_frustum->CheckRectangle(position, size)) {
+            // @todo
+            if (1 || m_frustum->CheckRectangle(position, size)) {
                 m_modelsRender.push_back(m_models[i]);
             }
         }
@@ -215,13 +216,16 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
+                // @todo - is ugly below
+                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
-                        terrain->Render(camera, m_RenderStencilTexture->GetShaderResourceView());
+                        terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
                     }
                     else if (dynamic_cast<const SkyPlaneClass*>(model) != nullptr || dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                         m_modelsRender[i]->Render(camera);
+
+                        // render volumetric clouds
                         m_D3D->TurnOnAlphaFalseBlending();
                         m_bitmapClouds->Render(m_D3D->GetDeviceContext(), 0, 0);
                         m_volumetricClouds->Render(m_D3D->GetDeviceContext(), m_bitmapClouds->GetIndexCount());

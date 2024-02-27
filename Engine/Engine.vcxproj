@@ -147,7 +147,6 @@
     <ClCompile Include="textures\shadowshaderclass.cpp" />
     <ClCompile Include="textures\skydomeshaderclass.cpp" />
     <ClCompile Include="textures\skyplaneshaderclass.cpp" />
-    <ClCompile Include="textures\softshadowshaderclass.cpp" />
     <ClCompile Include="textures\specmapshaderclass.cpp" />
     <ClCompile Include="textures\Texture3DShaderClass.cpp" />
     <ClCompile Include="textures\texturearrayclass.cpp" />
@@ -218,6 +217,7 @@
     <ClInclude Include="models\Reflection.h" />
     <ClInclude Include="models\sky\skydomeclass.h" />
     <ClInclude Include="models\sky\skyplaneclass.h" />
+    <ClInclude Include="models\sky\WeatherManager.h" />
     <ClInclude Include="models\terrain\quadtreeclass.h" />
     <ClInclude Include="models\terrain\terrainclass.h" />
     <ClInclude Include="models\WaterNode.h" />
@@ -257,7 +257,6 @@
     <ClInclude Include="textures\shadowshaderclass.h" />
     <ClInclude Include="textures\skydomeshaderclass.h" />
     <ClInclude Include="textures\skyplaneshaderclass.h" />
-    <ClInclude Include="textures\softshadowshaderclass.h" />
     <ClInclude Include="textures\specmapshaderclass.h" />
     <ClInclude Include="textures\Texture3DShaderClass.h" />
     <ClInclude Include="textures\texturearrayclass.h" />
@@ -321,8 +320,6 @@
     <None Include="data\shaders\skydome.vs" />
     <None Include="data\shaders\skyplane.ps" />
     <None Include="data\shaders\skyplane.vs" />
-    <None Include="data\shaders\softshadow.ps" />
-    <None Include="data\shaders\softshadow.vs" />
     <None Include="data\shaders\specmap.ps" />
     <None Include="data\shaders\specmap.vs" />
     <None Include="data\shaders\texture.ps" />

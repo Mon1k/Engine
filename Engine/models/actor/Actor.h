@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../Model.h"
+#include "../../timerclass.h"
 
 class Actor: public Model
 {
@@ -64,11 +65,11 @@ public:
 	// animation
 	struct Animation
 	{
-		float frameTime;
 		float totalTime;
 		float currentTime;
 		float maxTime;
 		float tick;
+
 		std::string name;
 		std::vector<AnimationNode> nodes;
 	};
@@ -176,6 +177,7 @@ public:
 protected:
 	float m_counter;
 	float m_counterTotal;
+
 	int m_currentAnimation;
 	int m_totalAnimation;
 
