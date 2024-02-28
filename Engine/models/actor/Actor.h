@@ -1,10 +1,11 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <string>
 
 #include "../Model.h"
-#include "../../timerclass.h"
+#include "../../tool/String.h"
 
 class Actor: public Model
 {
@@ -105,7 +106,7 @@ public:
 		D3DXMATRIX OffsetMatrix;
 		NodeInfo* node;
 
-		D3DXMATRIX transformation;	
+		D3DXMATRIX transformation;
 
 		BoneInfo() {
 			D3DXMatrixIdentity(&OffsetMatrix);
@@ -123,6 +124,14 @@ public:
 		std::vector<BoneInfo> bones;
 	};
 
+	enum AnimationType {
+		AnimationWalk = 0,
+		AnimationRun = 1,
+		AnimationIdle = 2
+	};
+	const std::string AnimationTypeWalk = "walk";
+	const std::string AnimationTypeRun = "run";
+	const std::string AnimationTypeIdle = "idle";
 
 public:
 	Actor();
@@ -130,6 +139,38 @@ public:
 	void addAnimation(Actor::Animation animation)
 	{
 		m_animations.push_back(animation);
+	}
+
+	void fillAnimationMap(Actor::Animation animation)
+	{
+		std::vector<int> values;
+		values.push_back(m_animations.size() - 1);
+
+		if (String::search(animation.name, AnimationTypeWalk) != -1) {
+			if (m_animationsMap.count(AnimationTypeWalk) > 0) {
+				m_animationsMap.at(Actor::AnimationTypeWalk).push_back(m_animations.size() - 1);
+			}
+			else {
+				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeWalk, values
+				));
+			}
+		} else if (String::search(animation.name, AnimationTypeRun) != -1) {
+			if (m_animationsMap.count(AnimationTypeRun) > 0) {
+				m_animationsMap.at(Actor::AnimationTypeRun).push_back(m_animations.size() - 1);
+			}
+			else {
+				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeRun, values
+				));
+			}
+		} else if (String::search(animation.name, AnimationTypeIdle) != -1) {
+			if (m_animationsMap.count(AnimationTypeIdle) > 0) {
+				m_animationsMap.at(Actor::AnimationTypeIdle).push_back(m_animations.size() - 1);
+			}
+			else {
+				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeIdle, values
+			));
+			}
+		}
 	}
 
 	void setWeights(std::vector<Actor::Weight> weights)
@@ -182,6 +223,9 @@ protected:
 	int m_totalAnimation;
 
 	std::vector<Animation> m_animations;
+	std::map<std::string, std::vector<int>> m_animationsMap;
+
+
 	std::vector<Weight> m_weights;
 	std::vector<NodeInfo*> m_NodeInfo;
 	std::vector<MeshInfo*> m_Mesh;

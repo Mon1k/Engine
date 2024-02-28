@@ -242,6 +242,7 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 		}
 
 		actor->addAnimation(animation);
+		actor->fillAnimationMap(animation);
 	}
 
 	return true;

@@ -19,7 +19,7 @@ QuadTreeClass::~QuadTreeClass()
 
 bool QuadTreeClass::Initialize(void* terrain, int vertexCount, D3DClass* d3dClass, FrustumClass* frustum)
 {
-	float centerX, centerZ, width;
+	float centerX, centerY, centerZ, width;
 
 	m_D3D = d3dClass;
 	m_frustum = frustum;
@@ -38,7 +38,7 @@ bool QuadTreeClass::Initialize(void* terrain, int vertexCount, D3DClass* d3dClas
 	//terrain->CopyVertexArray((void*)m_vertexList);
 
 	// Calculate the center x,z and the width of the mesh.
-	CalculateMeshDimensions(vertexCount, centerX, centerZ, width);
+	CalculateMeshDimensions(vertexCount, centerX, centerY, centerZ, width);
 
 	// Create the parent node for the quad tree.
 	m_parentNode = new NodeType;
@@ -48,7 +48,7 @@ bool QuadTreeClass::Initialize(void* terrain, int vertexCount, D3DClass* d3dClas
 	m_parentNode->parent = 0;
 
 	// Recursively build the quad tree based on the vertex list data and mesh dimensions.
-	CreateTreeNode(m_parentNode, centerX, centerZ, width);
+	CreateTreeNode(m_parentNode, centerX, centerY, centerZ, width);
 
 	// Release the vertex list since the quad tree now has the vertices in each node.
 	if (m_vertexList) {
@@ -74,7 +74,7 @@ int QuadTreeClass::GetDrawCount()
 	return m_drawCount;
 }
 
-void QuadTreeClass::CalculateMeshDimensions(int vertexCount, float& centerX, float& centerZ, float& meshWidth)
+void QuadTreeClass::CalculateMeshDimensions(int vertexCount, float& centerX, float& centerY, float& centerZ, float& meshWidth)
 {
 	int i;
 	float maxWidth, maxDepth, minWidth, minDepth, width, depth, maxX, maxZ;
@@ -82,16 +82,19 @@ void QuadTreeClass::CalculateMeshDimensions(int vertexCount, float& centerX, flo
 
 	// Initialize the center position of the mesh to zero.
 	centerX = 0.0f;
+	centerY = 0.0f;
 	centerZ = 0.0f;
 
 	// Sum all the vertices in the mesh.
 	for (i = 0; i < vertexCount; i++) {
 		centerX += m_vertexList[i].position.x;
+		centerY += m_vertexList[i].position.y;
 		centerZ += m_vertexList[i].position.z;
 	}
 
 	// And then divide it by the number of vertices to find the mid-point of the mesh.
 	centerX = centerX / (float)vertexCount;
+	centerY = centerY / (float)vertexCount;
 	centerZ = centerZ / (float)vertexCount;
 
 	// Initialize the maximum and minimum size of the mesh.
@@ -121,7 +124,7 @@ void QuadTreeClass::CalculateMeshDimensions(int vertexCount, float& centerX, flo
 	m_width = meshWidth;
 }
 
-void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positionZ, float width)
+void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positionY, float positionZ, float width)
 {
 	int numTriangles = 0, i, size, count, vertexCount, index, vertexIndex;
 	float offsetX, offsetZ;
@@ -133,6 +136,7 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 
 	// Store the node position and size.
 	node->positionX = positionX;
+	node->positionY = positionY;
 	node->positionZ = positionZ;
 	node->width = width;
 
@@ -195,7 +199,7 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 				node->triangleCount = numTriangles;
 
 				// Extend the tree starting from this new child node now.
-				CreateTreeNode(node->nodes[i], positionX + offsetX, positionZ + offsetZ, width / 2.0f);
+				CreateTreeNode(node->nodes[i], positionX + offsetX, positionY, positionZ + offsetZ, width / 2.0f);
 			}
 		}
 
@@ -225,6 +229,7 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 
 	// Go through all the triangles in the vertex list.
 	size = node->parent->indexes.size();
+	float minY = FLT_MAX, maxY = FLT_MIN;
 	for (i = 0; i < size; i++) {
 		// If the triangle is inside this node then add it to the vertex array.
 		if (IsTriangleContained(node->parent->indexes[i], positionX, positionZ, width)) {
@@ -239,6 +244,9 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			vertices[index].binormal = m_vertexList[vertexIndex].binormal;
 			vertices[index].texture2 = m_vertexList[vertexIndex].texture2;
 			indices[index] = index;
+
+			minY = minY > vertices[index].position.y ? vertices[index].position.y : minY;
+			maxY = maxY < vertices[index].position.y ? vertices[index].position.y : maxY;
 			
 			// Also store the vertex position information in the node vertex array.
 			node->vertexArray[index].x = m_vertexList[vertexIndex].position.x;
@@ -281,6 +289,9 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 			}
 		}
 	}
+
+	node->positionY = (minY + maxY) / 2;
+	node->height = maxY - minY;
 
 	// Set up the description of the vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -466,7 +477,7 @@ void QuadTreeClass::RenderNode(NodeType* node, AbstractShader* shader)
 	ID3D11DeviceContext* deviceContext;
 
 	// Check to see if the node can be viewed, height doesn't matter in a quad tree.
-	result = m_frustum->CheckCube(node->positionX, 0.0f, node->positionZ, (node->width / 2.0f));
+	result = m_frustum->CheckRectangle(node->positionX, node->positionY, node->positionZ, node->width / 2.0f, node->height / 2.0f, node->width / 2.0f);
 
 	// If it can't be seen then none of its children can either so don't continue down the tree, this is where the speed is gained.
 	if (!result) {

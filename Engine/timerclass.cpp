@@ -37,7 +37,7 @@ void TimerClass::Frame()
 	QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
 
 	m_differenceTime = currentTime - m_startTime;
-	m_frameTime = m_differenceTime / m_ticksPerMs;
+	m_frameTime = (float)m_differenceTime / m_ticksPerMs;
 	m_startTime = currentTime;
 }
 

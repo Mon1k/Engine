@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdarg>
 #include <vector>
+#include <algorithm>
 
 class String
 {
@@ -47,5 +48,18 @@ public:
         } while (shift < string.size());
 
         return array;
+    }
+
+    int static search(std::string haystack, std::string needle)
+    {
+        auto it = std::search(
+            haystack.begin(), haystack.end(),
+            needle.begin(), needle.end(),
+            [](unsigned char ch1, unsigned char ch2) { 
+                return std::toupper(ch1) == std::toupper(ch2); 
+            }
+        );
+
+        return it != haystack.end() ? it - haystack.begin() : -1;
     }
 };
