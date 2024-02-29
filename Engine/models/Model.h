@@ -9,9 +9,9 @@ public:
 	Model();
 
 	virtual void Shutdown();
-	virtual void Render(CameraClass*);
+	virtual void Render();
 
-	void showBBox();
+	BBox* showBBox();
 	void hideBBox();
 	BBox* getBBox()
 	{

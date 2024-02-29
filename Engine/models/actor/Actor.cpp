@@ -189,17 +189,18 @@ void Actor::frame(CameraClass* camera, float time)
 	}
 
 	// update bbox
+	D3DXVECTOR4 bboxnew;
+	D3DXMATRIX world = GetWorldMatrix();
+
+	D3DXVec3Transform(&bboxnew, &m_Min, &world);
+	m_Min = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
+	D3DXVec3Transform(&bboxnew, &m_Max, &world);
+	m_Max = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
+
 	if (m_BBox) {
 		D3DXVECTOR3 position, size;
-		D3DXVECTOR4 bboxnew;
-		D3DXMATRIX world = GetWorldMatrix();
-
-		D3DXVec3Transform(&bboxnew, &m_Min, &world);
-		m_Min = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
-		D3DXVec3Transform(&bboxnew, &m_Max, &world);
-		m_Max = D3DXVECTOR3(bboxnew.x, bboxnew.y, bboxnew.z);
-		
 		GetBoundingBox(position, size);
+		m_BBox->setCamera(camera);
 		m_BBox->reCreate(position, size);
 	}
 }

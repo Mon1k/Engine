@@ -16,16 +16,16 @@ void Model::Shutdown()
 	ModelClass::Shutdown();
 }
 
-void Model::Render(CameraClass* camera)
+void Model::Render()
 {
-	ModelClass::Render(camera);
-	
 	if (m_BBox) {
-		m_BBox->Render(camera);
+		m_BBox->Render();
 	}
+	
+	ModelClass::Render();
 }
 
-void Model::showBBox()
+BBox* Model::showBBox()
 {
 	if (!m_BBox) {
 		D3DXVECTOR3 position, size;
@@ -34,6 +34,8 @@ void Model::showBBox()
 		m_BBox = new BBox;
 		m_BBox->CreateBox(m_D3D, position, size);
 	}
+
+	return m_BBox;
 }
 
 void Model::hideBBox()

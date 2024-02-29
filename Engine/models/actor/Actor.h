@@ -173,6 +173,19 @@ public:
 		}
 	}
 
+	std::vector<int> getAnimationsByType(std::string type)
+	{
+		std::vector<int> rows;
+
+		if (m_animationsMap.count(type) > 0) {
+			for (int i : m_animationsMap.at(type)) {
+				rows.push_back(i);
+			}
+		}
+
+		return rows;
+	}
+
 	void setWeights(std::vector<Actor::Weight> weights)
 	{
 		m_weights = weights;

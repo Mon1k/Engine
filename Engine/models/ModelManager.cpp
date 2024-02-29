@@ -3,7 +3,6 @@
 #include "AbstractTarget.h"
 #include "terrain/terrainclass.h"
 #include "sky/skydomeclass.h"
-#include "sky/skyplaneclass.h"
 
 ModelManager::ModelManager()
 {
@@ -113,8 +112,7 @@ void ModelManager::PreRender(CameraClass* camera)
         }
         else {
             m_models[i]->GetBoundingBox(position, size);
-            // @todo
-            if (1 || m_frustum->CheckRectangle(position, size)) {
+            if (m_frustum->CheckRectangle(position, size)) {
                 m_modelsRender.push_back(m_models[i]);
             }
         }
@@ -222,7 +220,7 @@ void ModelManager::Render(CameraClass* camera)
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
                         terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
                     }
-                    else if (dynamic_cast<const SkyPlaneClass*>(model) != nullptr || dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
+                    else if (dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                         m_modelsRender[i]->Render(camera);
 
                         // render volumetric clouds

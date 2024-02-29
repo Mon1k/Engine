@@ -1,6 +1,7 @@
 #include "systemclass.h"
 #include <time.h>
 #include <stdio.h>
+#include <ctime>
 
 int Options::shadow_width;
 int Options::shadow_height;
@@ -41,6 +42,8 @@ bool SystemClass::init()
 {
 	int screenWidth, screenHeight;
 	bool result;
+
+	std::srand(std::time(0));
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
 	screenWidth = 0;
