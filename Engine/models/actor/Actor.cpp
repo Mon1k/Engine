@@ -204,3 +204,69 @@ void Actor::frame(CameraClass* camera, float time)
 		m_BBox->reCreate(position, size);
 	}
 }
+
+void Actor::fillAnimationMap(Actor::Animation animation)
+{
+	std::vector<int> values;
+	values.push_back(m_animations.size() - 1);
+
+	if (String::search(animation.name, AnimationTypeWalk) != -1) {
+		m_animations[m_animations.size() - 1].type = AnimationWalk;
+		if (m_animationsMap.count(AnimationTypeWalk) > 0) {
+			m_animationsMap.at(Actor::AnimationTypeWalk).push_back(m_animations.size() - 1);
+		}
+		else {
+			m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeWalk, values
+			));
+		}
+	}
+	else if (String::search(animation.name, AnimationTypeRun) != -1) {
+		m_animations[m_animations.size() - 1].type = AnimationRun;
+		if (m_animationsMap.count(AnimationTypeRun) > 0) {
+			m_animationsMap.at(Actor::AnimationTypeRun).push_back(m_animations.size() - 1);
+		}
+		else {
+			m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeRun, values
+			));
+		}
+	}
+	else if (String::search(animation.name, AnimationTypeIdle) != -1) {
+		m_animations[m_animations.size() - 1].type = AnimationIdle;
+		if (m_animationsMap.count(AnimationTypeIdle) > 0) {
+			m_animationsMap.at(Actor::AnimationTypeIdle).push_back(m_animations.size() - 1);
+		}
+		else {
+			m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeIdle, values
+			));
+		}
+	}
+}
+
+void Actor::fillAnimationMap(std::string name)
+{
+	for (size_t i = 0; i < m_animations.size(); i++) {
+		if (String::search(m_animations[i].name, name) != -1) {
+			if (m_animationsMap.count(name) > 0) {
+				m_animationsMap.at(name).push_back(i);
+			}
+			else {
+				std::vector<int> values;
+				values.push_back(i);
+				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(name, values));
+			}
+		}
+	}
+}
+
+std::vector<int> Actor::getAnimationsByType(const std::string type)
+{
+	std::vector<int> rows;
+
+	if (m_animationsMap.count(type) > 0) {
+		for (int i : m_animationsMap.at(type)) {
+			rows.push_back(i);
+		}
+	}
+
+	return rows;
+}

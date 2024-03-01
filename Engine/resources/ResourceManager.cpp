@@ -14,8 +14,8 @@ bool ResourceManager::Add(AbstractResource* model)
 
 void ResourceManager::Shutdown()
 {
-    int size = m_resources.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_resources.size();
+    for (size_t i = 0; i < size; i++) {
         m_resources[i]->Shutdown();
     }
 }

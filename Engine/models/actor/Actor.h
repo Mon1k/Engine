@@ -72,6 +72,7 @@ public:
 		float tick;
 
 		std::string name;
+		int type = -1;
 		std::vector<AnimationNode> nodes;
 	};
 
@@ -125,6 +126,7 @@ public:
 	};
 
 	enum AnimationType {
+		AnimationUnknown = -1,
 		AnimationWalk = 0,
 		AnimationRun = 1,
 		AnimationIdle = 2
@@ -141,50 +143,10 @@ public:
 		m_animations.push_back(animation);
 	}
 
-	void fillAnimationMap(Actor::Animation animation)
-	{
-		std::vector<int> values;
-		values.push_back(m_animations.size() - 1);
-
-		if (String::search(animation.name, AnimationTypeWalk) != -1) {
-			if (m_animationsMap.count(AnimationTypeWalk) > 0) {
-				m_animationsMap.at(Actor::AnimationTypeWalk).push_back(m_animations.size() - 1);
-			}
-			else {
-				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeWalk, values
-				));
-			}
-		} else if (String::search(animation.name, AnimationTypeRun) != -1) {
-			if (m_animationsMap.count(AnimationTypeRun) > 0) {
-				m_animationsMap.at(Actor::AnimationTypeRun).push_back(m_animations.size() - 1);
-			}
-			else {
-				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeRun, values
-				));
-			}
-		} else if (String::search(animation.name, AnimationTypeIdle) != -1) {
-			if (m_animationsMap.count(AnimationTypeIdle) > 0) {
-				m_animationsMap.at(Actor::AnimationTypeIdle).push_back(m_animations.size() - 1);
-			}
-			else {
-				m_animationsMap.insert(std::pair<std::string, std::vector<int>>(Actor::AnimationTypeIdle, values
-			));
-			}
-		}
-	}
-
-	std::vector<int> getAnimationsByType(std::string type)
-	{
-		std::vector<int> rows;
-
-		if (m_animationsMap.count(type) > 0) {
-			for (int i : m_animationsMap.at(type)) {
-				rows.push_back(i);
-			}
-		}
-
-		return rows;
-	}
+	void fillAnimationMap(Actor::Animation animation);
+	void fillAnimationMap(std::string name);
+	
+	std::vector<int> getAnimationsByType(const std::string type);
 
 	void setWeights(std::vector<Actor::Weight> weights)
 	{
@@ -213,9 +175,19 @@ public:
 
 	virtual void frame(CameraClass*, float);
 
-	int getCurrentAnimation()
+	int getIndexCurrentAnimation()
 	{
 		return m_currentAnimation;
+	}
+
+	Actor::Animation getCurrentAnimation()
+	{
+		return m_animations[m_currentAnimation];
+	}
+
+	int getCurrentAnimationType()
+	{
+		return m_animations[m_currentAnimation].type;
 	}
 
 	void setCurrentAnimation(int animation)
@@ -233,7 +205,6 @@ protected:
 	float m_counterTotal;
 
 	int m_currentAnimation;
-	int m_totalAnimation;
 
 	std::vector<Animation> m_animations;
 	std::map<std::string, std::vector<int>> m_animationsMap;

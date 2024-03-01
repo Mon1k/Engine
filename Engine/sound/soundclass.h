@@ -43,18 +43,22 @@ public:
 
 	bool Initialize(HWND, char*);
 	void Shutdown();
+	
 	bool Play();
-	void setPosition(D3DXVECTOR3 position) {
-		m_Position = position;
-	}
+	void stop();
+	bool isPlaying();
+
 	void setVolume(int volume) {
 		m_Volume = volume;
 	}
 	void set3D(bool is3D) {
 		b_is3D = is3D;
 	}
+
+	void setPosition(D3DXVECTOR3);
 	void setPositionListener(D3DXVECTOR3);
-	bool isPlaying();
+	void setMaxDistance(float);
+	void SetRolloffFactor(float);
 
 private:
 	bool InitializeDirectSound(HWND);
@@ -75,6 +79,7 @@ private:
 	int m_Volume;
 	bool b_is3D;
 	D3DXVECTOR3 m_Position;
+	unsigned long m_PositionSound;
 };
 
 #endif

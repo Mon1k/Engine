@@ -2,7 +2,6 @@
 #define _RESOURCEMANAGER_H_
 
 #include <vector>
-using namespace std;
 
 #include "AbstractResource.h"
 

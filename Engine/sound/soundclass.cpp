@@ -10,6 +10,7 @@ SoundClass::SoundClass()
 	m_secondary3DBuffer1 = 0;
 	b_is3D = false;
 	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_PositionSound = 0;
 }
 
 
@@ -107,6 +108,7 @@ bool SoundClass::InitializeDirectSound(HWND hwnd)
 
 	// Set the initial position of the listener to be in the middle of the scene.
 	m_listener->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+	m_listener->SetRolloffFactor(0.075f, DS3D_IMMEDIATE);
 
 	return true;
 }
@@ -197,7 +199,7 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 		return false;
 	}
 	if (!b_is3D && waveFileHeader.numChannels != 2) {
-		return false;
+		//return false;
 	}
 
 	// Check that the wave file was recorded at a sample rate of 44.1 KHz.
@@ -232,7 +234,7 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 	// Set the buffer description of the secondary sound buffer that the wave file will be loaded onto.
 	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
 	if (b_is3D) {
-		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
+		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D | DSBCAPS_MUTE3DATMAXDISTANCE;
 	}
 	else {
 		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
@@ -306,14 +308,15 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 		}
 	}
 
+	m_secondary3DBuffer1->SetMaxDistance(100.0f, DS3D_IMMEDIATE);
+
 	return true;
 }
 
 void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer, IDirectSound3DBuffer8** secondary3DBuffer)
 {
 	// Release the 3D interface to the secondary sound buffer.
-	if (*secondary3DBuffer)
-	{
+	if (*secondary3DBuffer) {
 		(*secondary3DBuffer)->Release();
 		*secondary3DBuffer = 0;
 	}
@@ -323,8 +326,6 @@ void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer, IDirect
 		(*secondaryBuffer)->Release();
 		*secondaryBuffer = 0;
 	}
-
-	return;
 }
 
 bool SoundClass::Play()
@@ -332,20 +333,15 @@ bool SoundClass::Play()
 	HRESULT result;
 
 	// Set position at the beginning of the sound buffer.
-	result = m_secondaryBuffer1->SetCurrentPosition(0);
+	result = m_secondaryBuffer1->SetCurrentPosition(m_PositionSound);
 	if (FAILED(result)) {
 		return false;
 	}
 
-	// Set volume of the buffer to 100%.
+	// Set volume of the buffer
 	result = m_secondaryBuffer1->SetVolume(m_Volume);
 	if (FAILED(result)) {
 		return false;
-	}
-
-	// Set the 3D position of the sound.
-	if (b_is3D) {
-		m_secondary3DBuffer1->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
 	}
 
 	// Play the contents of the secondary sound buffer.
@@ -355,6 +351,19 @@ bool SoundClass::Play()
 	}
 
 	return true;
+}
+
+void SoundClass::stop()
+{
+	m_secondaryBuffer1->Stop();
+}
+
+void SoundClass::setPosition(D3DXVECTOR3 position)
+{
+	m_Position = position;
+	if (b_is3D) {
+		m_secondary3DBuffer1->SetPosition(m_Position.x, m_Position.y, m_Position.z, DS3D_IMMEDIATE);
+	}
 }
 
 void SoundClass::setPositionListener(D3DXVECTOR3 position)
@@ -371,4 +380,14 @@ bool SoundClass::isPlaying()
 	}
 
 	return (status & DSBSTATUS_PLAYING) != 0;
+}
+
+void SoundClass::setMaxDistance(float distance)
+{
+	m_secondary3DBuffer1->SetMaxDistance(distance, DS3D_IMMEDIATE);
+}
+
+void SoundClass::SetRolloffFactor(float rollof)
+{
+	m_listener->SetRolloffFactor(rollof, DS3D_IMMEDIATE);
 }
