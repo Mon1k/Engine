@@ -128,11 +128,7 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 {
 	int numTriangles = 0, i, size, count, vertexCount, index, vertexIndex;
 	float offsetX, offsetZ;
-	VertexType* vertices;
-	unsigned long* indices;
 	bool result;
-	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 
 	// Store the node position and size.
 	node->positionX = positionX;
@@ -207,6 +203,11 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 
 		return;
 	}
+
+	VertexType* vertices;
+	unsigned long* indices;
+	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 
 	// Case 3: If this node is not empty and the triangle count for it is less than the max then 
 	// this node is at the bottom of the tree so create the list of triangles to store in it.

@@ -137,19 +137,10 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 
     }
     
-    color = m_ambientColor;
     float4 defaultColor = m_diffuseColor * m_lightIntensity * lightIntensity1;
     
-    if (m_ShadowSize) {
-        g_ShadowSize = m_ShadowSize;
-        g_isSoftShadow = true;
-        color = m_ambientColor + calcShadow(input.lightViewPosition, defaultColor, lightIntensity1, (m_lightDirection.z > 0 && input.normal.z <= 0));
-    } else {
-        color += defaultColor;
-    }
-    
     textureColor1 = shaderTexture.Sample(SampleTypeWrap, input.tex.xy);
-    color = saturate(color * textureColor1);
+    color = textureColor1;
 
     if (m_countLayers > 2) {
         if (m_countLayers == 8) {
@@ -201,5 +192,15 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
         }
     }
     
-    return color;
+    if (!m_ShadowSize) {
+        color *= (m_ambientColor + defaultColor);
+    } else {
+        if (m_ShadowSize) {
+            g_ShadowSize = m_ShadowSize;
+            g_isSoftShadow = true;
+            color *= (calcShadow(input.lightViewPosition, defaultColor, lightIntensity1) + m_ambientColor);
+        }
+    }
+    
+    return saturate(color);
 }

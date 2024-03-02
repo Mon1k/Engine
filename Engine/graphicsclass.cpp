@@ -106,13 +106,14 @@ void GraphicsClass::frame(TimerClass *timer)
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX viewMatrix, projectionMatrix;
-	D3DXVECTOR3 background = D3DXVECTOR3(0.0f, 0.8f, 1.0f);
+	D3DXVECTOR3 background = D3DXVECTOR3(0.49f, 0.81f, 1.0f);
 
 	m_TriangleCount = 0;
 	m_RenderCount = 0;
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
+	m_D3D->setViewMatrix(m_Camera->getViewMatrix());
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetProjectionMatrix(projectionMatrix);

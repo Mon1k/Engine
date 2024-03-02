@@ -13,7 +13,7 @@ float2 texOffset(int u, int v)
     return float2(u * 1.0f / g_ShadowSize, v * 1.0f / g_ShadowSize);
 }
 
-float4 calcShadow(float4 lightViewPosition, float4 defaultColor, float intensity, bool checkNormal)
+float4 calcShadow(float4 lightViewPosition, float4 defaultColor, float intensity)
 {
     float4 color = 0;
     float shadow = 0;
@@ -50,7 +50,7 @@ float4 calcShadow(float4 lightViewPosition, float4 defaultColor, float intensity
                 color += defaultColor;
                 
             // shadow
-            } else  if (checkNormal) {
+            } else {
                 int gradientShadowSize = 7;
                 float gradientShadowSizeLimit = gradientShadowSize / 2;
                 int gradientShadowSizeDelimiter = (gradientShadowSize + 1) * 4;
@@ -76,5 +76,5 @@ float4 calcShadow(float4 lightViewPosition, float4 defaultColor, float intensity
         color += defaultColor;
     }
     
-	return saturate(color);
+	return color;
 }

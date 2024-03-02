@@ -32,10 +32,12 @@ private:
 	struct NodeType
 	{
 		float positionX, positionY, positionZ, width, height;
+
 		int triangleCount;
 		ID3D11Buffer* vertexBuffer, *indexBuffer;
 		VectorType* vertexArray;
 		vector<int> indexes;
+
 		NodeType* nodes[4];
 		NodeType* parent;
 	};

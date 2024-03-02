@@ -305,7 +305,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	LightBufferType* dataPtr2;
-	int i, size;
+	size_t i, size;
 
 	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
 

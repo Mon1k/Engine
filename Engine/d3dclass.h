@@ -34,6 +34,14 @@ public:
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetWorldMatrix(D3DXMATRIX&);
 	void GetOrthoMatrix(D3DXMATRIX&);
+	void GetViewMatrix(D3DXMATRIX& view)
+	{
+		view = m_viewMatrix;
+	}
+	void setViewMatrix(D3DXMATRIX view)
+	{
+		m_viewMatrix = view;
+	}
 
 	void GetVideoCardInfo(char*, int&);
 
@@ -85,6 +93,7 @@ private:
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_worldMatrix;
 	D3DXMATRIX m_orthoMatrix;
+	D3DXMATRIX m_viewMatrix;
 
 	ID3D11DepthStencilState* m_depthDisabledStencilState;
 

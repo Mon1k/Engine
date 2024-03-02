@@ -542,7 +542,7 @@ void VolumetricClouds::computeVolumetricCloudsShaders(CameraClass* camera)
 
 
 	m_D3D->GetProjectionMatrix(project);
-	camera->GetViewMatrix(view);
+	m_D3D->GetViewMatrix(view);
 
 	D3DXMatrixInverse(&invertProject, NULL, &project);
 	D3DXMatrixInverse(&invertView, NULL, &view);

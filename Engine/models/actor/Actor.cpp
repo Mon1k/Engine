@@ -200,7 +200,6 @@ void Actor::frame(CameraClass* camera, float time)
 	if (m_BBox) {
 		D3DXVECTOR3 position, size;
 		GetBoundingBox(position, size);
-		m_BBox->setCamera(camera);
 		m_BBox->reCreate(position, size);
 	}
 }

@@ -32,7 +32,10 @@ public:
     virtual void Render()
     {
     }
-    virtual void Render(CameraClass*) = 0;
+    virtual void Render(CameraClass*)
+    {
+
+    }
     virtual void PreRender(CameraClass*)
     {
     }

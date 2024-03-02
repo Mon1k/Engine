@@ -32,17 +32,19 @@ public:
 	{
 		m_lastTime += time;
 
-		if (m_powerChange && m_lastTime >= 1000) {
+		if (m_powerChange && m_lastTime >= 1000.0f) {
 			m_lastTime = 0;
+			m_currentParams.global_density += m_dir * time * m_powerChange;
 
-			if (m_dir > 0.0f && m_currentParams.global_density > m_targetParams.global_density) {
+			if (m_dir > 0.0f && m_currentParams.global_density >= m_targetParams.global_density) {
 				m_dir = -m_dir;
+				m_currentParams.global_density = m_targetParams.global_density;
 				m_targetParams.global_density = 1.0f - m_targetParams.global_density;
-			} else if (m_dir < 0.0f && m_currentParams.global_density < m_targetParams.global_density) {
+			} else if (m_dir < 0.0f && m_currentParams.global_density <= m_targetParams.global_density) {
 				m_dir = -m_dir;
+				m_currentParams.global_density = m_targetParams.global_density;
 				m_targetParams.global_density = 1.0f - m_targetParams.global_density;
 			}
-			m_currentParams.global_density += m_dir * time * m_powerChange;
 			m_clouds->setParams(m_currentParams);
 		}
 	}

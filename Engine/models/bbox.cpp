@@ -111,17 +111,11 @@ void BBox::Shutdown()
     }
 }
 
-void BBox::Render(CameraClass* camera)
-{
-    m_camera = camera;
-    Render();
-}
-
 void BBox::Render()
 {
     D3DXMATRIX worldMatrix, projectionMatrix, viewMatrix;
 
-    m_camera->GetViewMatrix(viewMatrix);
+    m_D3D->GetViewMatrix(viewMatrix);
     m_D3D->GetWorldMatrix(worldMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 

@@ -102,6 +102,7 @@ void ModelManager::PreRender(CameraClass* camera)
     m_modelsShadow.clear();
     m_modelsRender.clear();
 
+    // add models for renderer
     for (size_t i = 0; i < m_models.size(); i++) {
         if (!m_models[i]->isVisible()) {
             continue;
@@ -117,8 +118,10 @@ void ModelManager::PreRender(CameraClass* camera)
             }
         }
     }
-
+    
+    // add models for renderer shadow
     for (size_t i = 0; i < m_modelsRender.size(); i++) {
+        // add models for reflections
         if (Options::reflectionLevel < 2 && dynamic_cast<const AbstractTarget*>(m_modelsRender[i]) != nullptr) {
             AbstractTarget* targetScopes = dynamic_cast<AbstractTarget*>(m_modelsRender[i]);
             targetScopes->clearTargets();
@@ -218,10 +221,10 @@ void ModelManager::Render(CameraClass* camera)
                 if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
-                        terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
+                        terrain->Render(m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
                     }
                     else if (dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
-                        m_modelsRender[i]->Render(camera);
+                        model->Render(camera);
 
                         // render volumetric clouds
                         m_D3D->TurnOnAlphaFalseBlending();
