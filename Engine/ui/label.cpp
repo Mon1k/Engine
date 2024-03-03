@@ -46,6 +46,11 @@ bool Label::Add(char* text, int positionX, int positionY)
 	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
 }
 
+bool Label::Add(char* text)
+{
+	return Add(text, m_x, m_y, 1.0f, 1.0f, 1.0f);
+}
+
 void Label::Shutdown()
 {
 	if (m_Text) {

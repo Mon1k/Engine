@@ -73,7 +73,7 @@ bool Window::addHeader(std::string title, int flags)
 	m_BitmapHeader = new BitmapClass;
 	result = m_BitmapHeader->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"data/textures/ui/window_header.png", m_header->m_width, m_header->m_height);
 	if (!result) {
-		MessageBox(NULL, L"Could not initialize the bitmap objec headert.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object header for ui window", L"Error", MB_OK);
 		return false;
 	}
 
@@ -94,16 +94,17 @@ bool Window::addBody()
 	m_BitmapBody = new BitmapClass;
 	result = m_BitmapBody->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"data/textures/ui/window_body.png", m_body->m_width, m_body->m_height);
 	if (!result) {
-		MessageBox(NULL, L"Could not initialize the bitmap object body.", L"Error", MB_OK);
+		MessageBox(NULL, L"Could not initialize the bitmap object body for ui window", L"Error", MB_OK);
 		return false;
 	}
 
 	return true;
 }
 
-void Window::addChild(AbstractGui* child)
+AbstractGui* Window::addChild(AbstractGui* child)
 {
 	m_body->addChild(child);
+	return child;
 }
 
 void Window::setTitle(std::string title)

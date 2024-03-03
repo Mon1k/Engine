@@ -14,13 +14,13 @@ bool UIManager::Initialize(D3DClass* d3d, D3DXMATRIX baseViewMatrix)
     return true;
 }
 
-bool UIManager::Add(AbstractGui* ui)
+AbstractGui* UIManager::Add(AbstractGui* ui)
 {
     ui->m_D3D = m_D3D;
     ui->m_baseViewMatrix = m_baseViewMatrix;
     m_elements.push_back(ui);
 
-    return true;
+    return ui;
 }
 
 AbstractGui* UIManager::getById(int id)
@@ -34,6 +34,19 @@ AbstractGui* UIManager::getById(int id)
     }
 
     return NULL;
+}
+
+int UIManager::getNextId()
+{
+    int id = 0;
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
+        if (m_elements[i]->getId() > id) {
+            id = m_elements[i]->getId();
+        }
+    }
+
+    return id;
 }
 
 void UIManager::Shutdown()

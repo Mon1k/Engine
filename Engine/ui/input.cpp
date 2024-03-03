@@ -20,7 +20,7 @@ Input::~Input()
 {
 }
 
-bool Input::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight, int positionX, int positionY)
+bool Input::Initialize(int width, int height, int positionX, int positionY)
 {
 	bool result;
 
@@ -54,12 +54,13 @@ bool Input::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight
 		return false;
 	}
 
-	m_width = bitmapWidth;
-	m_height = bitmapHeight;
+	m_width = width;
+	m_height = height;
 	m_x = positionX;
 	m_y = positionY;
 
 	// Initialize the bitmap object.
+	WCHAR* textureFilename = L"data/textures/ui/button.png";
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		return false;
@@ -164,7 +165,10 @@ void Input::onKeyboardPress(InputClass::EventKey event)
 		chunkRight = m_String.substr(m_CursorShift, size);
 	}
 
-	if (event.key == DIK_BACKSPACE && m_CursorShift > 0) {
+	if (event.key == DIK_ESCAPE) {
+		unfocus();
+	}
+	else if (event.key == DIK_BACKSPACE && m_CursorShift > 0) {
 		m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
 		m_CursorShift--;
 		m_CursorShift = min(m_CursorShift, m_String.length());
@@ -273,8 +277,24 @@ void Input::frame(float counter)
 	int timeout = m_Flash ? 500 : 1000;
 	m_FrameCounter += counter;
 	if (m_FrameCounter > timeout) {
-		m_Flash = !m_Flash;
-		m_FrameCounter = 0;
-		updateText();
+		hideCaret();
 	}
+}
+
+void Input::unfocus()
+{
+	AbstractGui::unfocus();
+	hideCaret();
+}
+
+void Input::hideCaret()
+{
+	m_Flash = false;
+	m_usesFlashCursor = 0;
+	updateText();
+}
+
+void Input::showCaret()
+{
+	m_Flash = true;
 }

@@ -195,11 +195,9 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
     if (!m_ShadowSize) {
         color *= (m_ambientColor + defaultColor);
     } else {
-        if (m_ShadowSize) {
-            g_ShadowSize = m_ShadowSize;
-            g_isSoftShadow = true;
-            color *= (calcShadow(input.lightViewPosition, defaultColor, lightIntensity1) + m_ambientColor);
-        }
+        g_ShadowSize = m_ShadowSize;
+        g_isSoftShadow = true;
+        color *= (calcShadow(input.lightViewPosition, defaultColor, lightIntensity1) + m_ambientColor);
     }
     
     return saturate(color);

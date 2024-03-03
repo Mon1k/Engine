@@ -12,11 +12,14 @@ public:
     Label(const Label&);
     ~Label();
 
-    bool Initialize(int, int);
-    void Shutdown();
-    bool Add(char*, int, int, float, float, float);
-    bool Add(char*, int, int);
-    bool Render();
+    bool Initialize(int width, int height);
+    virtual void Shutdown();
+    virtual bool Render();
+
+    bool Add(char*, int positionX, int positionY, float, float, float);
+    bool Add(char*, int positionX, int positionY);
+    bool Add(char*);
+    
 
 private:
     TextClass* m_Text;

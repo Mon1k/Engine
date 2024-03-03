@@ -70,6 +70,9 @@
     <Filter Include="models\actor">
       <UniqueIdentifier>{4ad03cb6-a3a3-4557-a7eb-07be64b884ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ui\dialogs">
+      <UniqueIdentifier>{b208f4b8-e8ec-4e31-9524-7a0d3b97402b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -317,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="textures\Texture3DShaderClass.cpp">
       <Filter>textures</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Alert.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -655,6 +661,9 @@
     </ClInclude>
     <ClInclude Include="models\sky\WeatherManager.h">
       <Filter>models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\Alert.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

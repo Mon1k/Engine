@@ -25,7 +25,7 @@ public:
 	void setNextTarget()
 	{
 		m_targetParams = m_startParams;
-		m_targetParams.global_density = 0.75f;
+		m_targetParams.global_density = 0.52f;
 	}
 
 	void frame(float time)
@@ -39,11 +39,11 @@ public:
 			if (m_dir > 0.0f && m_currentParams.global_density >= m_targetParams.global_density) {
 				m_dir = -m_dir;
 				m_currentParams.global_density = m_targetParams.global_density;
-				m_targetParams.global_density = 1.0f - m_targetParams.global_density;
+				m_targetParams.global_density = 0.1f;
 			} else if (m_dir < 0.0f && m_currentParams.global_density <= m_targetParams.global_density) {
 				m_dir = -m_dir;
 				m_currentParams.global_density = m_targetParams.global_density;
-				m_targetParams.global_density = 1.0f - m_targetParams.global_density;
+				m_targetParams.global_density = 0.52f;
 			}
 			m_clouds->setParams(m_currentParams);
 		}

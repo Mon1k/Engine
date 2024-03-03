@@ -10,7 +10,6 @@
 
 
 #include <string>
-using namespace std;
 
 class Window : public Group
 {
@@ -31,9 +30,9 @@ public:
     bool addHeader(std::string, int);
     bool addBody();
 
-    void Shutdown();
-    bool Render();
-    void addChild(AbstractGui*);
+    virtual void Shutdown();
+    virtual bool Render();
+    virtual AbstractGui* addChild(AbstractGui*);
     void setTitle(std::string);
     
     Group* getHeader() {

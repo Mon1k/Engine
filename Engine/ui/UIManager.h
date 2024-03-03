@@ -14,7 +14,7 @@ public:
     UIManager();
     bool Initialize(D3DClass*, D3DXMATRIX);
     void EventProccesor(InputClass*);
-    bool Add(AbstractGui* ui);
+    AbstractGui* Add(AbstractGui* ui);
     void Render();
     void Shutdown();
     void frame(float);
@@ -27,7 +27,9 @@ public:
     {
         return this->m_events;
     };
+
     AbstractGui* getById(int);
+    int getNextId();
 
     void onMouseClick(int x, int y, int button);
     void onKeyboardClick(InputClass::EventKey);

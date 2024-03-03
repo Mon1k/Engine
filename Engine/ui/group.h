@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #include "AbstractGUI.h"
 
@@ -46,11 +45,13 @@ public:
 		return 0;
 	}
 
-	virtual void addChild(AbstractGui* child)
+	virtual AbstractGui* addChild(AbstractGui* child)
 	{
 		child->m_D3D = m_D3D;
 		child->m_baseViewMatrix = m_baseViewMatrix;
 		m_childs.push_back(child);
+
+		return child;
 	}
 
 	virtual bool Render()

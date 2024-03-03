@@ -49,12 +49,14 @@ void Reflection::RenderToTexture(CameraClass* camera)
 	int size = m_modelsTarget.size();
 	for (int i = 0; i < size; i++) {
 		camera->setViewMatrix(m_ReflectionMatrix);
+		m_D3D->setViewMatrix(m_ReflectionMatrix);
 		m_modelsTarget[i]->Render(camera);
 	}
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	m_D3D->SetBackBufferRenderTarget();
 	camera->setViewMatrix(viewMatrix);
+	m_D3D->setViewMatrix(viewMatrix);
 }
 
 void Reflection::Render(CameraClass* camera)

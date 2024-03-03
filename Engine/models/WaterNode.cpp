@@ -134,6 +134,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_ReflectionMatrix = camera->GetReflectionViewMatrix();
 
 	camera->setViewMatrix(m_ReflectionMatrix);
+	m_D3D->setViewMatrix(m_ReflectionMatrix);
 	cameraPosition.y = -cameraPosition.y + (m_waterHeight * 2.0f);
 	camera->SetPosition(cameraPosition);
 
@@ -151,6 +152,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_D3D->SetBackBufferRenderTarget();
 
 	camera->setViewMatrix(viewMatrix);
+	m_D3D->setViewMatrix(viewMatrix);
 	camera->SetPosition(oldCameraPosition);
 }
 

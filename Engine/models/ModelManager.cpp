@@ -3,6 +3,7 @@
 #include "AbstractTarget.h"
 #include "terrain/terrainclass.h"
 #include "sky/skydomeclass.h"
+#include "WaterNode.h"
 
 ModelManager::ModelManager()
 {
@@ -217,11 +218,11 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                // @todo - is ugly below
-                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr) {
+                // @todo - is so ugly below
+                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr || dynamic_cast<const WaterNode*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
-                        terrain->Render(m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
+                        terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
                     }
                     else if (dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                         model->Render(camera);
@@ -233,6 +234,9 @@ void ModelManager::Render(CameraClass* camera)
                         m_D3D->TurnOffAlphaBlending();
                     }
                     else if (dynamic_cast<const AbstractTarget*>(model) != nullptr) {
+                        model->Render(camera);
+                    }
+                    else if (dynamic_cast<const WaterNode*>(model) != nullptr) {
                         model->Render(camera);
                     }
                     else {

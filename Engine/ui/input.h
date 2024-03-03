@@ -8,7 +8,6 @@
 #include "../inputclass.h"
 
 #include <string>
-using namespace std;
 
 class Input : public AbstractGui
 {
@@ -16,7 +15,7 @@ public:
     Input();
     ~Input();
 
-    bool Initialize(WCHAR*, int, int, int, int);
+    bool Initialize(int, int, int, int);
     void Shutdown();
     bool Render();
 
@@ -28,8 +27,19 @@ public:
     virtual bool isIntersect(int x, int y);
     virtual void frame(float counter);
 
-    std::string getValue() {
+    std::string getValue()
+    {
         return m_String;
+    }
+
+    float getValueFloat()
+    {
+        return std::stof(m_String);
+    }
+
+    int getValueInt()
+    {
+        return std::stoi(m_String);
     }
 
     void setMaxSize(int size)
@@ -43,6 +53,10 @@ public:
     }
 
     char replaceSymbolByEvent(InputClass::EventKey);
+
+    virtual void unfocus();
+    void hideCaret();
+    void showCaret();
 
 private:
     TextureShaderClass* m_TextureShader;

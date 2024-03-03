@@ -154,6 +154,7 @@
     <ClCompile Include="textures\transparentshaderclass.cpp" />
     <ClCompile Include="textures\watershaderclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
+    <ClCompile Include="ui\Alert.cpp" />
     <ClCompile Include="ui\button.cpp" />
     <ClCompile Include="ui\checkbox.cpp" />
     <ClCompile Include="ui\cursor.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="tool\random.h" />
     <ClInclude Include="tool\String.h" />
     <ClInclude Include="ui\AbstractGUI.h" />
+    <ClInclude Include="ui\Alert.h" />
     <ClInclude Include="ui\button.h" />
     <ClInclude Include="ui\checkbox.h" />
     <ClInclude Include="ui\cursor.h" />
