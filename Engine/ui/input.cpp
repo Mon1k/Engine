@@ -20,7 +20,15 @@ Input::~Input()
 {
 }
 
-bool Input::Initialize(int width, int height, int positionX, int positionY)
+Input* Input::createFloat(float* value, int width, int height, int positionX, int positionY)
+{
+	Input* input = new Input;
+	input->initialize(width, height, positionX, positionY);
+	input->setValue(&typeid(float), &value);
+	return input;
+}
+
+bool Input::initialize(int width, int height, int positionX, int positionY)
 {
 	bool result;
 
@@ -116,6 +124,12 @@ bool Input::setText(std::string text)
 {
 	m_String = text;
 	m_CursorShift = m_String.length();
+
+	//std::is_same<float, m_value::cl>::value
+
+	if (typeid(m_value) == typeid(std::string)) {
+		m_value = &getValue();
+	}
 
 	return updateText(text);
 }

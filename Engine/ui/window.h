@@ -3,7 +3,6 @@
 #include "AbstractGUI.h"
 #include "group.h"
 #include "label.h"
-#include "button.h"
 
 #include "../textureshaderclass.h"
 #include "../bitmapclass.h"
@@ -15,7 +14,7 @@ class Window : public Group
 {
 public:
     enum EventType : int {
-        WINDOW_CLOSE = 32769
+        WINDOW_CLOSE = 65537
     };
 
     static const int HEADER_BUTTON_CLOSE = 1;
@@ -26,8 +25,8 @@ public:
     Window();
     ~Window();
 
-    bool Initialize(int, int, int, int);
-    bool addHeader(std::string, int);
+    bool Initialize(int width, int height, int positionX, int positionY);
+    bool addHeader(std::string title, int flags);
     bool addBody();
 
     virtual void Shutdown();

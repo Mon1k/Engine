@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <ctime>
 
-#include "tool/String.h"
-#include "tool/Array.h"
+
 
 int Options::shadow_width;
 int Options::shadow_height;

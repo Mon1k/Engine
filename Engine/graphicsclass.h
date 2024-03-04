@@ -49,7 +49,7 @@ public:
 		return m_particleManager;
 	};
 
-private:
+protected:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	FrustumClass* m_Frustum;
@@ -58,6 +58,7 @@ private:
 	ModelManager* m_modelManager;
 	ParticleManager* m_particleManager;
 
+private:
 	int m_RenderCount;
 	int m_TriangleCount;
 };

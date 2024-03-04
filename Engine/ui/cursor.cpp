@@ -7,27 +7,27 @@ Cursor::Cursor()
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 
-	m_width = 0;
-	m_height = 0;
-	m_x = 0;
-	m_y = 0;
-}
-
-
-Cursor::Cursor(const Cursor& other)
-{
+	m_width = 32;
+	m_height = 32;
+	m_x = Options::screen_width / 2;
+	m_y = Options::screen_height / 2;
 }
 
 Cursor::~Cursor()
 {
 }
 
-bool Cursor::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool Cursor::Initialize()
+{
+	return Initialize(m_width, m_height);
+}
+
+bool Cursor::Initialize(int width, int height)
 {
 	bool result;
 
-	m_width = bitmapWidth;
-	m_height = bitmapHeight;
+	m_width = width;
+	m_height = height;
 
 	m_TextureShader = new TextureShaderClass;
 	result = m_TextureShader->Initialize(m_D3D->GetDevice());
@@ -38,6 +38,7 @@ bool Cursor::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeigh
 
 	// Create the bitmap object.
 	m_Bitmap = new BitmapClass;
+	WCHAR* textureFilename = L"data/textures/ui/cursor.png";
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);

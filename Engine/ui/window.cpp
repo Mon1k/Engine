@@ -1,4 +1,5 @@
 #include "window.h"
+#include "button.h"
 #include "../Options.h"
 
 Window::Window()
@@ -59,7 +60,6 @@ bool Window::addHeader(std::string title, int flags)
 			buttonClose->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
 				this->proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);
 				this->hide();
-				return 0;
 			});
 			rightShift += headerHeightElm + paddingX;
 		}

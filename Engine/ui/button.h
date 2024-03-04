@@ -14,12 +14,16 @@ public:
     Button(const Button&);
     ~Button();
 
-    bool Initialize(WCHAR*, int, int);
-    void Shutdown();
-    bool Add(char*, int, int, float, float, float);
-    bool Add(char*, int, int);
-    bool setText(char*);
-    bool Render();
+    bool Initialize(int width, int height);
+    bool Initialize(WCHAR* texture, int width, int height);
+    
+    virtual bool Render();
+    virtual void Shutdown();
+
+    bool Add(char* text, int positionX, int positionY, float red, float green, float blue);
+    bool Add(char* text, int positionX, int positionY);
+    bool setText(char* text);
+    
 
 private:
     TextureShaderClass* m_TextureShader;

@@ -5,6 +5,10 @@
 
 #include <windows.h>
 
+#include "tool/String.h"
+#include "tool/Array.h"
+#include "tool/Types.h"
+
 #include "Options.h"
 #include "inputclass.h"
 #include "graphicsclass.h"

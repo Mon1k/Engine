@@ -10,10 +10,10 @@ class Cursor: public AbstractGui
 {
 public:
     Cursor();
-    Cursor(const Cursor&);
     ~Cursor();
 
-    bool Initialize(WCHAR*, int, int);
+    bool Initialize();
+    bool Initialize(int, int);
     void Shutdown();
     bool Render();
 

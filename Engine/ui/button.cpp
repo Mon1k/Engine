@@ -17,7 +17,12 @@ Button::~Button()
 {
 }
 
-bool Button::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool Button::Initialize(int width, int height)
+{
+	return Initialize(L"data/textures/ui/button.png", width, height);
+}
+
+bool Button::Initialize(WCHAR* texture, int width, int height)
 {
 	bool result;
 
@@ -54,9 +59,10 @@ bool Button::Initialize(WCHAR* textureFilename, int bitmapWidth, int bitmapHeigh
 	}
 
 	// Initialize the bitmap object.
-	m_width = bitmapWidth;
-	m_height = bitmapHeight;
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
+	m_width = width;
+	m_height = height;
+
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, texture, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;

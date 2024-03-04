@@ -40,11 +40,13 @@ public:
     virtual void focus()
     {
         m_IsFocused = true;
+        proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
     }
 
     virtual void unfocus()
     {
         m_IsFocused = false;
+        proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
     }
 
     virtual bool isFocused()
@@ -72,7 +74,7 @@ public:
         proccesedEventHandlers(EventType::KEYBOARD_DOWN);
     }
 
-    virtual void addEventHandler(int event, std::function<int()> handler)
+    virtual void addEventHandler(int event, std::function<void()> handler)
     {
         Event eventObject;
         eventObject.event = event;
@@ -87,7 +89,7 @@ public:
         }
 
         size_t size = m_handlers.size();
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
             if (m_handlers[i].event == event) {
                 m_handlers[i].handler();
             }
@@ -113,7 +115,7 @@ public:
 
 public:
     struct Event {
-        std::function<int()> handler;
+        std::function<void()> handler;
         int event;
         int lparam;
         int wparam;
@@ -127,7 +129,7 @@ public:
         OBJECT_BLUR = 201
 
 
-        // more 32768 user event
+        // more 65536 is user events
     };
 
     D3DClass* m_D3D;

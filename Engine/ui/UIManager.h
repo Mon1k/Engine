@@ -14,10 +14,12 @@ public:
     UIManager();
     bool Initialize(D3DClass*, D3DXMATRIX);
     void EventProccesor(InputClass*);
-    AbstractGui* Add(AbstractGui* ui);
-    void Render();
-    void Shutdown();
-    void frame(float);
+    
+    virtual void Render();
+    virtual void Shutdown();
+    virtual void frame(float);
+
+    AbstractGui* add(AbstractGui* ui);
 
     std::vector<AbstractGui*> getElements()
     {

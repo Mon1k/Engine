@@ -8,7 +8,12 @@ Alert::Alert()
 
 void Alert::initialize()
 {
-	Window::Initialize(200, 100, Options::screen_width / 2 - 100, Options::screen_height / 2 - 50);
+	m_width = 300;
+	m_height = 150;
+	m_x = Options::screen_width / 2 - m_width / 2;
+	m_y = Options::screen_height / 2 - m_height / 2;
+
+	Window::Initialize(m_width, m_height, m_x, m_y);
 	addHeader("Alert", HEADER_BUTTON_CLOSE);
 	addBody();
 
@@ -26,4 +31,25 @@ void Alert::initialize()
 void Alert::setText(std::string text)
 {
 	m_label->Add(&text[0]);
+}
+
+void Alert::setTextHeader(std::string text)
+{
+	m_title->Add(&text[0]);
+}
+
+void Alert::onKeyboardPress(InputClass::EventKey event)
+{
+	if (event.key == DIK_ESCAPE) {
+		unfocus();
+		hide();
+	}
+
+	AbstractGui::onKeyboardPress(event);
+}
+
+void Alert::show()
+{
+	AbstractGui::show();
+	AbstractGui::focus();
 }

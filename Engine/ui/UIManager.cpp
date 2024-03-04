@@ -1,4 +1,5 @@
 #include "UIManager.h"
+#include "cursor.h"
 
 UIManager::UIManager()
 {
@@ -14,7 +15,7 @@ bool UIManager::Initialize(D3DClass* d3d, D3DXMATRIX baseViewMatrix)
     return true;
 }
 
-AbstractGui* UIManager::Add(AbstractGui* ui)
+AbstractGui* UIManager::add(AbstractGui* ui)
 {
     ui->m_D3D = m_D3D;
     ui->m_baseViewMatrix = m_baseViewMatrix;
@@ -25,8 +26,8 @@ AbstractGui* UIManager::Add(AbstractGui* ui)
 
 AbstractGui* UIManager::getById(int id)
 {
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         AbstractGui* node =  dynamic_cast<AbstractGui*>(m_elements[i]->getById(id));
         if (node) {
             return node;
@@ -51,8 +52,8 @@ int UIManager::getNextId()
 
 void UIManager::Shutdown()
 {
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         m_elements[i]->Shutdown();
     }
 }
@@ -65,11 +66,23 @@ void UIManager::Render()
     // Turn on the alpha blending before rendering the text.
     m_D3D->TurnOnAlphaBlending();
 
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    std::vector<AbstractGui*> deffered;
+
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         if (m_elements[i]->isVisible()) {
-            m_elements[i]->Render();
+            if (dynamic_cast<Cursor*>(m_elements[i]) != nullptr) {
+                deffered.push_back(m_elements[i]);
+            }
+            else {
+                m_elements[i]->Render();
+            }
         }
+    }
+
+    size = deffered.size();
+    for (size_t i = 0; i < size; i++) {
+        deffered[i]->Render();
     }
 
     // Turn off alpha blending after rendering the text.
@@ -81,8 +94,8 @@ void UIManager::Render()
 
 void UIManager::onMouseClick(int x, int y, int button)
 {
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         if (m_elements[i]->isVisible()) {
             if (m_elements[i]->isIntersect(x, y)) {
                 m_elements[i]->focus();
@@ -99,8 +112,8 @@ void UIManager::onMouseClick(int x, int y, int button)
 
 void UIManager::onKeyboardClick(InputClass::EventKey event)
 {
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         if (m_elements[i]->isVisible() && m_elements[i]->isFocused()) {
             m_elements[i]->onKeyboardPress(event);
             m_events.push_back(m_elements[i]);
@@ -134,8 +147,8 @@ void UIManager::frame(float counter)
         return;
     }
 
-    int size = m_elements.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
         if (m_elements[i]->isVisible()) {
             m_elements[i]->frame(counter);
             if (m_elements[i]->isFocused()) {

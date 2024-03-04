@@ -15,15 +15,18 @@ public:
     Input();
     ~Input();
 
-    bool Initialize(int, int, int, int);
-    void Shutdown();
-    bool Render();
+
+    static Input* createFloat(float* value, int width, int height, int positionX, int positionY);
+    
+    bool initialize(int width, int height, int positionX, int positionY);
+    virtual void Shutdown();
+    virtual bool Render();
 
     bool setText(std::string);
     bool updateText(std::string);
     void updateText();
     virtual void onMousePress(int x, int y, int button);
-    virtual void onKeyboardPress(InputClass::EventKey);
+    virtual void onKeyboardPress(InputClass::EventKey event);
     virtual bool isIntersect(int x, int y);
     virtual void frame(float counter);
 
@@ -58,6 +61,11 @@ public:
     void hideCaret();
     void showCaret();
 
+    void setValue(const type_info* ti, void* value) {
+        m_ti = ti;
+        m_value = value;
+    }
+
 private:
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
@@ -68,6 +76,10 @@ private:
     int m_CursorShift;
     float m_FrameCounter;
     int m_MaxSize;
+
     std::string m_String;
     std::string m_ViewedString;
+    
+    const type_info* m_ti;
+    void* m_value;
 };
