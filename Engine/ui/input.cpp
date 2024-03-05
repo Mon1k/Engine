@@ -1,5 +1,6 @@
 #include "input.h"
 #include "../Options.h"
+#include "../tool/String.h"
 
 Input::Input()
 {
@@ -20,11 +21,30 @@ Input::~Input()
 {
 }
 
-Input* Input::createFloat(float* value, int width, int height, int positionX, int positionY)
+Input* Input::createString(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY)
 {
 	Input* input = new Input;
+	input->m_D3D = d3d;
 	input->initialize(width, height, positionX, positionY);
-	input->setValue(&typeid(float), &value);
+	input->setValue(&typeid(std::string), value);
+	return input;
+}
+
+Input* Input::createFloat(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY)
+{
+	Input* input = new Input;
+	input->m_D3D = d3d;
+	input->initialize(width, height, positionX, positionY);
+	input->setValue(&typeid(float), value);
+	return input;
+}
+
+Input* Input::createInt(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY)
+{
+	Input* input = new Input;
+	input->m_D3D = d3d;
+	input->initialize(width, height, positionX, positionY);
+	input->setValue(&typeid(int), value);
 	return input;
 }
 
@@ -125,17 +145,24 @@ bool Input::setText(std::string text)
 	m_String = text;
 	m_CursorShift = m_String.length();
 
-	//std::is_same<float, m_value::cl>::value
-
-	if (typeid(m_value) == typeid(std::string)) {
-		m_value = &getValue();
-	}
-
 	return updateText(text);
 }
 
 bool Input::updateText(std::string text)
 {
+	if (m_String.size() > 0) {
+		std::string typeName = std::string(m_typeInfo->name());
+		if (typeName.compare("float") == 0) {
+			*(float*)m_value = getValueFloat();
+		}
+		else if (typeName.compare("int") == 0) {
+			*(int*)m_value = getValueInt();
+		}
+		else if (String::search(typeName, "std::basic_string")) {
+			*(std::string*)m_value = getValue();
+		}
+	}
+
 	return m_Text->AddText(&text[0], m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 

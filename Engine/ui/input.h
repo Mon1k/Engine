@@ -15,8 +15,10 @@ public:
     Input();
     ~Input();
 
-
-    static Input* createFloat(float* value, int width, int height, int positionX, int positionY);
+    static Input* createString(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY);
+    static Input* createFloat(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY);
+    static Input* createInt(void* value, D3DClass* d3d, int width, int height, int positionX, int positionY);
+    
     
     bool initialize(int width, int height, int positionX, int positionY);
     virtual void Shutdown();
@@ -61,8 +63,9 @@ public:
     void hideCaret();
     void showCaret();
 
-    void setValue(const type_info* ti, void* value) {
-        m_ti = ti;
+    void setValue(const type_info* ti, void* value)
+    {
+        m_typeInfo = ti;
         m_value = value;
     }
 
@@ -80,6 +83,6 @@ private:
     std::string m_String;
     std::string m_ViewedString;
     
-    const type_info* m_ti;
+    const type_info* m_typeInfo;
     void* m_value;
 };
