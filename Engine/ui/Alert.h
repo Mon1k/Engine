@@ -15,6 +15,7 @@ public:
 
 	virtual void onKeyboardPress(InputClass::EventKey event);
 	virtual void show();
+	virtual void showText(std::string text);
 
 private:
 	Label* m_label;

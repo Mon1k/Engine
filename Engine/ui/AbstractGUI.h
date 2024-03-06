@@ -8,6 +8,8 @@
 #include <functional>
 #include <vector>
 
+class UIManager;
+
 class AbstractGui: public AbstractNode
 {
 public:
@@ -21,6 +23,7 @@ public:
         m_x = 0;
         m_y = 0;
 
+        m_manager = 0;
         m_handlers.clear();
     };
     virtual void Shutdown() = 0;
@@ -128,7 +131,6 @@ public:
         OBJECT_FOCUS = 200,
         OBJECT_BLUR = 201
 
-
         // more 65536 is user events
     };
 
@@ -139,6 +141,7 @@ public:
 
     int m_width, m_height, m_x, m_y;
     
+    UIManager* m_manager;
     std::vector<Event> m_handlers;
 };
 

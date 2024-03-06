@@ -1,5 +1,6 @@
 #include "Alert.h"
 #include "../Options.h"
+#include "UIManager.h"
 
 Alert::Alert()
 {
@@ -26,6 +27,13 @@ void Alert::initialize()
 	m_label->Add("Alert", m_x + paddingX, m_y + paddingY);
 
 	setVisible(false);
+	setId(m_manager->getNextId());
+
+	addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
+		if (this->m_manager) {
+			m_manager->remove(this->getId());
+		}
+		});
 }
 
 void Alert::setText(std::string text)
@@ -52,4 +60,11 @@ void Alert::show()
 {
 	AbstractGui::show();
 	AbstractGui::focus();
+}
+
+void Alert::showText(std::string text)
+{
+	initialize();
+	setText(text);
+	show();
 }

@@ -62,4 +62,25 @@ public:
 
         return it != haystack.end() ? it - haystack.begin() : -1;
     }
+
+    inline static std::string& rtrim(std::string& s)
+    {
+        const char* ws = " \t\n\r\f\v\b";
+
+        s.erase(s.find_last_not_of(ws) + 1);
+        return s;
+    }
+
+    inline static std::string& ltrim(std::string& s)
+    {
+        const char* ws = " \t\n\r\f\v\b";
+
+        s.erase(0, s.find_first_not_of(ws));
+        return s;
+    }
+
+    inline static std::string& trim(std::string& s)
+    {
+        return ltrim(rtrim(s));
+    }
 };

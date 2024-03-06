@@ -2,10 +2,10 @@
 #define _UIMANAGER_H_
 
 #include <vector>
-using namespace std;
 
-#include "../d3dclass.h"
-#include "../inputclass.h"
+class D3DClass;
+class InputClass;
+
 #include "AbstractGUI.h"
 
 class UIManager
@@ -20,6 +20,7 @@ public:
     virtual void frame(float);
 
     AbstractGui* add(AbstractGui* ui);
+    void remove(int id);
 
     std::vector<AbstractGui*> getElements()
     {

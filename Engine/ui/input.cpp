@@ -150,7 +150,7 @@ bool Input::setText(std::string text)
 
 bool Input::updateText(std::string text)
 {
-	if (m_String.size() > 0) {
+	if (String::trim(m_String).size() > 0) {
 		std::string typeName = std::string(m_typeInfo->name());
 		if (typeName.compare("float") == 0) {
 			*(float*)m_value = getValueFloat();

@@ -1,5 +1,6 @@
 #include "UIManager.h"
 #include "cursor.h"
+#include "group.h"
 
 UIManager::UIManager()
 {
@@ -19,9 +20,22 @@ AbstractGui* UIManager::add(AbstractGui* ui)
 {
     ui->m_D3D = m_D3D;
     ui->m_baseViewMatrix = m_baseViewMatrix;
+    ui->m_manager = this;
     m_elements.push_back(ui);
 
     return ui;
+}
+
+void UIManager::remove(int id)
+{
+    size_t size = m_elements.size();
+    for (size_t i = 0; i < size; i++) {
+        if (m_elements[i]->getId() == id) {
+            m_elements[i]->Shutdown();
+            m_elements.erase(m_elements.begin() + i);
+            return;
+        }
+    }
 }
 
 AbstractGui* UIManager::getById(int id)
@@ -42,12 +56,16 @@ int UIManager::getNextId()
     int id = 0;
     size_t size = m_elements.size();
     for (size_t i = 0; i < size; i++) {
-        if (m_elements[i]->getId() > id) {
-            id = m_elements[i]->getId();
+        int elmId = m_elements[i]->getId();
+        if (dynamic_cast<Group*>(m_elements[i]) != nullptr) {
+            elmId = ((Group*)m_elements[i])->getLastId();
+        }
+        if (elmId > id) {
+            id = elmId;
         }
     }
 
-    return id;
+    return id + 1;
 }
 
 void UIManager::Shutdown()
@@ -94,13 +112,12 @@ void UIManager::Render()
 
 void UIManager::onMouseClick(int x, int y, int button)
 {
-    size_t size = m_elements.size();
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < m_elements.size(); i++) {
         if (m_elements[i]->isVisible()) {
             if (m_elements[i]->isIntersect(x, y)) {
+                m_events.push_back(m_elements[i]);
                 m_elements[i]->focus();
                 m_elements[i]->onMousePress(x, y, button);
-                m_events.push_back(m_elements[i]);
                 return;
             }
             else {
@@ -112,11 +129,10 @@ void UIManager::onMouseClick(int x, int y, int button)
 
 void UIManager::onKeyboardClick(InputClass::EventKey event)
 {
-    size_t size = m_elements.size();
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < m_elements.size(); i++) {
         if (m_elements[i]->isVisible() && m_elements[i]->isFocused()) {
-            m_elements[i]->onKeyboardPress(event);
             m_events.push_back(m_elements[i]);
+            m_elements[i]->onKeyboardPress(event);
         }
     }
 }

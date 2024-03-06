@@ -27,6 +27,23 @@ public:
 		return false;
 	}
 
+	virtual int getLastId()
+	{
+		int id = 0;
+		int size = m_childs.size();
+		for (int i = 0; i < size; i++) {
+			int elmId = m_childs[i]->getId();
+			if (dynamic_cast<Group*>(m_childs[i]) != nullptr) {
+				elmId = ((Group*)m_childs[i])->getLastId();
+			}
+			if (elmId > id) {
+				id = elmId;
+			}
+		}
+
+		return id;
+	}
+
 	virtual AbstractNode* getById(int id) {
 		if (AbstractNode::compareId(id)) {
 			return this;
@@ -108,18 +125,18 @@ public:
 			return;
 		}
 
-		int size = m_handlers.size();
-		for (int i = 0; i < size; i++) {	
+		size_t size = m_handlers.size();
+		for (size_t i = 0; i < size; i++) {
 			if (m_handlers[i].event == event) {
 				m_handlers[i].handler();
 			}
 		}
 
-		int sizeChild = m_childs.size();
-		for (int i = 0; i < sizeChild; i++) {
+		size_t sizeChild = m_childs.size();
+		for (size_t i = 0; i < sizeChild; i++) {
 			if (m_childs[i]->isVisible()) {
-				int sizeChildHandler = m_childs[i]->m_handlers.size();
-				for (int j = 0; j < sizeChildHandler; j++) {
+				size_t sizeChildHandler = m_childs[i]->m_handlers.size();
+				for (size_t j = 0; j < sizeChildHandler; j++) {
 					if (m_childs[i]->m_handlers[j].event == event) {
 						m_childs[i]->m_handlers[j].handler();
 					}
