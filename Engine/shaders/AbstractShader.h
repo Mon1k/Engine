@@ -5,7 +5,6 @@
 #include <d3dx10math.h>
 #include <d3dx11async.h>
 #include <fstream>
-using namespace std;
 
 #include "../d3dclass.h"
 
@@ -49,7 +48,7 @@ public:
 	{
 		char* compileErrors;
 		size_t bufferSize, i;
-		ofstream fout;
+		std::ofstream fout;
 
 
 		// Get a pointer to the error message text buffer.

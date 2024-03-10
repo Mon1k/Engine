@@ -5,7 +5,6 @@ const int MAX_TRIANGLES = 10000;
 
 #include <fstream>
 #include <vector>
-using namespace std;
 
 #include "../../d3dclass.h"
 #include "../../frustumclass.h"
@@ -36,7 +35,7 @@ private:
 		int triangleCount;
 		ID3D11Buffer* vertexBuffer, *indexBuffer;
 		VectorType* vertexArray;
-		vector<int> indexes;
+		std::vector<int> indexes;
 
 		NodeType* nodes[4];
 		NodeType* parent;

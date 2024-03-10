@@ -4,7 +4,6 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #include "AbstractModel.h"
 #include "CompositeModel.h"

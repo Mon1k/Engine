@@ -8,7 +8,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-using namespace std;
 
 #include "models/AbstractModel.h"
 #include "models/CompositeModel.h"

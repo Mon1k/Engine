@@ -14,7 +14,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 		int nIndex1, nIndex2, nIndex3;
 	} FaceType;
 
-	ifstream fin;
+	std::ifstream fin;
 	char input;
 
 	///// open for countable

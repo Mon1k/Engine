@@ -261,7 +261,7 @@ void FogShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwn
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
-	ofstream fout;
+	std::ofstream fout;
 
 
 	// Get a pointer to the error message text buffer.

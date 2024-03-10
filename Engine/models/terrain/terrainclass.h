@@ -43,7 +43,7 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(D3DClass*, FrustumClass*, char*, std::string, ::string);
+	bool Initialize(D3DClass*, FrustumClass*, char*, std::string, std::string);
 	virtual void Shutdown();
 	virtual void Render(CameraClass*);
 	virtual void Render(CameraClass*, ID3D11ShaderResourceView*);

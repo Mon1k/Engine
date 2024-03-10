@@ -6,7 +6,6 @@
 #include <d3dx10math.h>
 #include <d3dx11async.h>
 #include <fstream>
-using namespace std;
 
 #include "./shaders/AbstractShader.h"
 

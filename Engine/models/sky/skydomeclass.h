@@ -5,7 +5,6 @@
 #include <d3dx10math.h>
 #include <fstream>
 #include <string>
-using namespace std;
 
 #include "../../modelclass.h"
 #include "../../textures/skydomeshaderclass.h"

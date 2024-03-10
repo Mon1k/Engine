@@ -168,7 +168,7 @@ bool AssimpLoader::load(char* filename, ModelClass* model)
 	actor->setWeights(weights);
 
 	// process animation
-	std::string filenameStd = string(filename);
+	std::string filenameStd = std::string(filename);
 	for (size_t i = 0; i < m_Scene->mNumAnimations; ++i) {
 		const aiAnimation* assimp_anim = m_Scene->mAnimations[i];
 

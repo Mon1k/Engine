@@ -14,8 +14,6 @@
 
 #include "../resources/AbstractResource.h"
 
-using namespace std;
-
 class SoundClass: public AbstractResource
 {
 private:

@@ -6,7 +6,6 @@
 #include <d3dx11async.h>
 #include <fstream>
 #include <vector>
-using namespace std;
 
 #include "../shaders/AbstractShader.h"
 #include "../lightclass.h"

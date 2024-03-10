@@ -3,7 +3,6 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #include "AbstractParticle.h"
 #include "../../d3dclass.h"

@@ -7,7 +7,6 @@
 #include <iterator>
 #include <vector>
 #include <string>
-using namespace std;
 
 
 class TextureArrayClass

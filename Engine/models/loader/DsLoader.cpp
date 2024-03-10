@@ -2,7 +2,7 @@
 
 bool DsLoader::load(char* filename, AbstractModel* model)
 {
-	ifstream fin;
+	std::ifstream fin;
 	char input;
 	int i, vertextCount;
 

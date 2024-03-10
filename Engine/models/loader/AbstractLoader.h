@@ -2,7 +2,6 @@
 #define _ABSTRACTLOADER_H_
 
 #include <fstream>
-using namespace std;
 
 class AbstractLoader
 {

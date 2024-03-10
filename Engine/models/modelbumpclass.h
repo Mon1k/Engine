@@ -4,7 +4,6 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 #include <fstream>
-using namespace std;
 
 #include "../modelclass.h"
 

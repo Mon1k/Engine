@@ -23,7 +23,7 @@ TerrainClass::~TerrainClass()
 {
 }
 
-bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, ::string textureFilename, ::string normalTextureFilename)
+bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* heightMapFilename, std::string textureFilename, std::string normalTextureFilename)
 {
 	bool result;
 

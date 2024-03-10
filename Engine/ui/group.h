@@ -66,6 +66,7 @@ public:
 	{
 		child->m_D3D = m_D3D;
 		child->m_baseViewMatrix = m_baseViewMatrix;
+		child->m_manager = m_manager;
 		m_childs.push_back(child);
 
 		return child;
