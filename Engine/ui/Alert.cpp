@@ -46,14 +46,15 @@ void Alert::setTextHeader(std::string text)
 	m_title->Add(&text[0]);
 }
 
-void Alert::onKeyboardPress(InputClass::EventKey event)
+bool Alert::onKeyboardPress(InputClass::EventKey event)
 {
 	if (event.key == DIK_ESCAPE) {
 		unfocus();
 		hide();
+		return true;
 	}
 
-	AbstractGui::onKeyboardPress(event);
+	return AbstractGui::onKeyboardPress(event);
 }
 
 void Alert::show()

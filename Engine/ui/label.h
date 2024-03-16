@@ -16,13 +16,24 @@ public:
     virtual void Shutdown();
     virtual bool Render();
 
+    void setAlign(int align)
+    {
+        m_align = align;
+    }
+
     bool Add(char*, int positionX, int positionY, float, float, float);
     bool Add(char*, int positionX, int positionY);
     bool Add(char*);
     
+    enum {
+        ALIGN_LEFT = 0,
+        ALIGN_RIGHT = 1,
+        ALIGN_CENTER = 2
+    };
 
 private:
     TextClass* m_Text;
+    int m_align;
 };
 
 #endif

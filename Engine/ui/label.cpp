@@ -4,6 +4,7 @@
 Label::Label()
 {
 	m_Text = 0;
+	m_align = ALIGN_LEFT;
 }
 
 
@@ -38,7 +39,18 @@ bool Label::Add(char* text, int positionX, int positionY, float red, float green
 	m_x = positionX;
 	m_y = positionY;
 
-	return m_Text->AddText(text, m_x + m_width / 3, m_y + m_height / 3, red, green, blue);
+	int x;
+	if (m_align == ALIGN_LEFT) {
+		x = m_x;
+	}
+	else if (m_align == ALIGN_RIGHT) {
+		x = m_x + m_width - std::string(text).size() * 7;
+	}
+	else {
+		x = m_x + m_width / 3;
+	}
+
+	return m_Text->AddText(text, x, m_y + m_height / 3, red, green, blue);
 }
 
 bool Label::Add(char* text, int positionX, int positionY)

@@ -13,7 +13,7 @@ public:
 	void setText(std::string text);
 	void setTextHeader(std::string text);
 
-	virtual void onKeyboardPress(InputClass::EventKey event);
+	virtual bool onKeyboardPress(InputClass::EventKey event);
 	virtual void show();
 	virtual void showText(std::string text);
 

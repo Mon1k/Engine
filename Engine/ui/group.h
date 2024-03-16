@@ -72,10 +72,30 @@ public:
 		return child;
 	}
 
+	virtual void removeChild(int id)
+	{
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			if (m_childs[i]->getId() == id) {
+				m_childs[i]->Shutdown();
+				m_childs.erase(m_childs.begin() + i);
+			}
+		}
+	}
+
+	virtual void removeChild(AbstractGui* ui)
+	{
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			if (m_childs[i] == ui) {
+				m_childs[i]->Shutdown();
+				m_childs.erase(m_childs.begin() + i);
+			}
+		}
+	}
+
 	virtual bool Render()
 	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		size_t size = m_childs.size();
+		for (size_t i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible()) {
 				m_childs[i]->Render();
 			}
@@ -121,15 +141,18 @@ public:
 		return false;
 	}
 
-	virtual void proccesedEventHandlers(int event) {
+	virtual bool proccesedEventHandlers(int event)
+	{
 		if (!isVisible()) {
-			return;
+			return false;
 		}
 
+		bool isEvent = false;
 		size_t size = m_handlers.size();
 		for (size_t i = 0; i < size; i++) {
 			if (m_handlers[i].event == event) {
 				m_handlers[i].handler();
+				isEvent = true;
 			}
 		}
 
@@ -140,30 +163,37 @@ public:
 				for (size_t j = 0; j < sizeChildHandler; j++) {
 					if (m_childs[i]->m_handlers[j].event == event) {
 						m_childs[i]->m_handlers[j].handler();
+						isEvent = true;
 					}
 				}
 			}
 		}
+
+		return isEvent;
 	}
 
-	virtual void onMousePress(int x, int y, int button)
+	virtual bool onMousePress(int x, int y, int button)
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
-				m_childs[i]->onMousePress(x, y, button);
+				return m_childs[i]->onMousePress(x, y, button);
 			}
 		}
+
+		return false;
 	}
 
-	virtual void onKeyboardPress(InputClass::EventKey event)
+	virtual bool  onKeyboardPress(InputClass::EventKey event)
 	{
 		int size = m_childs.size();
 		for (int i = 0; i < size; i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
-				m_childs[i]->onKeyboardPress(event);
+				return m_childs[i]->onKeyboardPress(event);
 			}
 		}
+
+		return false;
 	}
 
 	virtual void frame(float counter)

@@ -27,8 +27,8 @@ public:
     bool setText(std::string);
     bool updateText(std::string);
     void updateText();
-    virtual void onMousePress(int x, int y, int button);
-    virtual void onKeyboardPress(InputClass::EventKey event);
+    virtual bool onMousePress(int x, int y, int button);
+    virtual bool onKeyboardPress(InputClass::EventKey event);
     virtual bool isIntersect(int x, int y);
     virtual void frame(float counter);
 

@@ -31,12 +31,14 @@ public:
     void toogle() {
         b_IsMarked = !b_IsMarked;
     };
-    virtual void onMousePress(int x, int y, int button)
+    virtual bool onMousePress(int x, int y, int button)
     {
         if (button == MOUSE_BUTTON1) {
             toogle();
-            proccesedEventHandlers(AbstractGui::EventType::MOUSE_DOWN);
+            return proccesedEventHandlers(AbstractGui::EventType::MOUSE_DOWN);
         }
+
+        return false;
     }
 
 private:

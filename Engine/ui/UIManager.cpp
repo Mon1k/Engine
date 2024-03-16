@@ -117,8 +117,9 @@ void UIManager::onMouseClick(int x, int y, int button)
             if (m_elements[i]->isIntersect(x, y)) {
                 m_events.push_back(m_elements[i]);
                 m_elements[i]->focus();
-                m_elements[i]->onMousePress(x, y, button);
-                return;
+                if (m_elements[i]->onMousePress(x, y, button)) {
+                    return;
+                }
             }
             else {
                 m_elements[i]->unfocus();

@@ -88,7 +88,7 @@ bool Input::initialize(int width, int height, int positionX, int positionY)
 	m_y = positionY;
 
 	// Initialize the bitmap object.
-	WCHAR* textureFilename = L"data/textures/ui/button.png";
+	WCHAR* textureFilename = L"data/textures/ui/input.png";
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		return false;
@@ -178,20 +178,20 @@ void Input::updateText()
 	updateText(&m_ViewedString[0]);
 }
 
-void Input::onMousePress(int x, int y, int button)
+bool Input::onMousePress(int x, int y, int button)
 {
 	if (button == MOUSE_BUTTON1 && isIntersect(x, y)) {
 		m_IsFocused = true;
 		m_Flash = false;
 		m_FrameCounter = 0;
 		updateText();
-		proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
+		return proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
 	}
 
-	AbstractGui::onMousePress(x, y, button);
+	return AbstractGui::onMousePress(x, y, button);
 }
 
-void Input::onKeyboardPress(InputClass::EventKey event)
+bool Input::onKeyboardPress(InputClass::EventKey event)
 {
 	std::string chunkLeft;
 	std::string chunkRight;
@@ -246,7 +246,7 @@ void Input::onKeyboardPress(InputClass::EventKey event)
 		updateText();
 	}
 
-	AbstractGui::onKeyboardPress(event);
+	return AbstractGui::onKeyboardPress(event);
 }
 
 char Input::replaceSymbolByEvent(InputClass::EventKey event)

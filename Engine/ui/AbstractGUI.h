@@ -67,14 +67,14 @@ public:
         m_visible = visible;
     }
 
-    virtual void onMousePress(int x, int y, int button)
+    virtual bool onMousePress(int x, int y, int button)
     {
-        proccesedEventHandlers(EventType::MOUSE_DOWN);
+        return proccesedEventHandlers(EventType::MOUSE_DOWN);
     }
 
-    virtual void onKeyboardPress(InputClass::EventKey)
+    virtual bool onKeyboardPress(InputClass::EventKey)
     {
-        proccesedEventHandlers(EventType::KEYBOARD_DOWN);
+        return proccesedEventHandlers(EventType::KEYBOARD_DOWN);
     }
 
     virtual void addEventHandler(int event, std::function<void()> handler)
@@ -85,18 +85,22 @@ public:
         m_handlers.push_back(eventObject);
     }
 
-    virtual void proccesedEventHandlers(int event)
+    virtual bool proccesedEventHandlers(int event)
     {
         if (!isVisible()) {
-            return;
+            return false;
         }
 
+        bool isEvent = false;
         size_t size = m_handlers.size();
         for (size_t i = 0; i < size; i++) {
             if (m_handlers[i].event == event) {
                 m_handlers[i].handler();
+                isEvent = true;
             }
         }
+
+        return isEvent;
     }
 
     virtual bool isIntersect(int x, int y)
@@ -125,6 +129,9 @@ public:
     };
     enum EventType: int {
         MOUSE_DOWN = 0,
+        MOUSE1_DOWN = 1,
+        MOUSE2_DOWN = 2,
+        MOUSE3_DOWN = 3,
         
         KEYBOARD_DOWN = 100,
 

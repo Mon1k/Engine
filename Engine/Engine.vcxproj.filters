@@ -324,6 +324,12 @@
     <ClCompile Include="ui\Alert.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="ui\dialogs\OpenDialog.cpp">
+      <Filter>ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Table.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -663,6 +669,12 @@
       <Filter>models\sky</Filter>
     </ClInclude>
     <ClInclude Include="ui\Alert.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialogs\OpenDialog.h">
+      <Filter>ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\Table.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
