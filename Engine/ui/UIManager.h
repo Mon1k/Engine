@@ -36,6 +36,7 @@ public:
 
     void onMouseClick(int x, int y, int button);
     void onKeyboardClick(InputClass::EventKey);
+    void onScroll(int diff);
 
     bool isFocused() {
         return m_IsFocused;

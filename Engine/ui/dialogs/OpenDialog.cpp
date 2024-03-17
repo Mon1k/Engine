@@ -1,4 +1,5 @@
 #include "OpenDialog.h"
+#include "../../Options.h"
 #include "../UIManager.h"
 #include "../../tool/Date.h"
 
@@ -7,16 +8,18 @@ OpenDialog::OpenDialog() : Window()
 
 }
 
-bool OpenDialog::initialize(int positionX, int positionY)
+bool OpenDialog::initialize()
 {
 	m_width = 640;
 	m_height = 480;
-	bool result = Window::Initialize(m_width, m_height, positionX, positionY);
+	m_x = Options::screen_width / 2 - m_width / 2;
+	m_y = Options::screen_height / 2 - m_height / 2;
+	bool result = Window::Initialize(m_width, m_height, m_x, m_y);
 
 	setVisible(false);
 	setId(m_manager->getNextId());
 
-	addHeader("Open Dialog", HEADER_BUTTON_CLOSE);
+	addHeader("Open file", HEADER_BUTTON_CLOSE);
 	addBody();
 
 	int padding = 5;
@@ -35,8 +38,15 @@ bool OpenDialog::initialize(int positionX, int positionY)
 	m_table->addColumn("Date");
 	m_table->addEventHandler(Table::EventType::ROW_CHOOSE, [this] {
 		m_currentRow = m_table->getSelectedRow();
-		proccesedEventHandlers(OpenDialog::EventType::FILE_CHOOSE);
-		m_manager->remove(getId());
+		
+		if (getCurrentRow().is_directory()) {
+			std::filesystem::directory_entry entry = getCurrentRow();
+			setPath(entry.path().generic_string());
+		}
+		else {
+			proccesedEventHandlers(OpenDialog::EventType::FILE_CHOOSE);
+			m_manager->remove(getId());
+		}
 		});
 	
 
@@ -44,24 +54,9 @@ bool OpenDialog::initialize(int positionX, int positionY)
 		m_manager->remove(this->getId());
 		});
 
-	getCurrentPath();
-	getRows();
+	setPath(getCurrentPath());
 
 	return result;
-}
-
-bool OpenDialog::Render()
-{
-	Window::Render();
-	m_table->Render();
-
-	return true;
-}
-
-void OpenDialog::Shutdown()
-{
-	m_table->Shutdown();
-	Window::Shutdown();
 }
 
 std::string OpenDialog::getCurrentPath()
@@ -72,6 +67,12 @@ std::string OpenDialog::getCurrentPath()
 	}
 
 	return m_path;
+}
+
+void OpenDialog::setPath(std::string path)
+{
+	m_path = path;
+	getRows();
 }
 
 std::vector<std::filesystem::directory_entry> OpenDialog::getRows()
@@ -87,13 +88,18 @@ std::vector<std::filesystem::directory_entry> OpenDialog::getRows()
 	m_rows.clear();
 	m_table->clearRows();
 
+	std::filesystem::path path = m_path;
+	std::filesystem::directory_entry entryParent = std::filesystem::directory_entry(path.parent_path());
+	
 	// add upper dir
 	row.clear();
 	row.push_back("..");
 	row.push_back("");
 	row.push_back("DIR");
-	row.push_back(""); // @todo - later add time for this dir upper
-	m_rows.push_back(rows[0]); // add parent dir
+	stat(entryParent.path().generic_string().c_str(), &result);
+	row.push_back(Date::dateFormat(result));
+
+	m_rows.push_back(entryParent);
 	m_table->addRow(row);
 
 	// first fill dir
@@ -124,7 +130,7 @@ std::vector<std::filesystem::directory_entry> OpenDialog::getRows()
 
 		row.clear();
 		row.push_back(entry.path().filename().generic_string());
-		row.push_back(entry.path().extension().generic_string().substr(1));
+		row.push_back(entry.path().extension().generic_string());
 		row.push_back(std::to_string(entry.file_size()));
 
 		stat(entry.path().generic_string().c_str(), &result);

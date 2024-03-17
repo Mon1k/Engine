@@ -17,8 +17,7 @@ public:
 			return true;
 		}
 
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->compareId(id)) {
 				return true;
 			}
@@ -30,8 +29,7 @@ public:
 	virtual int getLastId()
 	{
 		int id = 0;
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			int elmId = m_childs[i]->getId();
 			if (dynamic_cast<Group*>(m_childs[i]) != nullptr) {
 				elmId = ((Group*)m_childs[i])->getLastId();
@@ -49,8 +47,7 @@ public:
 			return this;
 		}
 
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible()) {
 				AbstractGui* node = dynamic_cast<AbstractGui*>(m_childs[i]->getById(id));
 				if (node) {
@@ -92,24 +89,23 @@ public:
 		}
 	}
 
+	virtual void Shutdown()
+	{
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			m_childs[i]->Shutdown();
+		}
+		m_childs.clear();
+	}
+
 	virtual bool Render()
 	{
-		size_t size = m_childs.size();
-		for (size_t i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible()) {
 				m_childs[i]->Render();
 			}
 		}
 
 		return true;
-	}
-
-	virtual void Shutdown()
-	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
-			m_childs[i]->Shutdown();
-		}
 	}
 
 	virtual std::vector<AbstractGui*> getChilds()
@@ -119,8 +115,7 @@ public:
 
 	virtual void setPosition(float x, float y)
 	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->setPosition(x, y);
 		}
 	}
@@ -131,8 +126,7 @@ public:
 			return true;
 		}
 
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
 				return true;
 			}
@@ -174,8 +168,7 @@ public:
 
 	virtual bool onMousePress(int x, int y, int button)
 	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
 				return m_childs[i]->onMousePress(x, y, button);
 			}
@@ -184,10 +177,9 @@ public:
 		return false;
 	}
 
-	virtual bool  onKeyboardPress(InputClass::EventKey event)
+	virtual bool onKeyboardPress(InputClass::EventKey event)
 	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
 				return m_childs[i]->onKeyboardPress(event);
 			}
@@ -196,10 +188,22 @@ public:
 		return false;
 	}
 
+	virtual bool onScroll(int diff)
+	{
+		AbstractGui::onScroll(diff);
+
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			if (m_childs[i]->isVisible()) {
+				m_childs[i]->onScroll(diff);
+			}
+		}
+
+		return true;
+	}
+
 	virtual void frame(float counter)
 	{
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible()) {
 				m_childs[i]->frame(counter);
 			}
@@ -212,8 +216,7 @@ public:
 			return true;
 		}
 
-		int size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
 				return true;
 			}

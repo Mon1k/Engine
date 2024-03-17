@@ -13,11 +13,10 @@ class OpenDialog : public Window
 public:
 	OpenDialog();
 
-	bool initialize(int positionX, int positionY);
-	virtual bool Render();
-	virtual void Shutdown();
+	bool initialize();
 
 	std::string getCurrentPath();
+	void setPath(std::string path);
 	std::vector<std::filesystem::directory_entry> getRows();
 	std::filesystem::directory_entry getCurrentRow()
 	{

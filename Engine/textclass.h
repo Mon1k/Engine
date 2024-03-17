@@ -5,6 +5,8 @@
 #include "fontshaderclass.h"
 #include "math/Rectangle.h"
 
+#include <string>
+
 class TextClass
 {
 private:
@@ -35,6 +37,16 @@ public:
 		return m_rectangle;
 	}
 	void updateRectangle(float, float);
+
+	char* getText()
+	{
+		return m_text;
+	}
+
+	D3DXVECTOR3 getColor()
+	{
+		return D3DXVECTOR3(m_sentence->red, m_sentence->green, m_sentence->blue);
+	}
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

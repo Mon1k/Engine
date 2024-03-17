@@ -15,9 +15,8 @@ public:
 	}
 
 	void initialize();
-	virtual bool Render();
-	virtual void Shutdown();
-	void update();
+	virtual void update();
+	virtual bool onScroll(int diff);
 
 	void addColumn(std::string name, int align = Label::ALIGN_CENTER);
 	void clearColumns()
@@ -40,9 +39,16 @@ public:
 		m_selectedRow = row;
 	}
 
+	std::vector<std::string> getRow(int row)
+	{
+		return m_rows[row];
+	}
+
 	enum EventType : int {
 		ROW_CHOOSE = 65737
 	};
+
+	int scrollX = 0, scrollY = 0;
 
 protected:
 	struct Column {
@@ -52,6 +58,5 @@ protected:
 
 	std::vector<Column> m_columns;
 	std::vector<std::vector<std::string>> m_rows;
-	std::vector<Label*> m_labels;
 	int m_selectedRow;
 };

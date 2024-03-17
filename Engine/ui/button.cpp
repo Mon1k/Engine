@@ -6,6 +6,7 @@ Button::Button()
 	m_TextureShader = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
+	m_align = ALIGN_CENTER;
 }
 
 
@@ -77,10 +78,18 @@ bool Button::Add(char* text, int positionX, int positionY, float red, float gree
 	m_x = positionX;
 	m_y = positionY;
 
-	int length = strlen(text);
-	int shiftX = m_width / 2 - (length * 7) / 2;
+	int x;
+	if (m_align == ALIGN_LEFT) {
+		x = m_x;
+	}
+	else if (m_align == ALIGN_RIGHT) {
+		x = m_x + m_width - std::string(text).size() * 6.3;
+	}
+	else {
+		x = m_x + m_width / 2 - std::string(text).size() / 2 * 6.3;
+	}
 
-	return m_Text->AddText(text, m_x + shiftX, m_y + m_height / 3, red, green, blue);
+	return m_Text->AddText(text, x, m_y + m_height / 3, red, green, blue);
 }
 
 bool Button::Add(char* text, int positionX, int positionY)

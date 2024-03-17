@@ -275,7 +275,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 void TextClass::updateRectangle(float positionX, float positionY)
 {
 	m_rectangle.position = new ds::math::Point(positionX, positionY);
-	m_rectangle.width = m_rectangle.position->x + strlen(m_text) * 8;
+	m_rectangle.width = m_rectangle.position->x + strlen(m_text) * 6.3;
 	m_rectangle.height = 10;
 }
 

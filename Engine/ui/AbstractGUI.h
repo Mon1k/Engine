@@ -28,11 +28,14 @@ public:
     };
     virtual void Shutdown() = 0;
     virtual bool Render() = 0;
+    virtual void update()
+    {
+
+    }
 
     virtual void hide()
     {
         m_visible = false;
-        unfocus();
     }
 
     virtual void show()
@@ -77,6 +80,11 @@ public:
         return proccesedEventHandlers(EventType::KEYBOARD_DOWN);
     }
 
+    virtual bool onScroll(int diff)
+    {
+        return proccesedEventHandlers(EventType::SCROLL);
+    }
+
     virtual void addEventHandler(int event, std::function<void()> handler)
     {
         Event eventObject;
@@ -92,8 +100,7 @@ public:
         }
 
         bool isEvent = false;
-        size_t size = m_handlers.size();
-        for (size_t i = 0; i < size; i++) {
+        for (size_t i = 0; i < m_handlers.size(); i++) {
             if (m_handlers[i].event == event) {
                 m_handlers[i].handler();
                 isEvent = true;
@@ -116,6 +123,14 @@ public:
     {
         m_x = x;
         m_y = y;
+        update();
+    }
+
+    virtual void move(float dx, float dy)
+    {
+        m_x += dx;
+        m_y += dy;
+        update();
     }
 
     virtual void frame(float) {}
@@ -132,11 +147,15 @@ public:
         MOUSE1_DOWN = 1,
         MOUSE2_DOWN = 2,
         MOUSE3_DOWN = 3,
+        MOUSE_WHEEL = 4,
         
         KEYBOARD_DOWN = 100,
 
         OBJECT_FOCUS = 200,
-        OBJECT_BLUR = 201
+        OBJECT_BLUR = 201,
+
+        SCROLL = 300,
+        RESIZE = 301,
 
         // more 65536 is user events
     };

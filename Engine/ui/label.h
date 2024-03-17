@@ -15,6 +15,7 @@ public:
     bool Initialize(int width, int height);
     virtual void Shutdown();
     virtual bool Render();
+    virtual void update();
 
     void setAlign(int align)
     {

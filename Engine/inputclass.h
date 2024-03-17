@@ -33,6 +33,10 @@ public:
 	void resetState();
 	
 	void GetMouseLocation(int&, int&);
+	int getMouseWheel()
+	{
+		return m_mouseState.lZ;
+	}
 	int getMouseButton();
 	int getMouseButtonPress();
 	

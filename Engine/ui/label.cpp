@@ -33,6 +33,11 @@ bool Label::Initialize(int bitmapWidth, int bitmapHeight)
 	return true;
 }
 
+void Label::update()
+{
+	D3DXVECTOR3 color = m_Text->getColor();
+	Add(m_Text->getText(), m_x, m_y, color.x, color.y, color.z);
+}
 
 bool Label::Add(char* text, int positionX, int positionY, float red, float green, float blue)
 {
@@ -44,10 +49,10 @@ bool Label::Add(char* text, int positionX, int positionY, float red, float green
 		x = m_x;
 	}
 	else if (m_align == ALIGN_RIGHT) {
-		x = m_x + m_width - std::string(text).size() * 7;
+		x = m_x + m_width - std::string(text).size() * 6.3;
 	}
 	else {
-		x = m_x + m_width / 3;
+		x = m_x + m_width / 2 - std::string(text).size() / 2 * 6.3;
 	}
 
 	return m_Text->AddText(text, x, m_y + m_height / 3, red, green, blue);

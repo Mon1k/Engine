@@ -138,6 +138,15 @@ void UIManager::onKeyboardClick(InputClass::EventKey event)
     }
 }
 
+void UIManager::onScroll(int diff)
+{
+    for (size_t i = 0; i < m_elements.size(); i++) {
+        if (m_elements[i]->isVisible()) {
+            m_elements[i]->onScroll(diff);
+        }
+    }
+}
+
 void UIManager::EventProccesor(InputClass* input)
 {
     int mouseButton = input->getMouseButton();
@@ -149,6 +158,10 @@ void UIManager::EventProccesor(InputClass* input)
         int mouseX, mouseY;
         input->GetMouseLocation(mouseX, mouseY);
         onMouseClick(mouseX, mouseY, mouseButton);
+    }
+
+    if (input->getMouseWheel()) {
+        onScroll(input->getMouseWheel());
     }
 
     if (eventKey.key > 0) {
