@@ -59,6 +59,7 @@ public:
 
     char replaceSymbolByEvent(InputClass::EventKey);
 
+    virtual void focus();
     virtual void unfocus();
     void hideCaret();
     void showCaret();

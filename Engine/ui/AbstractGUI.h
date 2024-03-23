@@ -24,6 +24,7 @@ public:
         m_y = 0;
 
         m_manager = 0;
+        m_parent = 0;
         m_handlers.clear();
     };
     virtual void Shutdown() = 0;
@@ -45,14 +46,18 @@ public:
 
     virtual void focus()
     {
-        m_IsFocused = true;
-        proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
+        if (!m_IsFocused) {
+            m_IsFocused = true;
+            proccesedEventHandlers(AbstractGui::EventType::OBJECT_FOCUS);
+        }
     }
 
     virtual void unfocus()
     {
-        m_IsFocused = false;
-        proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
+        if (m_IsFocused) {
+            m_IsFocused = false;
+            proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
+        }
     }
 
     virtual bool isFocused()
@@ -168,6 +173,7 @@ public:
     int m_width, m_height, m_x, m_y;
     
     UIManager* m_manager;
+    AbstractGui* m_parent;
     std::vector<Event> m_handlers;
 };
 

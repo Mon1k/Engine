@@ -48,8 +48,6 @@ public:
 		ROW_CHOOSE = 65737
 	};
 
-	int scrollX = 0, scrollY = 0;
-
 protected:
 	struct Column {
 		std::string name;
@@ -59,4 +57,6 @@ protected:
 	std::vector<Column> m_columns;
 	std::vector<std::vector<std::string>> m_rows;
 	int m_selectedRow;
+
+	int m_scrollX = 0, m_scrollY = 0;
 };

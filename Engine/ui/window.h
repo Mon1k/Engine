@@ -33,6 +33,7 @@ public:
     virtual bool Render();
     virtual AbstractGui* addChild(AbstractGui*);
     void setTitle(std::string);
+    virtual void close();
     
     Group* getHeader() {
         return m_header;

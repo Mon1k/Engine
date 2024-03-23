@@ -174,16 +174,13 @@ void UIManager::frame(float counter)
     m_IsFocused = false;
     if (m_events.size() > 1) {
         m_IsFocused = true;
-        return;
     }
 
-    size_t size = m_elements.size();
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < m_elements.size(); i++) {
         if (m_elements[i]->isVisible()) {
             m_elements[i]->frame(counter);
-            if (m_elements[i]->isFocused()) {
+            if (!m_IsFocused && m_elements[i]->isFocused()) {
                 m_IsFocused = true;
-                return;
             }
         }
     }

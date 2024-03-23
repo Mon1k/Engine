@@ -15,6 +15,9 @@ Input::Input()
 	m_CursorShift = 0;
 	m_MaxSize = 0;
 	m_String.clear();
+
+	m_value = 0;
+	m_typeInfo = &typeid(std::string);
 }
 
 Input::~Input()
@@ -150,7 +153,7 @@ bool Input::setText(std::string text)
 
 bool Input::updateText(std::string text)
 {
-	if (String::trim(m_String).size() > 0) {
+	if (m_value && String::trim(m_String).size() > 0) {
 		std::string typeName = std::string(m_typeInfo->name());
 		if (typeName.compare("float") == 0) {
 			*(float*)m_value = getValueFloat();
@@ -301,7 +304,7 @@ char Input::replaceSymbolByEvent(InputClass::EventKey event)
 bool Input::isIntersect(int x, int y) {
 	bool result = AbstractGui::isIntersect(x, y);
 	if (!result && m_IsFocused) {
-		m_IsFocused = false;
+		unfocus();
 		updateText(m_String);
 		proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
 	}
@@ -319,23 +322,36 @@ void Input::frame(float counter)
 	m_FrameCounter += counter;
 	if (m_FrameCounter > timeout) {
 		hideCaret();
+		m_FrameCounter = 0;
+	}
+}
+
+void Input::focus()
+{
+	if (!m_IsFocused) {
+		AbstractGui::focus();
+		showCaret();
 	}
 }
 
 void Input::unfocus()
 {
-	AbstractGui::unfocus();
-	hideCaret();
+	if (m_IsFocused) {
+		AbstractGui::unfocus();
+		hideCaret();
+	}
 }
 
 void Input::hideCaret()
 {
 	m_Flash = false;
-	m_usesFlashCursor = 0;
+	m_usesFlashCursor = false;
 	updateText();
 }
 
 void Input::showCaret()
 {
-	m_Flash = true;
+	m_Flash = false;
+	m_usesFlashCursor = true;
+	m_FrameCounter = 0;
 }

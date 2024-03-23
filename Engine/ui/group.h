@@ -64,6 +64,7 @@ public:
 		child->m_D3D = m_D3D;
 		child->m_baseViewMatrix = m_baseViewMatrix;
 		child->m_manager = m_manager;
+		child->m_parent = this;
 		m_childs.push_back(child);
 
 		return child;
@@ -142,24 +143,21 @@ public:
 		}
 
 		bool isEvent = false;
-		size_t size = m_handlers.size();
-		for (size_t i = 0; i < size; i++) {
-			if (m_handlers[i].event == event) {
-				m_handlers[i].handler();
-				isEvent = true;
-			}
-		}
 
 		size_t sizeChild = m_childs.size();
 		for (size_t i = 0; i < sizeChild; i++) {
 			if (m_childs[i]->isVisible()) {
-				size_t sizeChildHandler = m_childs[i]->m_handlers.size();
-				for (size_t j = 0; j < sizeChildHandler; j++) {
-					if (m_childs[i]->m_handlers[j].event == event) {
-						m_childs[i]->m_handlers[j].handler();
-						isEvent = true;
-					}
+				if (m_childs[i]->proccesedEventHandlers(event)) {
+					isEvent = true;
+					break;
 				}
+			}
+		}
+
+		for (size_t i = 0; i < m_handlers.size(); i++) {
+			if (m_handlers[i].event == event) {
+				m_handlers[i].handler();
+				isEvent = true;
 			}
 		}
 
@@ -168,20 +166,30 @@ public:
 
 	virtual bool onMousePress(int x, int y, int button)
 	{
+		bool result = false;
 		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
-				return m_childs[i]->onMousePress(x, y, button);
+				m_childs[i]->focus();
+				result = m_childs[i]->onMousePress(x, y, button);
+			}
+			else {
+				m_childs[i]->unfocus();
 			}
 		}
 
-		return false;
+		return result;
 	}
 
 	virtual bool onKeyboardPress(InputClass::EventKey event)
 	{
 		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
-				return m_childs[i]->onKeyboardPress(event);
+				if (m_childs[i]->onKeyboardPress(event)) {
+					return true;
+				}
+			}
+			else {
+				m_childs[i]->unfocus();
 			}
 		}
 
@@ -206,6 +214,9 @@ public:
 		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible()) {
 				m_childs[i]->frame(counter);
+				if (!m_IsFocused && m_childs[i]->isFocused()) {
+					m_IsFocused = true;
+				}
 			}
 		}
 	}
@@ -223,6 +234,20 @@ public:
 		}
 
 		return false;
+	}
+
+	virtual void focus()
+	{
+		if (!m_IsFocused) {
+			m_IsFocused = true;
+		}
+	}
+
+	virtual void unfocus()
+	{
+		if (m_IsFocused) {
+			m_IsFocused = false;
+		}
 	}
 
 protected:

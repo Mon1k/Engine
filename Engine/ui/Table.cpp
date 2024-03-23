@@ -19,18 +19,18 @@ bool Table::onScroll(int diff)
 	int sensibilityY = 5;
 	float shift = (float)diff / sensibilityY;
 
+	m_scrollY += -1 * shift;
+	if (m_scrollY < 0) {
+		m_scrollY = 0;
+		return false;
+	}
 
 	float maxChildY = 0;
 	for (size_t i = 0; i < m_childs.size(); i++) {
 		maxChildY = max(maxChildY, m_childs[i]->m_y);
 	}
 	if (shift < 0 && m_y + m_height > maxChildY) {
-		return false;
-	}
-
-	scrollY += -1 * shift;
-	if (scrollY < 0) {
-		scrollY = 0;
+		m_scrollY += shift;
 		return false;
 	}
 	
