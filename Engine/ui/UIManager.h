@@ -38,7 +38,9 @@ public:
     void onKeyboardClick(InputClass::EventKey);
     void onScroll(int diff);
 
-    bool isFocused() {
+    void focus();
+    bool isFocused()
+    {
         return m_IsFocused;
     }
 

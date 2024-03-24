@@ -1,4 +1,5 @@
 #include "textclass.h"
+#include "Options.h"
 
 TextClass::TextClass()
 {
@@ -22,10 +23,6 @@ TextClass::~TextClass()
 bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int screenWidth, int screenHeight)
 {
 	bool result;
-
-	// Store the screen width and height.
-	m_screenWidth = screenWidth;
-	m_screenHeight = screenHeight;
 
 	m_device = device;
 	m_deviceContext = deviceContext;
@@ -65,14 +62,14 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	return true;
 }
 
-bool TextClass::AddText(char* text, int positionX, int positionY, float red, float green, float blue)
+bool TextClass::AddText(std::string text, int positionX, int positionY, float red, float green, float blue)
 {
 	bool result;
 
 	m_text = text;
 
 	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence, m_text, positionX, positionY, red, green, blue, m_deviceContext);
+	result = UpdateSentence(m_sentence, &m_text[0], positionX, positionY, red, green, blue, m_deviceContext);
 	if (!result) {
 		return false;
 	}
@@ -211,7 +208,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 	return true;
 }
 
-bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX, int positionY, float red, float green, float blue,
+bool TextClass::UpdateSentence(SentenceType* sentence, std::string text, int positionX, int positionY, float red, float green, float blue,
 	ID3D11DeviceContext* deviceContext)
 {
 	int numLetters;
@@ -227,7 +224,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	sentence->blue = blue;
 
 	// Get the number of letters in the sentence.
-	numLetters = (int)strlen(text);
+	numLetters = text.size();
 
 	// Check for possible buffer overflow.
 	if (numLetters > sentence->maxLength) {
@@ -244,11 +241,11 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	memset(vertices, 0, (sizeof(VertexType) * sentence->vertexCount));
 
 	// Calculate the X and Y pixel position on the screen to start drawing to.
-	drawX = (float)(((m_screenWidth / 2) * -1) + positionX);
-	drawY = (float)((m_screenHeight / 2) - positionY);
+	drawX = (float)(((Options::screen_width / 2) * -1) + positionX);
+	drawY = (float)((Options::screen_height / 2) - positionY);
 
 	// Use the font class to build the vertex array from the sentence text and sentence draw location.
-	m_Font->BuildVertexArray((void*)vertices, text, drawX, drawY);
+	m_Font->BuildVertexArray((void*)vertices, &text[0], drawX, drawY);
 
 	// Lock the vertex buffer so it can be written to.
 	result = deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -275,7 +272,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 void TextClass::updateRectangle(float positionX, float positionY)
 {
 	m_rectangle.position = new ds::math::Point(positionX, positionY);
-	m_rectangle.width = m_rectangle.position->x + strlen(m_text) * 6.3;
+	m_rectangle.width = m_rectangle.position->x + m_text.size() * 6.3;
 	m_rectangle.height = 10;
 }
 

@@ -17,14 +17,19 @@ public:
     virtual bool Render();
     virtual void update();
 
+    std::string getText()
+    {
+        return m_Text->getText();
+    }
+
     void setAlign(int align)
     {
         m_align = align;
     }
 
-    bool Add(char*, int positionX, int positionY, float, float, float);
-    bool Add(char*, int positionX, int positionY);
-    bool Add(char*);
+    bool Add(std::string, int positionX, int positionY, float, float, float);
+    bool Add(std::string, int positionX, int positionY);
+    bool Add(std::string);
     
     enum {
         ALIGN_LEFT = 0,

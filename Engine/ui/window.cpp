@@ -49,6 +49,11 @@ bool Window::addHeader(std::string title, int flags)
 	m_header->m_width = m_width;
 	m_header->m_height = headerHeight;
 
+	m_title = new Label;
+	m_header->addChild(m_title);
+	m_title->Initialize(m_header->m_width - rightShift, headerHeightElm);
+	m_title->setAlign(Label::ALIGN_CENTER);
+	m_title->Add(&title[0], m_header->m_x + paddingX, m_header->m_y + paddingY);
 	
 	if (flags) {
 		if (flags & this->HEADER_BUTTON_CLOSE) {
@@ -63,12 +68,6 @@ bool Window::addHeader(std::string title, int flags)
 			rightShift += headerHeightElm + paddingX;
 		}
 	}
-
-	m_title = new Label;
-	m_header->addChild(m_title);
-	m_title->Initialize(m_header->m_width - rightShift, headerHeightElm);
-	m_title->setAlign(Label::ALIGN_CENTER);
-	m_title->Add(&title[0], m_header->m_x + paddingX, m_header->m_y + paddingY);
 
 	m_BitmapHeader = new BitmapClass;
 	result = m_BitmapHeader->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"data/textures/ui/window_header.png", m_header->m_width, m_header->m_height);
@@ -114,8 +113,8 @@ void Window::setTitle(std::string title)
 
 void Window::close()
 {
-	this->proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);
-	this->hide();
+	proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);
+	hide();
 }
 
 void Window::Shutdown()

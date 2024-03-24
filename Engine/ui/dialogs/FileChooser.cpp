@@ -3,9 +3,10 @@
 #include "../UIManager.h"
 #include "../../tool/Date.h"
 
-FileChooser::FileChooser()
+FileChooser::FileChooser() : Window()
 {
 	m_currentRow = 0;
+	m_table = 0;
 }
 
 bool FileChooser::initialize()

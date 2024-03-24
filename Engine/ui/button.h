@@ -1,6 +1,8 @@
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
 
+#include <string>
+
 #include "AbstractGUI.h"
 
 #include "../textureshaderclass.h"
@@ -25,9 +27,9 @@ public:
         m_align = align;
     }
 
-    bool Add(char* text, int positionX, int positionY, float red, float green, float blue);
-    bool Add(char* text, int positionX, int positionY);
-    bool setText(char* text);
+    bool Add(std::string text, int positionX, int positionY, float red, float green, float blue);
+    bool Add(std::string text, int positionX, int positionY);
+    bool setText(std::string text);
     
     enum {
         ALIGN_LEFT = 0,

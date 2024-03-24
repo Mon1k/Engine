@@ -73,7 +73,7 @@ bool Button::Initialize(WCHAR* texture, int width, int height)
 }
 
 
-bool Button::Add(char* text, int positionX, int positionY, float red, float green, float blue)
+bool Button::Add(std::string text, int positionX, int positionY, float red, float green, float blue)
 {
 	m_x = positionX;
 	m_y = positionY;
@@ -92,12 +92,12 @@ bool Button::Add(char* text, int positionX, int positionY, float red, float gree
 	return m_Text->AddText(text, x, m_y + m_height / 3, red, green, blue);
 }
 
-bool Button::Add(char* text, int positionX, int positionY)
+bool Button::Add(std::string text, int positionX, int positionY)
 {
 	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
 }
 
-bool Button::setText(char* text)
+bool Button::setText(std::string text)
 {
 	return Add(text, m_x, m_y);
 }

@@ -36,10 +36,10 @@ bool Label::Initialize(int bitmapWidth, int bitmapHeight)
 void Label::update()
 {
 	D3DXVECTOR3 color = m_Text->getColor();
-	Add(m_Text->getText(), m_x, m_y, color.x, color.y, color.z);
+	Add(&m_Text->getText()[0], m_x, m_y, color.x, color.y, color.z);
 }
 
-bool Label::Add(char* text, int positionX, int positionY, float red, float green, float blue)
+bool Label::Add(std::string text, int positionX, int positionY, float red, float green, float blue)
 {
 	m_x = positionX;
 	m_y = positionY;
@@ -58,12 +58,12 @@ bool Label::Add(char* text, int positionX, int positionY, float red, float green
 	return m_Text->AddText(text, x, m_y + m_height / 3, red, green, blue);
 }
 
-bool Label::Add(char* text, int positionX, int positionY)
+bool Label::Add(std::string text, int positionX, int positionY)
 {
 	return Add(text, positionX, positionY, 1.0f, 1.0f, 1.0f);
 }
 
-bool Label::Add(char* text)
+bool Label::Add(std::string text)
 {
 	return Add(text, m_x, m_y, 1.0f, 1.0f, 1.0f);
 }

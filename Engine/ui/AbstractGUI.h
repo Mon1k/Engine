@@ -124,14 +124,14 @@ public:
         return false;
     }
 
-    virtual void setPosition(float x, float y)
+    virtual void setPosition(int x, int y)
     {
         m_x = x;
         m_y = y;
         update();
     }
 
-    virtual void move(float dx, float dy)
+    virtual void move(int dx, int dy)
     {
         m_x += dx;
         m_y += dy;
@@ -153,6 +153,9 @@ public:
         MOUSE2_DOWN = 2,
         MOUSE3_DOWN = 3,
         MOUSE_WHEEL = 4,
+        MOUSE_IN = 5,
+        MOUSE_OVER = 6,
+        MOUSE_OUT = 7,
         
         KEYBOARD_DOWN = 100,
 

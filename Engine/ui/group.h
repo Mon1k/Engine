@@ -30,9 +30,12 @@ public:
 	{
 		int id = 0;
 		for (size_t i = 0; i < m_childs.size(); i++) {
-			int elmId = m_childs[i]->getId();
+			int elmId = 0;
 			if (dynamic_cast<Group*>(m_childs[i]) != nullptr) {
 				elmId = ((Group*)m_childs[i])->getLastId();
+			}
+			if (m_childs[i]->getId() > elmId) {
+				elmId = m_childs[i]->getId();
 			}
 			if (elmId > id) {
 				id = elmId;
@@ -143,9 +146,7 @@ public:
 		}
 
 		bool isEvent = false;
-
-		size_t sizeChild = m_childs.size();
-		for (size_t i = 0; i < sizeChild; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			if (m_childs[i]->isVisible()) {
 				if (m_childs[i]->proccesedEventHandlers(event)) {
 					isEvent = true;
@@ -154,10 +155,12 @@ public:
 			}
 		}
 
-		for (size_t i = 0; i < m_handlers.size(); i++) {
-			if (m_handlers[i].event == event) {
-				m_handlers[i].handler();
-				isEvent = true;
+		if (!isEvent) {
+			for (size_t i = 0; i < m_handlers.size(); i++) {
+				if (m_handlers[i].event == event) {
+					m_handlers[i].handler();
+					isEvent = true;
+				}
 			}
 		}
 
@@ -168,7 +171,7 @@ public:
 	{
 		bool result = false;
 		for (size_t i = 0; i < m_childs.size(); i++) {
-			if (m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
+			if (!result && m_childs[i]->isVisible() && m_childs[i]->isIntersect(x, y)) {
 				m_childs[i]->focus();
 				result = m_childs[i]->onMousePress(x, y, button);
 			}
@@ -247,6 +250,17 @@ public:
 	{
 		if (m_IsFocused) {
 			m_IsFocused = false;
+		}
+	}
+
+	virtual void move(int dx, int dy)
+	{
+		AbstractGui::move(dx, dy);
+
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			if (m_childs[i]->isVisible()) {
+				m_childs[i]->move(dx, dy);
+			}
 		}
 	}
 

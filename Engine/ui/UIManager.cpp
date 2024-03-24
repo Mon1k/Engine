@@ -54,11 +54,13 @@ AbstractGui* UIManager::getById(int id)
 int UIManager::getNextId()
 {
     int id = 0;
-    size_t size = m_elements.size();
-    for (size_t i = 0; i < size; i++) {
-        int elmId = m_elements[i]->getId();
+    for (size_t i = 0; i < m_elements.size(); i++) {
+        int elmId = 0;
         if (dynamic_cast<Group*>(m_elements[i]) != nullptr) {
             elmId = ((Group*)m_elements[i])->getLastId();
+        }
+        if (m_elements[i]->getId() > elmId) {
+            elmId = m_elements[i]->getId();
         }
         if (elmId > id) {
             id = elmId;
@@ -184,4 +186,9 @@ void UIManager::frame(float counter)
             }
         }
     }
+}
+
+void UIManager::focus()
+{
+    m_IsFocused = true;
 }

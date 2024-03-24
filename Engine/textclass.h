@@ -31,14 +31,14 @@ public:
 	bool Initialize(ID3D11Device*, ID3D11DeviceContext*, int, int);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
-	bool AddText(char*, int, int, float, float, float);
+	bool AddText(std::string, int, int, float, float, float);
 
 	ds::math::Rectangle getRectangle() {
 		return m_rectangle;
 	}
 	void updateRectangle(float, float);
 
-	char* getText()
+	std::string getText()
 	{
 		return m_text;
 	}
@@ -50,21 +50,20 @@ public:
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
-	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);
+	bool UpdateSentence(SentenceType*, std::string, int, int, float, float, float, ID3D11DeviceContext*);
 	void ReleaseSentence(SentenceType**);
 	bool RenderSentence(ID3D11DeviceContext*, SentenceType*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
 
 private:
 	FontClass* m_Font;
 	FontShaderClass* m_FontShader;
-	int m_screenWidth, m_screenHeight;
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
 
 	ds::math::Rectangle m_rectangle;
 	SentenceType* m_sentence;
-	char* m_text;
+	std::string m_text;
 };
 
 #endif

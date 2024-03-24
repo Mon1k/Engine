@@ -166,7 +166,7 @@ bool Input::updateText(std::string text)
 		}
 	}
 
-	return m_Text->AddText(&text[0], m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
+	return m_Text->AddText(text, m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 
 void Input::updateText()
