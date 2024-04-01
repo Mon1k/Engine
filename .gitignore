@@ -340,3 +340,10 @@ ASALocalRun/
 healthchecksdb
 /Engine/data
 !/Engine/data/shaders
+/editor/Engine/data
+/editor/Engine/1Engine.exe
+/editor/Engine/assimp-vc143-mtd.dll
+/editor/Engine/main.map
+/editor/Engine/main1.map
+/editor/Engine/main2.map
+/editor/Engine/main3.map
