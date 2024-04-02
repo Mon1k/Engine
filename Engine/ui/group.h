@@ -4,12 +4,15 @@
 #include <algorithm>
 
 #include "AbstractGUI.h"
+#include "Scrollbar.h"
 
 class Group : public AbstractGui
 {
 public:
-	Group() {
+	Group()
+	{
 		m_childs.clear();
+		m_scrollbar = 0;
 	}
 
 	virtual bool compareId(int id) {
@@ -209,6 +212,10 @@ public:
 			}
 		}
 
+		if (m_scrollbar) {
+			m_scrollbar->onScroll(diff);
+		}
+
 		return true;
 	}
 
@@ -250,6 +257,12 @@ public:
 	{
 		if (m_IsFocused) {
 			m_IsFocused = false;
+
+			for (size_t i = 0; i < m_childs.size(); i++) {
+				if (m_childs[i]->isVisible() && m_childs[i]->isFocused()) {
+					m_childs[i]->unfocus();
+				}
+			}
 		}
 	}
 
@@ -264,6 +277,13 @@ public:
 		}
 	}
 
+	void addScrollbar(Group* owner)
+	{
+		m_scrollbar = new Scrollbar;
+		m_scrollbar->setParent(owner);
+	}
+
 protected:
 	std::vector<AbstractGui*> m_childs;
+	Scrollbar* m_scrollbar;
 };

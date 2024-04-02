@@ -21,6 +21,8 @@ public:
 
 
 protected:
+	int m_scrollY = 0;
+
 	ListNode* m_parentNode;
 	std::vector<ListNode*> m_childsNodes;
 };

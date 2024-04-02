@@ -59,7 +59,7 @@ bool Window::addHeader(std::string title, int flags)
 		if (flags & this->HEADER_BUTTON_CLOSE) {
 			Button* buttonClose = new Button;
 			m_header->addChild(buttonClose);
-			buttonClose->Initialize(L"data/textures/ui/button_close.png", headerHeightElm, headerHeightElm);
+			buttonClose->initialize(L"data/textures/ui/button_close.png", headerHeightElm, headerHeightElm);
 			buttonClose->m_x = m_header->m_x + m_header->m_width - headerHeightElm;
 			buttonClose->m_y = m_header->m_y + paddingY;
 			buttonClose->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {

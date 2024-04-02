@@ -2,43 +2,7 @@
 
 void Table::initialize()
 {
-	addEventHandler(AbstractGui::EventType::SCROLL, [this] {
-		for (size_t i = 0; i < m_childs.size(); i++) {
-			if (m_childs[i]->m_y + m_childs[i]->m_height > m_y + m_height || m_childs[i]->m_y < m_y) {
-				m_childs[i]->hide();
-			}
-			else {
-				m_childs[i]->show();
-			}
-		}
-	});
-}
-
-bool Table::onScroll(int diff)
-{
-	int sensibilityY = 5;
-	float shift = (float)diff / sensibilityY;
-
-	m_scrollY += -1 * shift;
-	if (m_scrollY < 0) {
-		m_scrollY = 0;
-		return false;
-	}
-
-	float maxChildY = 0;
-	for (size_t i = 0; i < m_childs.size(); i++) {
-		maxChildY = max(maxChildY, m_childs[i]->m_y);
-	}
-	if (shift < 0 && m_y + m_height > maxChildY) {
-		m_scrollY += shift;
-		return false;
-	}
-	
-	for (size_t i = 0; i < m_childs.size(); i++) {
-		m_childs[i]->move(0, shift);
-	}
-
-	return Group::onScroll(diff);
+	addScrollbar(this);
 }
 
 void Table::addColumn(std::string name, int align)

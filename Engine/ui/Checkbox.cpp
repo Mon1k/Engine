@@ -1,5 +1,5 @@
 #include "checkbox.h"
-
+#include "../Options.h"
 
 Checkbox::Checkbox()
 {
@@ -16,9 +16,12 @@ Checkbox::~Checkbox()
 {
 }
 
-bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilename, WCHAR* textureFilenameMarked, int bitmapWidth, int bitmapHeight)
+bool Checkbox::initialize()
 {
 	bool result;
+
+	WCHAR* textureFilename = L"data/textures/ui/checkbox.png";
+	WCHAR* textureFilenameMarked = L"data/textures/ui/checkbox_marked.png";
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -27,7 +30,7 @@ bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilen
 	}
 
 	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), screenWidth, screenHeight);
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), Options::screen_width, Options::screen_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
@@ -46,21 +49,20 @@ bool Checkbox::Initialize(int screenWidth, int screenHeight, WCHAR* textureFilen
 		return false;
 	}
 
-
-	m_width = bitmapWidth;
-	m_height = bitmapHeight;
+	m_width = 18;
+	m_height = 18;
 
 	// Create the bitmap object.
 	m_Bitmap = new BitmapClass;
 	m_Bitmap_marked = new BitmapClass;
 
 	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilename, m_width, m_height);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilename, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
-	result = m_Bitmap_marked->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, textureFilenameMarked, m_width, m_height);
+	result = m_Bitmap_marked->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, textureFilenameMarked, m_width, m_height);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize the bitmap marked object.", L"Error", MB_OK);
 		return false;

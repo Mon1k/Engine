@@ -143,7 +143,7 @@ void UIManager::onKeyboardClick(InputClass::EventKey event)
 void UIManager::onScroll(int diff)
 {
     for (size_t i = 0; i < m_elements.size(); i++) {
-        if (m_elements[i]->isVisible()) {
+        if (m_elements[i]->isVisible() && m_elements[i]->isFocused()) {
             m_elements[i]->onScroll(diff);
         }
     }
@@ -191,4 +191,14 @@ void UIManager::frame(float counter)
 void UIManager::focus()
 {
     m_IsFocused = true;
+}
+
+void UIManager::unfocus()
+{
+    m_IsFocused = false;
+    for (size_t i = 0; i < m_elements.size(); i++) {
+        if (m_elements[i]->isVisible()) {
+            m_elements[i]->unfocus();
+        }
+    }
 }

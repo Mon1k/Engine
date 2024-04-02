@@ -13,6 +13,7 @@ public:
 	FileChooser();
 
 	virtual bool initialize();
+	virtual void show();
 
 	std::string getCurrentPath();
 	void setPath(std::string path);

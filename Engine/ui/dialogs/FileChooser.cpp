@@ -59,6 +59,12 @@ bool FileChooser::initialize()
 	return result;
 }
 
+void FileChooser::show()
+{
+	AbstractGui::show();
+	focus();
+}
+
 std::string FileChooser::getCurrentPath()
 {
 	if (m_path.size() == 0) {

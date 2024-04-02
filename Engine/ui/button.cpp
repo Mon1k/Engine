@@ -18,12 +18,12 @@ Button::~Button()
 {
 }
 
-bool Button::Initialize(int width, int height)
+bool Button::initialize(int width, int height)
 {
-	return Initialize(L"data/textures/ui/button.png", width, height);
+	return initialize(L"data/textures/ui/button.png", width, height);
 }
 
-bool Button::Initialize(WCHAR* texture, int width, int height)
+bool Button::initialize(WCHAR* texture, int width, int height)
 {
 	bool result;
 

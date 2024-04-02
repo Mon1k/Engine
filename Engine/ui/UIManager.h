@@ -39,6 +39,7 @@ public:
     void onScroll(int diff);
 
     void focus();
+    void unfocus();
     bool isFocused()
     {
         return m_IsFocused;

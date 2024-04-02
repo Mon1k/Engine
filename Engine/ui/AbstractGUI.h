@@ -37,6 +37,7 @@ public:
     virtual void hide()
     {
         m_visible = false;
+        m_IsFocused = false;
     }
 
     virtual void show()

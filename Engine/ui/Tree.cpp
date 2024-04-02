@@ -17,6 +17,8 @@ bool Tree::initialize(int width, int height, int positionX, int positionY)
 
 	m_parentNode = new ListNode;
 
+	addScrollbar(m_body);
+
 	return true;
 }
 
@@ -44,6 +46,8 @@ ListNode* Tree::addNode(std::string title)
 	node->initialize(title, m_width - padding * 2, node->m_height, m_x + padding, top + size * (node->m_height + padding));
 	m_childsNodes.push_back(node);
 	m_parentNode->addChild(node);
+
+	//proccesedEventHandlers(AbstractGui::EventType::SCROLL);
 
 	return node;
 }

@@ -14,7 +14,7 @@ public:
     Checkbox();
     ~Checkbox();
 
-    bool Initialize(int, int, WCHAR*, WCHAR*, int, int);
+    bool initialize();
     void Shutdown();
     bool Add(char*, int, int, float, float, float);
     bool Add(char*, int, int);

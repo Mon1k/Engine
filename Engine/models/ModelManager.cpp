@@ -315,6 +315,6 @@ void ModelManager::frame(CameraClass* camera, float time)
         m_modelsRender[i]->frame(camera, time);
     }
 
-    m_volumetricClouds->frame(camera, time);
-    m_WeatherManager->frame(time);
+    //m_volumetricClouds->frame(camera, time);
+    //m_WeatherManager->frame(time);
 }

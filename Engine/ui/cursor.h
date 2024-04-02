@@ -13,7 +13,7 @@ public:
     ~Cursor();
 
     bool Initialize();
-    bool Initialize(int, int);
+    bool Initialize(int width, int height);
     void Shutdown();
     bool Render();
 

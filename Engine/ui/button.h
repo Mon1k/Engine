@@ -16,8 +16,8 @@ public:
     Button(const Button&);
     ~Button();
 
-    bool Initialize(int width, int height);
-    bool Initialize(WCHAR* texture, int width, int height);
+    bool initialize(int width, int height);
+    bool initialize(WCHAR* texture, int width, int height);
     
     virtual bool Render();
     virtual void Shutdown();

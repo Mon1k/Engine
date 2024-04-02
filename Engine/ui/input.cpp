@@ -10,7 +10,7 @@ Input::Input()
 
 	m_IsFocused = false;
 	m_Flash = true;
-	m_usesFlashCursor = false;
+	m_usesFlashCursor = true;
 	m_FrameCounter = 0;
 	m_CursorShift = 0;
 	m_MaxSize = 0;
@@ -172,7 +172,7 @@ bool Input::updateText(std::string text)
 void Input::updateText()
 {
 	m_ViewedString = m_String.substr(0, m_CursorShift);
-	if (m_IsFocused && (!m_usesFlashCursor || !m_Flash)) {
+	if (m_IsFocused && m_usesFlashCursor && !m_Flash) {
 		m_ViewedString += "|";
 	}
 	if (m_CursorShift < m_String.length()) {
@@ -321,8 +321,9 @@ void Input::frame(float counter)
 	int timeout = m_Flash ? 500 : 1000;
 	m_FrameCounter += counter;
 	if (m_FrameCounter > timeout) {
-		hideCaret();
 		m_FrameCounter = 0;
+		m_Flash = m_Flash ? false : true;
+		updateText();
 	}
 }
 
@@ -344,14 +345,12 @@ void Input::unfocus()
 
 void Input::hideCaret()
 {
-	m_Flash = false;
-	m_usesFlashCursor = false;
+	m_Flash = true;
 	updateText();
 }
 
 void Input::showCaret()
 {
 	m_Flash = false;
-	m_usesFlashCursor = true;
 	m_FrameCounter = 0;
 }

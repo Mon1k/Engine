@@ -16,7 +16,6 @@ public:
 
 	void initialize();
 	virtual void update();
-	virtual bool onScroll(int diff);
 
 	void addColumn(std::string name, int align = Label::ALIGN_CENTER);
 	void clearColumns()

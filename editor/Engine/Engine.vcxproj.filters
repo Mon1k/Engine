@@ -1,0 +1,968 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\engine">
+      <UniqueIdentifier>{163a5509-47ed-4a58-8a6e-137838e771fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\map">
+      <UniqueIdentifier>{3edbfa5e-4371-486d-8411-391d191604ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\math">
+      <UniqueIdentifier>{93e504b1-d052-47ad-a9e1-13ee0b546c01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models">
+      <UniqueIdentifier>{b7c29158-9052-42b1-8d39-a6de545a0c82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\2d">
+      <UniqueIdentifier>{3045dae6-9acb-4490-8949-1acae95f14f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\actor">
+      <UniqueIdentifier>{9cd71da2-749a-4c6a-9eb3-ee8e9fa0075c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\loader">
+      <UniqueIdentifier>{66636a2a-650d-4a46-afcd-a5af9639e2d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\particles">
+      <UniqueIdentifier>{e49c05df-8156-4eec-9228-ca611a6d6616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\sky">
+      <UniqueIdentifier>{6e1fa99e-726d-42ea-a76c-0b1d9375780d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\models\terrain">
+      <UniqueIdentifier>{8939cca2-04a2-4df2-9a64-a3c02c7bf714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\reader">
+      <UniqueIdentifier>{b11ae94c-89a7-4790-8c2d-cf91ae754b8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\reader\xml">
+      <UniqueIdentifier>{97cb7042-0180-48d3-9341-32e6d98f1109}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\render">
+      <UniqueIdentifier>{6d0752fd-c04a-4233-85bd-6a39a737f8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\render\2d">
+      <UniqueIdentifier>{a89e68bb-a001-4274-88bb-edafd4920688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\render\passes">
+      <UniqueIdentifier>{7f742f5c-f70a-46c8-8ee3-9834381f20da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\resources">
+      <UniqueIdentifier>{59981b55-4e55-49b2-a771-8b695b04cae1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\shaders">
+      <UniqueIdentifier>{741beefd-9cc5-40fc-b858-27c166970d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\shaders\data">
+      <UniqueIdentifier>{445ecdd5-e33f-41b7-b5ce-5b9eb12da825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\sound">
+      <UniqueIdentifier>{2ab31b0a-bc59-4109-a70b-91d98f201a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\textures">
+      <UniqueIdentifier>{fb8ad840-1733-4881-a913-fa284c61c9c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\tool">
+      <UniqueIdentifier>{d666646c-f2a5-4a8e-a34e-181d0e153523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\ui">
+      <UniqueIdentifier>{e69c4bd1-c7e9-41c2-9d0d-3804fa2156d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\ui\dialogs">
+      <UniqueIdentifier>{8461b39e-fb9f-4871-991e-90cad3a6b37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\editor">
+      <UniqueIdentifier>{c3d19e99-fb44-4361-b928-72111ae2e8f6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\alphamapshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\bitmapclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\cameraclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\clipplaneshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\colorshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\d3dclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\fogshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\fontclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\fontshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\fpsclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\frustumclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\graphicsclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\inputclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\lightclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\lightshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\modelclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\modellistclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\positionclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\systemclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textureclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textureshaderclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\timerclass.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\bbox.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Billboard.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Blur.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Fire.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\foliageclass.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Glass.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\gridclass.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Model.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\modelbumpclass.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\modelcolor.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\ModelManager.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\Reflection.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\WaterNode.cpp">
+      <Filter>src\engine\models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\2d\DebugWindow.cpp">
+      <Filter>src\engine\models\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\actor\Actor.cpp">
+      <Filter>src\engine\models\actor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\loader\AssimpLoader.cpp">
+      <Filter>src\engine\models\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\loader\DsLoader.cpp">
+      <Filter>src\engine\models\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\loader\ObjLoader.cpp">
+      <Filter>src\engine\models\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\particles\Fountain.cpp">
+      <Filter>src\engine\models\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\particles\ParticleManager.cpp">
+      <Filter>src\engine\models\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\particles\Waterfall.cpp">
+      <Filter>src\engine\models\particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\sky\skydomeclass.cpp">
+      <Filter>src\engine\models\sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\sky\skyplaneclass.cpp">
+      <Filter>src\engine\models\sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\terrain\quadtreeclass.cpp">
+      <Filter>src\engine\models\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\models\terrain\terrainclass.cpp">
+      <Filter>src\engine\models\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\render\renderstenciltextureclass.cpp">
+      <Filter>src\engine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\render\rendertextureclass.cpp">
+      <Filter>src\engine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\render\viewpointclass.cpp">
+      <Filter>src\engine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\render\2d\debugwindowclass.cpp">
+      <Filter>src\engine\render\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\render\passes\VolumetricClouds.cpp">
+      <Filter>src\engine\render\passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\resources\ResourceManager.cpp">
+      <Filter>src\engine\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\sound\soundclass.cpp">
+      <Filter>src\engine\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\blurshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\bumpmapshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\depthshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\fadeshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\fireshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\foliageshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\glassshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\lightmapshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\multitextureshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\particleshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\projectionshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\reflectionshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\refractionshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\shadowshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\skydomeshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\skyplaneshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\softshadowshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\specmapshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\terrainshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\Texture3DShaderClass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\texturearrayclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\translateshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\transparentshaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\textures\watershaderclass.cpp">
+      <Filter>src\engine\textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\Alert.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\button.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\checkbox.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\cursor.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\image.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\input.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\label.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\ListNode.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\Scrollbar.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\Table.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\Tree.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\UIManager.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\window.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\FileChooser.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\OpenDialog.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\SaveDialog.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Engine\AbstractNode.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\alphamapshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\bitmapclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\cameraclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\clipplaneshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\CollisionDetection.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\colorshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\d3dclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\fogshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\fontclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\fontshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\fpsclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\frustumclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\graphicsclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\inputclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\lightclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\lightshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\modelclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\modellistclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\Options.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\positionclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\resource.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\systemclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textureclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textureshaderclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\timerclass.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\map\MapEntity.h">
+      <Filter>src\engine\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\map\XmlLoad.h">
+      <Filter>src\engine\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\map\XmlSave.h">
+      <Filter>src\engine\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\math\Math.h">
+      <Filter>src\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\math\Point.h">
+      <Filter>src\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\math\Rectangle.h">
+      <Filter>src\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\AbstractModel.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\AbstractTarget.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\bbox.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Billboard.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Blur.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\CompositeModel.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Fire.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\foliageclass.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Glass.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\gridclass.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Model.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\modelbumpclass.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\modelcolor.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\ModelManager.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\Reflection.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\WaterNode.h">
+      <Filter>src\engine\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\2d\DebugWindow.h">
+      <Filter>src\engine\models\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\actor\Actor.h">
+      <Filter>src\engine\models\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\loader\AbstractLoader.h">
+      <Filter>src\engine\models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\loader\AssimpLoader.h">
+      <Filter>src\engine\models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\loader\DsLoader.h">
+      <Filter>src\engine\models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\loader\ObjLoader.h">
+      <Filter>src\engine\models\loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\particles\AbstractParticle.h">
+      <Filter>src\engine\models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\particles\Fountain.h">
+      <Filter>src\engine\models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\particles\ParticleManager.h">
+      <Filter>src\engine\models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\particles\Waterfall.h">
+      <Filter>src\engine\models\particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\sky\skydomeclass.h">
+      <Filter>src\engine\models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\sky\skyplaneclass.h">
+      <Filter>src\engine\models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\sky\WeatherManager.h">
+      <Filter>src\engine\models\sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\terrain\quadtreeclass.h">
+      <Filter>src\engine\models\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\models\terrain\terrainclass.h">
+      <Filter>src\engine\models\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\AbstractEntity.h">
+      <Filter>src\engine\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\AbstractReader.h">
+      <Filter>src\engine\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\AbstractWriter.h">
+      <Filter>src\engine\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\xml\Attribute.h">
+      <Filter>src\engine\reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\xml\Node.h">
+      <Filter>src\engine\reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\xml\XmlReader.h">
+      <Filter>src\engine\reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\reader\xml\XmlWriter.h">
+      <Filter>src\engine\reader\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\render\renderstenciltextureclass.h">
+      <Filter>src\engine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\render\rendertextureclass.h">
+      <Filter>src\engine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\render\viewpointclass.h">
+      <Filter>src\engine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\render\2d\debugwindowclass.h">
+      <Filter>src\engine\render\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\render\passes\VolumetricClouds.h">
+      <Filter>src\engine\render\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\resources\AbstractResource.h">
+      <Filter>src\engine\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\resources\ResourceManager.h">
+      <Filter>src\engine\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\resources\shader.h">
+      <Filter>src\engine\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\shaders\AbstractShader.h">
+      <Filter>src\engine\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\sound\soundclass.h">
+      <Filter>src\engine\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\blurshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\bumpmapshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\depthshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\fadeshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\fireshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\foliageshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\glassshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\lightmapshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\multitextureshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\particleshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\projectionshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\reflectionshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\refractionshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\shadowshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\skydomeshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\skyplaneshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\softshadowshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\specmapshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\terrainshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\Texture3DShaderClass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\texturearrayclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\translateshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\transparentshaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\textures\watershaderclass.h">
+      <Filter>src\engine\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\Array.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\Date.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\File.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\random.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\String.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\Types.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\AbstractGUI.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\Alert.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\button.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\checkbox.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\cursor.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\group.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\image.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\input.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\label.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\ListNode.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\Scrollbar.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\Table.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\Tree.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\UIManager.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\window.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\FileChooser.h">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\OpenDialog.h">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\SaveDialog.h">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ObjectWindow.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainWindow.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\alphamap.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\alphamap.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\blur.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\blur.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\bumpmap.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\bumpmap.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\clipplane.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\clipplane.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\color.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\color.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\depth.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\depth.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fade.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fade.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fire.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fire.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fog.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\fog.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\foliage.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\foliage.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\font.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\font.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\glass.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\glass.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\light.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\light.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\lightmap.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\lightmap.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\multitexture.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\multitexture.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\particle.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\particle.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\projection.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\projection.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\reflection.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\reflection.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\refraction.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\refraction.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\shadow.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\shadow.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\skydome.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\skydome.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\skyplane.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\skyplane.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\softshadow.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\softshadow.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\specmap.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\specmap.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\terrain.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\terrain.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\texture.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\texture.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\translate.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\translate.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\transparent.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\transparent.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\water.ps">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+    <None Include="data\shaders\water.vs">
+      <Filter>src\engine\shaders\data</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="data\shaders\Noise.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\shadow.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\shadow_common.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\terrain.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\texture3d.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\VolumetricClouds.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\VolumetricCloudsNoise.hlsl">
+      <Filter>src\engine\shaders\data</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
