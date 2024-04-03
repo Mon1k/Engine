@@ -921,7 +921,7 @@ void App::frameUI()
 		this->unselectModel();
 
 		for (int i = 0; i < models.size(); i++) {
-			if (models[i]->getId() <= 2) {
+			if (models[i]->getId() <= 1) {
 				continue;
 			}
 			ModelClass* model = dynamic_cast<ModelClass*>(models[i]);
@@ -946,6 +946,7 @@ void App::frameUI()
 
 		if (modelNear) {
 			m_selectedModel = modelNear;
+			m_selectedModel->showBBox();
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
 			/*if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
 				this->updateWindowModel();
