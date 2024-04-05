@@ -111,6 +111,12 @@ void Window::setTitle(std::string title)
 	m_title->Add(&title[0], m_title->m_x, m_title->m_y);
 }
 
+void Window::show()
+{
+	Group::show();
+	proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
+}
+
 void Window::close()
 {
 	proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);

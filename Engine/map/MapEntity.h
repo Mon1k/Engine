@@ -2,10 +2,12 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include <d3dx10math.h>
 
 #include "../models/CompositeModel.h"
+#include "../models/Model.h"
 #include "../models/ModelManager.h"
 #include "../lightshaderclass.h"
 
@@ -17,7 +19,9 @@ public:
 		TERRAIN = 2,
 		WATER = 3,
 		SKY = 4,
-		COMPOSITE_MODEL = 5
+		COMPOSITE_MODEL = 5,
+		ACTOR = 6,
+		LIGHT = 7
 	};
 
 	struct ObjectFormat {
@@ -28,8 +32,11 @@ public:
 		D3DXVECTOR3 rotation;
 		std::string path;
 		std::string texture;
-		std::vector<std::string> extraParams;
+		std::vector<std::string> extraParams; // @todo - deprecation
+		std::map<std::string, std::string> params;
 		ObjectTypes type;
+
+		Model* model;
 		CompositeModel* parent;
 	} format;
 

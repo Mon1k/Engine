@@ -26,8 +26,7 @@ public:
 		objectWindow->setId(2);
 		objectWindow->addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
 			m_app->unselectModel();
-			return 0;
-			});
+		});
 		shift += objectWindow->m_y + objectWindow->getHeader()->m_height + 5;
 
 		Input* objectPath = new Input;
@@ -53,10 +52,6 @@ public:
 					m_app->m_modelManager->Add(model);
 					m_app->m_selectedModel = model;
 
-					AbstractGui* objectWindow = m_app->m_uiManager->getById(2);
-					objectWindow->show();
-					objectWindow->focus();
-
 					MapEntity::ObjectFormat format;
 					format.id = model->getId();
 					format.type = MapEntity::ObjectTypes::MODEL;
@@ -65,9 +60,12 @@ public:
 					format.rotation = model->getRotation();
 					format.path = objectPath->getValue();
 					format.texture = objectTexture->getValue();
+					
+					format.model = model;
 					format.parent = 0;
-					// is alpha
-					format.extraParams.push_back("0");
+					
+					format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
+					
 					m_app->m_mapEntities->add(format);
 
 					//this->updateObjectModel();
@@ -77,8 +75,7 @@ public:
 				MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
 				editorFormat->path = objectPath->getValue();
 			}
-			return 0;
-			});
+		});
 		shift += objectPath->m_height + 5;
 
 
@@ -97,8 +94,7 @@ public:
 
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		shift += objectTexture->m_height + 5;
 
 
@@ -121,8 +117,7 @@ public:
 
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objectPositionY = new Input;
 		objectWindow->addChild(objectPositionY);
 		objectPositionY->initialize(100, 28, objectWindow->m_x + 112, shift);
@@ -135,8 +130,7 @@ public:
 				m_app->m_selectedModel->SetPosition(position);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objectPositionZ = new Input;
 		objectWindow->addChild(objectPositionZ);
 		objectPositionZ->initialize(100, 28, objectWindow->m_x + 214, shift);
@@ -149,8 +143,7 @@ public:
 				m_app->m_selectedModel->SetPosition(position);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		shift += objectPositionX->m_height + 5;
 
 
@@ -172,8 +165,7 @@ public:
 				m_app->m_selectedModel->SetScale(scale);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objectScaleY = new Input;
 		objectWindow->addChild(objectScaleY);
 		objectScaleY->initialize(100, 28, objectWindow->m_x + 112, shift);
@@ -186,8 +178,7 @@ public:
 				m_app->m_selectedModel->SetScale(scale);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objectScaleZ = new Input;
 		objectWindow->addChild(objectScaleZ);
 		objectScaleZ->initialize(100, 28, objectWindow->m_x + 214, shift);
@@ -200,8 +191,7 @@ public:
 				m_app->m_selectedModel->SetScale(scale);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		shift += objectScaleX->m_height + 5;
 
 
@@ -223,8 +213,7 @@ public:
 				m_app->m_selectedModel->SetRotation(rotation);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objecRotateY = new Input;
 		objectWindow->addChild(objecRotateY);
 		objecRotateY->initialize(100, 28, objectWindow->m_x + 112, shift);
@@ -237,8 +226,7 @@ public:
 				m_app->m_selectedModel->SetRotation(rotation);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		Input* objecRotateZ = new Input;
 		objectWindow->addChild(objecRotateZ);
 		objecRotateZ->initialize(100, 28, objectWindow->m_x + 214, shift);
@@ -251,8 +239,7 @@ public:
 				m_app->m_selectedModel->SetRotation(rotation);
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		shift += objecRotateX->m_height + 5;
 
 
@@ -265,8 +252,7 @@ public:
 			if (m_app->m_selectedModel) {
 				//this->updateObjectModel();
 			}
-			return 0;
-			});
+		});
 		shift += alphaObject->m_height + 5;
 
 
@@ -283,8 +269,7 @@ public:
 				m_app->unselectModel();
 				objectWindow->hide();
 			}
-			return 0;
-			});
+		});
 	}
 
 public:

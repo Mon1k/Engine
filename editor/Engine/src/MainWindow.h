@@ -59,8 +59,7 @@ public:
 			Window* objectWindow = dynamic_cast<Window*>(m_app->m_uiManager->getById(2));
 			objectWindow->show();
 			objectWindow->focus();
-			return 0;
-			});
+		});
 
 		Button* newCompositeObjectButton = new Button;
 		menuTop->addChild(newCompositeObjectButton);
@@ -72,8 +71,7 @@ public:
 			Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(41));
 			objectWindow->show();
 			objectWindow->focus();*/
-			return 0;
-			});
+		});
 
 		Button* newTerrainButton = new Button;
 		menuTop->addChild(newTerrainButton);
@@ -85,8 +83,7 @@ public:
 			Window* terrainWindow = dynamic_cast<Window*>(m_uiManager->getById(21));
 			terrainWindow->show();
 			terrainWindow->focus();*/
-			return 0;
-			});
+		});
 
 		Button* newWaterButton = new Button;
 		menuTop->addChild(newWaterButton);
@@ -98,8 +95,7 @@ public:
 			Window* waterWindow = dynamic_cast<Window*>(m_uiManager->getById(51));
 			waterWindow->show();
 			waterWindow->focus();*/
-			return 0;
-			});
+		});
 
 		Button* newSkyButton = new Button;
 		menuTop->addChild(newSkyButton);
@@ -111,8 +107,7 @@ public:
 			Window* skyWindow = dynamic_cast<Window*>(m_uiManager->getById(71));
 			skyWindow->show();
 			skyWindow->focus();*/
-			return 0;
-			});
+		});
 	}
 
 public:

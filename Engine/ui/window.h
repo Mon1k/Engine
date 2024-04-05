@@ -14,7 +14,8 @@ class Window : public Group
 {
 public:
     enum EventType : int {
-        WINDOW_CLOSE = 65537
+        WINDOW_CLOSE = 65537,
+        WINDOW_OPEN = 65538
     };
 
     static const int HEADER_BUTTON_CLOSE = 1;
@@ -33,6 +34,7 @@ public:
     virtual bool Render();
     virtual AbstractGui* addChild(AbstractGui*);
     void setTitle(std::string);
+    virtual void show();
     virtual void close();
     
     Group* getHeader() {
