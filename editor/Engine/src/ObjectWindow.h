@@ -14,6 +14,10 @@ class ObjectWindow
 public:
 	void initialize()
 	{
+		m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 		int shift = 0;
 		Window* menuTop = dynamic_cast<Window*>(m_app->m_uiManager->getById(1));
 
@@ -108,40 +112,33 @@ public:
 		objectWindow->addChild(objectPositionX);
 		objectPositionX->initialize(100, 28, objectWindow->m_x + 10, shift);
 		objectPositionX->setId(10);
-		objectPositionX->setText("0.00");
+		objectPositionX->setText("0.0");
+		objectPositionX->setValue(&typeid(float), &m_position.x);
 		objectPositionX->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionX, this] {
 			if (m_app->m_selectedModel) {
-				D3DXVECTOR3 position = m_app->m_selectedModel->GetPosition();
-				position.x = std::stof(objectPositionX->getValue());
-				m_app->m_selectedModel->SetPosition(position);
-
-				//this->updateObjectModel();
+				this->updateObjectModel();
 			}
 		});
 		Input* objectPositionY = new Input;
 		objectWindow->addChild(objectPositionY);
 		objectPositionY->initialize(100, 28, objectWindow->m_x + 112, shift);
 		objectPositionY->setId(11);
-		objectPositionY->setText("0.00");
+		objectPositionY->setText("0.0");
+		objectPositionY->setValue(&typeid(float), &m_position.y);
 		objectPositionY->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionY, this] {
 			if (m_app->m_selectedModel) {
-				D3DXVECTOR3 position = m_app->m_selectedModel->GetPosition();
-				position.y = std::stof(objectPositionY->getValue());
-				m_app->m_selectedModel->SetPosition(position);
-				//this->updateObjectModel();
+				this->updateObjectModel();
 			}
 		});
 		Input* objectPositionZ = new Input;
 		objectWindow->addChild(objectPositionZ);
 		objectPositionZ->initialize(100, 28, objectWindow->m_x + 214, shift);
 		objectPositionZ->setId(12);
-		objectPositionZ->setText("0.00");
+		objectPositionZ->setText("0.0");
+		objectPositionZ->setValue(&typeid(float), &m_position.z);
 		objectPositionZ->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionZ, this] {
 			if (m_app->m_selectedModel) {
-				D3DXVECTOR3 position = m_app->m_selectedModel->GetPosition();
-				position.z = std::stof(objectPositionZ->getValue());
-				m_app->m_selectedModel->SetPosition(position);
-				//this->updateObjectModel();
+				this->updateObjectModel();
 			}
 		});
 		shift += objectPositionX->m_height + 5;
@@ -272,6 +269,47 @@ public:
 		});
 	}
 
+	void updateObjectModel()
+	{
+		if (!m_app->m_selectedModel) {
+			return;
+		}
+
+		Window* objectWindow = dynamic_cast<Window*>(m_app->m_uiManager->getById(2));
+		objectWindow->setTitle("Object properties - " + m_app->m_selectedModel->getId());
+		objectWindow->focus();
+		objectWindow->show();
+
+		Input* input;
+		Checkbox* checkbox;
+		bool isAlpha;
+		std::string path, texture;
+
+		input = dynamic_cast<Input*>(m_app->m_uiManager->getById(19));
+		path = input->getValue();
+		input = dynamic_cast<Input*>(m_app->m_uiManager->getById(20));
+		texture = input->getValue();
+
+		checkbox = dynamic_cast<Checkbox*>(m_app->m_uiManager->getById(75));
+		isAlpha = checkbox->getIsMarked();
+
+
+		m_app->m_selectedModel->SetPosition(m_position);
+		m_app->m_selectedModel->setAlpha(isAlpha);
+
+		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
+		editorFormat->position = m_position;
+		editorFormat->scale = m_scale;
+		editorFormat->rotation = m_rotation;
+		editorFormat->path = path;
+		editorFormat->texture = texture;
+		editorFormat->params["alpha"] = std::to_string(isAlpha ? 1 : 0);
+	}
+
 public:
 	App* m_app;
+
+	D3DXVECTOR3 m_position;
+	D3DXVECTOR3 m_scale;
+	D3DXVECTOR3 m_rotation;
 };

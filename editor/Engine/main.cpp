@@ -948,10 +948,10 @@ void App::frameUI()
 			m_selectedModel = modelNear;
 			m_selectedModel->showBBox();
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-			/*if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
-				this->updateWindowModel();
+			if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
+				m_objectUI->updateObjectModel();
 			}
-			else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
+			/*else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
 				this->updateCompositeModel();
 			}
 			else if (editorFormat->type == MapEntity::ObjectTypes::TERRAIN) {
