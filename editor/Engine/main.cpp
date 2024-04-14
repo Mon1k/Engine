@@ -16,8 +16,8 @@
 #include "../../Engine/models/gridclass.h"
 
 // editor ui
-#include "src\MainWindow.h"
-#include "src\ObjectWindow.h"
+#include "src/MainWindow.h"
+#include "src/ObjectWindow.h"
 
 #include "../../Engine/lightclass.h"
 #include "../../Engine/lightshaderclass.h"
@@ -824,8 +824,8 @@ bool App::init()
 		m_Counters[i] = 0;
 	}
 
-	m_Position->SetPosition(50.0f, 10.0f, 40.0f);
-	m_Position->SetRotation(0.0f, -120.0f, 0.0f);
+	m_Position->SetPosition(8.0f, 10.0f, 30.0f);
+	m_Position->SetRotation(15.0f, -180.0f, 0.0f);
 	m_modelManager = m_Graphics->getModelManager();
 	m_uiManager = m_Graphics->getUiManager();
 
@@ -949,6 +949,7 @@ void App::frameUI()
 			m_selectedModel->showBBox();
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
 			if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
+				m_objectUI->updateUiFromModel();
 				m_objectUI->updateObjectModel();
 			}
 			/*else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {

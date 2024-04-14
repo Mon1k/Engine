@@ -169,6 +169,23 @@ bool Input::updateText(std::string text)
 	return m_Text->AddText(text, m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
 }
 
+std::string Input::getValueRef()
+{
+	std::string typeName = std::string(m_typeInfo->name());
+	if (typeName.compare("float") == 0) {
+		float *t = static_cast<float*>(m_value);
+		return std::to_string(*t);
+	}
+	else if (typeName.compare("int") == 0) {
+		int* t = static_cast<int*>(m_value);
+		return std::to_string(*t);
+	}
+	else if (String::search(typeName, "std::basic_string")) {
+		std::string* t = static_cast<std::string*>(m_value);
+		return *t;
+	}
+}
+
 void Input::updateText()
 {
 	m_ViewedString = m_String.substr(0, m_CursorShift);
@@ -316,6 +333,13 @@ void Input::frame(float counter)
 {
 	if (!m_usesFlashCursor || !m_IsFocused) {
 		return;
+	}
+
+	if (m_value) {
+		std::string ref = getValueRef();
+		if (ref != m_String) {
+			m_String = ref;
+		}
 	}
 
 	int timeout = m_Flash ? 500 : 1000;

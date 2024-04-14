@@ -7,6 +7,8 @@
 #include "../../Engine/map/XmlSave.h"
 #include "../../Engine/map/XmlLoad.h"
 
+#include "ObjectWindow.h"
+
 class MainWindow
 {
 public:
@@ -56,6 +58,7 @@ public:
 		newObjectButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this, menuTop] {
 			//this->resetWindowModel();
 			m_app->unselectModel();
+			m_app->m_objectUI->resetUI();
 			Window* objectWindow = dynamic_cast<Window*>(m_app->m_uiManager->getById(2));
 			objectWindow->show();
 			objectWindow->focus();

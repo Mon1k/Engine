@@ -12,11 +12,16 @@
 class ObjectWindow
 {
 public:
-	void initialize()
+	void resetUI()
 	{
 		m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	}
+
+	void initialize()
+	{
+		resetUI();
 
 		int shift = 0;
 		Window* menuTop = dynamic_cast<Window*>(m_app->m_uiManager->getById(1));
@@ -37,6 +42,7 @@ public:
 		objectWindow->addChild(objectPath);
 		objectPath->initialize(400, 28, objectWindow->m_x + 10, shift);
 		objectPath->setText("data/models/bath.ds");
+		//objectPath->setValue(&typeid(std::string), &m_path);
 		objectPath->setId(19);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPath, this] {
 			if (!m_app->m_selectedModel) {
@@ -64,11 +70,11 @@ public:
 					format.rotation = model->getRotation();
 					format.path = objectPath->getValue();
 					format.texture = objectTexture->getValue();
-					
+
+					format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
+
 					format.model = model;
 					format.parent = 0;
-					
-					format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
 					
 					m_app->m_mapEntities->add(format);
 
@@ -112,7 +118,7 @@ public:
 		objectWindow->addChild(objectPositionX);
 		objectPositionX->initialize(100, 28, objectWindow->m_x + 10, shift);
 		objectPositionX->setId(10);
-		objectPositionX->setText("0.0");
+		objectPositionX->setText("0.000000");
 		objectPositionX->setValue(&typeid(float), &m_position.x);
 		objectPositionX->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionX, this] {
 			if (m_app->m_selectedModel) {
@@ -269,6 +275,15 @@ public:
 		});
 	}
 
+	void updateUiFromModel()
+	{
+		if (!m_app->m_selectedModel) {
+			return;
+		}
+
+		m_position = m_app->m_selectedModel->GetPosition();
+	}
+
 	void updateObjectModel()
 	{
 		if (!m_app->m_selectedModel) {
@@ -276,7 +291,7 @@ public:
 		}
 
 		Window* objectWindow = dynamic_cast<Window*>(m_app->m_uiManager->getById(2));
-		objectWindow->setTitle("Object properties - " + m_app->m_selectedModel->getId());
+		objectWindow->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		objectWindow->focus();
 		objectWindow->show();
 
@@ -296,6 +311,8 @@ public:
 
 		m_app->m_selectedModel->SetPosition(m_position);
 		m_app->m_selectedModel->setAlpha(isAlpha);
+		m_app->m_selectedModel->hideBBox();
+		m_app->m_selectedModel->showBBox();
 
 		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
 		editorFormat->position = m_position;
@@ -309,6 +326,8 @@ public:
 public:
 	App* m_app;
 
+	std::string m_path;
+	std::string m_texture;
 	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_scale;
 	D3DXVECTOR3 m_rotation;

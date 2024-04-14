@@ -69,6 +69,7 @@ public:
         m_typeInfo = ti;
         m_value = value;
     }
+    std::string getValueRef();
 
 private:
     TextureShaderClass* m_TextureShader;
