@@ -68,6 +68,7 @@ public:
     {
         m_typeInfo = ti;
         m_value = value;
+        m_value_float = (float*)value;
     }
     std::string getValueRef();
 
@@ -87,4 +88,5 @@ private:
     
     const type_info* m_typeInfo;
     void* m_value;
+    float* m_value_float;
 };

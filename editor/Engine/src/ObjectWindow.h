@@ -118,8 +118,9 @@ public:
 		objectWindow->addChild(objectPositionX);
 		objectPositionX->initialize(100, 28, objectWindow->m_x + 10, shift);
 		objectPositionX->setId(10);
-		objectPositionX->setText("0.000000");
+		objectPositionX->setText("0.0");
 		objectPositionX->setValue(&typeid(float), &m_position.x);
+		//objectPositionX->m_value_float = &m_position.x;
 		objectPositionX->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionX, this] {
 			if (m_app->m_selectedModel) {
 				this->updateObjectModel();
@@ -130,7 +131,7 @@ public:
 		objectPositionY->initialize(100, 28, objectWindow->m_x + 112, shift);
 		objectPositionY->setId(11);
 		objectPositionY->setText("0.0");
-		objectPositionY->setValue(&typeid(float), &m_position.y);
+		//objectPositionY->setValue(&typeid(float), &m_position.y);
 		objectPositionY->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionY, this] {
 			if (m_app->m_selectedModel) {
 				this->updateObjectModel();
@@ -141,7 +142,7 @@ public:
 		objectPositionZ->initialize(100, 28, objectWindow->m_x + 214, shift);
 		objectPositionZ->setId(12);
 		objectPositionZ->setText("0.0");
-		objectPositionZ->setValue(&typeid(float), &m_position.z);
+		//objectPositionZ->setValue(&typeid(float), &m_position.z);
 		objectPositionZ->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [objectPositionZ, this] {
 			if (m_app->m_selectedModel) {
 				this->updateObjectModel();
@@ -282,6 +283,11 @@ public:
 		}
 
 		m_position = m_app->m_selectedModel->GetPosition();
+
+		Window* objectWindow = dynamic_cast<Window*>(m_app->m_uiManager->getById(2));
+		objectWindow->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
+		objectWindow->focus();
+		objectWindow->show();
 	}
 
 	void updateObjectModel()

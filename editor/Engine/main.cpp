@@ -950,7 +950,7 @@ void App::frameUI()
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
 			if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
 				m_objectUI->updateUiFromModel();
-				m_objectUI->updateObjectModel();
+				//m_objectUI->updateObjectModel();
 			}
 			/*else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
 				this->updateCompositeModel();

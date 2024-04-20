@@ -17,7 +17,8 @@ Input::Input()
 	m_String.clear();
 
 	m_value = 0;
-	m_typeInfo = &typeid(std::string);
+	m_value_float = nullptr;
+	m_typeInfo = nullptr;
 }
 
 Input::~Input()
@@ -153,7 +154,7 @@ bool Input::setText(std::string text)
 
 bool Input::updateText(std::string text)
 {
-	if (m_value && String::trim(m_String).size() > 0) {
+	if (m_typeInfo && String::trim(m_String).size() > 0) {
 		std::string typeName = std::string(m_typeInfo->name());
 		if (typeName.compare("float") == 0) {
 			*(float*)m_value = getValueFloat();
@@ -172,18 +173,20 @@ bool Input::updateText(std::string text)
 std::string Input::getValueRef()
 {
 	std::string typeName = std::string(m_typeInfo->name());
-	if (typeName.compare("float") == 0) {
-		float *t = static_cast<float*>(m_value);
-		return std::to_string(*t);
+	if (typeName.compare("float") == 0 && m_value_float != nullptr) {
+		return String::ssprintf("%.1f", *m_value_float);
 	}
-	else if (typeName.compare("int") == 0) {
+
+	return m_String;
+
+	/*else if (typeName.compare("int") == 0) {
 		int* t = static_cast<int*>(m_value);
 		return std::to_string(*t);
 	}
 	else if (String::search(typeName, "std::basic_string")) {
 		std::string* t = static_cast<std::string*>(m_value);
 		return *t;
-	}
+	}*/
 }
 
 void Input::updateText()
@@ -331,15 +334,16 @@ bool Input::isIntersect(int x, int y) {
 
 void Input::frame(float counter)
 {
-	if (!m_usesFlashCursor || !m_IsFocused) {
-		return;
-	}
-
-	if (m_value) {
+	if (m_typeInfo) {
 		std::string ref = getValueRef();
 		if (ref != m_String) {
 			m_String = ref;
+			updateText();
 		}
+	}
+
+	if (!m_usesFlashCursor || !m_IsFocused) {
+		return;
 	}
 
 	int timeout = m_Flash ? 500 : 1000;
