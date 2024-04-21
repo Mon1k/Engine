@@ -133,6 +133,9 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 		if (entry.is_directory()) {
 			continue;
 		}
+		if (m_filter.size() > 0 && !checkFilter(entry)) {
+			continue;
+		}
 
 		row.clear();
 		row.push_back(entry.path().filename().generic_string());
@@ -149,4 +152,39 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 	m_table->update();
 
 	return m_rows;
+}
+
+void FileChooser::addDefailtImageFilters()
+{
+	m_filter.push_back("jpg");
+	m_filter.push_back("jpeg");
+	m_filter.push_back("bmp");
+	m_filter.push_back("gif");
+	m_filter.push_back("png");
+	m_filter.push_back("dds");
+
+	getRows();
+}
+
+void FileChooser::addFilter(std::string extension)
+{
+	m_filter.push_back(extension);
+
+	getRows();
+}
+
+bool FileChooser::checkFilter(std::filesystem::directory_entry entry)
+{
+	std::string extension = entry.path().extension().generic_string();
+	if (extension.substr(0, 1) == ".") {
+		extension = extension.substr(1);
+	}
+
+	for (size_t i = 0; i < m_filter.size(); i++) {
+		if (m_filter[i] == extension) {
+			return true;
+		}
+	}
+
+	return false;
 }

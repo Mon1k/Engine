@@ -1,15 +1,17 @@
 #pragma once
 
 #include "AbstractGUI.h"
+#include "../tool/Ref.h"
 
 #include "../textureshaderclass.h"
 #include "../bitmapclass.h"
 #include "../textclass.h"
 #include "../inputclass.h"
 
+
 #include <string>
 
-class Input : public AbstractGui
+class Input : public AbstractGui, public ValueRef
 {
 public:
     Input();
@@ -64,14 +66,6 @@ public:
     void hideCaret();
     void showCaret();
 
-    void setValue(const type_info* ti, void* value)
-    {
-        m_typeInfo = ti;
-        m_value = value;
-        m_value_float = (float*)value;
-    }
-    std::string getValueRef();
-
 private:
     TextureShaderClass* m_TextureShader;
     BitmapClass* m_Bitmap;
@@ -85,8 +79,4 @@ private:
 
     std::string m_String;
     std::string m_ViewedString;
-    
-    const type_info* m_typeInfo;
-    void* m_value;
-    float* m_value_float;
 };

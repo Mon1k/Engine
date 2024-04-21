@@ -22,7 +22,15 @@ public:
 	{
 		return m_rows[m_currentRow];
 	}
+	std::string getCurrentFilePath()
+	{
+		return m_rows[m_currentRow].path().generic_string();
+	}
 
+	void addDefailtImageFilters();
+	void addFilter(std::string extension);
+	bool checkFilter(std::filesystem::directory_entry entry);
+		
 	enum EventType : int {
 		FILE_CHOOSE = 65637,
 		FILE_CHOOSE_GET = 65638
@@ -35,4 +43,6 @@ protected:
 	int m_currentRow;
 
 	Table* m_table;
+
+	std::vector<std::string> m_filter;
 };

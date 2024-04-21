@@ -1,6 +1,6 @@
 #include "Alert.h"
-#include "../Options.h"
-#include "UIManager.h"
+#include "../../Options.h"
+#include "../UIManager.h"
 
 Alert::Alert()
 {

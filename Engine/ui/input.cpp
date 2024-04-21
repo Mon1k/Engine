@@ -2,7 +2,7 @@
 #include "../Options.h"
 #include "../tool/String.h"
 
-Input::Input()
+Input::Input(): ValueRef()
 {
 	m_TextureShader = 0;
 	m_Bitmap = 0;
@@ -15,10 +15,6 @@ Input::Input()
 	m_CursorShift = 0;
 	m_MaxSize = 0;
 	m_String.clear();
-
-	m_value = 0;
-	m_value_float = nullptr;
-	m_typeInfo = nullptr;
 }
 
 Input::~Input()
@@ -30,7 +26,7 @@ Input* Input::createString(void* value, D3DClass* d3d, int width, int height, in
 	Input* input = new Input;
 	input->m_D3D = d3d;
 	input->initialize(width, height, positionX, positionY);
-	input->setValue(&typeid(std::string), value);
+	input->setValueRefLink(&typeid(std::string), value);
 	return input;
 }
 
@@ -39,7 +35,7 @@ Input* Input::createFloat(void* value, D3DClass* d3d, int width, int height, int
 	Input* input = new Input;
 	input->m_D3D = d3d;
 	input->initialize(width, height, positionX, positionY);
-	input->setValue(&typeid(float), value);
+	input->setValueRefLink(&typeid(float), value);
 	return input;
 }
 
@@ -48,7 +44,7 @@ Input* Input::createInt(void* value, D3DClass* d3d, int width, int height, int p
 	Input* input = new Input;
 	input->m_D3D = d3d;
 	input->initialize(width, height, positionX, positionY);
-	input->setValue(&typeid(int), value);
+	input->setValueRefLink(&typeid(int), value);
 	return input;
 }
 
@@ -154,39 +150,9 @@ bool Input::setText(std::string text)
 
 bool Input::updateText(std::string text)
 {
-	if (m_typeInfo && String::trim(m_String).size() > 0) {
-		std::string typeName = std::string(m_typeInfo->name());
-		if (typeName.compare("float") == 0) {
-			*(float*)m_value = getValueFloat();
-		}
-		else if (typeName.compare("int") == 0) {
-			*(int*)m_value = getValueInt();
-		}
-		else if (String::search(typeName, "std::basic_string")) {
-			*(std::string*)m_value = getValue();
-		}
-	}
+	setValueRef(m_String);
 
 	return m_Text->AddText(text, m_x + 4, m_y + m_height / 3, 1.0f, 1.0f, 1.0f);
-}
-
-std::string Input::getValueRef()
-{
-	std::string typeName = std::string(m_typeInfo->name());
-	if (typeName.compare("float") == 0 && m_value_float != nullptr) {
-		return String::ssprintf("%.1f", *m_value_float);
-	}
-
-	return m_String;
-
-	/*else if (typeName.compare("int") == 0) {
-		int* t = static_cast<int*>(m_value);
-		return std::to_string(*t);
-	}
-	else if (String::search(typeName, "std::basic_string")) {
-		std::string* t = static_cast<std::string*>(m_value);
-		return *t;
-	}*/
 }
 
 void Input::updateText()
@@ -334,12 +300,9 @@ bool Input::isIntersect(int x, int y) {
 
 void Input::frame(float counter)
 {
-	if (m_typeInfo) {
-		std::string ref = getValueRef();
-		if (ref != m_String) {
-			m_String = ref;
-			updateText();
-		}
+	if (isChangeValueRef(getValue())) {
+		m_String = getValueRef();
+		updateText();
 	}
 
 	if (!m_usesFlashCursor || !m_IsFocused) {

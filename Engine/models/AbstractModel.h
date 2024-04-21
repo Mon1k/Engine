@@ -97,6 +97,10 @@ public:
         return m_rotation;
     }
 
+    D3DXVECTOR3 getRotationDegree() {
+        return D3DXVECTOR3(D3DXToDegree(m_rotation.x), D3DXToDegree(m_rotation.y), D3DXToDegree(m_rotation.z));
+    }
+
     virtual void SetPosition(D3DXVECTOR3 _position)
     {
         D3DXVECTOR3 delta;

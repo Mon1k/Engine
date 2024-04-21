@@ -28,6 +28,11 @@ public:
 		return m_textures;
 	}
 
+	std::string getTexturePath()
+	{
+		return m_texturesPath[0];
+	}
+
 	std::string getTexturePath(int index)
 	{
 		if (index >= m_texturesPath.size()) {

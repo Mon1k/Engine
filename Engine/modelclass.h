@@ -56,8 +56,13 @@ public:
 	bool addTexture(std::string);
 	bool LoadTextures(std::string);
 	bool LoadTexturesArray(std::vector<std::string>);
-	void ReleaseTexture();
 
+	std::string getPath()
+	{
+		return m_path;
+	}
+
+	void ReleaseTexture();
 	void ReleaseModel();
 
 	virtual D3DXMATRIX GetWorldMatrix();	
@@ -142,6 +147,7 @@ protected:
 	
 	CompositeModel* m_subsets;
 	TextureArrayClass* m_TextureArray;
+	std::string m_path;
 	std::vector<LightClass*> m_lights;
 };
 

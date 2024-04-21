@@ -73,12 +73,12 @@ bool ModelClass::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector
 
 bool ModelClass::LoadModel(char* filename)
 {
-	std::string string(filename);
+	m_path = std::string(filename);
 
-	if (string.rfind(".ds") != std::string::npos || string.rfind(".txt") != std::string::npos) {
+	if (m_path.rfind(".ds") != std::string::npos || m_path.rfind(".txt") != std::string::npos) {
 		DsLoader* loader = new DsLoader;
 		return loader->load(filename, this);
-	} else if (string.rfind(".obj") != std::string::npos) {
+	} else if (m_path.rfind(".obj") != std::string::npos) {
 		ObjLoader* loader = new ObjLoader;
 		return loader->load(filename, this);
 	} else {

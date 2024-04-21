@@ -319,9 +319,6 @@
     <ClCompile Include="..\..\Engine\textures\watershaderclass.cpp">
       <Filter>src\engine\textures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\ui\Alert.cpp">
-      <Filter>src\engine\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\ui\button.cpp">
       <Filter>src\engine\ui</Filter>
     </ClCompile>
@@ -365,6 +362,12 @@
       <Filter>src\engine\ui\dialogs</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\ui\dialogs\SaveDialog.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\FileInput.cpp">
+      <Filter>src\engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\Alert.cpp">
       <Filter>src\engine\ui\dialogs</Filter>
     </ClCompile>
   </ItemGroup>
@@ -705,9 +708,6 @@
     <ClInclude Include="..\..\Engine\ui\AbstractGUI.h">
       <Filter>src\engine\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine\ui\Alert.h">
-      <Filter>src\engine\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine\ui\button.h">
       <Filter>src\engine\ui</Filter>
     </ClInclude>
@@ -764,6 +764,15 @@
     </ClInclude>
     <ClInclude Include="main.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\tool\Ref.h">
+      <Filter>src\engine\tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\FileInput.h">
+      <Filter>src\engine\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\Alert.h">
+      <Filter>src\engine\ui\dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

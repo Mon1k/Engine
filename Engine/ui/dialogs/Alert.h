@@ -1,7 +1,7 @@
 #pragma once
 
-#include "window.h"
-#include "label.h"
+#include "../window.h"
+#include "../label.h"
 #include <string>
 
 class Alert : public Window
