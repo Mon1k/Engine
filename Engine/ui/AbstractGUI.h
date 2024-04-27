@@ -105,6 +105,11 @@ public:
             return false;
         }
 
+        return fireEvent(event);
+    }
+
+    virtual bool fireEvent(int event)
+    {
         bool isEvent = false;
         for (size_t i = 0; i < m_handlers.size(); i++) {
             if (m_handlers[i].event == event) {

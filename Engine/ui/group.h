@@ -159,12 +159,7 @@ public:
 		}
 
 		if (!isEvent) {
-			for (size_t i = 0; i < m_handlers.size(); i++) {
-				if (m_handlers[i].event == event) {
-					m_handlers[i].handler();
-					isEvent = true;
-				}
-			}
+			isEvent = AbstractGui::fireEvent(event);
 		}
 
 		return isEvent;

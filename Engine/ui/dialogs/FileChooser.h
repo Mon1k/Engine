@@ -27,7 +27,8 @@ public:
 		return m_rows[m_currentRow].path().generic_string();
 	}
 
-	void addDefailtImageFilters();
+	void addDefaultImageFilters();
+	void addDefaultModelsFilters();
 	void addFilter(std::string extension);
 	bool checkFilter(std::filesystem::directory_entry entry);
 		

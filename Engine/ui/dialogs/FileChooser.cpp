@@ -154,7 +154,7 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 	return m_rows;
 }
 
-void FileChooser::addDefailtImageFilters()
+void FileChooser::addDefaultImageFilters()
 {
 	m_filter.push_back("jpg");
 	m_filter.push_back("jpeg");
@@ -165,6 +165,17 @@ void FileChooser::addDefailtImageFilters()
 
 	getRows();
 }
+
+void FileChooser::addDefaultModelsFilters()
+{
+	m_filter.push_back("ds");
+	m_filter.push_back("obj");
+	m_filter.push_back("fbx");
+	m_filter.push_back("md5mesh");
+
+	getRows();
+}
+
 
 void FileChooser::addFilter(std::string extension)
 {

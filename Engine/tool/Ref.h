@@ -60,6 +60,8 @@ public:
 		else if (String::search(typeName, "std::basic_string") && m_value_string != nullptr) {
 			return *m_value_string;
 		}
+
+		return "";
 	}
 
 	bool isChangeValueRef(std::string value)

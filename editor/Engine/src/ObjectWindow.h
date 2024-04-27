@@ -43,13 +43,15 @@ public:
 		});
 		shift += objectWindow->m_y + objectWindow->getHeader()->m_height + 5;
 
-		Input* objectPath = new Input;
+		FileInput* objectPath = new FileInput;
 		FileInput* objectTexture = new FileInput;
 
 		objectWindow->addChild(objectPath);
 		objectPath->initialize(400, 28, objectWindow->m_x + 10, shift);
-		objectPath->setValueRefLink(&typeid(std::string), &m_path);
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/models");
+		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setId(19);
+		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this, objectPath, objectTexture] {
 			if (!m_app->m_selectedModel) {
 				Model* model = new Model;
@@ -82,6 +84,16 @@ public:
 					m_app->m_mapEntities->add(format);
 				}
 			}
+			else {
+				Model* model = m_app->m_selectedModel;
+				model->Shutdown();
+				model->addLights({ m_app->m_light });
+				LightShaderClass* shader = new LightShaderClass;
+				shader->Initialize(m_app->getGraphic()->getD3D()->GetDevice());
+				shader->addLights({ m_app->m_light });
+				model->addShader(shader);
+				model->Initialize(m_app->getGraphic()->getD3D(), &objectPath->getValue()[0], { objectTexture->getValue() });
+			}
 			this->updateObjectModel();
 		});
 		shift += objectPath->m_height + 5;
@@ -89,7 +101,7 @@ public:
 		objectWindow->addChild(objectTexture);
 		objectTexture->initialize(400, 28, objectWindow->m_x + 10, shift);
 		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
-		objectTexture->getDialog()->addDefailtImageFilters();
+		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setId(20);
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {

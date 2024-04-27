@@ -17,6 +17,9 @@ void FileInput::initialize(int width, int height, int positionX, int positionY)
 	m_inputPath = new Input();
 	Group::addChild(m_inputPath);
 	m_inputPath->initialize(width - 50, height, positionX, positionY);
+	m_inputPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+		this->fireEvent(AbstractGui::EventType::OBJECT_BLUR);
+	});
 
 	m_buttonChoose = new Button();
 	Group::addChild(m_buttonChoose);
@@ -27,7 +30,7 @@ void FileInput::initialize(int width, int height, int positionX, int positionY)
 		m_dialog->addEventHandler(FileChooser::EventType::FILE_CHOOSE, [this] {
 			m_inputPath->setText(m_dialog->getCurrentFilePath());
 			m_dialog->hide();
-			this->proccesedEventHandlers(AbstractGui::EventType::OBJECT_BLUR);
+			this->fireEvent(AbstractGui::EventType::OBJECT_BLUR);
 		});
 	});
 

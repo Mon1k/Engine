@@ -829,6 +829,7 @@ bool App::init()
 	m_modelManager = m_Graphics->getModelManager();
 	m_uiManager = m_Graphics->getUiManager();
 
+	m_selectedModel = 0;
 	m_CollisionDetection = new CollisionDetection;
 	m_mapEntities = new MapEntity;
 
