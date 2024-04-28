@@ -36,14 +36,19 @@ public:
 	{
 		if (m_typeInfo && String::trim(value).size() > 0) {
 			std::string typeName = std::string(m_typeInfo->name());
-			if (typeName.compare("float") == 0) {
-				*m_value_float = std::stof(value);
+			try {
+				if (typeName.compare("float") == 0) {
+					*m_value_float = std::stof(value);
+				}
+				else if (typeName.compare("int") == 0) {
+					*m_value_int = std::stoi(value);
+				}
+				else if (String::search(typeName, "std::basic_string")) {
+					*m_value_string = value;
+				}
 			}
-			else if (typeName.compare("int") == 0) {
-				*m_value_int = std::stoi(value);
-			}
-			else if (String::search(typeName, "std::basic_string")) {
-				*m_value_string = value;
+			catch (...)
+			{
 			}
 		}
 	}

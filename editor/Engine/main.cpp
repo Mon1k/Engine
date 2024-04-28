@@ -18,6 +18,7 @@
 // editor ui
 #include "src/MainWindow.h"
 #include "src/ObjectWindow.h"
+#include "src/TerrainWindow.h"
 
 #include "../../Engine/lightclass.h"
 #include "../../Engine/lightshaderclass.h"
@@ -27,21 +28,25 @@
 
 void App::initDefaultObjects()
 {
+	m_selectedModel = 0;
+
 	GridClass* grid = new GridClass;
 	grid->Initialize(m_Graphics->getD3D(), 100, 100);
 	grid->setId(1);
 	m_modelManager->Add(grid);
 }
 
-void App::IninMenuTop()
+void App::InitMenuTop()
 {
 	m_mainWindow = new MainWindow;
 	m_mainWindow->m_app = this;
 	m_mainWindow->initialize();
 
-	m_objectUI = new ObjectWindow;
-	m_objectUI->m_app = this;
-	m_objectUI->initialize();
+	m_objectWindow = new ObjectWindow(this);
+	m_objectWindow->initialize();
+
+	m_terrainWindow = new TerrainWindow(this);
+	m_terrainWindow->initialize();
 }
 
 	/*void InitWindowTerrain()
@@ -841,8 +846,6 @@ bool App::init()
 
 void App::loadUI()
 {
-	int shift;
-
 	Label* label = new Label;
 	m_uiManager->add(label);
 	label->Initialize(76, 28);
@@ -855,25 +858,16 @@ void App::loadUI()
 	label2->Add("", 1, 80, 1.0f, 0.3f, 0.3f);
 	label2->setId(5);
 
-
-	this->IninMenuTop();
-	/*this->InitWindowObject();
-	this->InitWindowCompositeObject();
-	this->InitWindowTerrain();
-	this->InitWindowWater();
-	this->InitWindowSky();*/
-
-
 	Cursor* cursor = new Cursor;
 	m_uiManager->add(cursor);
-	cursor->Initialize(32, 32);
+	cursor->Initialize();
 	cursor->setId(6);
+
+	this->InitMenuTop();
 }
 
 void App::loadScene()
 {
-	m_selectedModel = 0;
-
 	m_light = new LightClass;
 	m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -896,14 +890,12 @@ bool App::frame()
 	return true;
 }
 
-
 void App::frameUI()
 {
 	int mouseX, mouseY;
 	m_Input->GetMouseLocation(mouseX, mouseY);
 	int mouseButtonPress = m_Input->getMouseButtonPress();
 	D3DXVECTOR3 direction, position, scale, rotation;
-	int size;
 
 	if (m_Input->IsKeyDown(VK_ESCAPE)) {
 		m_uiManager->unfocus();
@@ -950,15 +942,15 @@ void App::frameUI()
 			m_selectedModel->showBBox();
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
 			if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
-				m_objectUI->updateUiFromModel();
+				m_objectWindow->updateUiFromModel();
 			}
 			/*else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
 				this->updateCompositeModel();
-			}
+			}*/
 			else if (editorFormat->type == MapEntity::ObjectTypes::TERRAIN) {
-				this->updateWindowTerrain();
+				//m_terrainWindow->updateUiFromModel();
 			}
-			else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
+			/*else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
 				this->updateWindowWater();
 			}
 			else if (editorFormat->type == MapEntity::ObjectTypes::SKY) {
@@ -968,8 +960,7 @@ void App::frameUI()
 	}
 
 	std::vector<AbstractGui*> elements = m_uiManager->getElements();
-	size = elements.size();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements[i]->getId() == 4) {
 			Label* label = dynamic_cast<Label*>(elements[i]);
 			char mouseString[128];
@@ -997,7 +988,6 @@ void App::frameUI()
 
 void App::frameScene()
 {
-	float time = m_Timer->GetTime();
 }
 
 MapEntity::ObjectFormat* App::getObjectEditor(int id)
@@ -1011,151 +1001,12 @@ void App::unselectModel()
 		m_selectedModel->hideBBox();
 		m_selectedModel = 0;
 
-		/*AbstractGui* objectWindow = m_uiManager->getById(2);
-		objectWindow->hide();
-
-		AbstractGui* terrainWindow = m_uiManager->getById(21);
-		terrainWindow->hide();*/
+		m_objectWindow->getWindow()->hide();
+		m_terrainWindow->getWindow()->hide();
 	}
 }
 
-	/*void resetWindowModel()
-	{
-		Input* positionInput;
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(10));
-		positionInput->setText(std::string("0.00"));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(11));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(12));
-		positionInput->setText("0.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(13));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(14));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(15));
-		positionInput->setText("1.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(16));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(17));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(18));
-		positionInput->setText("0.00");
-	}
-
-	void updateWindowModel()
-	{
-		D3DXVECTOR3 direction, position, scale, rotation;
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-
-		this->updateBbox();
-
-		position = m_selectedModel->GetPosition();
-		scale = m_selectedModel->GetScale();
-		rotation = m_selectedModel->getRotation();
-
-		Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(2));
-		objectWindow->show();
-		objectWindow->focus();
-		std::string title = "Object properties - ";
-		title += std::to_string(m_selectedModel->getId());
-		objectWindow->setTitle(title);
-		Input* positionInput;
-		Checkbox* checkbox;
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(10));
-		positionInput->setText(String::ssprintf("%.2f", position.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(11));
-		positionInput->setText(String::ssprintf("%.2f", position.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(12));
-		positionInput->setText(String::ssprintf("%.2f", position.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(13));
-		positionInput->setText(String::ssprintf("%.2f", scale.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(14));
-		positionInput->setText(String::ssprintf("%.2f", scale.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(15));
-		positionInput->setText(String::ssprintf("%.2f", scale.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(16));
-		positionInput->setText(String::ssprintf("%.2f", rotation.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(17));
-		positionInput->setText(String::ssprintf("%.2f", rotation.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(18));
-		positionInput->setText(String::ssprintf("%.2f", rotation.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(19));
-		positionInput->setText(editorFormat->path);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(20));
-		positionInput->setText(editorFormat->texture);
-
-		if (editorFormat->extraParams.size() < 1) {
-			editorFormat->extraParams.push_back("0");
-		}
-		checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(75));
-		checkbox->setMarked(stoi(editorFormat->extraParams[0]) > 0);
-	}
-
-	void updateObjectModel()
-	{
-		if (!m_selectedModel) {
-			return;
-		}
-
-		Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(2));
-		std::string title = "Object properties - ";
-		title += std::to_string(m_selectedModel->getId());
-		objectWindow->setTitle(title);
-
-		Input* input;
-		Checkbox* checkbox;
-		D3DXVECTOR3 position, scale, rotation;
-		bool isAlpha;
-		std::string path, texture;
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(10));
-		position.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(11));
-		position.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(12));
-		position.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(13));
-		scale.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(14));
-		scale.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(15));
-		scale.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(16));
-		rotation.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(17));
-		rotation.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(18));
-		rotation.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(19));
-		path = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(20));
-		texture = input->getValue();
-
-		checkbox = dynamic_cast<Checkbox*>(m_uiManager->getById(75));
-		isAlpha = checkbox->getIsMarked();
-
-
-		m_selectedModel->setAlpha(isAlpha);
-
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		editorFormat->position = position;
-		editorFormat->scale = scale;
-		editorFormat->rotation = rotation;
-		editorFormat->path = path;
-		editorFormat->texture = texture;
-		editorFormat->extraParams[0] = std::to_string(isAlpha ? 1 : 0);
-
-		this->updateBbox();
-	}
+	/*
 
 	void resetWindowCompositeModel()
 	{

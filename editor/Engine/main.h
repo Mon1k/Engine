@@ -5,6 +5,7 @@
 
 class MainWindow;
 class ObjectWindow;
+class TerrainWindow;
 
 class CollisionDetection;
 
@@ -14,7 +15,7 @@ public:
 	virtual bool init();
 
 	void initDefaultObjects();
-	void IninMenuTop();
+	void InitMenuTop();
 
 	void loadUI();
 	void loadScene();
@@ -39,5 +40,6 @@ public:
 	LightClass* m_light;
 
 	MainWindow* m_mainWindow;
-	ObjectWindow* m_objectUI;
+	ObjectWindow* m_objectWindow;
+	TerrainWindow* m_terrainWindow;
 };

@@ -30,12 +30,15 @@ class ModelManager
 public:
     ModelManager();
     bool Initialize(D3DClass*, FrustumClass*);
-    bool Add(AbstractModel* model);
+    
     void PreRender(CameraClass*);
     void Render(CameraClass*);
     void RenderShadowDepth(CameraClass*);
     
+    bool Add(AbstractModel* model);
+    void remove(int id);
     void clear();
+
     void Shutdown();
 
     int getRenderCount()

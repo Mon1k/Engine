@@ -53,10 +53,19 @@ public:
 		m_entities.push_back(entity);
 	}
 
+	void remove(int id)
+	{
+		for (int i = 0; i < m_entities.size(); i++) {
+			if (m_entities[i].id == id) {
+				m_entities.erase(m_entities.begin() + i);
+				return;
+			}
+		}
+	}
+
 	MapEntity::ObjectFormat* getEntity(int id)
 	{
-		int size = m_entities.size();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < m_entities.size(); i++) {
 			if (m_entities[i].id == id) {
 				return &m_entities[i];
 			}
@@ -73,27 +82,27 @@ public:
 		m_entities.clear();
 	}
 
-	ModelClass* copyModel(MapEntity::ObjectFormat entity, ModelManager* manager)
+	Model* copyModel(MapEntity::ObjectFormat entity, ModelManager* manager)
 	{
-		ModelClass* model = new ModelClass;
-		ModelClass* modelOriginal = dynamic_cast<ModelClass*>(manager->getById(entity.id));
+		Model* model = new Model;
+		Model* modelOriginal = dynamic_cast<Model*>(manager->getById(entity.id));
 		D3DXVECTOR3 position;
 
 		position = entity.position;
 		float maxX = modelOriginal->getMaxPosition().x;
 		float minX = modelOriginal->getMinPosition().x;
-		float width = maxX - minX;
-		position.x += width * 1.1;
+		position.x += (maxX - minX) * 1.1;
 
 		model->Initialize(modelOriginal->getD3D(), &entity.path[0], {entity.texture});
 		model->SetPosition(position);
 		model->SetScale(entity.scale);
 		model->SetRotation(entity.rotation);
-		model->addLights({ modelOriginal->getLight(0) });
+		model->setAlpha(modelOriginal->getAlpha());
+		model->addLights(modelOriginal->getLights());
 
 		LightShaderClass* shader = new LightShaderClass;
 		shader->Initialize(modelOriginal->getD3D()->GetDevice());
-		shader->addLights({ modelOriginal->getLight(0) });
+		shader->addLights(modelOriginal->getLights());
 		model->addShader(shader);
 
 		model->setId(manager->getNextId());

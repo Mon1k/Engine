@@ -18,6 +18,11 @@ Button::~Button()
 {
 }
 
+bool Button::initialize()
+{
+	return initialize(100, 20);
+}
+
 bool Button::initialize(int width, int height)
 {
 	return initialize(L"data/textures/ui/button.png", width, height);

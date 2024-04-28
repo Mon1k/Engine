@@ -115,6 +115,7 @@ void Window::show()
 {
 	Group::show();
 	proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
+	focus();
 }
 
 void Window::close()

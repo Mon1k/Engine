@@ -54,6 +54,16 @@ bool ModelManager::Add(AbstractModel* model)
     return true;
 }
 
+void ModelManager::remove(int id)
+{
+    for (int i = 0; i < m_models.size(); i++) {
+        if (m_models[i]->getId() == id) {
+            m_models.erase(m_models.begin() + i);
+            return;
+        }
+    }
+}
+
 void ModelManager::clear()
 {
     for (int i = 0; i < m_models.size(); i++) {

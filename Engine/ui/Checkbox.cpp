@@ -152,3 +152,10 @@ bool Checkbox::Render()
 	
 	return true;
 }
+
+void Checkbox::frame(float counter)
+{
+	if (isChangeValueRef(std::to_string((int)b_IsMarked))) {
+		b_IsMarked = getValueRef() == "1";
+	}
+}

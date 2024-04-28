@@ -16,6 +16,7 @@ public:
     Button(const Button&);
     ~Button();
 
+    bool initialize();
     bool initialize(int width, int height);
     bool initialize(WCHAR* texture, int width, int height);
     

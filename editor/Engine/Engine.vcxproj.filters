@@ -774,6 +774,9 @@
     <ClInclude Include="..\..\Engine\ui\dialogs\Alert.h">
       <Filter>src\engine\ui\dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="src\TerrainWindow.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps">
