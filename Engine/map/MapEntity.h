@@ -7,7 +7,7 @@
 #include <d3dx10math.h>
 
 #include "../models/CompositeModel.h"
-#include "../models/Model.h"
+#include "../modelclass.h"
 #include "../models/ModelManager.h"
 #include "../lightshaderclass.h"
 
@@ -25,6 +25,7 @@ public:
 	};
 
 	struct ObjectFormat {
+		ObjectTypes type;
 		int id;
 		std::string name;
 		D3DXVECTOR3 position;
@@ -34,11 +35,11 @@ public:
 		std::string texture;
 		std::vector<std::string> extraParams; // @todo - deprecation
 		std::map<std::string, std::string> params;
-		ObjectTypes type;
 
-		Model* model;
-		CompositeModel* parent;
-	} format;
+		ModelClass* model;
+		MapEntity::ObjectFormat* parent;
+		std::vector<MapEntity::ObjectFormat*> childs;
+	};
 
 	std::vector<MapEntity::ObjectFormat> m_entities;
 

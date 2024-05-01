@@ -5,12 +5,12 @@
 #include <d3dx10math.h>
 #include <stdio.h>
 
-#include "../../modelclass.h"
+#include "../Model.h"
 #include "quadtreeclass.h"
 #include "../../textures/terrainshaderclass.h"
 #include "../../frustumclass.h"
 
-class TerrainClass : public ModelClass
+class TerrainClass : public Model
 {
 private:
 	struct VertexType

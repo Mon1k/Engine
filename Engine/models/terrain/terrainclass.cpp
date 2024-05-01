@@ -1,6 +1,6 @@
 #include "terrainclass.h"
 
-TerrainClass::TerrainClass(): ModelClass()
+TerrainClass::TerrainClass(): Model()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
