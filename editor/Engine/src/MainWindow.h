@@ -13,6 +13,11 @@
 class MainWindow
 {
 public:
+	MainWindow::MainWindow(App* app)
+	{
+		m_app = app;
+	}
+
 	void initialize()
 	{
 		Window* menuTop = new Window;
@@ -106,6 +111,6 @@ public:
 		});
 	}
 
-public:
+protected:
 	App* m_app;
 };

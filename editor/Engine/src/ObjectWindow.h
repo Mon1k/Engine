@@ -27,6 +27,7 @@ public:
 		m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		m_isAlpha = false;
+		m_isShadow = false;
 	}
 
 	void initialize()
@@ -48,21 +49,19 @@ public:
 		shift += m_Window->m_y + m_Window->getHeader()->m_height + 5;
 
 		FileInput* objectPath = new FileInput;
-		FileInput* objectTexture = new FileInput;
-
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
-		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this, objectPath, objectTexture] {
+		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			LightShaderClass* shader = new LightShaderClass;
 			shader->Initialize(m_app->getGraphic()->getD3D()->GetDevice());
 			shader->addLights({ m_app->m_light });
 
 			if (!m_app->m_selectedModel) {
 				Model* model = new Model;
-				bool result = model->Initialize(m_app->getGraphic()->getD3D(), &objectPath->getValue()[0], {objectTexture->getValue()});
+				bool result = model->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], {m_texture});
 				if (result) {
 					model->setId(m_app->m_modelManager->getNextId());
 					model->addLights({ m_app->m_light });
@@ -76,14 +75,16 @@ public:
 					format.parent = 0;
 
 					format.id = model->getId();
+					format.name = "Object " + format.id;
 					format.type = MapEntity::ObjectTypes::MODEL;
 					format.position = model->GetPosition();
 					format.scale = model->GetScale();
 					format.rotation = model->getRotation();
-					format.path = objectPath->getValue();
-					format.texture = objectTexture->getValue();
+					format.path = m_path;
+					format.texture = m_texture;
 
 					format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
+					format.params.insert(std::pair<std::string, std::string>("shadow", "0"));
 					
 					m_app->m_mapEntities->add(format);
 				}
@@ -91,20 +92,21 @@ public:
 			else {
 				m_app->m_selectedModel->Shutdown();
 				m_app->m_selectedModel->addShader(shader);
-				m_app->m_selectedModel->Initialize(m_app->getGraphic()->getD3D(), &objectPath->getValue()[0], { objectTexture->getValue() });
+				m_app->m_selectedModel->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], { m_texture });
 			}
 			this->updateObjectModel();
 		});
 		shift += objectPath->m_height + 5;
 
+		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
 		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
 		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
-		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
+		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			m_app->m_selectedModel->ReleaseTexture();
-			m_app->m_selectedModel->LoadTextures(objectTexture->getValue());
+			m_app->m_selectedModel->LoadTextures(m_texture);
 			this->updateObjectModel();
 		});
 		shift += objectTexture->m_height + 5;
@@ -210,6 +212,16 @@ public:
 		});
 		shift += alphaObject->m_height + 5;
 
+		Checkbox* shadowObject = new Checkbox;
+		m_Window->addChild(shadowObject);
+		shadowObject->initialize();
+		shadowObject->Add("Is shadow", m_Window->m_x + 10, shift);
+		shadowObject->setValueRefLink(&typeid(int), &m_isShadow);
+		shadowObject->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
+			this->updateObjectModel();
+		});
+		shift += shadowObject->m_height + 5;
+
 
 		Button* cloneObject = new Button;
 		m_Window->addChild(cloneObject);
@@ -246,6 +258,7 @@ public:
 		m_scale = m_app->m_selectedModel->GetScale();
 		m_rotation = m_app->m_selectedModel->getRotationDegree();
 		m_isAlpha = m_app->m_selectedModel->getAlpha();
+		m_isShadow = m_app->m_selectedModel->isShadow();
 
 		m_Window->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		m_Window->show();
@@ -264,6 +277,7 @@ public:
 		m_app->m_selectedModel->SetScale(m_scale);
 		m_app->m_selectedModel->SetRotation(m_rotation);
 		m_app->m_selectedModel->setAlpha(m_isAlpha);
+		m_app->m_selectedModel->setShadow(m_isShadow != 0 ? true : false);
 		m_app->m_selectedModel->hideBBox();
 		m_app->m_selectedModel->showBBox();
 
@@ -274,6 +288,7 @@ public:
 		editorFormat->scale = m_scale;
 		editorFormat->rotation = m_rotation;
 		editorFormat->params["alpha"] = std::to_string(m_isAlpha ? 1 : 0);
+		editorFormat->params["shadow"] = std::to_string(m_isShadow ? 1 : 0);
 	}
 
 	Window* getWindow()
@@ -292,4 +307,5 @@ protected:
 	D3DXVECTOR3 m_scale;
 	D3DXVECTOR3 m_rotation;
 	int m_isAlpha;
+	int m_isShadow;
 };

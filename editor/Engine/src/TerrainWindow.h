@@ -10,6 +10,8 @@
 #include "../../../Engine/ui/checkbox.h"
 #include "../../../Engine/ui/FileInput.h"
 
+#include "../../Engine/models/terrain/terrainclass.h"
+
 class TerrainWindow
 {
 public:
@@ -20,13 +22,21 @@ public:
 
 	void resetUI()
 	{
-		m_path = "data/models/heightmap.bmp";
+		m_path = "data/textures/heightmap.bmp";
 		m_texture = "data/textures/grass.dds";
 		m_textureNormal = "data/textures/grass_n.dds";
 
 		m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		m_scaleNormal = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+
+		m_textureAlpha = "";
+		m_textureLayer1 = "";
+		m_textureNormalLayer1 = "";
+		m_textureLayer2 = "";
+		m_textureNormalLayer2 = "";
+		m_textureLayer3 = "";
+		m_textureNormalLayer3 = "";
 	}
 
 	void initialize()
@@ -47,19 +57,16 @@ public:
 		});
 		shift += m_Window->m_y + m_Window->getHeader()->m_height + 5;
 
-		Input* objectPath = new Input;
+		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectPath->setText("data/textures/heightmap.bmp");
-		objectPath->setId(22);
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/textures");
+		objectPath->getDialog()->addDefaultImageFilters();
+		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-			Input* objectPath = dynamic_cast<Input*>(m_app->m_uiManager->getById(22));
 			if (!m_app->m_selectedModel) {
-				Input* objectTexture = dynamic_cast<Input*>(m_app->m_uiManager->getById(23));
-				Input* objectTextureNormal = dynamic_cast<Input*>(m_app->m_uiManager->getById(30));
-
 				TerrainClass* model = new TerrainClass;
-				bool result = model->Initialize(m_app->getGraphic()->getD3D(), m_app->getGraphic()->getFrustum(), &objectPath->getValue()[0], objectTexture->getValue(), objectTextureNormal->getValue());
+				bool result = model->Initialize(m_app->getGraphic()->getD3D(), m_app->getGraphic()->getFrustum(), &m_path[0], m_texture, m_textureNormal);
 				if (result) {
 					model->setId(m_app->m_modelManager->getNextId());
 					model->addLights({ m_app->m_light });
@@ -70,70 +77,58 @@ public:
 					m_Window->show();
 
 					MapEntity::ObjectFormat format;
+					format.model = model;
+					format.parent = 0;
+
 					format.id = model->getId();
+					format.name = "Terrain " + format.id;
 					format.type = MapEntity::ObjectTypes::TERRAIN;
 					format.position = model->GetPosition();
 					format.scale = model->GetScale();
 					format.rotation = model->getRotation();
-					format.path = objectPath->getValue();
-					format.texture = objectTexture->getValue();
-					format.extraParams.push_back(objectTextureNormal->getValue());
-					// scale normal
-					format.extraParams.push_back("1.0;1.0;1.0");
-					// add layers
-					// alpha
-					format.extraParams.push_back("");
-					// layer1
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-					// layer2
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-					// layer3
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
+					format.path = m_path;
+					format.texture = m_texture;
+					
+					format.params.insert(std::pair<std::string, std::string>("texture_normal", m_textureNormal));
+					format.params.insert(std::pair<std::string, std::string>("scale_normal", "1.0;1.0;1.0"));
+					format.params.insert(std::pair<std::string, std::string>("layer_alpha", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer1", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer1_normal", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer2", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer2_normal", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer3", ""));
+					format.params.insert(std::pair<std::string, std::string>("layer3_normal", ""));
 
 					m_app->m_mapEntities->add(format);
-
-					this->updateTerrain();
 				}
 			}
-			else {
-				MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
-				editorFormat->path = objectPath->getValue();
-				this->updateTerrain();
-			}
-			return 0;
-			});
+			this->updateTerrain();
+		});
 		shift += objectPath->m_height + 5;
 
 
-		Input* objectTexture = new Input;
+		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
 		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectTexture->setText("data/textures/grass.dds");
-		objectTexture->setId(23);
-		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
-			if (m_app->m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
-				editorFormat->texture = objectTexture->getValue();
-				this->updateTerrain();
-			}
-			return 0;
-			});
+		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectTexture->getDialog()->addDefaultImageFilters();
+		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
+		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+			this->updateTerrain();
+		});
 		shift += objectTexture->m_height + 5;
 
-		Input* objectTextureNormal = new Input;
+		FileInput* objectTextureNormal = new FileInput;
 		m_Window->addChild(objectTextureNormal);
 		objectTextureNormal->initialize( 400, 28, m_Window->m_x + 10, shift);
-		objectTextureNormal->setText("data/textures/grass_n.dds");
-		objectTextureNormal->setId(30);
-		objectTextureNormal->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTextureNormal, this] {
-			if (m_app->m_selectedModel) {
-				this->updateTerrain();
-			}
-			return 0;
-			});
+		objectTextureNormal->getDialog()->setPath(objectTextureNormal->getDialog()->getCurrentPath() + "/data/textures");
+		objectTextureNormal->getDialog()->addDefaultImageFilters();
+		objectTextureNormal->setValueRefLink(&typeid(std::string), &m_textureNormal);
+		objectTextureNormal->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+			/*m_app->m_selectedModel->ReleaseTexture();
+			m_app->m_selectedModel->LoadTexturesArray({ m_texture, m_textureNormal });*/
+			this->updateTerrain();
+		});
 		shift += objectTextureNormal->m_height + 5;
 
 
@@ -146,30 +141,24 @@ public:
 		Input* objectPositionX = new Input;
 		m_Window->addChild(objectPositionX);
 		objectPositionX->initialize(100, 28, m_Window->m_x + 10, shift);
-		objectPositionX->setId(24);
-		objectPositionX->setText("0.00");
-		objectPositionX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionX, this] {
+		objectPositionX->setValueRefLink(&typeid(float), &m_position.x);
+		objectPositionX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectPositionY = new Input;
 		m_Window->addChild(objectPositionY);
 		objectPositionY->initialize(100, 28, m_Window->m_x + 112, shift);
-		objectPositionY->setId(25);
-		objectPositionY->setText("0.00");
-		objectPositionY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionY, this] {
+		objectPositionY->setValueRefLink(&typeid(float), &m_position.y);
+		objectPositionY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectPositionZ = new Input;
 		m_Window->addChild(objectPositionZ);
 		objectPositionZ->initialize(100, 28, m_Window->m_x + 214, shift);
-		objectPositionZ->setId(26);
-		objectPositionZ->setText("0.00");
-		objectPositionZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionZ, this] {
+		objectPositionZ->setValueRefLink(&typeid(float), &m_position.z);
+		objectPositionZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		shift += objectPositionX->m_height + 5;
 
 
@@ -182,30 +171,24 @@ public:
 		Input* objectScaleX = new Input;
 		m_Window->addChild(objectScaleX);
 		objectScaleX->initialize(100, 28, m_Window->m_x + 10, shift);
-		objectScaleX->setId(27);
-		objectScaleX->setText("1.00");
-		objectScaleX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleX, this] {
+		objectScaleX->setValueRefLink(&typeid(float), &m_scale.x);
+		objectScaleX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectScaleY = new Input;
 		m_Window->addChild(objectScaleY);
 		objectScaleY->initialize(100, 28, m_Window->m_x + 112, shift);
-		objectScaleY->setId(28);
-		objectScaleY->setText("1.00");
-		objectScaleY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleY, this] {
+		objectScaleY->setValueRefLink(&typeid(float), &m_scale.y);
+		objectScaleY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectScaleZ = new Input;
 		m_Window->addChild(objectScaleZ);
 		objectScaleZ->initialize(100, 28, m_Window->m_x + 214, shift);
-		objectScaleZ->setId(29);
-		objectScaleZ->setText("1.00");
-		objectScaleZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleZ, this] {
+		objectScaleZ->setValueRefLink(&typeid(float), &m_scale.z);
+		objectScaleZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		shift += objectScaleX->m_height + 5;
 
 
@@ -218,30 +201,25 @@ public:
 		Input* objectScaleNormalX = new Input;
 		m_Window->addChild(objectScaleNormalX);
 		objectScaleNormalX->initialize(100, 28, m_Window->m_x + 10, shift);
-		objectScaleNormalX->setId(31);
-		objectScaleNormalX->setText("1.00");
-		objectScaleNormalX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalX, this] {
+		objectScaleNormalX->setValueRefLink(&typeid(float), &m_scaleNormal.x);
+		objectScaleNormalX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectScaleNormalY = new Input;
 		m_Window->addChild(objectScaleNormalY);
 		objectScaleNormalY->initialize(100, 28, m_Window->m_x + 112, shift);
-		objectScaleNormalY->setId(32);
-		objectScaleNormalY->setText("1.00");
-		objectScaleNormalY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalY, this] {
+		objectScaleNormalY->setValueRefLink(&typeid(float), &m_scaleNormal.y);
+		objectScaleNormalY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+			int x = 1;
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		Input* objectScaleNormalZ = new Input;
 		m_Window->addChild(objectScaleNormalZ);
 		objectScaleNormalZ->initialize(100, 28, m_Window->m_x + 214, shift);
-		objectScaleNormalZ->setId(33);
-		objectScaleNormalZ->setText("1.00");
-		objectScaleNormalZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalZ, this] {
+		objectScaleNormalZ->setValueRefLink(&typeid(float), &m_scaleNormal.z);
+		objectScaleNormalZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		shift += objectScaleNormalX->m_height + 5;
 
 
@@ -252,52 +230,61 @@ public:
 		objectWindowLabeLayers->Add("Layers", m_Window->m_x + 5, shift);
 		shift += objectWindowLabeLayers->m_height + 1;
 
-		Input* objectLayerAlpha = new Input;
+		FileInput* objectLayerAlpha = new FileInput;
 		m_Window->addChild(objectLayerAlpha);
 		objectLayerAlpha->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectLayerAlpha->setId(40);
-		objectLayerAlpha->setText("");
+		objectLayerAlpha->setValueRefLink(&typeid(std::string), &m_textureAlpha);
 		objectLayerAlpha->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectLayerAlpha, this] {
 			this->updateTerrain();
-			return 0;
-			});
+		});
 		shift += objectLayerAlpha->m_height + 5;
 
-		Input* objectLayer1 = new Input;
+		FileInput* objectLayer1 = new FileInput;
 		m_Window->addChild(objectLayer1);
 		objectLayer1->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer1->setId(34);
-		objectLayer1->setText("");
-		Input* objectLayer1Normal = new Input;
+		objectLayer1->setValueRefLink(&typeid(std::string), &m_textureLayer1);
+		FileInput* objectLayer1Normal = new FileInput;
 		m_Window->addChild(objectLayer1Normal);
 		objectLayer1Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer1Normal->setId(35);
-		objectLayer1Normal->setText("");
+		objectLayer1->setValueRefLink(&typeid(std::string), &m_textureNormalLayer1);
 		shift += objectLayer1->m_height + 5;
 
-		Input* objectLayer2 = new Input;
+		FileInput* objectLayer2 = new FileInput;
 		m_Window->addChild(objectLayer2);
 		objectLayer2->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer2->setId(36);
-		objectLayer2->setText("");
-		Input* objectLayer2Normal = new Input;
+		objectLayer2->setValueRefLink(&typeid(std::string), &m_textureLayer2);
+		FileInput* objectLayer2Normal = new FileInput;
 		m_Window->addChild(objectLayer2Normal);
 		objectLayer2Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer2Normal->setId(37);
-		objectLayer2Normal->setText("");
+		objectLayer2Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer2);
 		shift += objectLayer2->m_height + 5;
 
-		Input* objectLayer3 = new Input;
+		FileInput* objectLayer3 = new FileInput;
 		m_Window->addChild(objectLayer3);
 		objectLayer3->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer3->setId(38);
-		objectLayer3->setText("");
-		Input* objectLayer3Normal = new Input;
+		objectLayer3->setValueRefLink(&typeid(std::string), &m_textureLayer3);
+		FileInput* objectLayer3Normal = new FileInput;
 		m_Window->addChild(objectLayer3Normal);
 		objectLayer3Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer3Normal->setId(39);
-		objectLayer3Normal->setText("");
+		objectLayer3Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer3);
 		shift += objectLayer3->m_height + 5;
+	}
+
+	void updateUiFromModel()
+	{
+		if (!m_app->m_selectedModel) {
+			return;
+		}
+
+		TerrainClass* terrain = dynamic_cast<TerrainClass*>(m_app->m_selectedModel);
+		m_path = terrain->getPath();
+		m_texture = terrain->GetTextureClass()->getTexturePath();
+		m_position = terrain->GetPosition();
+		m_scale = terrain->GetScale();
+		m_scaleNormal = terrain->getScaleNormal();
+
+		m_Window->setTitle("Terrain properties - " + std::to_string(m_app->m_selectedModel->getId()));
+		m_Window->show();
 	}
 
 	void updateTerrain()
@@ -305,6 +292,43 @@ public:
 		if (!m_app->m_selectedModel) {
 			return;
 		}
+
+		m_Window->setTitle("Terrain properties - " + std::to_string(m_app->m_selectedModel->getId()));
+		m_Window->show();
+
+		TerrainClass* terrain = dynamic_cast<TerrainClass*>(m_app->m_selectedModel);
+		terrain->Shutdown();
+		terrain->SetPosition(m_position);
+		terrain->SetScale(m_scale);
+		terrain->setScaleNormal(m_scaleNormal);
+		terrain->Initialize(m_app->getGraphic()->getD3D(), m_app->getGraphic()->getFrustum(), &m_path[0], m_texture, m_textureNormal);
+		/*if (layerAlpha.length() > 1 && layer1.length() > 1 && layer1Normal.length() > 1) {
+			terrain->addTextureLayer(layer1, layer1Normal);
+			if (layer2.length() > 1 && layer2Normal.length() > 1) {
+				terrain->addTextureLayer(layer2, layer2Normal);
+				if (layer3.length() > 1 && layer3Normal.length() > 1) {
+					terrain->addTextureLayer(layer3, layer3Normal);
+				}
+			}
+			terrain->addTextureAlpha(layerAlpha);
+		}*/
+		m_app->m_selectedModel->hideBBox();
+		m_app->m_selectedModel->showBBox();
+
+		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
+		editorFormat->path = m_path;
+		editorFormat->texture = m_texture;
+		editorFormat->position = m_position;
+		editorFormat->scale = m_scale;
+		editorFormat->params["texture_normal"] = m_textureNormal;
+		editorFormat->params["scale_normal"] = std::to_string(m_scaleNormal.x) + ";" + std::to_string(m_scaleNormal.y) + ";" + std::to_string(m_scaleNormal.z);
+		editorFormat->params["layer_alpha"] = m_textureAlpha;
+		editorFormat->params["layer1"] = m_textureLayer1;
+		editorFormat->params["layer1_normal"] = m_textureNormalLayer1;
+		editorFormat->params["layer2"] = m_textureLayer2;
+		editorFormat->params["layer2_normal"] = m_textureNormalLayer2;
+		editorFormat->params["layer3"] = m_textureLayer3;
+		editorFormat->params["layer3_normal"] = m_textureNormalLayer3;
 	}
 
 	Window* getWindow()

@@ -9,7 +9,6 @@
 #include "../../Engine/models/ModelManager.h"
 #include "../../Engine/modelclass.h"
 #include "../../Engine/models/Model.h"
-#include "../../Engine/models/terrain/terrainclass.h"
 #include "../../Engine/models/WaterNode.h"
 #include "../../Engine/models/sky/skydomeclass.h"
 #include "../../Engine/models/sky/skyplaneclass.h"
@@ -38,8 +37,7 @@ void App::initDefaultObjects()
 
 void App::InitMenuTop()
 {
-	m_mainWindow = new MainWindow;
-	m_mainWindow->m_app = this;
+	m_mainWindow = new MainWindow(this);
 	m_mainWindow->initialize();
 
 	m_objectWindow = new ObjectWindow(this);
@@ -871,9 +869,11 @@ void App::loadScene()
 	m_light = new LightClass;
 	m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_light->SetDirection(0.0f, -1.0f, 1.0f);
-	m_light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_light->SetSpecularPower(32.0f);
+	m_light->SetDirection(0.0f, -0.5f, 1.0f);
+	m_light->SetPosition(0.0f, 40.0f, 0.0f);
+	m_light->SetLookAt(70.0f, 0.0f, 70.0f);
+	m_light->setIntensity(2.0f);
+	m_light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	initDefaultObjects();
 }
@@ -948,7 +948,7 @@ void App::frameUI()
 				this->updateCompositeModel();
 			}*/
 			else if (editorFormat->type == MapEntity::ObjectTypes::TERRAIN) {
-				//m_terrainWindow->updateUiFromModel();
+				m_terrainWindow->updateUiFromModel();
 			}
 			/*else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
 				this->updateWindowWater();

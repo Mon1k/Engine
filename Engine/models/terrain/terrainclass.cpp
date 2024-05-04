@@ -28,6 +28,7 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	bool result;
 
 	m_D3D = d3dClass;
+	m_path = std::string(heightMapFilename);
 
 	// Load in the height map for the terrain.
 	result = LoadHeightMap(heightMapFilename);
