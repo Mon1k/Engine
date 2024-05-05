@@ -43,6 +43,7 @@ bool FileChooser::initialize()
 		if (getCurrentRow().is_directory()) {
 			std::filesystem::directory_entry entry = getCurrentRow();
 			setPath(entry.path().generic_string());
+			getRows();
 		}
 		else {
 			proccesedEventHandlers(FileChooser::EventType::FILE_CHOOSE);
@@ -53,8 +54,9 @@ bool FileChooser::initialize()
 	addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
 		m_manager->remove(this->getId());
 	});
-
-	setPath(getCurrentPath());
+	addEventHandler(Window::EventType::WINDOW_OPEN, [this] {
+		getRows();
+	});
 
 	return result;
 }
@@ -78,7 +80,6 @@ std::string FileChooser::getCurrentPath()
 void FileChooser::setPath(std::string path)
 {
 	m_path = path;
-	getRows();
 }
 
 std::vector<std::filesystem::directory_entry> FileChooser::getRows()
@@ -162,8 +163,6 @@ void FileChooser::addDefaultImageFilters()
 	m_filter.push_back("gif");
 	m_filter.push_back("png");
 	m_filter.push_back("dds");
-
-	getRows();
 }
 
 void FileChooser::addDefaultModelsFilters()
@@ -172,16 +171,12 @@ void FileChooser::addDefaultModelsFilters()
 	m_filter.push_back("obj");
 	m_filter.push_back("fbx");
 	m_filter.push_back("md5mesh");
-
-	getRows();
 }
 
 
 void FileChooser::addFilter(std::string extension)
 {
 	m_filter.push_back(extension);
-
-	getRows();
 }
 
 bool FileChooser::checkFilter(std::filesystem::directory_entry entry)

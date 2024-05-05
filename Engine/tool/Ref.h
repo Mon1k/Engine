@@ -74,6 +74,11 @@ public:
 		return m_typeInfo && getValueRef() != value;
 	}
 
+	void setFloatFormat(std::string format)
+	{
+		m_floatFormat = format;
+	}
+
 protected:
 	std::string m_floatFormat;
 

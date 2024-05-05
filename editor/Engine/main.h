@@ -6,6 +6,7 @@
 class MainWindow;
 class ObjectWindow;
 class TerrainWindow;
+class WaterWindow;
 
 class CollisionDetection;
 
@@ -25,6 +26,9 @@ public:
 	void frameScene();
 
 	MapEntity::ObjectFormat* getObjectEditor(int id);
+	ObjectWindow* getObjectWindow();
+	TerrainWindow* getTerrainWindow();
+	WaterWindow* getWaterWindow();
 	void unselectModel();
 
 public:
@@ -39,7 +43,9 @@ public:
 
 	LightClass* m_light;
 
+protected:
 	MainWindow* m_mainWindow;
 	ObjectWindow* m_objectWindow;
 	TerrainWindow* m_terrainWindow;
+	WaterWindow* m_waterWindow;
 };

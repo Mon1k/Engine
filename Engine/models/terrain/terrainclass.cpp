@@ -28,7 +28,6 @@ bool TerrainClass::Initialize(D3DClass* d3dClass, FrustumClass* frustum, char* h
 	bool result;
 
 	m_D3D = d3dClass;
-	m_path = std::string(heightMapFilename);
 
 	// Load in the height map for the terrain.
 	result = LoadHeightMap(heightMapFilename);
@@ -117,6 +116,8 @@ bool TerrainClass::LoadHeightMap(char* filename)
 	int imageSize, i, j, k, index;
 	unsigned char* bitmapImage;
 	unsigned char height;
+
+	m_path = std::string(filename);
 
 	// Open the height map file in binary.
 	error = fopen_s(&filePtr, filename, "rb");
@@ -801,6 +802,10 @@ void TerrainClass::Render(CameraClass* camera, ID3D11ShaderResourceView* texture
 
 	camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	if (m_BBox) {
+		m_BBox->Render();
+	}
 
 	TerrainShaderClass* shader = dynamic_cast<TerrainShaderClass*>(m_shader);
 	shader->SetShaderParameters(m_D3D->GetDeviceContext(), GetWorldMatrix(), viewMatrix, projectionMatrix, getLight(0), m_TextureArray, texture);

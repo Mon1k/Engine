@@ -20,7 +20,7 @@ public:
 	GridClass(const GridClass&);
 	~GridClass();
 
-	bool Initialize(D3DClass*, int, int);
+	bool Initialize(D3DClass* d3dClass, int width, int height);
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

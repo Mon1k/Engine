@@ -26,12 +26,13 @@ void FileInput::initialize(int width, int height, int positionX, int positionY)
 	m_buttonChoose->initialize(50, height);
 	m_buttonChoose->Add("Choose", positionX + width - 50 - 1, positionY);
 	m_buttonChoose->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-		m_dialog->show();
 		m_dialog->addEventHandler(FileChooser::EventType::FILE_CHOOSE, [this] {
 			m_inputPath->setText(m_dialog->getCurrentFilePath());
 			m_dialog->hide();
 			this->fireEvent(AbstractGui::EventType::OBJECT_BLUR);
 		});
+		m_dialog->show();
+		m_dialog->proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
 	});
 
 	m_dialog = new OpenDialog;

@@ -256,8 +256,9 @@ protected:
 			model->setNormalMapTiling(stof(params[1]->value), stof(params[2]->value));
 			model->setReflectRefractScale(stof(params[3]->value));
 
-			ModelClass* modelTarget = dynamic_cast<ModelClass*>(manager->getById(stoi(params[4]->value)));
-			model->addRefractionTarget(modelTarget);
+			// @todo later changes it
+			//ModelClass* modelTarget = dynamic_cast<ModelClass*>(manager->getById(stoi(params[4]->value)));
+			//model->addRefractionTarget(modelTarget);
 
 			manager->Add(model);
 

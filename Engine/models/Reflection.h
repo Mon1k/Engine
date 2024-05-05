@@ -1,12 +1,12 @@
 #ifndef _REFLECTION_H_
 #define _REFLECTION_H_
 
-#include "../modelclass.h"
+#include "Model.h"
 #include "../render/rendertextureclass.h"
 #include "../textures/reflectionshaderclass.h"
 #include "AbstractTarget.h"
 
-class Reflection: public ModelClass, public AbstractTarget
+class Reflection: public Model, public AbstractTarget
 {
 public:
 	Reflection();

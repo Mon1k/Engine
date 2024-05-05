@@ -7,7 +7,6 @@
 #include "../../../Engine/ui/label.h"
 #include "../../../Engine/ui/input.h"
 #include "../../../Engine/ui/window.h"
-#include "../../../Engine/ui/checkbox.h"
 #include "../../../Engine/ui/FileInput.h"
 
 #include "../../Engine/models/terrain/terrainclass.h"
@@ -18,6 +17,7 @@ public:
 	TerrainWindow::TerrainWindow(App* app)
 	{
 		m_app = app;
+		resetUI();
 	}
 
 	void resetUI()
@@ -41,8 +41,6 @@ public:
 
 	void initialize()
 	{
-		resetUI();
-
 		int shift = 0;
 		Window* menuTop = dynamic_cast<Window*>(m_app->m_uiManager->getById(1));
 
@@ -61,46 +59,41 @@ public:
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/textures");
-		objectPath->getDialog()->addDefaultImageFilters();
+		objectPath->getDialog()->addFilter("bmp");
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			if (!m_app->m_selectedModel) {
 				TerrainClass* model = new TerrainClass;
-				bool result = model->Initialize(m_app->getGraphic()->getD3D(), m_app->getGraphic()->getFrustum(), &m_path[0], m_texture, m_textureNormal);
-				if (result) {
-					model->setId(m_app->m_modelManager->getNextId());
-					model->addLights({ m_app->m_light });
+				model->setId(m_app->m_modelManager->getNextId());
+				model->addLights({ m_app->m_light });
 
-					m_app->m_modelManager->Add(model);
-					m_app->m_selectedModel = model;
+				m_app->m_modelManager->Add(model);
+				m_app->m_selectedModel = model;
 
-					m_Window->show();
+				MapEntity::ObjectFormat format;
+				format.model = model;
+				format.parent = 0;
 
-					MapEntity::ObjectFormat format;
-					format.model = model;
-					format.parent = 0;
-
-					format.id = model->getId();
-					format.name = "Terrain " + format.id;
-					format.type = MapEntity::ObjectTypes::TERRAIN;
-					format.position = model->GetPosition();
-					format.scale = model->GetScale();
-					format.rotation = model->getRotation();
-					format.path = m_path;
-					format.texture = m_texture;
+				format.id = model->getId();
+				format.name = "Terrain " + format.id;
+				format.type = MapEntity::ObjectTypes::TERRAIN;
+				format.position = model->GetPosition();
+				format.scale = model->GetScale();
+				format.rotation = model->getRotation();
+				format.path = m_path;
+				format.texture = m_texture;
 					
-					format.params.insert(std::pair<std::string, std::string>("texture_normal", m_textureNormal));
-					format.params.insert(std::pair<std::string, std::string>("scale_normal", "1.0;1.0;1.0"));
-					format.params.insert(std::pair<std::string, std::string>("layer_alpha", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer1", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer1_normal", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer2", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer2_normal", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer3", ""));
-					format.params.insert(std::pair<std::string, std::string>("layer3_normal", ""));
+				format.params.insert(std::pair<std::string, std::string>("texture_normal", m_textureNormal));
+				format.params.insert(std::pair<std::string, std::string>("scale_normal", "1.0;1.0;1.0"));
+				format.params.insert(std::pair<std::string, std::string>("layer_alpha", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer1", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer1_normal", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer2", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer2_normal", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer3", ""));
+				format.params.insert(std::pair<std::string, std::string>("layer3_normal", ""));
 
-					m_app->m_mapEntities->add(format);
-				}
+				m_app->m_mapEntities->add(format);
 			}
 			this->updateTerrain();
 		});
@@ -125,8 +118,6 @@ public:
 		objectTextureNormal->getDialog()->addDefaultImageFilters();
 		objectTextureNormal->setValueRefLink(&typeid(std::string), &m_textureNormal);
 		objectTextureNormal->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-			/*m_app->m_selectedModel->ReleaseTexture();
-			m_app->m_selectedModel->LoadTexturesArray({ m_texture, m_textureNormal });*/
 			this->updateTerrain();
 		});
 		shift += objectTextureNormal->m_height + 5;
@@ -233,6 +224,8 @@ public:
 		FileInput* objectLayerAlpha = new FileInput;
 		m_Window->addChild(objectLayerAlpha);
 		objectLayerAlpha->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectLayerAlpha->getDialog()->setPath(objectLayerAlpha->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayerAlpha->getDialog()->addDefaultImageFilters();
 		objectLayerAlpha->setValueRefLink(&typeid(std::string), &m_textureAlpha);
 		objectLayerAlpha->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectLayerAlpha, this] {
 			this->updateTerrain();
@@ -242,30 +235,42 @@ public:
 		FileInput* objectLayer1 = new FileInput;
 		m_Window->addChild(objectLayer1);
 		objectLayer1->initialize(200, 28, m_Window->m_x + 10, shift);
+		objectLayer1->getDialog()->setPath(objectLayer1->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer1->getDialog()->addDefaultImageFilters();
 		objectLayer1->setValueRefLink(&typeid(std::string), &m_textureLayer1);
 		FileInput* objectLayer1Normal = new FileInput;
 		m_Window->addChild(objectLayer1Normal);
 		objectLayer1Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer1->setValueRefLink(&typeid(std::string), &m_textureNormalLayer1);
+		objectLayer1Normal->getDialog()->setPath(objectLayer1Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer1Normal->getDialog()->addDefaultImageFilters();
+		objectLayer1Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer1);
 		shift += objectLayer1->m_height + 5;
 
 		FileInput* objectLayer2 = new FileInput;
 		m_Window->addChild(objectLayer2);
 		objectLayer2->initialize(200, 28, m_Window->m_x + 10, shift);
+		objectLayer2->getDialog()->setPath(objectLayer2->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer2->getDialog()->addDefaultImageFilters();
 		objectLayer2->setValueRefLink(&typeid(std::string), &m_textureLayer2);
 		FileInput* objectLayer2Normal = new FileInput;
 		m_Window->addChild(objectLayer2Normal);
 		objectLayer2Normal->initialize(200, 28, m_Window->m_x + 212, shift);
+		objectLayer2Normal->getDialog()->setPath(objectLayer2Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer2Normal->getDialog()->addDefaultImageFilters();
 		objectLayer2Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer2);
 		shift += objectLayer2->m_height + 5;
 
 		FileInput* objectLayer3 = new FileInput;
 		m_Window->addChild(objectLayer3);
 		objectLayer3->initialize(200, 28, m_Window->m_x + 10, shift);
+		objectLayer3->getDialog()->setPath(objectLayer3->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer3->getDialog()->addDefaultImageFilters();
 		objectLayer3->setValueRefLink(&typeid(std::string), &m_textureLayer3);
 		FileInput* objectLayer3Normal = new FileInput;
 		m_Window->addChild(objectLayer3Normal);
 		objectLayer3Normal->initialize(200, 28, m_Window->m_x + 212, shift);
+		objectLayer3Normal->getDialog()->setPath(objectLayer3Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer3Normal->getDialog()->addDefaultImageFilters();
 		objectLayer3Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer3);
 		shift += objectLayer3->m_height + 5;
 	}
@@ -280,8 +285,27 @@ public:
 		m_path = terrain->getPath();
 		m_texture = terrain->GetTextureClass()->getTexturePath();
 		m_position = terrain->GetPosition();
-		m_scale = terrain->GetScale();
+		m_scale = terrain->getOrigScale();
 		m_scaleNormal = terrain->getScaleNormal();
+
+		std::vector<std::string> textures = terrain->GetTextureClass()->getTexturesPath();
+		if (textures.size() >= 5) {
+			m_textureLayer1 = textures[2];
+			m_textureNormalLayer1 = textures[3];
+			m_textureAlpha = textures[4];
+
+			if (textures.size() >= 7) {
+				m_textureLayer2 = textures[4];
+				m_textureNormalLayer2 = textures[5];
+				m_textureAlpha = textures[6];
+
+				if (textures.size() == 9) {
+					m_textureLayer3 = textures[6];
+					m_textureNormalLayer3 = textures[7];
+					m_textureAlpha = textures[8];
+				}
+			}
+		}
 
 		m_Window->setTitle("Terrain properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		m_Window->show();
@@ -302,18 +326,17 @@ public:
 		terrain->SetScale(m_scale);
 		terrain->setScaleNormal(m_scaleNormal);
 		terrain->Initialize(m_app->getGraphic()->getD3D(), m_app->getGraphic()->getFrustum(), &m_path[0], m_texture, m_textureNormal);
-		/*if (layerAlpha.length() > 1 && layer1.length() > 1 && layer1Normal.length() > 1) {
-			terrain->addTextureLayer(layer1, layer1Normal);
-			if (layer2.length() > 1 && layer2Normal.length() > 1) {
-				terrain->addTextureLayer(layer2, layer2Normal);
-				if (layer3.length() > 1 && layer3Normal.length() > 1) {
-					terrain->addTextureLayer(layer3, layer3Normal);
+		if (m_textureAlpha.length() > 1 && m_textureLayer1.length() > 1 && m_textureNormalLayer1.length() > 1) {
+			terrain->addTextureLayer(m_textureLayer1, m_textureNormalLayer1);
+			if (m_textureLayer2.length() > 1 && m_textureNormalLayer2.length() > 1) {
+				terrain->addTextureLayer(m_textureLayer2, m_textureNormalLayer2);
+				if (m_textureLayer3.length() > 1 && m_textureNormalLayer3.length() > 1) {
+					terrain->addTextureLayer(m_textureLayer3, m_textureNormalLayer3);
 				}
 			}
-			terrain->addTextureAlpha(layerAlpha);
-		}*/
-		m_app->m_selectedModel->hideBBox();
-		m_app->m_selectedModel->showBBox();
+			terrain->addTextureAlpha(m_textureAlpha);
+		}
+		m_app->m_selectedModel->refreshBBox();
 
 		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
 		editorFormat->path = m_path;

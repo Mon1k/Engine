@@ -19,11 +19,6 @@ public:
 	void RenderReflectionToTexture(CameraClass*);
 	void Shutdown();
 
-	void addRefractionTarget(ModelClass* model)
-	{
-		this->m_RefractionModel = model;
-	}
-
 	void incrementTranslation()
 	{
 		m_waterTranslation += m_waterTranslationSpeed;
@@ -39,14 +34,36 @@ public:
 	{
 		m_waterHeight = height;
 	}
+	float getWaterHeight()
+	{
+		return m_waterHeight;
+	}
 	void setReflectRefractScale(float scale)
 	{
 		m_reflectRefractScale = scale;
+	}
+	float getReflectRefractScale()
+	{
+		return m_reflectRefractScale;
 	}
 	void setNormalMapTiling(float x, float y)
 	{
 		m_normalMapTiling = D3DXVECTOR2(x, y);
 	}
+	D3DXVECTOR2 getNormalMapTiling()
+	{
+		return m_normalMapTiling;
+	}
+
+	void addRefractionTarget(Model* model)
+	{
+		this->m_RefractionModel = model;
+	}
+	Model* getRefractionModel()
+	{
+		return m_RefractionModel;
+	}
+
 
 	virtual void frame(CameraClass*, float);
 
@@ -55,7 +72,7 @@ protected:
 	RefractionShaderClass* m_RefractionShader;
 	WaterShaderClass* m_WaterShader;
 	LightShaderClass* m_LightShaderWater;
-	ModelClass* m_RefractionModel;
+	Model* m_RefractionModel;
 
 	float m_waterHeight;
 	

@@ -113,15 +113,19 @@ void Window::setTitle(std::string title)
 
 void Window::show()
 {
-	Group::show();
-	proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
-	focus();
+	if (!m_visible) {
+		Group::show();
+		proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
+		focus();
+	}
 }
 
 void Window::close()
 {
-	proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);
-	hide();
+	if (m_visible) {
+		proccesedEventHandlers(Window::EventType::WINDOW_CLOSE);
+		hide();
+	}
 }
 
 void Window::Shutdown()

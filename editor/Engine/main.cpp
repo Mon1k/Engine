@@ -1,15 +1,10 @@
 #include "../../Engine/ui/UIManager.h"
-#include "../../Engine/ui/button.h"
 #include "../../Engine/ui/label.h"
 #include "../../Engine/ui/cursor.h"
-#include "../../Engine/ui/input.h"
-#include "../../Engine/ui/window.h"
-#include "../../Engine/ui/checkbox.h"
 
 #include "../../Engine/models/ModelManager.h"
 #include "../../Engine/modelclass.h"
 #include "../../Engine/models/Model.h"
-#include "../../Engine/models/WaterNode.h"
 #include "../../Engine/models/sky/skydomeclass.h"
 #include "../../Engine/models/sky/skyplaneclass.h"
 #include "../../Engine/models/gridclass.h"
@@ -18,6 +13,7 @@
 #include "src/MainWindow.h"
 #include "src/ObjectWindow.h"
 #include "src/TerrainWindow.h"
+#include "src/WaterWindow.h"
 
 #include "../../Engine/lightclass.h"
 #include "../../Engine/lightshaderclass.h"
@@ -28,6 +24,9 @@
 void App::initDefaultObjects()
 {
 	m_selectedModel = 0;
+	m_objectWindow = 0;
+	m_terrainWindow = 0;
+	m_waterWindow = 0;
 
 	GridClass* grid = new GridClass;
 	grid->Initialize(m_Graphics->getD3D(), 100, 100);
@@ -39,289 +38,39 @@ void App::InitMenuTop()
 {
 	m_mainWindow = new MainWindow(this);
 	m_mainWindow->initialize();
-
-	m_objectWindow = new ObjectWindow(this);
-	m_objectWindow->initialize();
-
-	m_terrainWindow = new TerrainWindow(this);
-	m_terrainWindow->initialize();
 }
 
-	/*void InitWindowTerrain()
-	{
-		int shift = 0;
-		Window* menuTop = dynamic_cast<Window*>(m_uiManager->getById(1));
-
-		Window* terrainWindow = new Window;
-		m_uiManager->Add(terrainWindow);
-		terrainWindow->Initialize(600, 500, Options::screen_width - 620, menuTop->m_height + 5);
-		terrainWindow->addHeader("Terrain properties", Window::HEADER_BUTTON_CLOSE);
-		terrainWindow->addBody();
-		terrainWindow->hide();
-		terrainWindow->setId(21);
-		terrainWindow->addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
-			unselectModel();
-			return 0;
-			});
-		shift += terrainWindow->m_y + terrainWindow->getHeader()->m_height + 5;
-
-
-		Input* objectPath = new Input;
-		terrainWindow->addChild(objectPath);
-		objectPath->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectPath->setText("data/textures/heightmap.bmp");
-		objectPath->setId(22);
-		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-			Input* objectPath = dynamic_cast<Input*>(m_uiManager->getById(22));
-			if (!m_selectedModel) {
-				Input* objectTexture = dynamic_cast<Input*>(m_uiManager->getById(23));
-				Input* objectTextureNormal = dynamic_cast<Input*>(m_uiManager->getById(30));
-
-				TerrainClass* model = new TerrainClass;
-				bool result = model->Initialize(m_Graphics->getD3D(), m_Graphics->getFrustum(), &objectPath->getValue()[0], objectTexture->getValue(), objectTextureNormal->getValue());
-				if (result) {
-					model->setId(m_modelManager->getNextId());
-					model->addLights({ m_light });
-
-					m_modelManager->Add(model);
-					m_selectedModel = model;
-
-					AbstractGui* objectWindow = m_uiManager->getById(21);
-					objectWindow->show();
-					objectWindow->focus();
-
-					MapEntity::ObjectFormat format;
-					format.id = model->getId();
-					format.type = MapEntity::ObjectTypes::TERRAIN;
-					format.position = model->GetPosition();
-					format.scale = model->GetScale();
-					format.rotation = model->getRotation();
-					format.path = objectPath->getValue();
-					format.texture = objectTexture->getValue();
-					format.extraParams.push_back(objectTextureNormal->getValue());
-					// scale normal
-					format.extraParams.push_back("1.0;1.0;1.0");
-					// add layers
-					// alpha
-					format.extraParams.push_back("");
-					// layer1
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-					// layer2
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-					// layer3
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-
-					m_mapEntities->add(format);
-
-					this->updateTerrain();
-				}
-			}
-			else {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->path = objectPath->getValue();
-				this->updateTerrain();
-			}
-			return 0;
-			});
-		shift += objectPath->m_height + 5;
-
-
-		Input* objectTexture = new Input;
-		terrainWindow->addChild(objectTexture);
-		objectTexture->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectTexture->setText("data/textures/grass.dds");
-		objectTexture->setId(23);
-		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->texture = objectTexture->getValue();
-				this->updateTerrain();
-			}
-			return 0;
-			});
-		shift += objectTexture->m_height + 5;
-
-		Input* objectTextureNormal = new Input;
-		terrainWindow->addChild(objectTextureNormal);
-		objectTextureNormal->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectTextureNormal->setText("data/textures/grass_n.dds");
-		objectTextureNormal->setId(30);
-		objectTextureNormal->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTextureNormal, this] {
-			if (m_selectedModel) {
-				this->updateTerrain();
-			}
-			return 0;
-			});
-		shift += objectTextureNormal->m_height + 5;
-
-
-		Label* objectWindowLabelPosition = new Label;
-		terrainWindow->addChild(objectWindowLabelPosition);
-		objectWindowLabelPosition->Initialize(50, 20);
-		objectWindowLabelPosition->Add("Position", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabelPosition->m_height + 1;
-
-		Input* objectPositionX = new Input;
-		terrainWindow->addChild(objectPositionX);
-		objectPositionX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectPositionX->setId(24);
-		objectPositionX->setText("0.00");
-		objectPositionX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionX, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectPositionY = new Input;
-		terrainWindow->addChild(objectPositionY);
-		objectPositionY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 112, shift);
-		objectPositionY->setId(25);
-		objectPositionY->setText("0.00");
-		objectPositionY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionY, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectPositionZ = new Input;
-		terrainWindow->addChild(objectPositionZ);
-		objectPositionZ->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 214, shift);
-		objectPositionZ->setId(26);
-		objectPositionZ->setText("0.00");
-		objectPositionZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionZ, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		shift += objectPositionX->m_height + 5;
-
-
-		Label* objectWindowLabelScale = new Label;
-		terrainWindow->addChild(objectWindowLabelScale);
-		objectWindowLabelScale->Initialize(50, 20);
-		objectWindowLabelScale->Add("Scale", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabelScale->m_height + 1;
-
-		Input* objectScaleX = new Input;
-		terrainWindow->addChild(objectScaleX);
-		objectScaleX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectScaleX->setId(27);
-		objectScaleX->setText("1.00");
-		objectScaleX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleX, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectScaleY = new Input;
-		terrainWindow->addChild(objectScaleY);
-		objectScaleY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 112, shift);
-		objectScaleY->setId(28);
-		objectScaleY->setText("1.00");
-		objectScaleY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleY, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectScaleZ = new Input;
-		terrainWindow->addChild(objectScaleZ);
-		objectScaleZ->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 214, shift);
-		objectScaleZ->setId(29);
-		objectScaleZ->setText("1.00");
-		objectScaleZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleZ, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		shift += objectScaleX->m_height + 5;
-
-
-		Label* objectWindowLabelScaleNormal = new Label;
-		terrainWindow->addChild(objectWindowLabelScaleNormal);
-		objectWindowLabelScaleNormal->Initialize(50, 20);
-		objectWindowLabelScaleNormal->Add("Scale normal", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabelScaleNormal->m_height + 1;
-
-		Input* objectScaleNormalX = new Input;
-		terrainWindow->addChild(objectScaleNormalX);
-		objectScaleNormalX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectScaleNormalX->setId(31);
-		objectScaleNormalX->setText("1.00");
-		objectScaleNormalX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalX, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectScaleNormalY = new Input;
-		terrainWindow->addChild(objectScaleNormalY);
-		objectScaleNormalY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 112, shift);
-		objectScaleNormalY->setId(32);
-		objectScaleNormalY->setText("1.00");
-		objectScaleNormalY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalY, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		Input* objectScaleNormalZ = new Input;
-		terrainWindow->addChild(objectScaleNormalZ);
-		objectScaleNormalZ->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 214, shift);
-		objectScaleNormalZ->setId(33);
-		objectScaleNormalZ->setText("1.00");
-		objectScaleNormalZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleNormalZ, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		shift += objectScaleNormalX->m_height + 5;
-
-
-		// layers
-		Label* objectWindowLabeLayers = new Label;
-		terrainWindow->addChild(objectWindowLabeLayers);
-		objectWindowLabeLayers->Initialize(50, 20);
-		objectWindowLabeLayers->Add("Layers", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabeLayers->m_height + 1;
-
-		Input* objectLayerAlpha = new Input;
-		terrainWindow->addChild(objectLayerAlpha);
-		objectLayerAlpha->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectLayerAlpha->setId(40);
-		objectLayerAlpha->setText("");
-		objectLayerAlpha->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectLayerAlpha, this] {
-			this->updateTerrain();
-			return 0;
-			});
-		shift += objectLayerAlpha->m_height + 5;
-
-		Input* objectLayer1 = new Input;
-		terrainWindow->addChild(objectLayer1);
-		objectLayer1->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 10, shift);
-		objectLayer1->setId(34);
-		objectLayer1->setText("");
-		Input* objectLayer1Normal = new Input;
-		terrainWindow->addChild(objectLayer1Normal);
-		objectLayer1Normal->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 212, shift);
-		objectLayer1Normal->setId(35);
-		objectLayer1Normal->setText("");
-		shift += objectLayer1->m_height + 5;
-
-		Input* objectLayer2 = new Input;
-		terrainWindow->addChild(objectLayer2);
-		objectLayer2->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 10, shift);
-		objectLayer2->setId(36);
-		objectLayer2->setText("");
-		Input* objectLayer2Normal = new Input;
-		terrainWindow->addChild(objectLayer2Normal);
-		objectLayer2Normal->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 212, shift);
-		objectLayer2Normal->setId(37);
-		objectLayer2Normal->setText("");
-		shift += objectLayer2->m_height + 5;
-
-		Input* objectLayer3 = new Input;
-		terrainWindow->addChild(objectLayer3);
-		objectLayer3->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 10, shift);
-		objectLayer3->setId(38);
-		objectLayer3->setText("");
-		Input* objectLayer3Normal = new Input;
-		terrainWindow->addChild(objectLayer3Normal);
-		objectLayer3Normal->Initialize(L"data/textures/ui/button.png", 200, 28, terrainWindow->m_x + 212, shift);
-		objectLayer3Normal->setId(39);
-		objectLayer3Normal->setText("");
-		shift += objectLayer3->m_height + 5;
+ObjectWindow* App::getObjectWindow()
+{
+	if (!m_objectWindow) {
+		m_objectWindow = new ObjectWindow(this);
+		m_objectWindow->initialize();
 	}
 
-	void InitWindowCompositeObject()
+	return m_objectWindow;
+}
+
+TerrainWindow* App::getTerrainWindow()
+{
+	if (!m_terrainWindow) {
+		m_terrainWindow = new TerrainWindow(this);
+		m_terrainWindow->initialize();
+	}
+
+	return m_terrainWindow;
+}
+
+WaterWindow* App::getWaterWindow()
+{
+	if (!m_waterWindow) {
+		m_waterWindow = new WaterWindow(this);
+		m_waterWindow->initialize();
+	}
+
+	return m_waterWindow;
+}
+
+	/*void InitWindowCompositeObject()
 	{
 		int shift = 0;
 		Window* menuTop = dynamic_cast<Window*>(m_uiManager->getById(1));
@@ -476,242 +225,6 @@ void App::InitMenuTop()
 		shift += objectScaleX->m_height + 5;
 	}
 
-
-	void InitWindowWater()
-	{
-		int shift = 0;
-		Window* menuTop = dynamic_cast<Window*>(m_uiManager->getById(1));
-
-		Window* terrainWindow = new Window;
-		m_uiManager->Add(terrainWindow);
-		terrainWindow->Initialize(600, 500, Options::screen_width - 620, menuTop->m_height + 5);
-		terrainWindow->addHeader("Water Node properties", Window::HEADER_BUTTON_CLOSE);
-		terrainWindow->addBody();
-		terrainWindow->hide();
-		terrainWindow->setId(51);
-		terrainWindow->addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
-			unselectModel();
-			return 0;
-			});
-		shift += terrainWindow->m_y + terrainWindow->getHeader()->m_height + 5;
-
-
-		Input* objectPath = new Input;
-		terrainWindow->addChild(objectPath);
-		objectPath->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectPath->setText("data/models/water.ds");
-		objectPath->setId(52);
-		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPath, this] {
-			if (!m_selectedModel) {
-				Input* objectTexture = dynamic_cast<Input*>(m_uiManager->getById(53));
-
-				WaterNode* model = new WaterNode;
-				bool result = model->Initialize(m_Graphics->getD3D(), &objectPath->getValue()[0], { objectTexture->getValue() });
-				if (result) {
-					model->setId(m_modelManager->getNextId());
-					model->addLights({ m_light });
-
-					m_modelManager->Add(model);
-					m_selectedModel = model;
-
-					AbstractGui* objectWindow = m_uiManager->getById(51);
-					objectWindow->show();
-					objectWindow->focus();
-
-					MapEntity::ObjectFormat format;
-					format.id = model->getId();
-					format.type = MapEntity::ObjectTypes::WATER;
-					format.position = model->GetPosition();
-					format.scale = model->GetScale();
-					format.rotation = model->getRotation();
-					format.path = objectPath->getValue();
-					format.texture = objectTexture->getValue();
-					// water height
-					format.extraParams.push_back("");
-					// tiling
-					format.extraParams.push_back("");
-					format.extraParams.push_back("");
-					// refreaction scale
-					format.extraParams.push_back("");
-					// target
-					format.extraParams.push_back("");
-
-					m_mapEntities->add(format);
-
-					this->updateWater();
-				}
-			}
-			else {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->path = objectPath->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectPath->m_height + 5;
-
-
-		Input* objectTexture = new Input;
-		terrainWindow->addChild(objectTexture);
-		objectTexture->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectTexture->setText("data/textures/water01.dds");
-		objectTexture->setId(53);
-		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->texture = objectTexture->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectTexture->m_height + 5;
-
-		Label* objectWindowLabelPosition = new Label;
-		terrainWindow->addChild(objectWindowLabelPosition);
-		objectWindowLabelPosition->Initialize(50, 20);
-		objectWindowLabelPosition->Add("Position", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabelPosition->m_height + 1;
-
-		Input* objectPositionX = new Input;
-		terrainWindow->addChild(objectPositionX);
-		objectPositionX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectPositionX->setId(54);
-		objectPositionX->setText("0.00");
-		objectPositionX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionX, this] {
-			this->updateWater();
-			return 0;
-			});
-		Input* objectPositionY = new Input;
-		terrainWindow->addChild(objectPositionY);
-		objectPositionY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 112, shift);
-		objectPositionY->setId(55);
-		objectPositionY->setText("0.00");
-		objectPositionY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionY, this] {
-			this->updateWater();
-			return 0;
-			});
-		Input* objectPositionZ = new Input;
-		terrainWindow->addChild(objectPositionZ);
-		objectPositionZ->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 214, shift);
-		objectPositionZ->setId(56);
-		objectPositionZ->setText("0.00");
-		objectPositionZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPositionZ, this] {
-			this->updateWater();
-			return 0;
-			});
-		shift += objectPositionX->m_height + 5;
-
-
-		Label* objectWindowLabelScale = new Label;
-		terrainWindow->addChild(objectWindowLabelScale);
-		objectWindowLabelScale->Initialize(50, 20);
-		objectWindowLabelScale->Add("Scale", terrainWindow->m_x + 5, shift);
-		shift += objectWindowLabelScale->m_height + 1;
-
-		Input* objectScaleX = new Input;
-		terrainWindow->addChild(objectScaleX);
-		objectScaleX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectScaleX->setId(57);
-		objectScaleX->setText("1.00");
-		objectScaleX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleX, this] {
-			this->updateWater();
-			return 0;
-			});
-		Input* objectScaleY = new Input;
-		terrainWindow->addChild(objectScaleY);
-		objectScaleY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 112, shift);
-		objectScaleY->setId(58);
-		objectScaleY->setText("1.00");
-		objectScaleY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleY, this] {
-			this->updateWater();
-			return 0;
-			});
-		Input* objectScaleZ = new Input;
-		terrainWindow->addChild(objectScaleZ);
-		objectScaleZ->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 214, shift);
-		objectScaleZ->setId(59);
-		objectScaleZ->setText("1.00");
-		objectScaleZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectScaleZ, this] {
-			this->updateWater();
-			return 0;
-			});
-		shift += objectScaleX->m_height + 5;
-
-
-		Input* objectWaterHeight = new Input;
-		terrainWindow->addChild(objectWaterHeight);
-		objectWaterHeight->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectWaterHeight->setText("5");
-		objectWaterHeight->setId(60);
-		objectWaterHeight->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectWaterHeight, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[0] = objectWaterHeight->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectWaterHeight->m_height + 5;
-
-		Input* objectWaterTilingX = new Input;
-		terrainWindow->addChild(objectWaterTilingX);
-		objectWaterTilingX->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectWaterTilingX->setText("0.05");
-		objectWaterTilingX->setId(61);
-		objectWaterTilingX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectWaterTilingX, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[1] = objectWaterTilingX->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		Input* objectWaterTilingY = new Input;
-		terrainWindow->addChild(objectWaterTilingY);
-		objectWaterTilingY->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + objectWaterTilingX->m_width + 20, shift);
-		objectWaterTilingY->setText("0.05");
-		objectWaterTilingY->setId(62);
-		objectWaterTilingY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectWaterTilingY, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[2] = objectWaterTilingY->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectWaterTilingX->m_height + 5;
-
-		Input* objectWaterRefractionScale = new Input;
-		terrainWindow->addChild(objectWaterRefractionScale);
-		objectWaterRefractionScale->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectWaterRefractionScale->setText("0.02");
-		objectWaterRefractionScale->setId(63);
-		objectWaterRefractionScale->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectWaterRefractionScale, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[3] = objectWaterRefractionScale->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectWaterRefractionScale->m_height + 5;
-
-
-		Input* objectWaterTarget = new Input;
-		terrainWindow->addChild(objectWaterTarget);
-		objectWaterTarget->Initialize(L"data/textures/ui/button.png", 100, 28, terrainWindow->m_x + 10, shift);
-		objectWaterTarget->setText("");
-		objectWaterTarget->setId(64);
-		objectWaterTarget->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectWaterTarget, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[4] = objectWaterTarget->getValue();
-				this->updateWater();
-			}
-			return 0;
-			});
-		shift += objectWaterTarget->m_height + 5;
-	}
 
 	void InitWindowSky()
 	{
@@ -869,10 +382,12 @@ void App::loadScene()
 	m_light = new LightClass;
 	m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_light->SetDirection(0.0f, -0.5f, 1.0f);
-	m_light->SetPosition(0.0f, 40.0f, 0.0f);
+	m_light->SetDirection(0.0f, -1.0f, 1.0f);
+	m_light->SetPosition(-50.0f, 80.0f, -50.0f);
 	m_light->SetLookAt(70.0f, 0.0f, 70.0f);
-	m_light->setIntensity(2.0f);
+	m_light->setIntensity(1.0f);
+	m_light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_light->SetSpecularPower(32.0f);
 	m_light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	initDefaultObjects();
@@ -942,18 +457,18 @@ void App::frameUI()
 			m_selectedModel->showBBox();
 			MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
 			if (editorFormat->type == MapEntity::ObjectTypes::MODEL) {
-				m_objectWindow->updateUiFromModel();
+				this->getObjectWindow()->updateUiFromModel();
 			}
 			/*else if (editorFormat->type == MapEntity::ObjectTypes::COMPOSITE_MODEL) {
 				this->updateCompositeModel();
 			}*/
 			else if (editorFormat->type == MapEntity::ObjectTypes::TERRAIN) {
-				m_terrainWindow->updateUiFromModel();
+				this->getTerrainWindow()->updateUiFromModel();
 			}
-			/*else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
-				this->updateWindowWater();
+			else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
+				this->getWaterWindow()->updateUiFromModel();
 			}
-			else if (editorFormat->type == MapEntity::ObjectTypes::SKY) {
+			/*else if (editorFormat->type == MapEntity::ObjectTypes::SKY) {
 				this->updateWindowSky();
 			}*/
 		}
@@ -1001,8 +516,9 @@ void App::unselectModel()
 		m_selectedModel->hideBBox();
 		m_selectedModel = 0;
 
-		m_objectWindow->getWindow()->hide();
-		m_terrainWindow->getWindow()->hide();
+		this->getObjectWindow()->getWindow()->hide();
+		this->getTerrainWindow()->getWindow()->hide();
+		this->getWaterWindow()->getWindow()->hide();
 	}
 }
 
@@ -1124,366 +640,6 @@ void App::unselectModel()
 			if (childId2.size() > 0) {
 				model->addChild(m_modelManager->getById(stoi(childId2)));
 			}
-		}
-
-		this->updateBbox();
-	}
-
-	void resetWindowTerrain()
-	{
-		Input* positionInput;
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(24));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(25));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(26));
-		positionInput->setText("0.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(27));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(28));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(29));
-		positionInput->setText("1.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(31));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(32));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(33));
-		positionInput->setText("1.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(40));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(34));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(35));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(36));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(37));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(38));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(39));
-		positionInput->setText("");
-	}
-
-	void updateWindowTerrain()
-	{
-		D3DXVECTOR3 direction, position, scale, rotation, scaleNormal;
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		TerrainClass* terrain = dynamic_cast<TerrainClass*>(m_selectedModel);
-
-		this->updateBbox();
-
-		position = editorFormat->position;
-		scale = editorFormat->scale;
-		scaleNormal = terrain->getScaleNormal();
-
-		AbstractGui* objectWindow = m_uiManager->getById(21);
-		objectWindow->show();
-		objectWindow->focus();
-		Input* positionInput;
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(24));
-		positionInput->setText(String::ssprintf("%.2f", position.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(25));
-		positionInput->setText(String::ssprintf("%.2f", position.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(26));
-		positionInput->setText(String::ssprintf("%.2f", position.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(27));
-		positionInput->setText(String::ssprintf("%.2f", scale.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(28));
-		positionInput->setText(String::ssprintf("%.2f", scale.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(29));
-		positionInput->setText(String::ssprintf("%.2f", scale.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(31));
-		positionInput->setText(String::ssprintf("%.2f", scaleNormal.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(32));
-		positionInput->setText(String::ssprintf("%.2f", scaleNormal.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(33));
-		positionInput->setText(String::ssprintf("%.2f", scaleNormal.z));
-
-		// layers
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(40));
-		positionInput->setText(editorFormat->extraParams[2]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(34));
-		positionInput->setText(editorFormat->extraParams[3]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(35));
-		positionInput->setText(editorFormat->extraParams[4]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(36));
-		positionInput->setText(editorFormat->extraParams[5]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(37));
-		positionInput->setText(editorFormat->extraParams[6]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(38));
-		positionInput->setText(editorFormat->extraParams[7]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(39));
-		positionInput->setText(editorFormat->extraParams[8]);
-
-		// textures
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(22));
-		positionInput->setText(editorFormat->path);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(23));
-		positionInput->setText(editorFormat->texture);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(30));
-		positionInput->setText(editorFormat->extraParams[0]);
-	}
-
-	void updateTerrain()
-	{
-		if (!m_selectedModel) {
-			return;
-		}
-
-		Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(21));
-		std::string title = "Terrain properties - ";
-		title += std::to_string(m_selectedModel->getId());
-		objectWindow->setTitle(title);
-
-		Input* input;
-
-		D3DXVECTOR3 position, scale, scaleNormal;
-		std::string textures, texturesNormal, heightmap;
-		std::string layerAlpha, layer1, layer1Normal, layer2, layer2Normal, layer3, layer3Normal;
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(24));
-		position.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(25));
-		position.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(26));
-		position.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(27));
-		scale.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(28));
-		scale.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(29));
-		scale.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(31));
-		scaleNormal.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(32));
-		scaleNormal.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(33));
-		scaleNormal.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(22));
-		heightmap = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(23));
-		textures = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(30));
-		texturesNormal = input->getValue();
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(40));
-		layerAlpha = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(34));
-		layer1 = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(35));
-		layer1Normal = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(36));
-		layer2 = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(37));
-		layer2Normal = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(38));
-		layer3 = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(39));
-		layer3Normal = input->getValue();
-
-
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		editorFormat->position = position;
-		editorFormat->scale = scale;
-		editorFormat->path = heightmap;
-		editorFormat->texture = textures;
-		editorFormat->extraParams[0] = texturesNormal;
-		editorFormat->extraParams[1] = std::to_string(scaleNormal.x)+";"+ std::to_string(scaleNormal.y)+";"+ std::to_string(scaleNormal.z);
-		editorFormat->extraParams[2] = layerAlpha;
-		editorFormat->extraParams[3] = layer1;
-		editorFormat->extraParams[4] = layer1Normal;
-		editorFormat->extraParams[5] = layer2;
-		editorFormat->extraParams[6] = layer2Normal;
-		editorFormat->extraParams[7] = layer3;
-		editorFormat->extraParams[8] = layer3Normal;
-
-
-		TerrainClass* terrain = dynamic_cast<TerrainClass*>(m_selectedModel);
-
-		terrain->Shutdown();
-		terrain->SetPosition(position);
-		terrain->SetScale(scale);
-		terrain->setScaleNormal(scaleNormal);
-		terrain->Initialize(m_Graphics->getD3D(), m_Graphics->getFrustum(), &heightmap[0], textures, texturesNormal);
-		if (layerAlpha.length() > 1 && layer1.length() > 1 && layer1Normal.length() > 1) {
-			terrain->addTextureLayer(layer1, layer1Normal);
-			if (layer2.length() > 1 && layer2Normal.length() > 1) {
-				terrain->addTextureLayer(layer2, layer2Normal);
-				if (layer3.length() > 1 && layer3Normal.length() > 1) {
-					terrain->addTextureLayer(layer3, layer3Normal);
-				}
-			}
-			terrain->addTextureAlpha(layerAlpha);
-		}
-
-		this->updateBbox();
-	}
-
-
-	void resetWindowWater()
-	{
-		Input* positionInput;
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(54));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(55));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(56));
-		positionInput->setText("0.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(57));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(58));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(59));
-		positionInput->setText("1.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(60));
-		positionInput->setText("5");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(61));
-		positionInput->setText("0.05");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(62));
-		positionInput->setText("0.05");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(63));
-		positionInput->setText("0.02");
-	}
-
-	void updateWindowWater()
-	{
-		D3DXVECTOR3 position, scale;
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		WaterNode* model = dynamic_cast<WaterNode*>(m_selectedModel);
-
-		this->updateBbox();
-
-		position = editorFormat->position;
-		scale = editorFormat->scale;
-
-		AbstractGui* objectWindow = m_uiManager->getById(51);
-		objectWindow->show();
-		objectWindow->focus();
-		Input* positionInput;
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(52));
-		positionInput->setText(editorFormat->path);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(53));
-		positionInput->setText(editorFormat->texture);
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(54));
-		positionInput->setText(String::ssprintf("%.2f", position.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(55));
-		positionInput->setText(String::ssprintf("%.2f", position.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(56));
-		positionInput->setText(String::ssprintf("%.2f", position.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(57));
-		positionInput->setText(String::ssprintf("%.2f", scale.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(58));
-		positionInput->setText(String::ssprintf("%.2f", scale.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(59));
-		positionInput->setText(String::ssprintf("%.2f", scale.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(60));
-		positionInput->setText(editorFormat->extraParams[0]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(61));
-		positionInput->setText(editorFormat->extraParams[1]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(62));
-		positionInput->setText(editorFormat->extraParams[2]);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(63));
-		positionInput->setText(editorFormat->extraParams[3]);
-	}
-
-	void updateWater()
-	{
-		if (!m_selectedModel) {
-			return;
-		}
-
-		Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(51));
-		std::string title = "Water properties - ";
-		title += std::to_string(m_selectedModel->getId());
-		objectWindow->setTitle(title);
-
-		Input* input;
-
-		D3DXVECTOR3 position, scale, scaleNormal;
-		std::string path, textures;
-		std::string waterHeight, waterTilingX, waterTilingY, waterRefraction, waterTarget;
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(52));
-		path = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(53));
-		textures = input->getValue();
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(54));
-		position.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(55));
-		position.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(56));
-		position.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(57));
-		scale.x = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(58));
-		scale.y = std::stof(input->getValue());
-		input = dynamic_cast<Input*>(m_uiManager->getById(59));
-		scale.z = std::stof(input->getValue());
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(60));
-		waterHeight = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(61));
-		waterTilingX = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(62));
-		waterTilingY = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(63));
-		waterRefraction = input->getValue();
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(64));
-		waterTarget = input->getValue();
-
-
-		ModelClass* modelWaterTarget = 0;
-		if (waterTarget.size() > 0) {
-			modelWaterTarget = dynamic_cast<ModelClass*>(m_modelManager->getById(std::stoi(waterTarget)));
-		}
-		if (!modelWaterTarget) {
-			waterTarget = "";
-			modelWaterTarget = 0;
-		}
-
-
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		editorFormat->position = position;
-		editorFormat->scale = scale;
-		editorFormat->path = path;
-		editorFormat->texture = textures;
-		editorFormat->extraParams[0] = waterHeight;
-		editorFormat->extraParams[1] = waterTilingX;
-		editorFormat->extraParams[2] = waterTilingY;
-		editorFormat->extraParams[3] = waterRefraction;
-		editorFormat->extraParams[4] = waterTarget;
-
-		WaterNode* model = dynamic_cast<WaterNode*>(m_selectedModel);
-
-		model->Shutdown();
-		model->Initialize(m_Graphics->getD3D(), &path[0], { textures });
-		model->SetPosition(position);
-		model->SetScale(scale);
-		model->setWaterHeight(std::stof(waterHeight));
-		model->setNormalMapTiling(std::stof(waterTilingX), std::stof(waterTilingY));
-		model->setReflectRefractScale(std::stof(waterRefraction));
-		if (modelWaterTarget) {
-			model->addRefractionTarget(modelWaterTarget);
 		}
 
 		this->updateBbox();

@@ -388,6 +388,7 @@
     <ClInclude Include="src\MainWindow.h" />
     <ClInclude Include="src\ObjectWindow.h" />
     <ClInclude Include="src\TerrainWindow.h" />
+    <ClInclude Include="src\WaterWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps" />

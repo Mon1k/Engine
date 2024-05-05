@@ -777,6 +777,9 @@
     <ClInclude Include="src\TerrainWindow.h">
       <Filter>src\editor</Filter>
     </ClInclude>
+    <ClInclude Include="src\WaterWindow.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\alphamap.ps">

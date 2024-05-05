@@ -16,6 +16,7 @@ public:
 	ObjectWindow::ObjectWindow(App* app)
 	{
 		m_app = app;
+		resetUI();
 	}
 
 	void resetUI()
@@ -32,8 +33,6 @@ public:
 
 	void initialize()
 	{
-		resetUI();
-
 		int shift = 0;
 		Window* menuTop = dynamic_cast<Window*>(m_app->m_uiManager->getById(1));
 
@@ -61,33 +60,31 @@ public:
 
 			if (!m_app->m_selectedModel) {
 				Model* model = new Model;
-				bool result = model->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], {m_texture});
-				if (result) {
-					model->setId(m_app->m_modelManager->getNextId());
-					model->addLights({ m_app->m_light });
-					model->addShader(shader);
+				model->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], {m_texture});
+				model->setId(m_app->m_modelManager->getNextId());
+				model->addLights({ m_app->m_light });
+				model->addShader(shader);
 
-					m_app->m_modelManager->Add(model);
-					m_app->m_selectedModel = model;
+				m_app->m_modelManager->Add(model);
+				m_app->m_selectedModel = model;
 
-					MapEntity::ObjectFormat format;
-					format.model = model;
-					format.parent = 0;
+				MapEntity::ObjectFormat format;
+				format.model = model;
+				format.parent = 0;
 
-					format.id = model->getId();
-					format.name = "Object " + format.id;
-					format.type = MapEntity::ObjectTypes::MODEL;
-					format.position = model->GetPosition();
-					format.scale = model->GetScale();
-					format.rotation = model->getRotation();
-					format.path = m_path;
-					format.texture = m_texture;
+				format.id = model->getId();
+				format.name = "Object " + format.id;
+				format.type = MapEntity::ObjectTypes::MODEL;
+				format.position = model->GetPosition();
+				format.scale = model->GetScale();
+				format.rotation = model->getRotation();
+				format.path = m_path;
+				format.texture = m_texture;
 
-					format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
-					format.params.insert(std::pair<std::string, std::string>("shadow", "0"));
+				format.params.insert(std::pair<std::string, std::string>("alpha", "0"));
+				format.params.insert(std::pair<std::string, std::string>("shadow", "0"));
 					
-					m_app->m_mapEntities->add(format);
-				}
+				m_app->m_mapEntities->add(format);
 			}
 			else {
 				m_app->m_selectedModel->Shutdown();
@@ -278,8 +275,7 @@ public:
 		m_app->m_selectedModel->SetRotation(m_rotation);
 		m_app->m_selectedModel->setAlpha(m_isAlpha);
 		m_app->m_selectedModel->setShadow(m_isShadow != 0 ? true : false);
-		m_app->m_selectedModel->hideBBox();
-		m_app->m_selectedModel->showBBox();
+		m_app->m_selectedModel->refreshBBox();
 
 		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
 		editorFormat->path = m_path;
@@ -295,7 +291,6 @@ public:
 	{
 		return m_Window;
 	}
-
 
 protected:
 	App* m_app;

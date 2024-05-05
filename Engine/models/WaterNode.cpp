@@ -142,8 +142,9 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	for (int i = 0; i < size; i++) {
 		AbstractModel* model = dynamic_cast<AbstractModel*>(m_modelsTarget[i]);
 		// skip refraction model if this Model (but not terrain sample)
+		// @todo - why skip?
 		if (model == m_RefractionModel && dynamic_cast<const Model*>(m_RefractionModel) != nullptr) {
-			continue;
+			//continue;
 		}
 		model->Render(camera);
 	}

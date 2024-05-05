@@ -25,6 +25,11 @@ void Model::Render()
 	ModelClass::Render();
 }
 
+void Model::Render(CameraClass* camera)
+{
+	ModelClass::Render(camera);
+}
+
 BBox* Model::showBBox()
 {
 	if (!m_BBox) {

@@ -9,6 +9,7 @@
 
 #include "ObjectWindow.h"
 #include "TerrainWindow.h"
+#include "WaterWindow.h"
 
 class MainWindow
 {
@@ -60,8 +61,8 @@ public:
 		newObjectButton->Add("New Object", 246, 1);
 		newObjectButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
 			m_app->unselectModel();
-			m_app->m_objectWindow->resetUI();
-			m_app->m_objectWindow->getWindow()->show();
+			m_app->getObjectWindow()->resetUI();
+			m_app->getObjectWindow()->getWindow()->show();
 		});
 
 		Button* newCompositeObjectButton = new Button;
@@ -82,8 +83,8 @@ public:
 		newTerrainButton->Add("New Terrain", 540, 1);
 		newTerrainButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
 			m_app->unselectModel();
-			m_app->m_terrainWindow->resetUI();
-			m_app->m_terrainWindow->getWindow()->show();
+			m_app->getTerrainWindow()->resetUI();
+			m_app->getTerrainWindow()->getWindow()->show();
 		});
 
 		Button* newWaterButton = new Button;
@@ -91,11 +92,9 @@ public:
 		newWaterButton->initialize(120, 28);
 		newWaterButton->Add("New Water", 662, 1);
 		newWaterButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			/*resetWindowWater();
-			unselectModel();
-			Window* waterWindow = dynamic_cast<Window*>(m_uiManager->getById(51));
-			waterWindow->show();
-			waterWindow->focus();*/
+			m_app->unselectModel();
+			m_app->getWaterWindow()->resetUI();
+			m_app->getWaterWindow()->getWindow()->show();
 		});
 
 		Button* newSkyButton = new Button;
