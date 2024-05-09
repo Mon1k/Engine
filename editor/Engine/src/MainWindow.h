@@ -10,6 +10,7 @@
 #include "ObjectWindow.h"
 #include "TerrainWindow.h"
 #include "WaterWindow.h"
+#include "SkyWindow.h"
 
 class MainWindow
 {
@@ -102,11 +103,9 @@ public:
 		newSkyButton->initialize(120, 28);
 		newSkyButton->Add("New Sky", 784, 1);
 		newSkyButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			/*resetWindowSky();
-			unselectModel();
-			Window* skyWindow = dynamic_cast<Window*>(m_uiManager->getById(71));
-			skyWindow->show();
-			skyWindow->focus();*/
+			m_app->unselectModel();
+			m_app->getSkyWindow()->resetUI();
+			m_app->getSkyWindow()->getWindow()->show();
 		});
 	}
 

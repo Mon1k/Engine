@@ -35,6 +35,7 @@ public:
 		std::string texture;
 		std::vector<std::string> extraParams; // @todo - deprecation
 		std::map<std::string, std::string> params;
+		std::vector<std::string> extraTextures;
 
 		ModelClass* model;
 		MapEntity::ObjectFormat* parent;
@@ -71,6 +72,8 @@ public:
 				return &m_entities[i];
 			}
 		}
+
+		return nullptr;
 	}
 
 	std::vector<MapEntity::ObjectFormat>* getEntities()
@@ -94,17 +97,17 @@ public:
 		float minX = modelOriginal->getMinPosition().x;
 		position.x += (maxX - minX) * 1.1;
 
+		LightShaderClass* shader = new LightShaderClass;
+		shader->Initialize(modelOriginal->getD3D()->GetDevice());
+		shader->addLights(modelOriginal->getLights());
+		model->addShader(shader);
+
 		model->Initialize(modelOriginal->getD3D(), &entity.path[0], {entity.texture});
 		model->SetPosition(position);
 		model->SetScale(entity.scale);
 		model->SetRotation(entity.rotation);
 		model->setAlpha(modelOriginal->getAlpha());
 		model->addLights(modelOriginal->getLights());
-
-		LightShaderClass* shader = new LightShaderClass;
-		shader->Initialize(modelOriginal->getD3D()->GetDevice());
-		shader->addLights(modelOriginal->getLights());
-		model->addShader(shader);
 
 		model->setId(manager->getNextId());
 		manager->Add(model);

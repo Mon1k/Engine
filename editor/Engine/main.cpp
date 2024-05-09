@@ -5,8 +5,6 @@
 #include "../../Engine/models/ModelManager.h"
 #include "../../Engine/modelclass.h"
 #include "../../Engine/models/Model.h"
-#include "../../Engine/models/sky/skydomeclass.h"
-#include "../../Engine/models/sky/skyplaneclass.h"
 #include "../../Engine/models/gridclass.h"
 
 // editor ui
@@ -14,6 +12,7 @@
 #include "src/ObjectWindow.h"
 #include "src/TerrainWindow.h"
 #include "src/WaterWindow.h"
+#include "src/SkyWindow.h"
 
 #include "../../Engine/lightclass.h"
 #include "../../Engine/lightshaderclass.h"
@@ -27,6 +26,7 @@ void App::initDefaultObjects()
 	m_objectWindow = 0;
 	m_terrainWindow = 0;
 	m_waterWindow = 0;
+	m_skyWindow = 0;
 
 	GridClass* grid = new GridClass;
 	grid->Initialize(m_Graphics->getD3D(), 100, 100);
@@ -68,6 +68,16 @@ WaterWindow* App::getWaterWindow()
 	}
 
 	return m_waterWindow;
+}
+
+SkyWindow* App::getSkyWindow()
+{
+	if (!m_skyWindow) {
+		m_skyWindow = new SkyWindow(this);
+		m_skyWindow->initialize();
+	}
+
+	return m_skyWindow;
 }
 
 	/*void InitWindowCompositeObject()
@@ -224,110 +234,7 @@ WaterWindow* App::getWaterWindow()
 			});
 		shift += objectScaleX->m_height + 5;
 	}
-
-
-	void InitWindowSky()
-	{
-		int shift = 0;
-		Window* menuTop = dynamic_cast<Window*>(m_uiManager->getById(1));
-
-		Window* terrainWindow = new Window;
-		m_uiManager->Add(terrainWindow);
-		terrainWindow->Initialize(600, 500, Options::screen_width - 620, menuTop->m_height + 5);
-		terrainWindow->addHeader("Sky Node properties", Window::HEADER_BUTTON_CLOSE);
-		terrainWindow->addBody();
-		terrainWindow->hide();
-		terrainWindow->setId(71);
-		terrainWindow->addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
-			unselectModel();
-			return 0;
-			});
-		shift += terrainWindow->m_y + terrainWindow->getHeader()->m_height + 5;
-
-
-		Input* objectPath = new Input;
-		terrainWindow->addChild(objectPath);
-		objectPath->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectPath->setText("data/models/skydome.ds");
-		objectPath->setId(72);
-		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectPath, this] {
-			if (!m_selectedModel) {
-				Input* objectTexture1 = dynamic_cast<Input*>(m_uiManager->getById(73));
-				Input* objectTexture2 = dynamic_cast<Input*>(m_uiManager->getById(74));
-
-				SkyPlaneClass* model = new SkyPlaneClass;
-				SkyDomeClass* modelDome = new SkyDomeClass;
-				bool result = model->Initialize(m_Graphics->getD3D(), { &objectTexture1->getValue()[0], &objectTexture2->getValue()[0] });
-				if (result) {
-					modelDome->Initialize(m_Graphics->getD3D(), objectPath->getValue());
-
-					modelDome->setId(m_modelManager->getNextId());
-					m_modelManager->Add(modelDome);
-
-					model->setId(m_modelManager->getNextId());
-					m_modelManager->Add(model);
-					m_selectedModel = model;
-
-					AbstractGui* objectWindow = m_uiManager->getById(71);
-					objectWindow->show();
-					objectWindow->focus();
-
-					MapEntity::ObjectFormat format;
-					format.id = model->getId();
-					format.type = MapEntity::ObjectTypes::SKY;
-					format.path = objectPath->getValue();
-					format.position = model->GetPosition();
-					format.scale = model->GetScale();
-					format.rotation = model->getRotation();
-					format.texture = objectTexture1->getValue();
-					// perturbe
-					format.extraParams.push_back(objectTexture2->getValue());
-					// dome
-					format.extraParams.push_back(std::to_string(modelDome->getId()));
-
-					m_mapEntities->add(format);
-				}
-			}
-			else {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->path = objectPath->getValue();
-				this->updateSky();
-			}
-			return 0;
-			});
-		shift += objectPath->m_height + 5;
-
-
-		Input* objectTexture = new Input;
-		terrainWindow->addChild(objectTexture);
-		objectTexture->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectTexture->setText("data/textures/cloud001.dds");
-		objectTexture->setId(73);
-		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->texture = objectTexture->getValue();
-				this->updateSky();
-			}
-			return 0;
-			});
-		shift += objectTexture->m_height + 5;
-
-		Input* objectTexture2 = new Input;
-		terrainWindow->addChild(objectTexture2);
-		objectTexture2->Initialize(L"data/textures/ui/button.png", 400, 28, terrainWindow->m_x + 10, shift);
-		objectTexture2->setText("data/textures/perturb001.dds");
-		objectTexture2->setId(74);
-		objectTexture2->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture2, this] {
-			if (m_selectedModel) {
-				MapEntity::ObjectFormat* editorFormat = this->getObjectEditor(m_selectedModel->getId());
-				editorFormat->extraParams[0] = objectTexture2->getValue();
-				this->updateSky();
-			}
-			return 0;
-			});
-		shift += objectTexture2->m_height + 5;
-	}*/
+	*/
 
 bool App::init()
 {
@@ -468,9 +375,9 @@ void App::frameUI()
 			else if (editorFormat->type == MapEntity::ObjectTypes::WATER) {
 				this->getWaterWindow()->updateUiFromModel();
 			}
-			/*else if (editorFormat->type == MapEntity::ObjectTypes::SKY) {
-				this->updateWindowSky();
-			}*/
+			else if (editorFormat->type == MapEntity::ObjectTypes::SKY) {
+				this->getSkyWindow()->updateUiFromModel();
+			}
 		}
 	}
 
@@ -519,6 +426,7 @@ void App::unselectModel()
 		this->getObjectWindow()->getWindow()->hide();
 		this->getTerrainWindow()->getWindow()->hide();
 		this->getWaterWindow()->getWindow()->hide();
+		this->getSkyWindow()->getWindow()->hide();
 	}
 }
 
@@ -644,86 +552,7 @@ void App::unselectModel()
 
 		this->updateBbox();
 	}
-
-	void resetWindowSky()
-	{
-		Input* positionInput;
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(72));
-		positionInput->setText("data/models/skydome.ds");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(73));
-		positionInput->setText("data/textures/cloud001.dds");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(74));
-		positionInput->setText("data/textures/perturb001.dds");
-	}
-
-	void updateWindowSky()
-	{
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		SkyPlaneClass* model = dynamic_cast<SkyPlaneClass*>(m_selectedModel);
-		SkyDomeClass* modelDome = dynamic_cast<SkyDomeClass*>(m_modelManager->getById(stoi(editorFormat->extraParams[1])));
-
-		AbstractGui* objectWindow = m_uiManager->getById(71);
-		objectWindow->show();
-		objectWindow->focus();
-		Input* positionInput;
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(72));
-		positionInput->setText(editorFormat->path);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(73));
-		positionInput->setText(editorFormat->texture);
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(74));
-		positionInput->setText(editorFormat->extraParams[0]);
-	}
-
-	void updateSky()
-	{
-		if (!m_selectedModel) {
-			return;
-		}
-
-		Window* objectWindow = dynamic_cast<Window*>(m_uiManager->getById(71));
-		std::string title = "Sky properties - ";
-		title += std::to_string(m_selectedModel->getId());
-		objectWindow->setTitle(title);
-
-		Input* input;
-		std::string path, textures, texturesPertube;
-
-		input = dynamic_cast<Input*>(m_uiManager->getById(72));
-		path = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(73));
-		textures = input->getValue();
-		input = dynamic_cast<Input*>(m_uiManager->getById(74));
-		texturesPertube = input->getValue();
-
-
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		editorFormat->path = path;
-		editorFormat->texture = textures;
-		editorFormat->extraParams[0] = texturesPertube;
-
-		SkyPlaneClass* model = dynamic_cast<SkyPlaneClass*>(m_selectedModel);
-		SkyDomeClass* modelDome = dynamic_cast<SkyDomeClass*>(m_modelManager->getById(stoi(editorFormat->extraParams[1])));
-
-		model->Shutdown();
-		model->Initialize(m_Graphics->getD3D(), { &textures[0], &texturesPertube[0] });
-		modelDome->Shutdown();
-		modelDome->Initialize(m_Graphics->getD3D(), path);
-	}
-
-	void updateBbox()
-	{
-		D3DXVECTOR3 direction, position, scale, rotation;
-		if (m_selectedModel) {
-			BBox* bbox = dynamic_cast<BBox*>(m_modelManager->getById(2));
-
-			m_selectedModel->GetBoundingBox(position, scale);
-
-			bbox->Shutdown();
-			bbox->CreateBox(m_Graphics->getD3D(), position, scale);
-			bbox->setVisible(true);
-		}
-	}*/
+	*/
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)

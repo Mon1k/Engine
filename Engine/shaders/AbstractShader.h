@@ -7,6 +7,7 @@
 #include <fstream>
 
 #include "../d3dclass.h"
+#include "../textures/texturearrayclass.h"
 
 class AbstractShader
 {
@@ -34,7 +35,7 @@ public:
 		m_D3D = D3D;
 	}
 
-	virtual bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3)
+	virtual bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, TextureArrayClass*, D3DXVECTOR3)
 	{
 		return true;
 	};

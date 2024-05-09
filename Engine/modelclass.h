@@ -128,6 +128,24 @@ public:
 		}
 	}
 
+	virtual void setAlpha(bool alpha)
+	{
+		AbstractModel::setAlpha(alpha);
+
+		if (m_subsets) {
+			m_subsets->setAlpha(alpha);
+		}
+	}
+
+	virtual void setShadow(bool shadow)
+	{
+		AbstractModel::setShadow(shadow);
+
+		if (m_subsets) {
+			m_subsets->setShadow(shadow);
+		}
+	}
+
 	virtual ID3D11Buffer* getVertexBuffer()
 	{
 		return m_vertexBuffer;

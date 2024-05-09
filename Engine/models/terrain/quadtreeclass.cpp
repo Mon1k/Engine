@@ -229,13 +229,14 @@ void QuadTreeClass::CreateTreeNode(NodeType* node, float positionX, float positi
 	index = 0;
 
 	// Go through all the triangles in the vertex list.
-	size = node->parent->indexes.size();
+	size = node->parent ? node->parent->indexes.size() : m_triangleCount;
 	float minY = FLT_MAX, maxY = FLT_MIN;
 	for (i = 0; i < size; i++) {
+		int indexIterator = node->parent ? node->parent->indexes[i] : i;
 		// If the triangle is inside this node then add it to the vertex array.
-		if (IsTriangleContained(node->parent->indexes[i], positionX, positionZ, width)) {
+		if (IsTriangleContained(indexIterator, positionX, positionZ, width)) {
 			// Calculate the index into the terrain vertex list.
-			vertexIndex = node->parent->indexes[i] * 3;
+			vertexIndex = indexIterator * 3;
 
 			// Get the three vertices of this triangle from the vertex list.
 			vertices[index].position = m_vertexList[vertexIndex].position;

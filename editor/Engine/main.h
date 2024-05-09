@@ -7,6 +7,7 @@ class MainWindow;
 class ObjectWindow;
 class TerrainWindow;
 class WaterWindow;
+class SkyWindow;
 
 class CollisionDetection;
 
@@ -29,6 +30,7 @@ public:
 	ObjectWindow* getObjectWindow();
 	TerrainWindow* getTerrainWindow();
 	WaterWindow* getWaterWindow();
+	SkyWindow* getSkyWindow();
 	void unselectModel();
 
 public:
@@ -48,4 +50,5 @@ protected:
 	ObjectWindow* m_objectWindow;
 	TerrainWindow* m_terrainWindow;
 	WaterWindow* m_waterWindow;
+	SkyWindow* m_skyWindow;
 };

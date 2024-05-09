@@ -1,6 +1,6 @@
 #include "skydomeclass.h"
 
-SkyDomeClass::SkyDomeClass(): ModelClass()
+SkyDomeClass::SkyDomeClass(): Model()
 {
 	m_model = 0;
 	m_vertexBuffer = 0;

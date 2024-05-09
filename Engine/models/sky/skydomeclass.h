@@ -6,10 +6,10 @@
 #include <fstream>
 #include <string>
 
-#include "../../modelclass.h"
+#include "../Model.h"
 #include "../../textures/skydomeshaderclass.h"
 
-class SkyDomeClass : public ModelClass
+class SkyDomeClass : public Model
 {
 private:
 	struct ModelType
@@ -35,6 +35,15 @@ public:
 
 	D3DXVECTOR4 GetApexColor();
 	D3DXVECTOR4 GetCenterColor();
+
+	void setApexColor(D3DXVECTOR4 color)
+	{
+		m_apexColor = color;
+	}
+	void setCenterColor(D3DXVECTOR4 color)
+	{
+		m_centerColor = color;
+	}
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

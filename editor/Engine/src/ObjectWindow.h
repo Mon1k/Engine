@@ -29,6 +29,9 @@ public:
 		m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		m_isAlpha = false;
 		m_isShadow = false;
+
+		m_extraTextures.clear();
+		m_extraTextures.push_back("");
 	}
 
 	void initialize()
@@ -60,11 +63,11 @@ public:
 
 			if (!m_app->m_selectedModel) {
 				Model* model = new Model;
+				model->addShader(shader);
 				model->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], {m_texture});
 				model->setId(m_app->m_modelManager->getNextId());
 				model->addLights({ m_app->m_light });
-				model->addShader(shader);
-
+				
 				m_app->m_modelManager->Add(model);
 				m_app->m_selectedModel = model;
 
@@ -103,7 +106,7 @@ public:
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			m_app->m_selectedModel->ReleaseTexture();
-			m_app->m_selectedModel->LoadTextures(m_texture);
+			this->loadTextures();
 			this->updateObjectModel();
 		});
 		shift += objectTexture->m_height + 5;
@@ -220,6 +223,22 @@ public:
 		shift += shadowObject->m_height + 5;
 
 
+		// extra textures
+		int currentIndex = m_extraTextures.size() - 1;
+		FileInput* objectExtraTexture = new FileInput;
+		m_Window->addChild(objectExtraTexture);
+		objectExtraTexture->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectExtraTexture->getDialog()->addDefaultImageFilters();
+		objectExtraTexture->setValueRefLink(&typeid(std::string), &m_extraTextures[currentIndex]);
+		objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+			m_app->m_selectedModel->ReleaseTexture();
+			this->loadTextures();
+			this->updateObjectModel();
+		});
+		shift += objectExtraTexture->m_height + 5;
+
+
 		Button* cloneObject = new Button;
 		m_Window->addChild(cloneObject);
 		cloneObject->initialize();
@@ -256,6 +275,9 @@ public:
 		m_rotation = m_app->m_selectedModel->getRotationDegree();
 		m_isAlpha = m_app->m_selectedModel->getAlpha();
 		m_isShadow = m_app->m_selectedModel->isShadow();
+		
+		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
+		m_extraTextures = editorFormat->extraTextures;
 
 		m_Window->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		m_Window->show();
@@ -285,6 +307,19 @@ public:
 		editorFormat->rotation = m_rotation;
 		editorFormat->params["alpha"] = std::to_string(m_isAlpha ? 1 : 0);
 		editorFormat->params["shadow"] = std::to_string(m_isShadow ? 1 : 0);
+		editorFormat->extraTextures = m_extraTextures;
+	}
+
+	void loadTextures()
+	{
+		m_app->m_selectedModel->LoadTextures(m_texture);
+		for (size_t i = 0; i < m_extraTextures.size(); i++) {
+			if (m_extraTextures[i].length() > 0 && m_app->m_selectedModel->getSubset() && m_app->m_selectedModel->getSubset()->getChilds().size() > i) {
+				ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(i));
+				model->ReleaseTexture();
+				model->LoadTextures(m_extraTextures[i]);
+			}
+		}
 	}
 
 	Window* getWindow()
@@ -303,4 +338,5 @@ protected:
 	D3DXVECTOR3 m_rotation;
 	int m_isAlpha;
 	int m_isShadow;
+	std::vector<std::string> m_extraTextures;
 };

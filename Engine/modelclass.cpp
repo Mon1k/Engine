@@ -359,7 +359,7 @@ void ModelClass::Render(CameraClass* camera)
 		}
 
 		m_shader->Render(m_D3D->GetDeviceContext(), GetIndexCount(), GetWorldMatrix(), viewMatrix, projectionMatrix,
-			GetTextureArray(), camera->GetPosition());
+			m_TextureArray, camera->GetPosition());
 
 		if (m_isAlpha) {
 			m_D3D->TurnOffAlphaBlending();

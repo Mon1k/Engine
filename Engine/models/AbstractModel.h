@@ -203,7 +203,7 @@ public:
         _size = this->getSizeByCenter();
     }
 
-    void setAlpha(bool alpha)
+    virtual void setAlpha(bool alpha)
     {
         m_isAlpha = alpha;
     }
@@ -212,7 +212,8 @@ public:
         return m_isAlpha;
     }
 
-    void setShadow(bool shadow) {
+    virtual void setShadow(bool shadow)
+    {
         m_isShadow = shadow;
     }
 

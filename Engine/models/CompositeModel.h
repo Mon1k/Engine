@@ -86,12 +86,29 @@ public:
 
 	virtual void SetRotation(D3DXVECTOR3 _rotation)
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->SetRotation(_rotation);
 		}
 
 		m_rotation = _rotation;
+	}
+
+	virtual void setAlpha(bool alpha)
+	{
+		m_isAlpha = alpha;
+
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			m_childs[i]->setAlpha(alpha);
+		}
+	}
+
+	virtual void setShadow(bool shadow)
+	{
+		m_isShadow = shadow;
+
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			m_childs[i]->setShadow(shadow);
+		}
 	}
 
 	virtual void CalcMinMax()

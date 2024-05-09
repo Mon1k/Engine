@@ -45,7 +45,7 @@ void LightShaderClass::Shutdown()
 }
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
+	D3DXMATRIX projectionMatrix, TextureArrayClass* textureArray, D3DXVECTOR3 cameraPosition)
 {
 	bool result;
 
@@ -279,7 +279,7 @@ void LightShaderClass::ShutdownShader()
 }
 
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 cameraPosition)
+	D3DXMATRIX projectionMatrix, TextureArrayClass* textureArray, D3DXVECTOR3 cameraPosition)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -346,7 +346,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &textureArray[0]);
+	deviceContext->PSSetShaderResources(0, 1, &textureArray->getTextures()[0]);
 
 	// Lock the light constant buffer so it can be written to.
 	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

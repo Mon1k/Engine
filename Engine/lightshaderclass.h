@@ -9,6 +9,7 @@
 
 #include "shaders/AbstractShader.h"
 #include "lightclass.h"
+#include "textures/texturearrayclass.h"
 
 class LightShaderClass: public AbstractShader
 {
@@ -52,7 +53,7 @@ public:
 
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, TextureArrayClass*, D3DXVECTOR3);
 	
 	void addLights(std::vector<LightClass*>);
 	LightClass* getLight(int index)
@@ -68,7 +69,7 @@ private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3);
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, TextureArrayClass*, D3DXVECTOR3);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:

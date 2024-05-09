@@ -44,7 +44,6 @@ public:
 		m_Window->addHeader("Water properties", Window::HEADER_BUTTON_CLOSE);
 		m_Window->addBody();
 		m_Window->hide();
-		m_Window->setId(51);
 		m_Window->addEventHandler(Window::EventType::WINDOW_CLOSE, [this] {
 			m_app->unselectModel();
 		});

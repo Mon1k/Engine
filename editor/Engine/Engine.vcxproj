@@ -387,6 +387,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="src\MainWindow.h" />
     <ClInclude Include="src\ObjectWindow.h" />
+    <ClInclude Include="src\SkyWindow.h" />
     <ClInclude Include="src\TerrainWindow.h" />
     <ClInclude Include="src\WaterWindow.h" />
   </ItemGroup>
