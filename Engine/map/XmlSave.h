@@ -33,7 +33,7 @@ public:
 	{
 		std::vector<MapEntity::ObjectFormat> entitiesList = entities->m_entities;
 
-		for (int i = 0; i < entitiesList.size(); i++) {
+		for (size_t i = 0; i < entitiesList.size(); i++) {
 			if (entitiesList[i].type == MapEntity::ObjectTypes::MODEL) {
 				Node* child = new Node;
 
@@ -86,6 +86,13 @@ public:
 			node->addAttribute(id);
 		}
 
+		if (entity.name.length() > 0) {
+			Attribute* name = new Attribute;
+			name->name = "name";
+			name->value = entity.name;
+			node->addAttribute(name);
+		}
+
 		if (entity.type != 0) {
 			Attribute* type = new Attribute;
 			type->name = "type";
@@ -128,13 +135,22 @@ public:
 			node->addAttribute(texture);
 		}
 
-		if (entity.extraParams.size() > 0) {
-			for (int i = 0; i < entity.extraParams.size(); i++) {
-				if (entity.extraParams[i].size() > 0) {
-					Attribute* extraParams = new Attribute;
-					extraParams->name = "params";
-					extraParams->value = entity.extraParams[i];
-					node->addAttribute(extraParams);
+		if (entity.params.size() > 0) {
+			for (const auto& [key, value] : entity.params) {
+				Attribute* params = new Attribute;
+				params->name = key;
+				params->value = value;
+				node->addAttribute(params);
+			}
+		}
+
+		if (entity.extraTextures.size() > 0) {
+			for (int i = 0; i < entity.extraTextures.size(); i++) {
+				if (entity.extraTextures[i].size() > 0) {
+					Attribute* extraTextures = new Attribute;
+					extraTextures->name = "extra_textures";
+					extraTextures->value = entity.extraTextures[i];
+					node->addAttribute(extraTextures);
 				}
 			}
 		}

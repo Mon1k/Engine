@@ -52,7 +52,7 @@ public:
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/models");
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -70,7 +70,7 @@ public:
 				format.parent = 0;
 
 				format.id = model->getId();
-				format.name = "Water " + format.id;
+				format.name = "Water " + std::to_string(format.id);
 				format.type = MapEntity::ObjectTypes::WATER;
 				format.position = model->GetPosition();
 				format.scale = model->GetScale();
@@ -93,7 +93,7 @@ public:
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
 		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectTexture, this] {
@@ -264,10 +264,9 @@ public:
 		editorFormat->texture = m_texture;
 		editorFormat->position = m_position;
 		editorFormat->scale = m_scale;
-		editorFormat->params["height"] = m_height;
+		editorFormat->params["height"] = std::to_string(m_height);
 		editorFormat->params["tiling"] = std::to_string(m_tiling.x) + ";" + std::to_string(m_tiling.y);
-		editorFormat->params["tiling"] = m_height;
-		editorFormat->params["refraction_scale"] = m_refractionScale;
+		editorFormat->params["refraction_scale"] = std::to_string(m_refractionScale);
 		if (m_targetId && model->getRefractionModel()) {
 			editorFormat->params["targetId"] = std::to_string(model->getRefractionModel()->getId());
 		}

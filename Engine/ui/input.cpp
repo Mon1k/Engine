@@ -300,7 +300,7 @@ bool Input::isIntersect(int x, int y) {
 
 void Input::frame(float counter)
 {
-	if (isChangeValueRef(getValue())) {
+	if (!m_IsFocused && isChangeValueRef(getValue())) {
 		m_String = getValueRef();
 		updateText();
 	}

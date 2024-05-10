@@ -15,17 +15,14 @@ public:
 	virtual bool initialize();
 	virtual void show();
 
-	std::string getCurrentPath();
+	std::string getCurrentPath();	
 	void setPath(std::string path);
 	std::vector<std::filesystem::directory_entry> getRows();
 	std::filesystem::directory_entry getCurrentRow()
 	{
 		return m_rows[m_currentRow];
 	}
-	std::string getCurrentFilePath()
-	{
-		return m_rows[m_currentRow].path().generic_string();
-	}
+	std::string getCurrentFilePath(bool pathIsRelative = true);
 
 	void addDefaultImageFilters();
 	void addDefaultModelsFilters();

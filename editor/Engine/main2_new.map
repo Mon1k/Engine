@@ -1,0 +1,6 @@
+<world>
+	<terrain id="5" type="2" position="0.000000;0.000000;0.000000" scale="1.000000;0.100000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/textures/heightmap1024.bmp" texture="data/textures/grass.dds" layer1="data/textures/dirt.dds" layer1_normal="data/textures/dirt_n.dds" layer2="data/textures/stone001.dds" layer2_normal="data/textures/stone001_n.dds" layer3="data/textures/dirt2.dds" layer3_normal="data/textures/dirt2_n.dds" layer_alpha="data/textures/alpha001.dds" params="data/textures/grass_n.dds" rotation="0.000000;0.000000;0.000000" scale_normal="1.000000;3.000000;1.000000" texture_normal="data/textures/grass_n.dds" type="2">
+	</terrain>
+	<model id="23" type="1" position="150.000000;21.000000;110.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;200.000000;0.000000" path="data/models/house.obj" texture="data/textures/wood.dds" alpha="1" params="1" shadow="1" type="1">
+	</model>
+</world>

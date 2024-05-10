@@ -83,4 +83,9 @@ public:
     {
         return ltrim(rtrim(s));
     }
+
+    std::string static replace(std::string str1, std::string str2, std::string replacement)
+    {
+        return str1.replace(str1.find(str2), str2.length(), replacement);
+    }
 };

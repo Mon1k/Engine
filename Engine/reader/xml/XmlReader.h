@@ -64,15 +64,26 @@ protected:
 		int shift = 0;
 		do {
 			std::string attributeScope = "";
-			int nextSpace = stringAttrubutes.find_first_of(" ", shift);
-			if (nextSpace == -1) {
-				nextSpace = stringAttrubutes.size() - 1;
+
+			int posEqual = stringAttrubutes.find_first_of("=", shift);
+			int shiftNextQuote = shift;
+			if (posEqual != -1) {
+				shiftNextQuote = posEqual + 2;
 			}
 
-			attributeScope = stringAttrubutes.substr(shift, nextSpace - shift - 1);
+			int nextSpace = stringAttrubutes.find_first_of("\"", shiftNextQuote);
+			if (nextSpace == -1) {
+				nextSpace = stringAttrubutes.length() - 1;
+			}
+
+			attributeScope = stringAttrubutes.substr(shift, nextSpace - shift + 1);
+			if (attributeScope.length() < 4) {
+				shift = nextSpace + 2;
+				continue;
+			}
 			attributesScopes.push_back(attributeScope);
-			shift = nextSpace + 1;
-		} while (shift < stringAttrubutes.size());
+			shift = nextSpace + 2;
+		} while (shift < stringAttrubutes.length());
 
 		extractAttribte(node, attributesScopes);
 	}
@@ -81,12 +92,13 @@ protected:
 	{
 		int size = attributesScopes.size();
 
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			Attribute* attribute = new Attribute;
 			int pos = attributesScopes[i].find_first_of("=");
 
 			attribute->name = attributesScopes[i].substr(0, pos);
-			attribute->value = attributesScopes[i].substr(attribute->name.size() + 2, attributesScopes[i].size() - 1);
+			attribute->value = attributesScopes[i].substr(attribute->name.length() + 1, attributesScopes[i].length());
+			attribute->value = attribute->value.substr(1, attribute->value.length() - 2);
 			node->addAttribute(attribute);
 		}
 	}

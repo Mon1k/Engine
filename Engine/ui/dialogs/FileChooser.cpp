@@ -2,6 +2,7 @@
 #include "../../Options.h"
 #include "../UIManager.h"
 #include "../../tool/Date.h"
+#include "../../tool/String.h"
 
 FileChooser::FileChooser() : Window()
 {
@@ -58,6 +59,8 @@ bool FileChooser::initialize()
 		getRows();
 	});
 
+	getCurrentPath();
+
 	return result;
 }
 
@@ -71,7 +74,7 @@ std::string FileChooser::getCurrentPath()
 {
 	if (m_path.size() == 0) {
 		std::filesystem::path p = std::filesystem::current_path();
-		m_path = p.generic_string();
+		m_path = p.generic_string()+"/";
 	}
 
 	return m_path;
@@ -193,4 +196,15 @@ bool FileChooser::checkFilter(std::filesystem::directory_entry entry)
 	}
 
 	return false;
+}
+
+std::string FileChooser::getCurrentFilePath(bool pathIsRelative)
+{
+	std::string path = std::filesystem::current_path().generic_string()+"/";
+	std::string currentRow = getCurrentRow().path().generic_string();
+	if (pathIsRelative) {
+		return String::replace(currentRow, path, "");
+	}
+
+	return path;
 }

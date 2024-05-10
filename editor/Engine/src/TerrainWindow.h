@@ -58,7 +58,7 @@ public:
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/textures");
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/textures");
 		objectPath->getDialog()->addFilter("bmp");
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -75,7 +75,7 @@ public:
 				format.parent = 0;
 
 				format.id = model->getId();
-				format.name = "Terrain " + format.id;
+				format.name = "Terrain " + std::to_string(format.id);
 				format.type = MapEntity::ObjectTypes::TERRAIN;
 				format.position = model->GetPosition();
 				format.scale = model->GetScale();
@@ -103,7 +103,7 @@ public:
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
 		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -114,7 +114,7 @@ public:
 		FileInput* objectTextureNormal = new FileInput;
 		m_Window->addChild(objectTextureNormal);
 		objectTextureNormal->initialize( 400, 28, m_Window->m_x + 10, shift);
-		objectTextureNormal->getDialog()->setPath(objectTextureNormal->getDialog()->getCurrentPath() + "/data/textures");
+		objectTextureNormal->getDialog()->setPath(objectTextureNormal->getDialog()->getCurrentPath() + "data/textures");
 		objectTextureNormal->getDialog()->addDefaultImageFilters();
 		objectTextureNormal->setValueRefLink(&typeid(std::string), &m_textureNormal);
 		objectTextureNormal->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -224,10 +224,10 @@ public:
 		FileInput* objectLayerAlpha = new FileInput;
 		m_Window->addChild(objectLayerAlpha);
 		objectLayerAlpha->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectLayerAlpha->getDialog()->setPath(objectLayerAlpha->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayerAlpha->getDialog()->setPath(objectLayerAlpha->getDialog()->getCurrentPath() + "data/textures");
 		objectLayerAlpha->getDialog()->addDefaultImageFilters();
 		objectLayerAlpha->setValueRefLink(&typeid(std::string), &m_textureAlpha);
-		objectLayerAlpha->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [objectLayerAlpha, this] {
+		objectLayerAlpha->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateTerrain();
 		});
 		shift += objectLayerAlpha->m_height + 5;
@@ -235,13 +235,13 @@ public:
 		FileInput* objectLayer1 = new FileInput;
 		m_Window->addChild(objectLayer1);
 		objectLayer1->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer1->getDialog()->setPath(objectLayer1->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer1->getDialog()->setPath(objectLayer1->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer1->getDialog()->addDefaultImageFilters();
 		objectLayer1->setValueRefLink(&typeid(std::string), &m_textureLayer1);
 		FileInput* objectLayer1Normal = new FileInput;
 		m_Window->addChild(objectLayer1Normal);
 		objectLayer1Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer1Normal->getDialog()->setPath(objectLayer1Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer1Normal->getDialog()->setPath(objectLayer1Normal->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer1Normal->getDialog()->addDefaultImageFilters();
 		objectLayer1Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer1);
 		shift += objectLayer1->m_height + 5;
@@ -249,13 +249,13 @@ public:
 		FileInput* objectLayer2 = new FileInput;
 		m_Window->addChild(objectLayer2);
 		objectLayer2->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer2->getDialog()->setPath(objectLayer2->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer2->getDialog()->setPath(objectLayer2->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer2->getDialog()->addDefaultImageFilters();
 		objectLayer2->setValueRefLink(&typeid(std::string), &m_textureLayer2);
 		FileInput* objectLayer2Normal = new FileInput;
 		m_Window->addChild(objectLayer2Normal);
 		objectLayer2Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer2Normal->getDialog()->setPath(objectLayer2Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer2Normal->getDialog()->setPath(objectLayer2Normal->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer2Normal->getDialog()->addDefaultImageFilters();
 		objectLayer2Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer2);
 		shift += objectLayer2->m_height + 5;
@@ -263,13 +263,13 @@ public:
 		FileInput* objectLayer3 = new FileInput;
 		m_Window->addChild(objectLayer3);
 		objectLayer3->initialize(200, 28, m_Window->m_x + 10, shift);
-		objectLayer3->getDialog()->setPath(objectLayer3->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer3->getDialog()->setPath(objectLayer3->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer3->getDialog()->addDefaultImageFilters();
 		objectLayer3->setValueRefLink(&typeid(std::string), &m_textureLayer3);
 		FileInput* objectLayer3Normal = new FileInput;
 		m_Window->addChild(objectLayer3Normal);
 		objectLayer3Normal->initialize(200, 28, m_Window->m_x + 212, shift);
-		objectLayer3Normal->getDialog()->setPath(objectLayer3Normal->getDialog()->getCurrentPath() + "/data/textures");
+		objectLayer3Normal->getDialog()->setPath(objectLayer3Normal->getDialog()->getCurrentPath() + "data/textures");
 		objectLayer3Normal->getDialog()->addDefaultImageFilters();
 		objectLayer3Normal->setValueRefLink(&typeid(std::string), &m_textureNormalLayer3);
 		shift += objectLayer3->m_height + 5;

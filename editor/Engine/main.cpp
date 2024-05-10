@@ -20,14 +20,9 @@
 #include "../../Engine/CollisionDetection.h"
 #include "../../Engine/tool/String.h"
 
+
 void App::initDefaultObjects()
 {
-	m_selectedModel = 0;
-	m_objectWindow = 0;
-	m_terrainWindow = 0;
-	m_waterWindow = 0;
-	m_skyWindow = 0;
-
 	GridClass* grid = new GridClass;
 	grid->Initialize(m_Graphics->getD3D(), 100, 100);
 	grid->setId(1);
@@ -241,6 +236,12 @@ bool App::init()
 	if (!SystemClass::init()) {
 		return false;
 	}
+
+	m_selectedModel = 0;
+	m_objectWindow = 0;
+	m_terrainWindow = 0;
+	m_waterWindow = 0;
+	m_skyWindow = 0;
 
 	int size = sizeof(m_Counters) / sizeof(m_Counters[0]);
 	for (int i = 0; i < size; i++) {

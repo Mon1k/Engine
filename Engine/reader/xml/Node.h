@@ -61,6 +61,11 @@ public:
 		return vector;
 	}
 
+	std::vector<Attribute*> getAttributes()
+	{
+		return attributes;
+	}
+
 public:
 	std::string name;
 	std::vector<Attribute*> attributes;

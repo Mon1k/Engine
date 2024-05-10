@@ -53,7 +53,7 @@ public:
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/models");
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -76,7 +76,7 @@ public:
 				format.parent = 0;
 
 				format.id = model->getId();
-				format.name = "Object " + format.id;
+				format.name = "Object " + std::to_string(format.id);
 				format.type = MapEntity::ObjectTypes::MODEL;
 				format.position = model->GetPosition();
 				format.scale = model->GetScale();
@@ -101,7 +101,7 @@ public:
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
 		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -228,7 +228,7 @@ public:
 		FileInput* objectExtraTexture = new FileInput;
 		m_Window->addChild(objectExtraTexture);
 		objectExtraTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "/data/textures");
+		objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectExtraTexture->getDialog()->addDefaultImageFilters();
 		objectExtraTexture->setValueRefLink(&typeid(std::string), &m_extraTextures[currentIndex]);
 		objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {

@@ -2,10 +2,12 @@
 
 #include "../main.h"
 
-#include "../../Engine/reader/xml/XmlWriter.h"
-#include "../../Engine/reader/xml/XmlReader.h"
-#include "../../Engine/map/XmlSave.h"
-#include "../../Engine/map/XmlLoad.h"
+#include "../../../Engine/reader/xml/XmlWriter.h"
+#include "../../../Engine/reader/xml/XmlReader.h"
+#include "../../../Engine/map/XmlSave.h"
+#include "../../../Engine/map/XmlLoad.h"
+
+#include "../../../Engine/ui/dialogs/SaveDialog.h"
 
 #include "ObjectWindow.h"
 #include "TerrainWindow.h"
@@ -32,9 +34,11 @@ public:
 		Button* exitButton = new Button;
 		menuTop->addChild(exitButton);
 		exitButton->initialize(80, 28);
-		exitButton->Add("Exit", 1, 1);
+		exitButton->Add("New", 1, 1);
 		exitButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			m_app->m_Done = true;
+			m_app->m_modelManager->clear();
+			m_app->m_mapEntities->clear();
+			m_app->initDefaultObjects();
 		});
 
 		Button* saveWorldButton = new Button;
@@ -42,8 +46,20 @@ public:
 		saveWorldButton->initialize(80, 28);
 		saveWorldButton->Add("Save", 82, 1);
 		saveWorldButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			XmlSave* xmlSave = new XmlSave(new XmlWriter);
-			xmlSave->save("main.map", m_app->m_mapEntities);
+			SaveDialog* dialog = new SaveDialog;
+			m_app->m_uiManager->add(dialog);
+			dialog->initialize();
+			dialog->addFilter("map");
+			dialog->setId(m_app->m_uiManager->getNextId());
+			dialog->addEventHandler(FileChooser::EventType::FILE_CHOOSE_GET, [this, dialog] {
+				dialog->hide();
+				m_app->m_uiManager->remove(dialog->getId());
+				XmlSave* xmlSave = new XmlSave(new XmlWriter);
+				xmlSave->save(dialog->getFilename(), m_app->m_mapEntities);
+				m_app->initDefaultObjects();
+			});
+			dialog->show();
+			dialog->proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
 		});
 
 		Button* loadWorldButton = new Button;
@@ -51,9 +67,20 @@ public:
 		loadWorldButton->initialize(80, 28);
 		loadWorldButton->Add("Load", 164, 1);
 		loadWorldButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			XmlLoad* xmlLoad = new XmlLoad(new XmlReader);
-			xmlLoad->load("main.map", m_app->m_mapEntities, m_app->m_modelManager);
-			m_app->initDefaultObjects();
+			OpenDialog* dialog = new OpenDialog;
+			m_app->m_uiManager->add(dialog);
+			dialog->initialize();
+			dialog->addFilter("map");
+			dialog->setId(m_app->m_uiManager->getNextId());
+			dialog->addEventHandler(FileChooser::EventType::FILE_CHOOSE, [this, dialog] {
+				dialog->hide();
+				m_app->m_uiManager->remove(dialog->getId());
+				XmlLoad* xmlLoad = new XmlLoad(new XmlReader);
+				xmlLoad->load(dialog->getCurrentFilePath(), m_app->m_mapEntities, m_app->m_modelManager);
+				m_app->initDefaultObjects();
+			});
+			dialog->show();
+			dialog->proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
 		});
 
 		Button* newObjectButton = new Button;

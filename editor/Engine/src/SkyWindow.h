@@ -47,7 +47,7 @@ public:
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
 		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "/data/models");
+		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
 		objectPath->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
@@ -64,6 +64,7 @@ public:
 
 				MapEntity::ObjectFormat format;
 				format.id = model->getId();
+				format.name = "Sky " + std::to_string(format.id);
 				format.type = MapEntity::ObjectTypes::SKY;
 				format.path = m_path;
 
