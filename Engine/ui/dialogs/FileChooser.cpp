@@ -165,6 +165,7 @@ void FileChooser::addDefaultImageFilters()
 	m_filter.push_back("bmp");
 	m_filter.push_back("gif");
 	m_filter.push_back("png");
+	m_filter.push_back("tga");
 	m_filter.push_back("dds");
 }
 

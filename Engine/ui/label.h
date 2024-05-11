@@ -26,6 +26,10 @@ public:
     {
         m_align = align;
     }
+    void setValign(int valign)
+    {
+        m_valign = valign;
+    }
 
     bool Add(std::string, int positionX, int positionY, float, float, float);
     bool Add(std::string, int positionX, int positionY);
@@ -34,12 +38,17 @@ public:
     enum {
         ALIGN_LEFT = 0,
         ALIGN_RIGHT = 1,
-        ALIGN_CENTER = 2
+        ALIGN_CENTER = 2,
+        
+        VALIGN_TOP = 10,
+        VALIGN_MIDDLE = 11,
+        VALIGN_BOTTOM = 12,
     };
 
 private:
     TextClass* m_Text;
     int m_align;
+    int m_valign;
 };
 
 #endif

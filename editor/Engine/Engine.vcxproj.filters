@@ -352,9 +352,6 @@
     <ClCompile Include="..\..\Engine\ui\UIManager.cpp">
       <Filter>src\engine\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine\ui\window.cpp">
-      <Filter>src\engine\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine\ui\dialogs\FileChooser.cpp">
       <Filter>src\engine\ui\dialogs</Filter>
     </ClCompile>
@@ -368,6 +365,12 @@
       <Filter>src\engine\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\ui\dialogs\Alert.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\window.cpp">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\ui\dialogs\Confirm.cpp">
       <Filter>src\engine\ui\dialogs</Filter>
     </ClCompile>
   </ItemGroup>
@@ -744,9 +747,6 @@
     <ClInclude Include="..\..\Engine\ui\UIManager.h">
       <Filter>src\engine\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine\ui\window.h">
-      <Filter>src\engine\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine\ui\dialogs\FileChooser.h">
       <Filter>src\engine\ui\dialogs</Filter>
     </ClInclude>
@@ -782,6 +782,12 @@
     </ClInclude>
     <ClInclude Include="src\SkyWindow.h">
       <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\window.h">
+      <Filter>src\engine\ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\ui\dialogs\Confirm.h">
+      <Filter>src\engine\ui\dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

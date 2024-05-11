@@ -1,6 +1,6 @@
 #include "window.h"
-#include "button.h"
-#include "../Options.h"
+#include "../button.h"
+#include "../../Options.h"
 
 Window::Window()
 {

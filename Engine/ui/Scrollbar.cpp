@@ -34,7 +34,7 @@ void Scrollbar::setParent(Group* parent)
 	m_parent->addEventHandler(AbstractGui::EventType::SCROLL, [this] {
 		m_childs = m_parent->getChilds();
 		for (size_t i = 0; i < m_childs.size(); i++) {
-			if (m_childs[i]->m_y + m_childs[i]->m_height > m_parent->m_y + m_parent->m_height || m_childs[i]->m_y < m_parent->m_y) {
+			if (m_childs[i]->m_y + m_childs[i]->m_height > m_parent->m_y + m_parent->m_height + 15 || m_childs[i]->m_y < m_parent->m_y) {
 				m_childs[i]->hide();
 			}
 			else {

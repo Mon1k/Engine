@@ -6,7 +6,7 @@
 #include "../../../Engine/ui/button.h"
 #include "../../../Engine/ui/label.h"
 #include "../../../Engine/ui/input.h"
-#include "../../../Engine/ui/window.h"
+#include "../../../Engine/ui/dialogs/window.h"
 #include "../../../Engine/ui/FileInput.h"
 
 #include "../../../Engine/models/sky/skydomeclass.h"

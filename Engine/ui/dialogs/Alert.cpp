@@ -23,8 +23,9 @@ void Alert::initialize()
 
 	m_label = new Label();
 	m_body->addChild(m_label);
-	m_label->Initialize(m_width - paddingX * 2, m_height - paddingY * 2);
-	m_label->Add("Alert", m_x + paddingX, m_y + paddingY);
+	m_label->setAlign(Label::ALIGN_CENTER);
+	m_label->Initialize(m_width - paddingX * 2, m_height - m_header->m_height - paddingY * 2);
+	m_label->Add("Alert", m_x + paddingX, m_y + m_header->m_height + paddingY);
 
 	setVisible(false);
 	setId(m_manager->getNextId());
@@ -33,7 +34,7 @@ void Alert::initialize()
 		if (this->m_manager) {
 			m_manager->remove(this->getId());
 		}
-		});
+	});
 }
 
 void Alert::setText(std::string text)
@@ -57,14 +58,9 @@ bool Alert::onKeyboardPress(InputClass::EventKey event)
 	return AbstractGui::onKeyboardPress(event);
 }
 
-void Alert::show()
-{
-	AbstractGui::show();
-	AbstractGui::focus();
-}
-
 void Alert::showText(std::string text)
 {
+	setId(this->m_manager->getNextId());
 	initialize();
 	setText(text);
 	show();

@@ -3,7 +3,6 @@
 #include "../../Engine/ui/cursor.h"
 
 #include "../../Engine/models/ModelManager.h"
-#include "../../Engine/modelclass.h"
 #include "../../Engine/models/Model.h"
 #include "../../Engine/models/gridclass.h"
 
@@ -340,11 +339,31 @@ void App::frameUI()
 			if (models[i]->getId() <= 1) {
 				continue;
 			}
-			ModelClass* model = dynamic_cast<ModelClass*>(models[i]);
+
+			MapEntity::ObjectFormat* entity = m_mapEntities->getEntity(models[i]->getId());
+			if (!entity || entity->type != MapEntity::MODEL) {
+				continue;
+			}
+
+			Model* model = dynamic_cast<Model*>(models[i]);
 
 			m_CollisionDetection->getRayDirection(m_Graphics->getD3D()->getScreenWidth(), m_Graphics->getD3D()->getScreenHeight(), mouseX, mouseY, position, direction);
 			if (m_CollisionDetection->RayBoxIntersect(position, direction, model->getMinPosition(), model->getMaxPosition())) {
 				modelsSelected.push_back(model);
+			}
+		}
+		if (modelsSelected.size() == 0) {
+			for (int i = 0; i < models.size(); i++) {
+				MapEntity::ObjectFormat* entity = m_mapEntities->getEntity(models[i]->getId());
+				if (!entity || entity->type == MapEntity::MODEL) {
+					continue;
+				}
+
+				Model* model = dynamic_cast<Model*>(models[i]);
+				m_CollisionDetection->getRayDirection(m_Graphics->getD3D()->getScreenWidth(), m_Graphics->getD3D()->getScreenHeight(), mouseX, mouseY, position, direction);
+				if (m_CollisionDetection->RayBoxIntersect(position, direction, model->getMinPosition(), model->getMaxPosition())) {
+					modelsSelected.push_back(model);
+				}
 			}
 		}
 
@@ -424,79 +443,22 @@ void App::unselectModel()
 		m_selectedModel->hideBBox();
 		m_selectedModel = 0;
 
-		this->getObjectWindow()->getWindow()->hide();
-		this->getTerrainWindow()->getWindow()->hide();
-		this->getWaterWindow()->getWindow()->hide();
-		this->getSkyWindow()->getWindow()->hide();
+		if (this->m_objectWindow) {
+			this->getObjectWindow()->getWindow()->hide();
+		}
+		if (this->m_terrainWindow) {
+			this->getTerrainWindow()->getWindow()->hide();
+		}
+		if (this->m_waterWindow) {
+			this->getWaterWindow()->getWindow()->hide();
+		}
+		if (this->m_skyWindow) {
+			this->getSkyWindow()->getWindow()->hide();
+		}
 	}
 }
 
 	/*
-
-	void resetWindowCompositeModel()
-	{
-		Input* positionInput;
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(42));
-		positionInput->setText("");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(43));
-		positionInput->setText("");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(44));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(45));
-		positionInput->setText("0.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(46));
-		positionInput->setText("0.00");
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(47));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(48));
-		positionInput->setText("1.00");
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(49));
-		positionInput->setText("1.00");
-	}
-
-	void updateWindowCompositeModel()
-	{
-		D3DXVECTOR3 direction, position, scale, rotation, scaleNormal;
-		MapEntity::ObjectFormat* editorFormat = getObjectEditor(m_selectedModel->getId());
-		CompositeModel* model = dynamic_cast<CompositeModel*>(m_selectedModel);
-
-		this->updateBbox();
-
-		position = editorFormat->position;
-		scale = editorFormat->scale;
-
-		AbstractGui* objectWindow = m_uiManager->getById(41);
-		objectWindow->show();
-		objectWindow->focus();
-		Input* positionInput;
-
-		if (editorFormat->extraParams.size() > 0) {
-			positionInput = dynamic_cast<Input*>(m_uiManager->getById(42));
-			positionInput->setText(String::ssprintf("%s", editorFormat->extraParams[0]));
-			if (editorFormat->extraParams.size() > 1) {
-				positionInput = dynamic_cast<Input*>(m_uiManager->getById(43));
-				positionInput->setText(String::ssprintf("%s", editorFormat->extraParams[1]));
-			}
-		}
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(44));
-		positionInput->setText(String::ssprintf("%.2f", position.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(45));
-		positionInput->setText(String::ssprintf("%.2f", position.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(46));
-		positionInput->setText(String::ssprintf("%.2f", position.z));
-
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(47));
-		positionInput->setText(String::ssprintf("%.2f", scale.x));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(48));
-		positionInput->setText(String::ssprintf("%.2f", scale.y));
-		positionInput = dynamic_cast<Input*>(m_uiManager->getById(49));
-		positionInput->setText(String::ssprintf("%.2f", scale.z));
-	}
-
 	void updateCompositeModel()
 	{
 		if (!m_selectedModel) {

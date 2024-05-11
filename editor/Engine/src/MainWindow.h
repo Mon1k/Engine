@@ -8,6 +8,7 @@
 #include "../../../Engine/map/XmlLoad.h"
 
 #include "../../../Engine/ui/dialogs/SaveDialog.h"
+#include "../../../Engine/ui/dialogs/Confirm.h"
 
 #include "ObjectWindow.h"
 #include "TerrainWindow.h"
@@ -36,9 +37,17 @@ public:
 		exitButton->initialize(80, 28);
 		exitButton->Add("New", 1, 1);
 		exitButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
-			m_app->m_modelManager->clear();
-			m_app->m_mapEntities->clear();
-			m_app->initDefaultObjects();
+			Confirm* dialog = new Confirm;
+			m_app->m_uiManager->add(dialog);
+			dialog->showText("Clear scene?");
+			dialog->addEventHandler(AbstractGui::EventType::ACTION_CHOOSE, [this, dialog] {
+				if (dialog->getResult()) {
+					m_app->m_modelManager->clear();
+					m_app->m_mapEntities->clear();
+					m_app->initDefaultObjects();
+				}
+				m_app->m_uiManager->remove(dialog->getId());
+			});
 		});
 
 		Button* saveWorldButton = new Button;

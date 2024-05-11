@@ -1,11 +1,11 @@
 #pragma once
 
-#include "AbstractGUI.h"
-#include "group.h"
-#include "label.h"
+#include "../AbstractGUI.h"
+#include "../group.h"
+#include "../label.h"
 
-#include "../textureshaderclass.h"
-#include "../bitmapclass.h"
+#include "../../textureshaderclass.h"
+#include "../../bitmapclass.h"
 
 
 #include <string>

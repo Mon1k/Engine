@@ -170,6 +170,7 @@ public:
 
         SCROLL = 300,
         RESIZE = 301,
+        ACTION_CHOOSE = 302
 
         // more 65536 is user events
     };

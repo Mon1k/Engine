@@ -80,6 +80,7 @@
     <LibraryPath>C:\download\etc\study\assimp-5.1.0\out\build\x64-Debug\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(ProjectName)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <TargetName>Editor</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -237,9 +238,11 @@
     <ClCompile Include="..\..\Engine\ui\checkbox.cpp" />
     <ClCompile Include="..\..\Engine\ui\cursor.cpp" />
     <ClCompile Include="..\..\Engine\ui\dialogs\Alert.cpp" />
+    <ClCompile Include="..\..\Engine\ui\dialogs\Confirm.cpp" />
     <ClCompile Include="..\..\Engine\ui\dialogs\FileChooser.cpp" />
     <ClCompile Include="..\..\Engine\ui\dialogs\OpenDialog.cpp" />
     <ClCompile Include="..\..\Engine\ui\dialogs\SaveDialog.cpp" />
+    <ClCompile Include="..\..\Engine\ui\dialogs\window.cpp" />
     <ClCompile Include="..\..\Engine\ui\FileInput.cpp" />
     <ClCompile Include="..\..\Engine\ui\image.cpp" />
     <ClCompile Include="..\..\Engine\ui\input.cpp" />
@@ -249,7 +252,6 @@
     <ClCompile Include="..\..\Engine\ui\Table.cpp" />
     <ClCompile Include="..\..\Engine\ui\Tree.cpp" />
     <ClCompile Include="..\..\Engine\ui\UIManager.cpp" />
-    <ClCompile Include="..\..\Engine\ui\window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -370,9 +372,11 @@
     <ClInclude Include="..\..\Engine\ui\checkbox.h" />
     <ClInclude Include="..\..\Engine\ui\cursor.h" />
     <ClInclude Include="..\..\Engine\ui\dialogs\Alert.h" />
+    <ClInclude Include="..\..\Engine\ui\dialogs\Confirm.h" />
     <ClInclude Include="..\..\Engine\ui\dialogs\FileChooser.h" />
     <ClInclude Include="..\..\Engine\ui\dialogs\OpenDialog.h" />
     <ClInclude Include="..\..\Engine\ui\dialogs\SaveDialog.h" />
+    <ClInclude Include="..\..\Engine\ui\dialogs\window.h" />
     <ClInclude Include="..\..\Engine\ui\FileInput.h" />
     <ClInclude Include="..\..\Engine\ui\group.h" />
     <ClInclude Include="..\..\Engine\ui\image.h" />
@@ -383,7 +387,6 @@
     <ClInclude Include="..\..\Engine\ui\Table.h" />
     <ClInclude Include="..\..\Engine\ui\Tree.h" />
     <ClInclude Include="..\..\Engine\ui\UIManager.h" />
-    <ClInclude Include="..\..\Engine\ui\window.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="src\MainWindow.h" />
     <ClInclude Include="src\ObjectWindow.h" />

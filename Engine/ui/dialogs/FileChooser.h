@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "../window.h"
+#include "window.h"
 #include "../Table.h"
 
 class FileChooser : public Window

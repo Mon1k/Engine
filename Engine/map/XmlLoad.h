@@ -125,6 +125,7 @@ protected:
 				textures.push_back(oldParams[i]->value);
 			}
 		}
+		params.erase("params");
 
 		std::vector<Attribute*> extraTextures = node->getAttributes("extra_textures");
 		for (size_t i = 0; i < extraTextures.size(); i++) {
@@ -281,6 +282,7 @@ protected:
 				}
 			}
 		}
+		params.erase("params");
 
 
 		model->SetScale(scale);
@@ -405,8 +407,13 @@ protected:
 			model->setReflectRefractScale(std::stof(params["refraction_scale"]));
 
 			// @todo later changes it, set target after load target in model manager
-			//ModelClass* modelTarget = dynamic_cast<ModelClass*>(manager->getById(stoi(params[4]->value)));
-			//model->addRefractionTarget(modelTarget);
+			if (params.find("targetId") != params.end()) {
+				Model* modelTarget = dynamic_cast<Model*>(manager->getById(std::stoi(params["targetId"])));
+				if (modelTarget) {
+					model->addRefractionTarget(modelTarget);
+				}
+			}
+
 
 			manager->Add(model);
 

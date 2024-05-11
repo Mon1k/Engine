@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "window.h"
+#include "dialogs/window.h"
 #include "ListNode.h"
 
 class Tree : public Window

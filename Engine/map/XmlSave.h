@@ -137,6 +137,9 @@ public:
 
 		if (entity.params.size() > 0) {
 			for (const auto& [key, value] : entity.params) {
+				if (key == "extra_textures") {
+					continue;
+				}
 				Attribute* params = new Attribute;
 				params->name = key;
 				params->value = value;
@@ -145,7 +148,7 @@ public:
 		}
 
 		if (entity.extraTextures.size() > 0) {
-			for (int i = 0; i < entity.extraTextures.size(); i++) {
+			for (size_t i = 0; i < entity.extraTextures.size(); i++) {
 				if (entity.extraTextures[i].size() > 0) {
 					Attribute* extraTextures = new Attribute;
 					extraTextures->name = "extra_textures";
