@@ -36,6 +36,7 @@ public:
     void RenderShadowDepth(CameraClass*);
     
     bool Add(AbstractModel* model);
+    bool addUnshift(AbstractModel* model);
     void remove(int id);
     void clear();
 

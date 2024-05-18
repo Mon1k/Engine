@@ -1,6 +1,6 @@
 #include "Actor.h"
 
-Actor::Actor() : Model()
+Actor::Actor() : ModelClass()
 {
 	m_counter = 0;
 	m_counterTotal = 0;

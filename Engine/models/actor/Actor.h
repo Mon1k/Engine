@@ -4,10 +4,10 @@
 #include <map>
 #include <string>
 
-#include "../Model.h"
+#include "../../modelclass.h"
 #include "../../tool/String.h"
 
-class Actor: public Model
+class Actor: public ModelClass
 {
 public:
 	// wight per vertex

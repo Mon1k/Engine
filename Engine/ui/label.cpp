@@ -90,6 +90,10 @@ void Label::Shutdown()
 
 bool Label::Render()
 {
+	if (m_Text->getText().length() == 0) {
+		return true;
+	}
+
 	bool result;
 	D3DXMATRIX worldMatrix, orthoMatrix;
 

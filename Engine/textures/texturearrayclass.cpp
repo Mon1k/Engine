@@ -43,13 +43,14 @@ void TextureArrayClass::Shutdown()
 	// Release the texture resources.
 	int size = m_textures.size();
 	for (int i = 0; i < size; i++) {
-		if (m_textures[i]) {
+		if (m_textures[i] && m_texturesPath[i].length() > 0) {
 			m_textures[i]->Release();
 			m_textures[i] = 0;
 		}
 	}
 
 	m_textures.clear();
+	m_texturesPath.clear();
 }
 
 ID3D11ShaderResourceView* TextureArrayClass::GetTexture(int index)

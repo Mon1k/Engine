@@ -181,6 +181,7 @@ bool TerrainClass::LoadHeightMap(char* filename)
 	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 	m_origScale = scale;
+	m_origPosition = position;
 
 	// Read the image data into the height map.
 	for (j = 0; j < m_terrainHeight; j++) {
@@ -222,7 +223,9 @@ bool TerrainClass::LoadHeightMap(char* filename)
 
 
 	// restore for normal worldmartix
+	// for this variable separate var, as uses position in quad without matrix for calc position
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	return true;
 }

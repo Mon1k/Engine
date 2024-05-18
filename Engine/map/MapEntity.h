@@ -33,7 +33,6 @@ public:
 		D3DXVECTOR3 rotation;
 		std::string path;
 		std::string texture;
-		std::vector<std::string> extraParams; // @todo - deprecation
 		std::map<std::string, std::string> params;
 		std::vector<std::string> extraTextures;
 
@@ -86,10 +85,10 @@ public:
 		m_entities.clear();
 	}
 
-	Model* copyModel(MapEntity::ObjectFormat entity, ModelManager* manager)
+	ModelClass* copyModel(MapEntity::ObjectFormat entity, ModelManager* manager)
 	{
-		Model* model = new Model;
-		Model* modelOriginal = dynamic_cast<Model*>(manager->getById(entity.id));
+		ModelClass* model = new ModelClass;
+		ModelClass* modelOriginal = dynamic_cast<ModelClass*>(manager->getById(entity.id));
 		D3DXVECTOR3 position;
 
 		position = entity.position;
@@ -102,18 +101,26 @@ public:
 		shader->addLights(modelOriginal->getLights());
 		model->addShader(shader);
 
-		model->Initialize(modelOriginal->getD3D(), &entity.path[0], {entity.texture});
-		model->SetPosition(position);
+		std::vector<std::string> textures;
+		textures.push_back(entity.texture);
+		for (size_t i = 0; i < entity.extraTextures.size(); i++) {
+			textures.push_back(entity.extraTextures[i]);
+		}
+
+		model->Initialize(modelOriginal->getD3D(), &entity.path[0], textures);
 		model->SetScale(entity.scale);
 		model->SetRotation(entity.rotation);
+		model->SetPosition(position);
 		model->setAlpha(modelOriginal->getAlpha());
+		model->setShadow(modelOriginal->isShadow());
 		model->addLights(modelOriginal->getLights());
-
+		
 		model->setId(manager->getNextId());
 		manager->Add(model);
 
 		MapEntity::ObjectFormat entityNew = entity;
 		entityNew.id = model->getId();
+		entityNew.name = "Object" + std::to_string(entityNew.id);
 		entityNew.position = model->GetPosition();
 		this->add(entityNew);
 

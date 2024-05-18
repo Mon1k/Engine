@@ -128,20 +128,36 @@ public:
 
         if (scale.x != _scale.x) {
             delta.x = _scale.x / scale.x;
-            m_Min.x = center.x - size.x / 2 * delta.x;
-            m_Max.x = center.x + size.x / 2 * delta.x;
+            /*m_Min.x = center.x - size.x / 2 * delta.x;
+            m_Max.x = center.x + size.x / 2 * delta.x;*/
+
+            m_Min.x = position.x - size.x / 2 * _scale.x;
+            m_Max.x = position.x + size.x / 2 * _scale.x;
+
+            /*m_Min.x *= delta.x;
+            m_Max.x *= delta.x;*/
         }
         if (scale.y != _scale.y) {
             delta.y = _scale.y / scale.y;
-            /*m_Min.y = center.y - size.y / 2 * delta.y;
-            m_Max.y = center.y + size.y / 2 * delta.y;*/
-            m_Min.y *= delta.y;
-            m_Max.y *= delta.y;
+            /*m_Min.y = center.y - size.y / 2 * _scale.y;
+            m_Max.y = center.y + size.y / 2 * _scale.y;*/
+            
+            m_Min.y = position.y - size.y / 2 * _scale.y;
+            m_Max.y = position.y + size.y / 2 * _scale.y;
+
+            /*m_Min.y *= delta.y;
+            m_Max.y *= delta.y;*/
         }
         if (scale.z != _scale.z) {
             delta.z = _scale.z / scale.z;
-            m_Min.z = center.z - size.z / 2 * delta.z;
-            m_Max.z = center.z + size.z / 2 * delta.z;
+            /*m_Min.z = center.z - size.z / 2 * delta.z;
+            m_Max.z = center.z + size.z / 2 * delta.z;*/
+
+            m_Min.z = position.z - size.z / 2 * _scale.z;
+            m_Max.z = position.z + size.z / 2 * _scale.z;
+
+            /*m_Min.z *= delta.z;
+            m_Max.z *= delta.z;*/
         }
         
         scale = _scale;

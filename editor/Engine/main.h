@@ -40,7 +40,7 @@ public:
 
 	CollisionDetection* m_CollisionDetection;
 
-	Model* m_selectedModel;
+	ModelClass* m_selectedModel;
 	MapEntity* m_mapEntities;
 
 	LightClass* m_light;

@@ -57,7 +57,7 @@ public:
 
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
-		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectPath->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/textures");
 		objectPath->getDialog()->addFilter("bmp");
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
@@ -102,7 +102,7 @@ public:
 
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
-		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectTexture->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
@@ -113,7 +113,7 @@ public:
 
 		FileInput* objectTextureNormal = new FileInput;
 		m_Window->addChild(objectTextureNormal);
-		objectTextureNormal->initialize( 400, 28, m_Window->m_x + 10, shift);
+		objectTextureNormal->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectTextureNormal->getDialog()->setPath(objectTextureNormal->getDialog()->getCurrentPath() + "data/textures");
 		objectTextureNormal->getDialog()->addDefaultImageFilters();
 		objectTextureNormal->setValueRefLink(&typeid(std::string), &m_textureNormal);
@@ -223,7 +223,7 @@ public:
 
 		FileInput* objectLayerAlpha = new FileInput;
 		m_Window->addChild(objectLayerAlpha);
-		objectLayerAlpha->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectLayerAlpha->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectLayerAlpha->getDialog()->setPath(objectLayerAlpha->getDialog()->getCurrentPath() + "data/textures");
 		objectLayerAlpha->getDialog()->addDefaultImageFilters();
 		objectLayerAlpha->setValueRefLink(&typeid(std::string), &m_textureAlpha);
@@ -284,7 +284,7 @@ public:
 		TerrainClass* terrain = dynamic_cast<TerrainClass*>(m_app->m_selectedModel);
 		m_path = terrain->getPath();
 		m_texture = terrain->GetTextureClass()->getTexturePath();
-		m_position = terrain->GetPosition();
+		m_position = terrain->getOrigPosition();
 		m_scale = terrain->getOrigScale();
 		m_scaleNormal = terrain->getScaleNormal();
 

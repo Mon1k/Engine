@@ -1,24 +1,19 @@
-#include "../../Engine/ui/UIManager.h"
+#include "main.h"
+
 #include "../../Engine/ui/label.h"
 #include "../../Engine/ui/cursor.h"
 
-#include "../../Engine/models/ModelManager.h"
-#include "../../Engine/models/Model.h"
 #include "../../Engine/models/gridclass.h"
+#include "../../Engine/lightclass.h"
 
-// editor ui
+#include "../../Engine/CollisionDetection.h"
+#include "../../Engine/tool/String.h"
+
 #include "src/MainWindow.h"
 #include "src/ObjectWindow.h"
 #include "src/TerrainWindow.h"
 #include "src/WaterWindow.h"
 #include "src/SkyWindow.h"
-
-#include "../../Engine/lightclass.h"
-#include "../../Engine/lightshaderclass.h"
-
-#include "../../Engine/CollisionDetection.h"
-#include "../../Engine/tool/String.h"
-
 
 void App::initDefaultObjects()
 {
@@ -248,6 +243,7 @@ bool App::init()
 	}
 
 	m_Position->SetPosition(8.0f, 10.0f, 30.0f);
+	//m_Position->SetPosition(268.0f, 20.0f, 160.0f);
 	m_Position->SetRotation(15.0f, -180.0f, 0.0f);
 	m_modelManager = m_Graphics->getModelManager();
 	m_uiManager = m_Graphics->getUiManager();
@@ -286,12 +282,13 @@ void App::loadUI()
 
 void App::loadScene()
 {
+	/* @todo - later as light entity, also sync with light from xmlload */
 	m_light = new LightClass;
-	m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_light->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 	m_light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_light->SetDirection(0.0f, -1.0f, 1.0f);
-	m_light->SetPosition(-50.0f, 80.0f, -50.0f);
-	m_light->SetLookAt(70.0f, 0.0f, 70.0f);
+	m_light->SetPosition(0.0f, 220.0f, 0.0f);
+	m_light->SetLookAt(300.0f, 0.0f, 200.0f);
 	m_light->setIntensity(1.0f);
 	m_light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_light->SetSpecularPower(32.0f);
@@ -345,7 +342,7 @@ void App::frameUI()
 				continue;
 			}
 
-			Model* model = dynamic_cast<Model*>(models[i]);
+			ModelClass* model = dynamic_cast<ModelClass*>(models[i]);
 
 			m_CollisionDetection->getRayDirection(m_Graphics->getD3D()->getScreenWidth(), m_Graphics->getD3D()->getScreenHeight(), mouseX, mouseY, position, direction);
 			if (m_CollisionDetection->RayBoxIntersect(position, direction, model->getMinPosition(), model->getMaxPosition())) {
@@ -359,7 +356,7 @@ void App::frameUI()
 					continue;
 				}
 
-				Model* model = dynamic_cast<Model*>(models[i]);
+				ModelClass* model = dynamic_cast<ModelClass*>(models[i]);
 				m_CollisionDetection->getRayDirection(m_Graphics->getD3D()->getScreenWidth(), m_Graphics->getD3D()->getScreenHeight(), mouseX, mouseY, position, direction);
 				if (m_CollisionDetection->RayBoxIntersect(position, direction, model->getMinPosition(), model->getMaxPosition())) {
 					modelsSelected.push_back(model);
@@ -367,11 +364,11 @@ void App::frameUI()
 			}
 		}
 
-		Model* modelNear = 0;
+		ModelClass* modelNear = 0;
 		float minDistance = D3D11_FLOAT32_MAX;
 		float distance;
 		for (int i = 0; i < modelsSelected.size(); i++) {
-			Model* model = dynamic_cast<Model*>(modelsSelected[i]);
+			ModelClass* model = dynamic_cast<ModelClass*>(modelsSelected[i]);
 			distance = m_CollisionDetection->getDistanceByPoints(m_CollisionDetection->m_position, model->getCenter());
 			if (distance < minDistance) {
 				minDistance = distance;

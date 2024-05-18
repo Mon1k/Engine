@@ -1,8 +1,272 @@
 <world>
-	<terrain id="2" name="Terrain 2" type="2" position="100.000000;0.000000;50.000000" scale="3.000000;0.100000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/textures/heightmap64.bmp" texture="data/textures/grass.dds" layer1="data/textures/dirt.dds" layer1_normal="data/textures/dirt_n.dds" layer2="data/textures/dirt2.dds" layer2_normal="data/textures/dirt2_n.dds" layer3="data/textures/stone001.dds" layer3_normal="data/textures/stone001_n.dds" layer_alpha="data/textures/alpha002.dds" rotation="0.000000;0.000000;0.000000" texture_normal="data/textures/grass_n.dds" type="2">
+	<terrain id="2" name="Terrain 2" type="2" position="200.000000;0.000000;100.000000" scale="3.000000;0.100000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/textures/heightmap64.bmp" texture="data/textures/grass.dds" layer1="data/textures/dirt.dds" layer1_normal="data/textures/dirt_n.dds" layer2="data/textures/dirt2.dds" layer2_normal="data/textures/dirt2_n.dds" layer3="data/textures/stone001.dds" layer3_normal="data/textures/stone001_n.dds" layer_alpha="data/textures/alpha002.dds" rotation="0.000000;0.000000;0.000000" scale_normal="1.000000;1.000000;1.000000" texture_normal="data/textures/grass_n.dds" type="2">
 	</terrain>
-	<model id="3" name="Object 3" type="1" position="240.000000;5.000000;128.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/house.obj" texture="data/textures/wood.dds" alpha="1" shadow="1" type="1">
-	</model>
-	<water id="4" name="Water 4" type="3" position="280.000000;4.000000;200.000000" scale="30.000000;1.000000;30.000000" rotation="0.000000;0.000000;0.000000" path="data/models/water.ds" texture="data/textures/water01.dds" height="4.000000" refraction_scale="0.200000" targetId="2" tiling="0.100000;0.100000" type="3">
+	<water id="4" name="Water 4" type="3" position="270.000000;4.000000;200.000000" scale="30.000000;1.000000;30.000000" rotation="0.000000;0.000000;0.000000" path="data/models/water.ds" texture="data/textures/water01.dds" height="4.000000" refraction_scale="0.070000" targetId="2" tiling="0.100000;0.100000" type="3">
 	</water>
+	<model id="5" name="Object 5" type="1" position="245.000000;6.000000;130.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
+	</model>
+	<model id="6" name="Object 6" type="1" position="280.000000;6.000000;160.000000" scale="0.020000;0.020000;0.020000" rotation="0.000000;0.000000;0.000000" path="data/models/well/well.obj" texture="data/models/well/Well_01_Albedo.png" alpha="0" shadow="1" type="1" extra_textures="data/models/well/Well_02_Albedo.png" extra_textures="data/models/well/Well_Bucket_Albedo.png">
+	</model>
+	<model id="7" name="Object 7" type="1" position="260.000000;6.500000;137.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;180.000000;0.000000" path="data/models/Medieval_cart_1_0/Medieval_cart_1_0.obj" texture="data/models/Medieval_cart_1_0/Medieval_cart_0_Fire_Lamp_1_0_BaseColor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/Medieval_cart_1_0/Medieval_cart_0_Glass_lamp_1_0_BaseColor.png" extra_textures="data/models/Medieval_cart_1_0/Medieval_cart_0_Metal_lamp_1_0_BaseColor.png" extra_textures="data/models/Medieval_cart_1_0/Medieval_cart_0_Metal_wheel_1_0_BaseColor.png" extra_textures="data/models/Medieval_cart_1_0/Medieval_cart_0_Wood_cart_1_0_BaseColor.png" extra_textures="data/models/Medieval_cart_1_0/TexturesCom_Rope_NaturalSisal_512_albedo.dds">
+	</model>
+	<model id="8" name="Object 8" type="1" position="277.000000;6.500000;135.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;-90.000000;0.000000" path="data/models/fence.obj" texture="data/textures/wood.dds" alpha="1" shadow="1" type="1" extra_textures="data/textures/wood.dds">
+	</model>
+	<model id="9" name="Object 8" type="1" position="265.500000;6.500000;135.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;-90.000000;0.000000" path="data/models/fence.obj" texture="data/textures/wood.dds" alpha="1" shadow="1" type="1" extra_textures="data/textures/wood.dds">
+	</model>
+	<model id="10" name="Object 8" type="1" position="271.200012;6.500000;135.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;-90.000000;0.000000" path="data/models/fence.obj" texture="data/textures/wood.dds" alpha="1" shadow="1" type="1" extra_textures="data/textures/wood.dds">
+	</model>
+	<model id="11" name="Object 11" type="1" position="260.000000;6.000000;130.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="12" name="Object 11" type="1" position="261.500000;6.000000;132.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="13" name="Object13" type="1" position="263.000000;6.000000;133.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="14" name="Object14" type="1" position="264.500000;6.000000;131.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="15" name="Object15" type="1" position="266.000000;6.000000;131.000000" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="16" name="Object16" type="1" position="266.000000;6.000000;133.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="17" name="Object17" type="1" position="261.493073;6.000000;130.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="18" name="Object18" type="1" position="262.986145;6.000000;130.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="19" name="Object19" type="1" position="264.500000;6.000000;127.000000" scale="0.250000;0.300000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="20" name="Object20" type="1" position="267.500000;6.000000;133.199905" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="21" name="Object21" type="1" position="269.000000;6.000000;133.100006" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="22" name="Object22" type="1" position="270.500000;6.000000;132.500000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="23" name="Object23" type="1" position="271.972290;6.000000;133.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="24" name="Object24" type="1" position="273.500000;6.000000;132.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="25" name="Object25" type="1" position="274.958435;6.000000;133.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="26" name="Object26" type="1" position="267.500000;6.000000;130.699905" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="27" name="Object27" type="1" position="268.986145;6.000000;131.000000" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="28" name="Object28" type="1" position="270.479218;6.000000;131.000000" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="29" name="Object29" type="1" position="272.000000;6.000000;130.199905" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="30" name="Object30" type="1" position="273.465363;6.000000;131.000000" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="31" name="Object31" type="1" position="274.958435;6.000000;131.000000" scale="0.250000;0.280000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="32" name="Object32" type="1" position="265.993073;6.000000;128.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="33" name="Object33" type="1" position="267.486145;6.000000;128.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="34" name="Object34" type="1" position="269.000000;6.000000;126.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="35" name="Object35" type="1" position="270.000000;6.000000;127.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="36" name="Object36" type="1" position="271.965363;6.000000;128.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="37" name="Object37" type="1" position="273.500000;6.000000;120.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="38" name="Object38" type="1" position="274.951508;6.000000;128.000000" scale="0.250000;0.250000;0.250000" rotation="0.000000;180.000000;0.000000" path="data/models/sunflower1/sunflower.obj" texture="data/models/sunflower1/sunflower.jpg" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="39" name="Object 39" type="1" position="230.000000;6.200000;205.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="40" name="Object40" type="1" position="224.600006;6.200000;200.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="41" name="Object41" type="1" position="233.300003;6.200000;200.000000" scale="1.000000;1.100000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="42" name="Object42" type="1" position="243.899994;6.200000;205.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="43" name="Object43" type="1" position="248.500000;6.200000;205.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="44" name="Object44" type="1" position="220.000000;6.200000;210.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="45" name="Object45" type="1" position="229.300003;6.200000;210.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="46" name="Object46" type="1" position="238.500000;6.200000;210.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="47" name="Object47" type="1" position="247.800003;6.200000;210.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="48" name="Object48" type="1" position="257.000000;6.200000;212.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="49" name="Object49" type="1" position="245.000000;6.200000;210.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="50" name="Object50" type="1" position="254.300003;6.200000;210.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="51" name="Object51" type="1" position="263.500000;6.200000;206.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="52" name="Object 52" type="1" position="315.200012;7.300000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="53" name="Object53" type="1" position="317.000000;7.300000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="54" name="Object54" type="1" position="318.799988;7.300000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="55" name="Object55" type="1" position="313.299988;7.300000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="56" name="Object56" type="1" position="314.200012;8.900000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="57" name="Object57" type="1" position="315.899994;8.900000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="58" name="Object58" type="1" position="317.600006;8.900000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="59" name="Object59" type="1" position="315.100006;10.500000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="60" name="Object60" type="1" position="316.799988;10.600000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="61" name="Object61" type="1" position="315.799988;12.200000;160.000000" scale="0.070000;0.070000;0.070000" rotation="90.000000;0.000000;0.000000" path="data/models/barrel/barrel.obj" texture="data/models/barrel/barrel.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="62" name="Object 62" type="1" position="305.000000;6.500000;155.000000" scale="3.000000;2.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/crate/crate.obj" texture="data/models/crate/crate.png" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="63" name="Object63" type="1" position="310.000000;6.500000;155.000000" scale="3.000000;2.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/crate/crate.obj" texture="data/models/crate/crate.png" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="64" name="Object64" type="1" position="306.799988;7.700000;155.000000" scale="3.000000;2.000000;3.000000" rotation="0.000000;0.000000;-45.000000" path="data/models/crate/crate.obj" texture="data/models/crate/crate.png" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="65" name="Object65" type="1" position="311.000000;7.900000;155.000000" scale="3.000000;2.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/crate/crate.obj" texture="data/models/crate/crate.png" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="66" name="Object66" type="1" position="310.200012;9.400000;155.000000" scale="3.000000;2.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/crate/crate.obj" texture="data/models/crate/crate.png" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="67" name="Object 67" type="1" position="305.000000;6.300000;190.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;30.000000;0.000000" path="data/models/crv2/crv2.obj" texture="data/models/crv2/crv2.png" alpha="1" shadow="1" type="1" extra_textures="data/models/crv2/crv2.png">
+	</model>
+	<model id="68" name="Object 68" type="1" position="306.600006;7.400000;186.000000" scale="1.500000;1.500000;1.500000" rotation="-45.000000;-90.000000;0.000000" path="data/models/plank/plank.obj" texture="data/models/plank/plank.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="69" name="Object69" type="1" position="309.000000;6.500000;186.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/plank/plank.obj" texture="data/models/plank/plank.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="70" name="Object70" type="1" position="310.218353;6.500000;186.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/plank/plank.obj" texture="data/models/plank/plank.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="71" name="Object71" type="1" position="311.436707;6.500000;186.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/plank/plank.obj" texture="data/models/plank/plank.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="72" name="Object72" type="1" position="311.000000;6.900000;186.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;90.000000;0.000000" path="data/models/plank/plank.obj" texture="data/models/plank/plank.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="73" name="Object 73" type="1" position="370.000000;6.500000;175.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/farm_windmill/farm_windmill.obj" texture="data/models/farm_windmill/base_color.png" alpha="1" shadow="1" type="1" extra_textures="data/models/farm_windmill/thatch_bc2.png" extra_textures="data/models/farm_windmill/thatch_bc2.png" extra_textures="data/models/farm_windmill/tiled_dirty_planks.png">
+	</model>
+	<model id="74" name="Object74" type="1" position="283.399994;6.000000;130.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
+	</model>
+	<model id="76" name="Object76" type="1" position="324.000000;6.000000;202.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;100.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
+	</model>
+	<model id="77" name="Object77" type="1" position="301.000000;6.000000;210.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;60.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
+	</model>
+	<model id="78" name="Object78" type="1" position="286.000000;6.000000;183.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;100.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
+	</model>
+	<model id="79" name="Object 79" type="1" position="290.000000;6.500000;160.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;-90.000000;0.000000" path="data/models/hangstool/Hangstool.obj" texture="data/models/hangstool/Hangstool.png" alpha="1" shadow="1" type="1">
+	</model>
+	<sky id="80" name="Sky 80" type="4" position="-107374176.000000;-107374176.000000;-107374176.000000" scale="-107374176.000000;-107374176.000000;-107374176.000000" rotation="-107374176.000000;-107374176.000000;-107374176.000000" path="data/models/skydome.ds">
+	</sky>
+	<model id="81" name="Object 81" type="1" position="294.000000;6.500000;153.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/FireBurner/FireBurner.obj" texture="data/models/FireBurner/fire_burner_fire_burner_BaseColor.1001.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="82" name="Object82" type="1" position="310.000000;6.500000;168.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/FireBurner/FireBurner.obj" texture="data/models/FireBurner/fire_burner_fire_burner_BaseColor.1001.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="83" name="Object83" type="1" position="338.000000;6.500000;191.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/FireBurner/FireBurner.obj" texture="data/models/FireBurner/fire_burner_fire_burner_BaseColor.1001.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="84" name="Object84" type="1" position="338.000000;6.500000;155.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;0.000000;0.000000" path="data/models/FireBurner/FireBurner.obj" texture="data/models/FireBurner/fire_burner_fire_burner_BaseColor.1001.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="85" name="Object 85" type="1" position="260.000000;4.100000;160.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;60.000000;0.000000" path="data/models/boat/boat.obj" texture="data/models/boat/wood2.jpg" alpha="1" shadow="1" type="1" extra_textures="data/models/boat/wood1.jpg" extra_textures="data/models/boat/wood3.jpg">
+	</model>
+	<model id="86" name="Object86" type="1" position="220.000000;6.200000;230.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="87" name="Object87" type="1" position="233.899994;6.200000;220.000000" scale="3.000000;3.100000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="88" name="Object88" type="1" position="247.800003;6.200000;221.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="89" name="Object89" type="1" position="261.700012;6.200000;226.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="90" name="Object90" type="1" position="220.600006;6.200000;221.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="91" name="Object91" type="1" position="234.500000;6.200000;241.000000" scale="3.000000;3.700000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="92" name="Object92" type="1" position="228.399994;6.200000;251.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="93" name="Object93" type="1" position="242.288010;6.200000;251.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="94" name="Object94" type="1" position="256.200012;6.200000;255.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="95" name="Object95" type="1" position="262.100006;6.200000;250.000000" scale="3.000000;3.200000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="96" name="Object96" type="1" position="242.300003;6.200000;267.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="97" name="Object97" type="1" position="256.188019;6.200000;267.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="98" name="Object98" type="1" position="270.076050;6.200000;267.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="99" name="Object99" type="1" position="283.964081;6.200000;267.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="100" name="Object100" type="1" position="275.588043;6.200000;226.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="101" name="Object101" type="1" position="284.000000;6.200000;251.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="102" name="Object102" type="1" position="297.899994;6.200000;251.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="103" name="Object103" type="1" position="311.799988;6.200000;253.000000" scale="3.000000;3.100000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="104" name="Object104" type="1" position="248.399994;6.200000;236.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="105" name="Object105" type="1" position="262.288025;6.200000;236.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="106" name="Object106" type="1" position="270.100006;6.200000;255.000000" scale="3.000000;2.800000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="107" name="Object107" type="1" position="280.500000;6.200000;206.000000" scale="3.000000;3.000000;3.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
+	</model>
+	<model id="108" name="Object 108" type="1" position="360.000000;6.500000;220.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;150.000000;0.000000" path="data/models/church/church.obj" texture="data/models/church/Church.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="109" name="Object 109" type="1" position="257.000000;5.500000;173.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;90.000000;0.000000" path="data/models/pier_wood/pier_wood.obj" texture="data/models/pier_wood/MoloL_DoskyMat_BaseColor.png" alpha="0" shadow="1" type="1" extra_textures="data/models/pier_wood/MoloL_HlavnaPodperaMat_BaseColor.png" extra_textures="data/models/pier_wood/MoloL_DoskyMat_BaseColor.png">
+	</model>
+	<model id="110" name="Object 110" type="1" position="294.000000;6.500000;130.000000" scale="0.800000;0.800000;0.800000" rotation="0.000000;-190.000000;0.000000" path="data/models/house1/house1.obj" texture="data/models/house1/logwood_bc.jpg" alpha="1" shadow="1" type="1" extra_textures="data/models/house1/thatch_bc.png" extra_textures="data/models/house1/T_rope_basecolor.jpg" extra_textures="data/models/house1/thatch_bc.png">
+	</model>
+	<model id="111" name="Object 111" type="1" position="300.000000;8.500000;265.000000" scale="0.050000;0.050000;0.050000" rotation="0.000000;-30.000000;0.000000" path="data/models/wood_cutter/wood_cutter.obj" texture="data/models/wood_cutter/house.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="112" name="Object 112" type="1" position="345.000000;6.500000;142.000000" scale="0.500000;0.500000;0.500000" rotation="0.000000;-20.000000;0.000000" path="data/models/forge_viking/forge_viking.obj" texture="data/models/forge_viking/pattern_logwood_bc.jpg" alpha="0" shadow="0" type="1" extra_textures="data/models/forge_viking/pattern_logwood_bc.jpg" extra_textures="data/models/forge_viking/pattern_logwood_bc.jpg" extra_textures="data/models/forge_viking/pattern_logwood_bc.jpg">
+	</model>
+	<model id="113" name="Object 113" type="1" position="230.000000;6.600000;130.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;0.000000;0.000000" path="data/models/campfire/campfire.obj" texture="data/models/campfire/Campfire_MAT_BaseColor_01.jpg" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="114" name="Object114" type="1" position="243.199997;6.600000;240.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;0.000000;0.000000" path="data/models/campfire/campfire.obj" texture="data/models/campfire/Campfire_MAT_BaseColor_00.jpg" alpha="0" shadow="1" type="1">
+	</model>
+	<model id="115" name="Object 115" type="1" position="290.000000;6.500000;145.000000" scale="1.500000;1.500000;1.500000" rotation="0.000000;90.000000;0.000000" path="data/models/cart/cart.obj" texture="data/models/cart/cart2v_M_c2v_BaseColor.1001.png" alpha="1" shadow="1" type="1" extra_textures="data/models/cart/cart2v_M_c2v_BaseColor.1001.png" extra_textures="data/models/cart/wheel_L_cart_L1_BaseColor.1001.png" extra_textures="data/models/cart/wheel_C_cart_L1_BaseColor.1001.png" extra_textures="data/models/cart/cart2v_M_c2v_BaseColor.1001.png" extra_textures="data/models/cart/cart2v_M_c2v_BaseColor.1001.png" extra_textures="data/models/cart/cart_LP_cart_U1_BaseColor.1001.png" extra_textures="data/models/cart/cloth_ cloth_BaseColor.1001.png">
+	</model>
+	<model id="120" name="Object 120" type="1" position="350.000000;6.500000;190.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb1.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="121" name="Object121" type="1" position="350.000000;6.500000;200.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb1.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="122" name="Object122" type="1" position="345.000000;6.500000;190.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb2.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="123" name="Object123" type="1" position="340.000000;6.500000;195.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb3.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="124" name="Object124" type="1" position="340.000000;6.500000;190.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb4.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="125" name="Object125" type="1" position="345.399994;6.500000;190.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb4.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="126" name="Object126" type="1" position="347.799988;6.500000;180.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb4.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="127" name="Object127" type="1" position="340.000000;6.500000;200.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;-90.000000;0.000000" path="data/models/tomb/tomb3.obj" texture="data/models/tomb/headstone _one_BaseColor.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="128" name="Object 128" type="1" position="310.000000;6.500000;182.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/barrel2/barrel2.obj" texture="data/models/barrel2/Barrel_Dirt_and_Rast_4K_Albedo.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="129" name="Object129" type="1" position="305.000000;6.500000;185.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/models/barrel2/barrel2.obj" texture="data/models/barrel2/Barrel_Dirt_and_Rast_4K_Albedo.png" alpha="0" shadow="0" type="1">
+	</model>
+	<model id="130" name="Object 130" type="1" position="233.000000;6.500000;125.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;90.000000;0.000000" path="data/models/bench/bench.obj" texture="data/models/bench/Bench_Dirt_4K_Albedo.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="131" name="Object131" type="1" position="227.000000;6.500000;129.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;-180.000000;0.000000" path="data/models/bench/bench.obj" texture="data/models/bench/Bench_Dirt_4K_Albedo.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="132" name="Object 132" type="1" position="264.000000;5.500000;179.000000" scale="0.300000;0.300000;0.300000" rotation="0.000000;0.000000;0.000000" path="data/models/boat2/boat2.obj" texture="data/models/boat2/tiled_dirty_planks.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="133" name="Object133" type="1" position="258.000000;6.400000;188.699905" scale="0.300000;0.300000;0.300000" rotation="220.000000;-60.000000;120.000000" path="data/models/boat2/boat2.obj" texture="data/models/boat2/tiled_dirty_planks.png" alpha="1" shadow="1" type="1">
+	</model>
+	<model id="134" name="Object 134" type="1" position="250.000000;6.500000;145.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock/rock.obj" texture="data/models/rock/RHEFRockDetails_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="135" name="Object135" type="1" position="281.399994;6.500000;149.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock/rock.obj" texture="data/models/rock/RHEFRockDetails_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="136" name="Object136" type="1" position="315.000000;6.500000;168.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock/rock.obj" texture="data/models/rock/RHEFRockDetails_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="137" name="Object137" type="1" position="314.399994;6.500000;198.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock/rock.obj" texture="data/models/rock/RHEFRockDetails_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="138" name="Object 138" type="1" position="230.000000;2.000000;201.000000" scale="0.600000;0.600000;0.600000" rotation="90.000000;180.000000;0.000000" path="data/models/rock2/rock2.obj" texture="data/models/rock2/RHEFGenericCliffA_Diffuse.png" alpha="0" shadow="0">
+	</model>
+	<model id="139" name="Object 139" type="1" position="210.000000;5.000000;132.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock3/rock3.obj" texture="data/models/rock2/RHEFGenericCliffA_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="140" name="Object140" type="1" position="328.399994;8.000000;225.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/rock3/rock3.obj" texture="data/models/rock2/RHEFGenericCliffA_Diffuse.png" alpha="0" shadow="1">
+	</model>
+	<model id="141" name="Object 141" type="1" position="330.000000;7.100000;275.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/cave/cave.obj" texture="data/models/cave/RHEFCave_Diffuse.png" alpha="1" shadow="1">
+	</model>
+	<model id="142" name="Object 142" type="1" position="275.000000;6.000000;150.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;90.000000;0.000000" path="data/models/bench2/bench2.obj" texture="data/models/bench2/rough_wood_diff_4k.jpg" alpha="0" shadow="1" extra_textures="data/models/bench2/rough_wood_diff_4k.jpg">
+	</model>
 </world>

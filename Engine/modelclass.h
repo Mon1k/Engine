@@ -14,6 +14,7 @@
 #include "textureclass.h"
 #include "textures/texturearrayclass.h"
 #include "lightclass.h"
+#include "models/bbox.h"
 
 class ModelClass : public AbstractModel
 {
@@ -119,12 +120,11 @@ public:
 		}
 	}
 
-	virtual void SetRotation(D3DXVECTOR3 _rotation)
+	virtual void SetRotation2(D3DXVECTOR3 _rotation)
 	{
 		AbstractModel::SetRotation(_rotation);
 		if (m_subsets) {
 			m_subsets->SetRotation(_rotation);
-			CalcMinMaxSubsets();
 		}
 	}
 
@@ -156,6 +156,18 @@ public:
 		return m_indexBuffer;
 	}
 
+	BBox* showBBox();
+	void hideBBox();
+	void refreshBBox()
+	{
+		hideBBox();
+		showBBox();
+	}
+	BBox* getBBox()
+	{
+		return m_BBox;
+	}
+
 protected:
 	virtual void ShutdownBuffers();
 	virtual void RenderBuffers(ID3D11DeviceContext*);
@@ -167,6 +179,8 @@ protected:
 	TextureArrayClass* m_TextureArray;
 	std::string m_path;
 	std::vector<LightClass*> m_lights;
+
+	BBox* m_BBox;
 };
 
 #endif

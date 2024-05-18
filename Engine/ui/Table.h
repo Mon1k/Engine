@@ -11,13 +11,12 @@ class Table : public Group
 public:
 	Table() : Group()
 	{
-
 	}
 
 	void initialize();
 	virtual void update();
 
-	void addColumn(std::string name, int align = Label::ALIGN_CENTER);
+	void addColumn(std::string name, int align = Label::ALIGN_CENTER, int percent = 25);
 	void clearColumns()
 	{
 		m_columns.clear();
@@ -51,11 +50,10 @@ protected:
 	struct Column {
 		std::string name;
 		int align = Label::ALIGN_CENTER;
+		int percent;
 	};
 
 	std::vector<Column> m_columns;
 	std::vector<std::vector<std::string>> m_rows;
 	int m_selectedRow;
-
-	int m_scrollX = 0, m_scrollY = 0;
 };

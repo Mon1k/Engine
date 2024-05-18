@@ -5,11 +5,12 @@ void Table::initialize()
 	addScrollbar(this);
 }
 
-void Table::addColumn(std::string name, int align)
+void Table::addColumn(std::string name, int align, int percent)
 {
 	Column column;
 	column.name = name;
 	column.align = align;
+	column.percent = percent;
 	m_columns.push_back(column);
 }
 
@@ -22,8 +23,8 @@ void Table::update()
 {
 	Shutdown();
 
-	int countColumns = m_columns.size();
-	int widthColumn = m_width / countColumns;
+	int widthColumn;
+	int shift = 0;
 	int heightRow = 28;
 	int leftRow = m_x;
 	int topRow = m_y;
@@ -32,25 +33,30 @@ void Table::update()
 	// add rows title from columns
 	for (size_t i = 0; i < m_columns.size(); i++) {
 		Label* label = new Label;
+		widthColumn = m_width * m_columns[i].percent / 100;
 		addChild(label);
 		label->Initialize(widthColumn, heightRow);
 		label->setAlign(m_columns[i].align);
-		label->Add(&m_columns[i].name[0], leftRow + i * widthColumn, topRow + heightRow * lineRow);
+		label->Add(&m_columns[i].name[0], leftRow + shift, topRow + heightRow * lineRow);
+		shift += widthColumn;
 	}
 	lineRow++;
 
 	// add rows
 	for (size_t i = 0; i < m_rows.size(); i++) {
+		shift = 0;
 		for (size_t j = 0; j < m_rows[i].size(); j++) {
 			Label* label = new Label;
+			widthColumn = m_width * m_columns[j].percent / 100;
 			addChild(label);
 			label->Initialize(widthColumn, heightRow);
 			label->setAlign(m_columns[j].align);
-			label->Add(&m_rows[i][j][0], leftRow + j * widthColumn, topRow + heightRow * lineRow);
+			label->Add(&m_rows[i][j][0], leftRow + shift, topRow + heightRow * lineRow);
 			label->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this, i] {
 				this->setSelectedRow((int)i);
 				this->proccesedEventHandlers(EventType::ROW_CHOOSE);
 			});
+			shift += widthColumn;
 		}
 
 		lineRow++;

@@ -101,6 +101,11 @@ public:
 		return m_origScale;
 	}
 
+	D3DXVECTOR3 getOrigPosition()
+	{
+		return m_origPosition;
+	}
+
 private:
 	bool LoadHeightMap(char*);
 	bool CalculateNormals();
@@ -117,6 +122,7 @@ private:
 	int m_terrainWidth, m_terrainHeight;
 	float m_repeat;
 	D3DXVECTOR3 m_scaleNormal;
+	D3DXVECTOR3 m_origPosition;
 	D3DXVECTOR3 m_origScale;
 
 	HeightMapType* m_heightMap;

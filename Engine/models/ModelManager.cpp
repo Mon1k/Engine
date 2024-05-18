@@ -54,6 +54,13 @@ bool ModelManager::Add(AbstractModel* model)
     return true;
 }
 
+bool ModelManager::addUnshift(AbstractModel* model)
+{
+    m_models.insert(m_models.begin(), model);
+
+    return true;
+}
+
 void ModelManager::remove(int id)
 {
     for (int i = 0; i < m_models.size(); i++) {
@@ -124,6 +131,10 @@ void ModelManager::PreRender(CameraClass* camera)
         }
         else {
             m_models[i]->GetBoundingBox(position, size);
+            // for shadow add width as height * 2, for render shadow behind normal bbox
+            if (m_models[i]->isShadow()) {
+                size.x += size.y * 2;
+            }
             if (m_frustum->CheckRectangle(position, size)) {
                 m_modelsRender.push_back(m_models[i]);
             }

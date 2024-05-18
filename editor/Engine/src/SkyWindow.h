@@ -46,7 +46,7 @@ public:
 
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
-		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectPath->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
@@ -59,7 +59,7 @@ public:
 				model->Initialize(m_app->getGraphic()->getD3D(), m_path);
 				model->setId(m_app->m_modelManager->getNextId());
 				
-				m_app->m_modelManager->Add(model);
+				m_app->m_modelManager->addUnshift(model);
 				m_app->m_selectedModel = model;
 
 				MapEntity::ObjectFormat format;

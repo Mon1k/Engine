@@ -37,6 +37,7 @@ public:
 		exitButton->initialize(80, 28);
 		exitButton->Add("New", 1, 1);
 		exitButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
+			m_app->unselectModel();
 			Confirm* dialog = new Confirm;
 			m_app->m_uiManager->add(dialog);
 			dialog->showText("Clear scene?");
@@ -55,6 +56,7 @@ public:
 		saveWorldButton->initialize(80, 28);
 		saveWorldButton->Add("Save", 82, 1);
 		saveWorldButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
+			m_app->unselectModel();
 			SaveDialog* dialog = new SaveDialog;
 			m_app->m_uiManager->add(dialog);
 			dialog->initialize();
@@ -76,6 +78,7 @@ public:
 		loadWorldButton->initialize(80, 28);
 		loadWorldButton->Add("Load", 164, 1);
 		loadWorldButton->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
+			m_app->unselectModel();
 			OpenDialog* dialog = new OpenDialog;
 			m_app->m_uiManager->add(dialog);
 			dialog->initialize();

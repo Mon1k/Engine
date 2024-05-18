@@ -1,4 +1,4 @@
- <world>
+<world>
 	<sky id="4" type="4" position="-107374176.000000;-107374176.000000;-107374176.000000" scale="-107374176.000000;-107374176.000000;-107374176.000000" rotation="-107374176.000000;-107374176.000000;-107374176.000000" path="data/models/skydome.ds">
 	</sky>
 	<terrain id="5" type="2" position="0.000000;0.000000;0.000000" scale="2.000000;0.100000;2.000000" rotation="0.000000;0.000000;0.000000" path="data/textures/heightmap1024.bmp" texture="data/textures/grass.dds" layer1="data/textures/dirt.dds" layer1_normal="data/textures/dirt_n.dds" layer2="data/textures/stone001.dds" layer2_normal="data/textures/stone001_n.dds" layer3="data/textures/dirt2.dds" layer3_normal="data/textures/dirt2_n.dds" layer_alpha="data/textures/alpha001.dds" rotation="0.000000;0.000000;0.000000" texture_normal="data/textures/grass_n.dds" type="2">
@@ -7,33 +7,33 @@
 	</water>
 	<model id="7" type="1" position="355.000000;19.700001;325.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/bath.ds" texture="data/textures/wall01.dds" alpha="1" shadow="1" type="1">
 	</model>
-	<model id="8" type="1" position="385.000000;9.000000;135.000000" scale="5.300000;2.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="8" type="1" position="385.000000;9.000000;135.000000" scale="5.300000;2.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="9" type="1" position="409.600006;9.000000;140.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="9" type="1" position="409.600006;9.000000;140.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="10" type="1" position="350.000000;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="10" type="1" position="350.000000;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="11" type="1" position="374.600006;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="11" type="1" position="374.600006;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="12" type="1" position="420.000000;9.000000;135.000000" scale="5.300000;7.600000;6.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="12" type="1" position="420.000000;9.000000;135.000000" scale="5.300000;7.600000;6.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="13" type="1" position="440.000000;9.000000;150.000000" scale="7.400000;8.800000;7.400000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="13" type="1" position="440.000000;9.000000;150.000000" scale="7.400000;8.800000;7.400000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="14" type="1" position="364.600006;9.000000;210.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="14" type="1" position="364.600006;9.000000;210.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="15" type="1" position="364.576752;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="15" type="1" position="364.576752;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="16" type="1" position="379.200012;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="16" type="1" position="379.200012;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="17" type="1" position="393.700012;11.000000;200.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="17" type="1" position="393.700012;11.000000;200.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="18" type="1" position="408.299988;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="18" type="1" position="408.299988;9.000000;190.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="19" type="1" position="389.200012;6.000000;160.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="19" type="1" position="389.200012;6.000000;160.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="20" type="1" position="389.200012;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="20" type="1" position="389.200012;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
-	<model id="21" type="1" position="403.700012;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves.png">
+	<model id="21" type="1" position="403.700012;6.000000;180.000000" scale="5.300000;6.500000;5.300000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
 	<model id="22" type="1" position="350.000000;11.000000;90.000000" scale="2.000000;2.000000;2.000000" rotation="0.000000;230.000000;0.000000" path="data/models/midpoly_town_house_01/midpoly_town_house_01.obj" texture="data/models/midpoly_town_house_01/T_darkwood_basecolor.png" alpha="1" shadow="1" type="1" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/T_brightwood_basecolor.png" extra_textures="data/models/midpoly_town_house_01/rock_bc.jpg">
 	</model>

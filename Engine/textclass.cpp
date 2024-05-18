@@ -67,6 +67,9 @@ bool TextClass::AddText(std::string text, int positionX, int positionY, float re
 	bool result;
 
 	m_text = text;
+	if (m_text.length() == 0) {
+		return true;
+	}
 
 	// Now update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentence, &m_text[0], positionX, positionY, red, green, blue, m_deviceContext);

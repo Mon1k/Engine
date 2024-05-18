@@ -59,8 +59,7 @@ public:
 	virtual void SetPosition(D3DXVECTOR3 _position)
 	{
 		D3DXVECTOR3 delta;
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			D3DXVECTOR3 newPosition = m_childs[i]->GetPosition();
 			newPosition.x += _position.x - newPosition.x;
 			newPosition.y += _position.y - newPosition.y;
@@ -75,8 +74,7 @@ public:
 
 	virtual void SetScale(D3DXVECTOR3 _scale)
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->SetScale(_scale);
 		}
 
@@ -113,23 +111,22 @@ public:
 
 	virtual void CalcMinMax()
 	{
-		D3DXVECTOR3 min, max;
+		D3DXVECTOR3 minP, maxP;
 
 		m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
 		m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
 
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
-			min = m_childs[i]->getMinPosition();
-			max = m_childs[i]->getMaxPosition();
+		for (size_t i = 0; i < m_childs.size(); i++) {
+			minP = m_childs[i]->getMinPosition();
+			maxP = m_childs[i]->getMaxPosition();
 
-			m_Min.x = min(m_Min.x, min.x);
-			m_Min.y = min(m_Min.y, min.y);
-			m_Min.z = min(m_Min.z, min.z);
+			m_Min.x = min(m_Min.x, minP.x);
+			m_Min.y = min(m_Min.y, minP.y);
+			m_Min.z = min(m_Min.z, minP.z);
 
-			m_Max.x = max(m_Max.x, max.x);
-			m_Max.y = max(m_Max.y, max.y);
-			m_Max.z = max(m_Max.z, max.z);
+			m_Max.x = max(m_Max.x, maxP.x);
+			m_Max.y = max(m_Max.y, maxP.y);
+			m_Max.z = max(m_Max.z, maxP.z);
 		}
 	}
 
@@ -146,7 +143,7 @@ public:
 	int GetIndexCount()
 	{
 		int count = 0;
-		for (int i = 0; i < m_childs.size(); i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			count += m_childs[i]->GetIndexCount();
 		}
 

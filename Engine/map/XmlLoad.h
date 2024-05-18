@@ -20,7 +20,7 @@ public:
 
 		//// @todo - later add lights in editor
 		m_lightModel = new LightClass;
-		m_lightModel->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		m_lightModel->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 		m_lightModel->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
 		m_lightModel->SetPosition(0.0f, 220.0f, 0.0f);
@@ -77,7 +77,7 @@ protected:
 
 	void loadModel(Node* node, MapEntity* entities, ModelManager* manager)
 	{
-		Model* model = new Model;
+		ModelClass* model = new ModelClass;
 		std::string path, texture;
 		D3DXVECTOR3 position, scale, rotation;
 		std::map<std::string, std::string> params;
@@ -114,19 +114,6 @@ protected:
 			}
 		}
 
-		// deprecated
-		std::vector<Attribute*> oldParams = node->getAttributes("params");
-		for (size_t i = 0; i < oldParams.size(); i++) {
-			if (i == 0) {
-				if (params.find("alpha") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("alpha", oldParams[i]->value));
-				}
-			} else if (i > 0) {
-				textures.push_back(oldParams[i]->value);
-			}
-		}
-		params.erase("params");
-
 		std::vector<Attribute*> extraTextures = node->getAttributes("extra_textures");
 		for (size_t i = 0; i < extraTextures.size(); i++) {
 			textures.push_back(extraTextures[i]->value);
@@ -141,9 +128,10 @@ protected:
 		bool result = model->Initialize(manager->getD3D(), &path[0], textures);
 		if (result) {
 			model->setId(id);
+			model->SetPosition(position);
 			model->SetScale(scale);
 			model->SetRotation(rotation);
-			model->SetPosition(position);
+			
 			if (params.find("alpha") != params.end()) {
 				model->setAlpha(true);
 			}
@@ -210,8 +198,6 @@ protected:
 		format.position = position;
 		format.scale = scale;
 		format.rotation = rotation;
-		format.extraParams.push_back(params[0]->value);
-		format.extraParams.push_back(params[1]->value);
 		entities->add(format);
 	}
 
@@ -246,43 +232,12 @@ protected:
 			}
 			else if (attributes[i]->name == "scale_normal") {
 				scaleNormal = extractVector3(attributes[i]);
+				params.insert(std::pair<std::string, std::string>(attributes[i]->name, attributes[i]->value));
 			}
 			else {
 				params.insert(std::pair<std::string, std::string>(attributes[i]->name, attributes[i]->value));
 			}
 		}
-
-		// deprecated
-		std::vector<Attribute*> oldParams = node->getAttributes("params");
-		for (size_t i = 0; i < oldParams.size(); i++) {
-			if (i == 0) {
-				if (params.find("texture_normal") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("texture_normal", oldParams[i]->value));
-				}
-			}
-			if (i == 1) {
-				if (params.find("scale_normal") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("scale_normal", oldParams[i]->value));
-					scaleNormal = extractVector3(oldParams[i]);
-				}
-			}
-			if (i >= 2) {
-				if (oldParams[2]->value.size() > 1 && oldParams[3]->value.size() > 1 && oldParams[4]->value.size() > 1) {
-					params.insert(std::pair<std::string, std::string>("layer1", oldParams[3]->value));
-					params.insert(std::pair<std::string, std::string>("layer1_normal", oldParams[4]->value));
-					if (oldParams[5]->value.size() > 1 && oldParams[6]->value.size() > 1) {
-						params.insert(std::pair<std::string, std::string>("layer2", oldParams[5]->value));
-						params.insert(std::pair<std::string, std::string>("layer2_normal", oldParams[6]->value));
-						if (oldParams[7]->value.size() > 1 && oldParams[8]->value.size() > 1) {
-							params.insert(std::pair<std::string, std::string>("layer3", oldParams[7]->value));
-							params.insert(std::pair<std::string, std::string>("layer3_normal", oldParams[8]->value));
-						}
-					}
-					params.insert(std::pair<std::string, std::string>("layer_alpha", oldParams[2]->value));
-				}
-			}
-		}
-		params.erase("params");
 
 
 		model->SetScale(scale);
@@ -362,38 +317,6 @@ protected:
 			}
 		}
 
-		// deprecated
-		std::vector<Attribute*> oldParams = node->getAttributes("params");
-		for (size_t i = 0; i < oldParams.size(); i++) {
-			if (i == 0) {
-				if (params.find("height") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("height", oldParams[i]->value));
-				}
-			}
-			if (i == 1) {
-				if (params.find("tiling") == params.end()) {
-					tiling.x = std::stof(oldParams[i]->value);
-					
-				}
-			}
-			if (i == 2) {
-				if (params.find("tiling") == params.end()) {
-					tiling.y = std::stof(oldParams[i]->value);
-					params.insert(std::pair<std::string, std::string>("tiling", std::to_string(tiling.x)+";"+std::to_string(tiling.y)));
-				}
-			}
-			if (i == 3) {
-				if (params.find("refraction_scale") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("refraction_scale", oldParams[i]->value));
-				}
-			}
-			if (i == 4) {
-				if (params.find("targetId") == params.end()) {
-					params.insert(std::pair<std::string, std::string>("targetId", oldParams[i]->value));
-				}
-			}
-		}
-
 		bool result = model->Initialize(manager->getD3D(), &path[0], { texture });
 		if (result) {
 			model->SetScale(scale);
@@ -465,7 +388,7 @@ protected:
 		model->Initialize(manager->getD3D(), path);
 		model->setId(id);
 
-		manager->Add(model);
+		manager->addUnshift(model);
 
 		MapEntity::ObjectFormat format;
 		format.parent = 0;

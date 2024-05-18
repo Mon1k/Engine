@@ -16,6 +16,12 @@ public:
 	ObjectWindow::ObjectWindow(App* app)
 	{
 		m_app = app;
+		m_extraTextures.clear();
+		int maxCountExtraTextures = 8;
+		for (size_t i = 0; i < maxCountExtraTextures; i++) {
+			m_extraTextures.push_back("");
+		}
+
 		resetUI();
 	}
 
@@ -30,8 +36,9 @@ public:
 		m_isAlpha = false;
 		m_isShadow = false;
 
-		m_extraTextures.clear();
-		m_extraTextures.push_back("");
+		for (size_t i = 0; i < m_extraTextures.size(); i++) {
+			m_extraTextures[i] = "";
+		}
 	}
 
 	void initialize()
@@ -41,7 +48,7 @@ public:
 
 		m_Window = new Window;
 		m_app->m_uiManager->add(m_Window);
-		m_Window->Initialize(600, 400, Options::screen_width - 620, menuTop->m_height + 5);
+		m_Window->Initialize(600, 610, Options::screen_width - 620, menuTop->m_height + 5);
 		m_Window->addHeader("Object properties", Window::HEADER_BUTTON_CLOSE);
 		m_Window->addBody();
 		m_Window->hide();
@@ -52,7 +59,7 @@ public:
 
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
-		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectPath->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
@@ -62,7 +69,7 @@ public:
 			shader->addLights({ m_app->m_light });
 
 			if (!m_app->m_selectedModel) {
-				Model* model = new Model;
+				ModelClass* model = new ModelClass;
 				model->addShader(shader);
 				model->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], {m_texture});
 				model->setId(m_app->m_modelManager->getNextId());
@@ -78,7 +85,9 @@ public:
 				format.id = model->getId();
 				format.name = "Object " + std::to_string(format.id);
 				format.type = MapEntity::ObjectTypes::MODEL;
-				format.position = model->GetPosition();
+				format.position = m_app->getGraphic()->getCamera()->GetPosition();
+				format.position.y /= 2;
+				m_position = format.position;
 				format.scale = model->GetScale();
 				format.rotation = model->getRotation();
 				format.path = m_path;
@@ -90,9 +99,10 @@ public:
 				m_app->m_mapEntities->add(format);
 			}
 			else {
+				std::vector<std::string> textures = m_app->m_selectedModel->GetTextureClass()->getTexturesPath();
 				m_app->m_selectedModel->Shutdown();
 				m_app->m_selectedModel->addShader(shader);
-				m_app->m_selectedModel->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], { m_texture });
+				m_app->m_selectedModel->Initialize(m_app->getGraphic()->getD3D(), &m_path[0], textures);
 			}
 			this->updateObjectModel();
 		});
@@ -100,14 +110,16 @@ public:
 
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
-		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectTexture->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-			m_app->m_selectedModel->ReleaseTexture();
-			this->loadTextures();
-			this->updateObjectModel();
+			if (m_app->m_selectedModel) {
+				m_app->m_selectedModel->ReleaseTexture();
+				this->loadTextures();
+				this->updateObjectModel();
+			}
 		});
 		shift += objectTexture->m_height + 5;
 
@@ -122,6 +134,7 @@ public:
 		m_Window->addChild(objectPositionX);
 		objectPositionX->initialize(100, 28, m_Window->m_x + 10, shift);
 		objectPositionX->setValueRefLink(&typeid(float), &m_position.x);
+		objectPositionX->setFloatFormat("%.2f");
 		objectPositionX->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -129,6 +142,7 @@ public:
 		m_Window->addChild(objectPositionY);
 		objectPositionY->initialize(100, 28, m_Window->m_x + 112, shift);
 		objectPositionY->setValueRefLink(&typeid(float), &m_position.y);
+		objectPositionY->setFloatFormat("%.2f");
 		objectPositionY->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -136,6 +150,7 @@ public:
 		m_Window->addChild(objectPositionZ);
 		objectPositionZ->initialize(100, 28, m_Window->m_x + 214, shift);
 		objectPositionZ->setValueRefLink(&typeid(float), &m_position.z);
+		objectPositionZ->setFloatFormat("%.2f");
 		objectPositionZ->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -152,6 +167,7 @@ public:
 		m_Window->addChild(objectScaleX);
 		objectScaleX->initialize(100, 28, m_Window->m_x + 10, shift);
 		objectScaleX->setValueRefLink(&typeid(float), &m_scale.x);
+		objectScaleX->setFloatFormat("%.2f");
 		objectScaleX->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateObjectModel();
 		});
@@ -159,6 +175,7 @@ public:
 		m_Window->addChild(objectScaleY);
 		objectScaleY->initialize(100, 28, m_Window->m_x + 112, shift);
 		objectScaleY->setValueRefLink(&typeid(float), &m_scale.y);
+		objectScaleY->setFloatFormat("%.2f");
 		objectScaleY->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateObjectModel();
 		});
@@ -166,6 +183,7 @@ public:
 		m_Window->addChild(objectScaleZ);
 		objectScaleZ->initialize(100, 28, m_Window->m_x + 214, shift);
 		objectScaleZ->setValueRefLink(&typeid(float), &m_scale.z);
+		objectScaleZ->setFloatFormat("%.2f");
 		objectScaleZ->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			this->updateObjectModel();
 		});
@@ -182,6 +200,7 @@ public:
 		m_Window->addChild(objecRotateX);
 		objecRotateX->initialize(100, 28, m_Window->m_x + 10, shift);
 		objecRotateX->setValueRefLink(&typeid(float), &m_rotation.x);
+		objecRotateX->setFloatFormat("%.0f");
 		objecRotateX->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -189,6 +208,7 @@ public:
 		m_Window->addChild(objecRotateY);
 		objecRotateY->initialize(100, 28, m_Window->m_x + 112, shift);
 		objecRotateY->setValueRefLink(&typeid(float), &m_rotation.y);
+		objecRotateY->setFloatFormat("%.0f");
 		objecRotateY->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -196,6 +216,7 @@ public:
 		m_Window->addChild(objecRotateZ);
 		objecRotateZ->initialize(100, 28, m_Window->m_x + 214, shift);
 		objecRotateZ->setValueRefLink(&typeid(float), &m_rotation.z);
+		objecRotateZ->setFloatFormat("%.0f");
 		objecRotateZ->addEventHandler(AbstractGui::EventType::KEYBOARD_DOWN, [this] {
 			this->updateObjectModel();
 		});
@@ -224,19 +245,21 @@ public:
 
 
 		// extra textures
-		int currentIndex = m_extraTextures.size() - 1;
-		FileInput* objectExtraTexture = new FileInput;
-		m_Window->addChild(objectExtraTexture);
-		objectExtraTexture->initialize(400, 28, m_Window->m_x + 10, shift);
-		objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "data/textures");
-		objectExtraTexture->getDialog()->addDefaultImageFilters();
-		objectExtraTexture->setValueRefLink(&typeid(std::string), &m_extraTextures[currentIndex]);
-		objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-			m_app->m_selectedModel->ReleaseTexture();
-			this->loadTextures();
-			this->updateObjectModel();
-		});
-		shift += objectExtraTexture->m_height + 5;
+		FileInput* objectExtraTexture = 0;
+		for (size_t i = 0; i < m_extraTextures.size(); i++) {
+			FileInput* objectExtraTexture = new FileInput;
+			m_Window->addChild(objectExtraTexture);
+			objectExtraTexture->initialize(580, 28, m_Window->m_x + 10, shift);
+			objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "data/textures");
+			objectExtraTexture->getDialog()->addDefaultImageFilters();
+			objectExtraTexture->setValueRefLink(&typeid(std::string), &m_extraTextures[i]);
+			objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
+				m_app->m_selectedModel->ReleaseTexture();
+				this->loadTextures();
+				this->updateObjectModel();
+			});
+			shift += objectExtraTexture->m_height + 5;
+		}
 
 
 		Button* cloneObject = new Button;
@@ -246,8 +269,10 @@ public:
 		cloneObject->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
 			m_Window->hide();
 			MapEntity::ObjectFormat* entity = m_app->m_mapEntities->getEntity(m_app->m_selectedModel->getId());
-			m_app->m_mapEntities->copyModel(*entity, m_app->m_modelManager);
-			m_app->unselectModel();
+			m_app->m_selectedModel->hideBBox();
+			m_app->m_selectedModel = m_app->m_mapEntities->copyModel(*entity, m_app->m_modelManager);
+			m_app->m_selectedModel->showBBox();
+			updateUiFromModel();
 		});
 
 		Button* deleteObject = new Button;
@@ -277,7 +302,12 @@ public:
 		m_isShadow = m_app->m_selectedModel->isShadow();
 		
 		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
-		m_extraTextures = editorFormat->extraTextures;
+		for (size_t i = 0; i < m_extraTextures.size(); i++) {
+			m_extraTextures[i] = "";
+			if (i < editorFormat->extraTextures.size()) {
+				m_extraTextures[i] = editorFormat->extraTextures[i];
+			}
+		}
 
 		m_Window->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		m_Window->show();
@@ -293,10 +323,10 @@ public:
 		m_Window->show();
 
 		m_app->m_selectedModel->SetPosition(m_position);
-		m_app->m_selectedModel->SetScale(m_scale);
-		m_app->m_selectedModel->SetRotation(m_rotation);
+		//m_app->m_selectedModel->SetScale(m_scale);
+		//m_app->m_selectedModel->SetRotation(m_rotation);
 		m_app->m_selectedModel->setAlpha(m_isAlpha);
-		m_app->m_selectedModel->setShadow(m_isShadow != 0 ? true : false);
+		m_app->m_selectedModel->setShadow(m_isShadow);
 		m_app->m_selectedModel->refreshBBox();
 
 		MapEntity::ObjectFormat* editorFormat = m_app->getObjectEditor(m_app->m_selectedModel->getId());
@@ -314,7 +344,7 @@ public:
 	{
 		m_app->m_selectedModel->LoadTextures(m_texture);
 		for (size_t i = 0; i < m_extraTextures.size(); i++) {
-			if (m_extraTextures[i].length() > 0 && m_app->m_selectedModel->getSubset() && m_app->m_selectedModel->getSubset()->getChilds().size() > i) {
+			if (m_extraTextures[i].length() > 1 && m_app->m_selectedModel->getSubset() && m_app->m_selectedModel->getSubset()->getChilds().size() > i) {
 				ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(i));
 				model->ReleaseTexture();
 				model->LoadTextures(m_extraTextures[i]);

@@ -261,6 +261,7 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 			model->addSubset(subset);
 		}
 	}
+	model->CalcMinMaxSubsets();
 
 	// Release the four data structures.
 	if (vertices) {

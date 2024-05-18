@@ -51,7 +51,7 @@ public:
 
 		FileInput* objectPath = new FileInput;
 		m_Window->addChild(objectPath);
-		objectPath->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectPath->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectPath->getDialog()->setPath(objectPath->getDialog()->getCurrentPath() + "data/models");
 		objectPath->getDialog()->addDefaultModelsFilters();
 		objectPath->setValueRefLink(&typeid(std::string), &m_path);
@@ -92,7 +92,7 @@ public:
 
 		FileInput* objectTexture = new FileInput;
 		m_Window->addChild(objectTexture);
-		objectTexture->initialize(400, 28, m_Window->m_x + 10, shift);
+		objectTexture->initialize(580, 28, m_Window->m_x + 10, shift);
 		objectTexture->getDialog()->setPath(objectTexture->getDialog()->getCurrentPath() + "data/textures");
 		objectTexture->getDialog()->addDefaultImageFilters();
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);

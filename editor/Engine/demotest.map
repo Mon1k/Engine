@@ -1,0 +1,4 @@
+<world>
+	<model id="2" name="Object 2" type="1" position="0.000000;0.000000;0.000000" scale="0.100000;0.100000;0.100000" rotation="0.000000;0.000000;0.000000" path="data/models/wood_cutter/wood_cutter.obj" texture="data/models/wood_cutter/house.png" alpha="0" shadow="0">
+	</model>
+</world>

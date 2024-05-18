@@ -34,10 +34,10 @@ bool FileChooser::initialize()
 	m_table->m_width = m_body->m_width - padding * 2;
 	m_table->m_height = m_body->m_height - m_header->m_height - padding * 2;
 
-	m_table->addColumn("Name", Label::ALIGN_LEFT);
-	m_table->addColumn("Type", Label::ALIGN_LEFT);
-	m_table->addColumn("Size", Label::ALIGN_LEFT);
-	m_table->addColumn("Date");
+	m_table->addColumn("Name", Label::ALIGN_LEFT, 50);
+	m_table->addColumn("Type", Label::ALIGN_LEFT, 15);
+	m_table->addColumn("Size", Label::ALIGN_LEFT, 17);
+	m_table->addColumn("Date", Label::ALIGN_CENTER, 18);
 	m_table->addEventHandler(Table::EventType::ROW_CHOOSE, [this] {
 		m_currentRow = m_table->getSelectedRow();
 
@@ -91,6 +91,11 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 	std::vector<std::filesystem::directory_entry> rows;
 	struct stat result;
 
+	if (!std::filesystem::is_directory(m_path)) {
+		m_path = "";
+		getCurrentPath();
+	}
+
 	for (const auto& entry : std::filesystem::directory_iterator(m_path)) {
 		rows.push_back(entry);
 	}
@@ -107,7 +112,7 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 	row.push_back("");
 	row.push_back("DIR");
 	stat(entryParent.path().generic_string().c_str(), &result);
-	row.push_back(Date::dateFormat(result));
+	row.push_back(Date::dateFormat(result.st_mtime));
 
 	m_rows.push_back(entryParent);
 	m_table->addRow(row);
@@ -125,7 +130,7 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 		row.push_back("DIR");
 
 		stat(entry.path().generic_string().c_str(), &result);
-		row.push_back(Date::dateFormat(result));
+		row.push_back(Date::dateFormat(result.st_mtime));
 
 		m_rows.push_back(entry);
 		m_table->addRow(row);
@@ -147,7 +152,7 @@ std::vector<std::filesystem::directory_entry> FileChooser::getRows()
 		row.push_back(std::to_string(entry.file_size()));
 
 		stat(entry.path().generic_string().c_str(), &result);
-		row.push_back(Date::dateFormat(result));
+		row.push_back(Date::dateFormat(result.st_mtime));
 
 		m_rows.push_back(entry);
 		m_table->addRow(row);

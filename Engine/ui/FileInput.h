@@ -18,6 +18,11 @@ public:
 	{
 		m_inputPath->setValueRefLink(typeInfo, value);
 	}
+
+	void setFloatFormat(std::string format)
+	{
+		m_inputPath->setFloatFormat(format);
+	}
 	
 	std::string getValue()
 	{

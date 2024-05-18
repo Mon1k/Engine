@@ -22,6 +22,8 @@ ModelClass::ModelClass(): AbstractModel()
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	m_BBox = 0;
 }
 
 
@@ -91,6 +93,12 @@ bool ModelClass::LoadModel(char* filename)
 
 void ModelClass::Shutdown()
 {
+	if (m_BBox) {
+		m_BBox->Shutdown();
+		delete m_BBox;
+		m_BBox = 0;
+	}
+
 	ReleaseTexture();
 	ShutdownBuffers();
 	ReleaseModel();
@@ -231,16 +239,16 @@ void ModelClass::CalcMinMax()
 
 void ModelClass::CalcMinMaxSubsets()
 {
-	D3DXVECTOR3 min, max;
-	min = m_subsets->getMinPosition();
-	max = m_subsets->getMaxPosition();
+	D3DXVECTOR3 minP, maxP;
+	minP = m_subsets->getMinPosition();
+	maxP = m_subsets->getMaxPosition();
 
-	m_Min.x = min(m_Min.x, min.x);
-	m_Min.y = min(m_Min.y, min.y);
-	m_Min.z = min(m_Min.z, min.z);
-	m_Max.x = max(m_Max.x, max.x);
-	m_Max.y = max(m_Max.y, max.y);
-	m_Max.z = max(m_Max.z, max.z);
+	m_Min.x = min(m_Min.x, minP.x);
+	m_Min.y = min(m_Min.y, minP.y);
+	m_Min.z = min(m_Min.z, minP.z);
+	m_Max.x = max(m_Max.x, maxP.x);
+	m_Max.y = max(m_Max.y, maxP.y);
+	m_Max.z = max(m_Max.z, maxP.z);
 }
 
 bool ModelClass::LoadTextures(std::string filename)
@@ -373,6 +381,10 @@ void ModelClass::Render(CameraClass* camera)
 
 void ModelClass::Render()
 {
+	if (m_BBox) {
+		m_BBox->Render();
+	}
+
 	RenderBuffers(m_D3D->GetDeviceContext());
 }
 
@@ -448,4 +460,26 @@ void ModelClass::addSubset(ModelClass* subset)
 		m_subsets = new CompositeModel;
 	}
 	m_subsets->addChild(subset);
+}
+
+BBox* ModelClass::showBBox()
+{
+	if (!m_BBox) {
+		D3DXVECTOR3 position, size;
+		GetBoundingBox(position, size);
+
+		m_BBox = new BBox;
+		m_BBox->CreateBox(m_D3D, position, size);
+	}
+
+	return m_BBox;
+}
+
+void ModelClass::hideBBox()
+{
+	if (m_BBox) {
+		m_BBox->Shutdown();
+		delete m_BBox;
+		m_BBox = 0;
+	}
 }
