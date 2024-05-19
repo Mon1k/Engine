@@ -18,8 +18,10 @@ public:
 
 	bool Initialize(ID3D11Device*, WCHAR*);
 	void AddTexture(ID3D11Device*, WCHAR*);
+	void setTexture(ID3D11Device* device, std::string filename, int index);
 	void AddResource(ID3D11ShaderResourceView*);
 	void Shutdown();
+	void ReleaseTexture(int index);
 
 	ID3D11ShaderResourceView* GetTexture(int);
 	ID3D11ShaderResourceView** GetTextureArray();

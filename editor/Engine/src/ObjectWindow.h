@@ -116,8 +116,7 @@ public:
 		objectTexture->setValueRefLink(&typeid(std::string), &m_texture);
 		objectTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
 			if (m_app->m_selectedModel) {
-				m_app->m_selectedModel->ReleaseTexture();
-				this->loadTextures();
+				this->loadTexture();
 				this->updateObjectModel();
 			}
 		});
@@ -253,10 +252,10 @@ public:
 			objectExtraTexture->getDialog()->setPath(objectExtraTexture->getDialog()->getCurrentPath() + "data/textures");
 			objectExtraTexture->getDialog()->addDefaultImageFilters();
 			objectExtraTexture->setValueRefLink(&typeid(std::string), &m_extraTextures[i]);
-			objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this] {
-				m_app->m_selectedModel->ReleaseTexture();
-				this->loadTextures();
+			objectExtraTexture->addEventHandler(AbstractGui::EventType::OBJECT_BLUR, [this, i] {
+				this->loadTexture(i);
 				this->updateObjectModel();
+
 			});
 			shift += objectExtraTexture->m_height + 5;
 		}
@@ -322,9 +321,9 @@ public:
 		m_Window->setTitle("Object properties - " + std::to_string(m_app->m_selectedModel->getId()));
 		m_Window->show();
 
+		m_app->m_selectedModel->SetScale(m_scale);
 		m_app->m_selectedModel->SetPosition(m_position);
-		//m_app->m_selectedModel->SetScale(m_scale);
-		//m_app->m_selectedModel->SetRotation(m_rotation);
+		m_app->m_selectedModel->SetRotation(m_rotation);
 		m_app->m_selectedModel->setAlpha(m_isAlpha);
 		m_app->m_selectedModel->setShadow(m_isShadow);
 		m_app->m_selectedModel->refreshBBox();
@@ -340,15 +339,21 @@ public:
 		editorFormat->extraTextures = m_extraTextures;
 	}
 
-	void loadTextures()
+	void loadTexture()
 	{
+		m_app->m_selectedModel->ReleaseTexture();
 		m_app->m_selectedModel->LoadTextures(m_texture);
-		for (size_t i = 0; i < m_extraTextures.size(); i++) {
-			if (m_extraTextures[i].length() > 1 && m_app->m_selectedModel->getSubset() && m_app->m_selectedModel->getSubset()->getChilds().size() > i) {
-				ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(i));
-				model->ReleaseTexture();
-				model->LoadTextures(m_extraTextures[i]);
-			}
+	}
+
+	void loadTexture(int index)
+	{
+		ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(index));
+		if (model) {
+			model->GetTextureClass()->ReleaseTexture(index);
+			model->GetTextureClass()->setTexture(model->getD3D()->GetDevice(), m_extraTextures[index], index);
+		}
+		else {
+			m_extraTextures[index] = "";
 		}
 	}
 

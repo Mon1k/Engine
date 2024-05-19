@@ -120,7 +120,7 @@ public:
 		}
 	}
 
-	virtual void SetRotation2(D3DXVECTOR3 _rotation)
+	virtual void SetRotation(D3DXVECTOR3 _rotation)
 	{
 		AbstractModel::SetRotation(_rotation);
 		if (m_subsets) {

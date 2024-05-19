@@ -1,4 +1,4 @@
 <world>
-	<model id="6" name="Object 6" type="1" position="20.000000;10.000000;20.000000" scale="0.020000;0.020000;0.020000" rotation="0.000000;0.000000;0.000000" path="data/models/well/well.obj" texture="data/models/well/Well_01_Albedo.png" alpha="0" shadow="1" type="1" extra_textures="data/models/well/Well_02_Albedo.png" extra_textures="data/models/well/Well_Bucket_Albedo.png">
+	<model id="39" name="Object 39" type="1" position="20.000000;6.000000;20.000000" scale="1.000000;1.000000;1.000000" rotation="0.000000;0.000000;0.000000" path="data/models/tree1/tree.obj" texture="data/models/tree1/bark_0003.dds" alpha="1" shadow="1" type="1" extra_textures="data/models/tree1/leaves2.dds">
 	</model>
 </world>

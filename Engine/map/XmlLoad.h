@@ -128,8 +128,8 @@ protected:
 		bool result = model->Initialize(manager->getD3D(), &path[0], textures);
 		if (result) {
 			model->setId(id);
-			model->SetPosition(position);
 			model->SetScale(scale);
+			model->SetPosition(position);
 			model->SetRotation(rotation);
 			
 			if (params.find("alpha") != params.end()) {

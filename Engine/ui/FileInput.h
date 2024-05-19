@@ -34,6 +34,11 @@ public:
 		return m_dialog;
 	}
 
+	Input* getInput()
+	{
+		return m_inputPath;
+	}
+
 
 protected:
 	Input* m_inputPath;

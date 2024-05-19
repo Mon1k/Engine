@@ -157,14 +157,20 @@ bool Input::updateText(std::string text)
 
 void Input::updateText()
 {
-	m_ViewedString = m_String.substr(0, m_CursorShift);
-	if (m_IsFocused && m_usesFlashCursor && !m_Flash) {
-		m_ViewedString += "|";
+	if (m_Flash) {
+		m_ViewedString = m_String;
 	}
-	if (m_CursorShift < m_String.length()) {
-		m_ViewedString += m_String.substr(m_CursorShift, m_String.length());
+	else {
+		m_ViewedString = m_String.substr(0, m_CursorShift);
+		if (m_IsFocused && m_usesFlashCursor && !m_Flash) {
+			m_ViewedString += "|";
+		}
+		if (m_CursorShift < m_String.length()) {
+			m_ViewedString += m_String.substr(m_CursorShift, m_String.length());
+		}
 	}
-	updateText(&m_ViewedString[0]);
+
+	updateText(m_ViewedString);
 }
 
 bool Input::onMousePress(int x, int y, int button)
@@ -198,12 +204,21 @@ bool Input::onKeyboardPress(InputClass::EventKey event)
 	if (event.key == DIK_ESCAPE) {
 		unfocus();
 	}
-	else if (event.key == DIK_BACKSPACE && m_CursorShift > 0) {
-		m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
-		m_CursorShift--;
-		m_CursorShift = min(m_CursorShift, m_String.length());
-		m_Flash = false;
-		updateText();
+	else if (event.key == DIK_BACKSPACE) {
+		if (m_CursorShift > 0) {
+			m_String = m_String.substr(0, m_CursorShift - 1) + chunkRight;
+			m_CursorShift--;
+			m_CursorShift = min(m_CursorShift, m_String.length());
+			m_Flash = false;
+			updateText();
+		}
+	}
+	else if (event.key == DIK_DELETE) {
+		if (m_CursorShift < m_String.length()) {
+			m_String = m_String.substr(0, m_CursorShift) + m_String.substr(m_CursorShift + 1, size);
+			m_Flash = false;
+			updateText();
+		}
 	}
 	else if (event.key == DIK_LEFTARROW) {
 		m_CursorShift--;
@@ -313,7 +328,7 @@ void Input::frame(float counter)
 	m_FrameCounter += counter;
 	if (m_FrameCounter > timeout) {
 		m_FrameCounter = 0;
-		m_Flash = m_Flash ? false : true;
+		m_Flash = !m_Flash;
 		updateText();
 	}
 }

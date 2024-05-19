@@ -114,7 +114,7 @@ public:
 		D3DXVECTOR3 minP, maxP;
 
 		m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-		m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+		m_Max = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 		for (size_t i = 0; i < m_childs.size(); i++) {
 			minP = m_childs[i]->getMinPosition();
@@ -137,6 +137,9 @@ public:
 
 	AbstractModel* getByIndex(int index)
 	{
+		if (index >= m_childs.size()) {
+			return nullptr;
+		}
 		return m_childs[index];
 	}
 

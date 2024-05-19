@@ -207,6 +207,18 @@ public:
 			this->updateWater();
 		});
 		shift += objectWaterTarget->m_height + 5;
+
+
+		Button* deleteObject = new Button;
+		m_Window->addChild(deleteObject);
+		deleteObject->initialize();
+		deleteObject->Add("Delete", m_Window->m_x + m_Window->m_width - 110, m_Window->m_y + m_Window->m_height - 30);
+		deleteObject->addEventHandler(AbstractGui::EventType::MOUSE_DOWN, [this] {
+			m_Window->hide();
+			m_app->m_mapEntities->remove(m_app->m_selectedModel->getId());
+			m_app->m_modelManager->remove(m_app->m_selectedModel->getId());
+			m_app->unselectModel();
+		});
 	}
 
 	void updateUiFromModel()

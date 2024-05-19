@@ -209,7 +209,7 @@ bool ModelClass::InitializeBuffers()
 void ModelClass::CalcMinMax()
 {
 	m_Min = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-	m_Max = D3DXVECTOR3(FLT_MIN, FLT_MIN, FLT_MIN);
+	m_Max = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	for (int i = 0; i < m_vertexCount; i++) {
 		if (m_model[i].x > m_Max.x) {
@@ -309,7 +309,6 @@ bool ModelClass::addTexture(std::string filename)
 
 void ModelClass::ReleaseTexture()
 {
-	// Release the texture array object.
 	if (m_TextureArray) {
 		m_TextureArray->Shutdown();
 		delete m_TextureArray;
@@ -470,6 +469,13 @@ BBox* ModelClass::showBBox()
 
 		m_BBox = new BBox;
 		m_BBox->CreateBox(m_D3D, position, size);
+
+		/*if (m_subsets) {
+			for (size_t i = 0; i < m_subsets->getChilds().size(); i++) {
+				ModelClass* child = dynamic_cast<ModelClass*>(m_subsets->getChilds()[i]);
+				child->showBBox();
+			}
+		}*/
 	}
 
 	return m_BBox;
@@ -481,5 +487,12 @@ void ModelClass::hideBBox()
 		m_BBox->Shutdown();
 		delete m_BBox;
 		m_BBox = 0;
+
+		/*if (m_subsets) {
+			for (size_t i = 0; i < m_subsets->getChilds().size(); i++) {
+				ModelClass* child = dynamic_cast<ModelClass*>(m_subsets->getChilds()[i]);
+				child->hideBBox();
+			}
+		}*/
 	}
 }

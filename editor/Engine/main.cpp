@@ -294,6 +294,9 @@ void App::loadScene()
 	m_light->SetSpecularPower(32.0f);
 	m_light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
+	XmlLoad* xmlLoad = new XmlLoad(new XmlReader);
+	xmlLoad->load("demo1_1.map", m_mapEntities, m_modelManager);
+
 	initDefaultObjects();
 }
 
