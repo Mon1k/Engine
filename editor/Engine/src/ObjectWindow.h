@@ -347,14 +347,16 @@ public:
 
 	void loadTexture(int index)
 	{
-		ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(index));
-		if (model) {
-			model->GetTextureClass()->ReleaseTexture(index);
-			model->GetTextureClass()->setTexture(model->getD3D()->GetDevice(), m_extraTextures[index], index);
+		if (m_app->m_selectedModel->getSubset()) {
+			ModelClass* model = dynamic_cast<ModelClass*>(m_app->m_selectedModel->getSubset()->getByIndex(index));
+			if (model) {
+				model->GetTextureClass()->ReleaseTexture(index);
+				model->GetTextureClass()->setTexture(model->getD3D()->GetDevice(), m_extraTextures[index], index);
+				return;
+			}
 		}
-		else {
-			m_extraTextures[index] = "";
-		}
+
+		m_extraTextures[index] = "";
 	}
 
 	Window* getWindow()

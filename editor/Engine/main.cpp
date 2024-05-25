@@ -243,7 +243,7 @@ bool App::init()
 	}
 
 	m_Position->SetPosition(8.0f, 10.0f, 30.0f);
-	//m_Position->SetPosition(268.0f, 20.0f, 160.0f);
+	m_Position->SetPosition(222.0f, 20.0f, 200.0f);
 	m_Position->SetRotation(15.0f, -180.0f, 0.0f);
 	m_modelManager = m_Graphics->getModelManager();
 	m_uiManager = m_Graphics->getUiManager();
@@ -295,7 +295,8 @@ void App::loadScene()
 	m_light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	XmlLoad* xmlLoad = new XmlLoad(new XmlReader);
-	xmlLoad->load("demo1_1.map", m_mapEntities, m_modelManager);
+	xmlLoad->load("demotest.map", m_mapEntities, m_modelManager);
+
 
 	initDefaultObjects();
 }

@@ -80,7 +80,7 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the refraction render to texture.
-	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.8f);
 
 	// Generate the view matrix based on the camera's position.
 	camera->Render();
@@ -125,7 +125,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the reflection render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.8f, 1.0f, 0.5f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.8f, 1.0f, 0.8f);
 
 	// Use the camera to render the reflection and create a reflection view matrix.
 	camera->RenderReflection(m_waterHeight);
@@ -150,8 +150,8 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 		// skip refraction model if this Model (but not terrain sample)
 		if (model == m_RefractionModel && dynamic_cast<const Model*>(m_RefractionModel) != nullptr) {
 			continue;
-		}
-		*/
+		}*/
+		
 		model->Render(camera);
 	}
 
