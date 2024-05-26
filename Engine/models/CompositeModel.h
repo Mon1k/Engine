@@ -21,8 +21,7 @@ public:
 
 	void removeChild(int id)
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs.erase(m_childs.begin() + i);
 		}
 	}
@@ -34,24 +33,21 @@ public:
 
 	virtual void Render(CameraClass* camera)
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->Render(camera);
 		}
 	}
 
 	virtual void Render()
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->Render();
 		}
 	}
 
 	virtual void Shutdown()
 	{
-		size_t size = m_childs.size();
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < m_childs.size(); i++) {
 			m_childs[i]->Shutdown();
 		}
 	}

@@ -144,21 +144,23 @@ void ModelManager::PreRender(CameraClass* camera)
     // add models for renderer shadow
     for (size_t i = 0; i < m_modelsRender.size(); i++) {
         // add models for reflections
-        if (Options::reflectionLevel < 2 && dynamic_cast<const AbstractTarget*>(m_modelsRender[i]) != nullptr) {
+        if (dynamic_cast<const AbstractTarget*>(m_modelsRender[i]) != nullptr) {
             AbstractTarget* targetScopes = dynamic_cast<AbstractTarget*>(m_modelsRender[i]);
             targetScopes->clearTargets();
-            for (size_t j = 0; j < m_modelsRender.size(); j++) {
-                if (i != j && dynamic_cast<const AbstractTarget*>(m_modelsRender[j]) == nullptr) {
-                    if (Options::reflectionLevel == 1) {
-                        if (dynamic_cast<const Model*>(m_modelsRender[j]) != nullptr) {
+            if (Options::reflectionLevel < 2) {
+                for (size_t j = 0; j < m_modelsRender.size(); j++) {
+                    if (i != j && dynamic_cast<const AbstractTarget*>(m_modelsRender[j]) == nullptr) {
+                        if (Options::reflectionLevel == 1) {
+                            if (dynamic_cast<const Model*>(m_modelsRender[j]) != nullptr) {
+                                targetScopes->addTarget(m_modelsRender[j]);
+                            }
+                        }
+                        else {
+                            if (dynamic_cast<const SkyDomeClass*>(m_modelsRender[j]) != nullptr) {
+                                continue;
+                            }
                             targetScopes->addTarget(m_modelsRender[j]);
                         }
-                    }
-                    else {
-                        if (dynamic_cast<const SkyDomeClass*>(m_modelsRender[j]) != nullptr) {
-                            continue;
-                        }
-                        targetScopes->addTarget(m_modelsRender[j]);
                     }
                 }
             }

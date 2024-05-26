@@ -21,7 +21,8 @@ public:
 		SKY = 4,
 		COMPOSITE_MODEL = 5,
 		ACTOR = 6,
-		LIGHT = 7
+		LIGHT = 7,
+		CAMERA = 8
 	};
 
 	struct ObjectFormat {

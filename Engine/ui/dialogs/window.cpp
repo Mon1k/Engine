@@ -116,8 +116,8 @@ void Window::show()
 	if (!m_visible) {
 		Group::show();
 		proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
-		focus();
 	}
+	focus();
 }
 
 void Window::close()

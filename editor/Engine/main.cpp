@@ -243,7 +243,7 @@ bool App::init()
 	}
 
 	m_Position->SetPosition(8.0f, 10.0f, 30.0f);
-	m_Position->SetPosition(222.0f, 20.0f, 200.0f);
+	//m_Position->SetPosition(222.0f, 20.0f, 200.0f);
 	m_Position->SetRotation(15.0f, -180.0f, 0.0f);
 	m_modelManager = m_Graphics->getModelManager();
 	m_uiManager = m_Graphics->getUiManager();
@@ -294,10 +294,6 @@ void App::loadScene()
 	m_light->SetSpecularPower(32.0f);
 	m_light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
-	XmlLoad* xmlLoad = new XmlLoad(new XmlReader);
-	xmlLoad->load("demotest.map", m_mapEntities, m_modelManager);
-
-
 	initDefaultObjects();
 }
 
@@ -320,7 +316,7 @@ void App::frameUI()
 	int mouseButtonPress = m_Input->getMouseButtonPress();
 	D3DXVECTOR3 direction, position, scale, rotation;
 
-	if (m_Input->IsKeyDown(VK_ESCAPE)) {
+	if (m_Input->IsKeyDown(DIK_ESCAPE)) {
 		m_uiManager->unfocus();
 	}
 
