@@ -133,10 +133,10 @@ protected:
 			model->SetRotation(rotation);
 			
 			if (params.find("alpha") != params.end()) {
-				model->setAlpha(true);
+				model->setAlpha((bool)std::stoi(params["alpha"]));
 			}
 			if (params.find("shadow") != params.end()) {
-				model->setShadow(true);
+				model->setShadow((bool)std::stoi(params["shadow"]));
 			}
 			
 

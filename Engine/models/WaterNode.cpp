@@ -40,8 +40,8 @@ bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<
 	m_waterHeight = position.y;
 
 	// Set the tiling for the water normal maps.
-	m_normalMapTiling.x = scale.x / 10.0f;  // Tile ten times over the quad.
-	m_normalMapTiling.y = scale.z / 5.0f;  // Tile five times over the quad.
+	m_normalMapTiling.x = scale.x / 5.0f;  // Tile ten times over the quad.
+	m_normalMapTiling.y = scale.z / 2.0f;  // Tile five times over the quad.
 	
 	// Initialize the water translation to zero.
 	m_waterTranslation = 0;
@@ -52,7 +52,7 @@ bool WaterNode::Initialize(D3DClass* d3dClass, char* modelFilename, std::vector<
 	m_reflectRefractScale = 0.03f;
 
 	// Set the tint of the refraction.
-	m_refractionTint = D3DXVECTOR4(0.0f, 0.8f, 1.0f, 1.0f);
+	m_refractionTint = D3DXVECTOR4(0.0f, 0.87f, 0.76f, 1.0f);
 
 	return true;
 }
@@ -80,7 +80,7 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the refraction render to texture.
-	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.8f);
+	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
 	camera->Render();
@@ -110,7 +110,7 @@ void WaterNode::RenderRefractionToTexture(CameraClass* camera)
 void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 {
 	if (m_modelsTarget.size() == 0) {
-		m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.1f, 0.87f, 0.76f, 1.0f);
+		m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.1f, 0.06f, 1.0f);
 		return;
 	}
 
@@ -126,7 +126,7 @@ void WaterNode::RenderReflectionToTexture(CameraClass* camera)
 	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
 
 	// Clear the reflection render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.1f, 0.87f, 0.76f, 1.0f);
+	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.1f, 0.06f, 1.0f);
 
 	// Use the camera to render the reflection and create a reflection view matrix.
 	camera->RenderReflection(m_waterHeight);

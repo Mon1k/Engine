@@ -87,7 +87,8 @@ float4 WaterPixelShader(PixelInputType input) : SV_TARGET
     fresnelFactor = max(0.0f, min(1.0f, r + (1.0f - r) * pow(1.0f - dot(normal, heightView), 2)));
 
     // Combine the reflection and refraction results for the final color using the fresnel factor.
-    color = lerp(reflectionColor, refractionColor, fresnelFactor);
+    //color = lerp(reflectionColor, refractionColor, fresnelFactor);
+    color = lerp(reflectionColor, refractionColor, 0.6f);
 
     // Calculate the reflection vector using the normal and the direction of the light.
     reflection = -reflect(normalize(lightDirection), normal);
