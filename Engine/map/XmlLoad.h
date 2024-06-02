@@ -22,9 +22,9 @@ public:
 		m_lightModel = new LightClass;
 		m_lightModel->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 		m_lightModel->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
-		m_lightModel->SetPosition(0.0f, 220.0f, 0.0f);
-		m_lightModel->SetLookAt(300.0f, 0.0f, 200.0f);
+		//m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
+		m_lightModel->SetPosition(0.0f, 20.0f, 0.0f);
+		//m_lightModel->SetLookAt(300.0f, 0.0f, 200.0f);
 		m_lightModel->setIntensity(1.0f);
 		m_lightModel->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetSpecularPower(32.0f);
