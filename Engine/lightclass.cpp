@@ -6,6 +6,7 @@ LightClass::LightClass()
 	m_intensity = 1.5f;
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_type = LightType::LIGHT_POINT;
 }
 
 

@@ -16,15 +16,18 @@ public:
 	void SetSpecularColor(float, float, float, float);
 	void SetSpecularPower(float);
 	void SetPosition(float, float, float);
-	void setPosition(D3DXVECTOR3 position) {
+	void setPosition(D3DXVECTOR3 position)
+	{
 		m_position = position;
 	}
-	void setLookAt(D3DXVECTOR3 lookAt) {
+	void setLookAt(D3DXVECTOR3 lookAt)
+	{
 		m_lookAt = lookAt;
 	}
-	void setIntensity(float intensity) {
+	void setIntensity(float intensity)
+	{
 		m_intensity = intensity;
-	};
+	}
 
 	D3DXVECTOR4 GetAmbientColor();
 	D3DXVECTOR4 GetDiffuseColor();
@@ -35,13 +38,25 @@ public:
 	D3DXVECTOR3 getLookAt() {
 		return m_lookAt;
 	};
-	float getIntensity() {
+	float getIntensity()
+	{
 		return m_intensity;
-	};
+	}
 
-	bool isDirection() {
+	bool isDirection()
+	{
 		return m_direction.x != 0.0f || m_direction.y != 0.0f || m_direction.z != 0.0f;
-	};
+	}
+
+	void setType(int type)
+	{
+		m_type = type;
+	}
+
+	int getType()
+	{
+		return m_type;
+	}
 
 	void SetLookAt(float, float, float);
 	void GenerateViewMatrix();
@@ -52,6 +67,12 @@ public:
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetOrthoMatrix(D3DXMATRIX&);
 
+	enum LightType: int {
+		LIGHT_DIRECTIONAL = 0,
+		LIGHT_POINT = 1,
+		LIGHT_SPOT = 2
+	};
+
 private:
 	D3DXVECTOR4 m_ambientColor;
 	D3DXVECTOR4 m_diffuseColor;
@@ -59,6 +80,7 @@ private:
 	D3DXVECTOR4 m_specularColor;
 	float m_specularPower;
 	float m_intensity;
+	int m_type;
 
 	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_lookAt;
