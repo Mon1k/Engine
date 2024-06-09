@@ -22,13 +22,14 @@ public:
 		m_lightModel = new LightClass;
 		m_lightModel->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 		m_lightModel->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		//m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
+		m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
 		m_lightModel->SetPosition(0.0f, 40.0f, 0.0f);
-		//m_lightModel->SetLookAt(300.0f, 0.0f, 200.0f);
+		m_lightModel->SetLookAt(-50.0f, 0.0f, -50.0f);
 		m_lightModel->setIntensity(1.0f);
 		m_lightModel->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetSpecularPower(32.0f);
 		m_lightModel->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+		m_lightModel->setType(LightClass::LightType::LIGHT_DIRECTIONAL);
 
 		m_light = new LightClass;
 		m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
