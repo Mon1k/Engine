@@ -43,7 +43,6 @@ private:
 
 public:
 	ShadowShaderClass();
-	ShadowShaderClass(const ShadowShaderClass&);
 	~ShadowShaderClass();
 
 	bool Initialize(ID3D11Device*);

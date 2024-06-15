@@ -14,12 +14,6 @@ ShadowShaderClass::ShadowShaderClass()
 	m_lightBuffer2 = 0;
 }
 
-
-ShadowShaderClass::ShadowShaderClass(const ShadowShaderClass& other)
-{
-}
-
-
 ShadowShaderClass::~ShadowShaderClass()
 {
 }
@@ -72,12 +66,10 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	D3D11_BUFFER_DESC lightBufferDesc2;
 
 
-	// Initialize the pointers this function will use to null.
 	errorMessage = 0;
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
 
-	// Compile the vertex shader code.
 	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "ShadowVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result)) {
@@ -93,7 +85,6 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 		return false;
 	}
 
-	// Compile the pixel shader code.
 	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "ShadowPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
 		&pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result)) {
@@ -111,8 +102,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 
 	// Create the vertex shader from the buffer.
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(result))
-	{
+	if (FAILED(result)) {
 		return false;
 	}
 
