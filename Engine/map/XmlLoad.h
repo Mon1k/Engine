@@ -28,7 +28,7 @@ public:
 		m_lightModel->setIntensity(1.0f);
 		m_lightModel->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetSpecularPower(32.0f);
-		m_lightModel->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+		m_lightModel->GenerateProjectionMatrix(Options::screen_depth, Options::screen_near);
 		m_lightModel->setType(LightClass::LightType::LIGHT_DIRECTIONAL);
 
 		m_light = new LightClass;

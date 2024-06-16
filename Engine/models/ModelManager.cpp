@@ -172,7 +172,7 @@ void ModelManager::PreRender(CameraClass* camera)
         }
     }
 
-    if (m_modelsShadow.size() > 0) {
+    if (Options::shadow_enabled && m_modelsShadow.size() > 0) {
         RenderShadowDepth(camera);
     }
 }
@@ -205,7 +205,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         CompositeModel* subset = model->getSubset();
         if (subset) {
-            for (int j = 0; j < subset->getChilds().size(); j++) {
+            for (size_t j = 0; j < subset->getChilds().size(); j++) {
                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                 modelSubset->Render();
                 m_DepthShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture());
@@ -222,13 +222,17 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
 void ModelManager::Render(CameraClass* camera)
 {
+    m_RenderCount = 0;
+    m_TriangleCount = 0;
+
+    if (!m_modelsRender.size()) {
+        return;
+    }
+
     std::vector<AbstractModel*> modelsAlpha;
     D3DXMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 
     modelsAlpha.clear();
-    
-    m_RenderCount = 0;
-    m_TriangleCount = 0;
 
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);

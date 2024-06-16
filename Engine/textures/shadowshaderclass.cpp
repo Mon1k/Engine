@@ -62,7 +62,6 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
-
 	D3D11_BUFFER_DESC lightBufferDesc2;
 
 
@@ -266,6 +265,11 @@ void ShadowShaderClass::ShutdownShader()
 	if (m_sampleStateClamp) {
 		m_sampleStateClamp->Release();
 		m_sampleStateClamp = 0;
+	}
+
+	if (m_SamplePointCmp) {
+		m_SamplePointCmp->Release();
+		m_SamplePointCmp = 0;
 	}
 
 	// Release the layout.

@@ -190,7 +190,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	UINT flagsDevice = 0;
 #if defined(DEBUG) || defined(_DEBUG)  
-	flagsDevice |= D3D11_CREATE_DEVICE_DEBUG;
+	//flagsDevice |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.

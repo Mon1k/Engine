@@ -20,6 +20,9 @@ public:
 		Options::screen_height = 1080;
 
 		Options::reflectionLevel = 0; // 0 - all, 1 - only objects, 2 - disable
+		Options::screen_depth = 1000.0f;
+		Options::screen_near = 0.1f;
+		Options::screen_vsync = false;
 	}
 
 	static int shadow_width;
@@ -34,4 +37,7 @@ public:
 	static int screen_height;
 
 	static unsigned int reflectionLevel;
+	static float screen_depth;
+	static float screen_near;
+	static bool screen_vsync;
 };

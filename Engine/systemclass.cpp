@@ -4,7 +4,6 @@
 #include <ctime>
 
 
-
 int Options::shadow_width;
 int Options::shadow_height;
 float Options::shadow_near;
@@ -15,6 +14,9 @@ bool Options::full_screen;
 int Options::screen_width;
 int Options::screen_height;
 unsigned int Options::reflectionLevel;
+float Options::screen_depth;
+float Options::screen_near;
+bool Options::screen_vsync;
 
 SystemClass::SystemClass()
 {
@@ -54,6 +56,19 @@ bool SystemClass::init()
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
+	// Create the input object. This object will be used to handle reading the keyboard input from the user.
+	m_Input = new InputClass;
+	if (!m_Input) {
+		return false;
+	}
+
+	// Initialize the input object.
+	result = m_Input->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the graphics object. This object will handle rendering all the graphics for this application.
 	m_Graphics = new GraphicsClass;
 	if (!m_Graphics) {
@@ -85,19 +100,6 @@ bool SystemClass::init()
 	result = m_Timer->Initialize();
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the input object. This object will be used to handle reading the keyboard input from the user.
-	m_Input = new InputClass;
-	if (!m_Input) {
-		return false;
-	}
-
-	// Initialize the input object.
-	result = m_Input->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -207,12 +209,13 @@ bool SystemClass::frame()
 	// frame ui
 	m_Graphics->getUiManager()->EventProccesor(m_Input);
 	m_Graphics->getUiManager()->frame(m_Timer->GetTime());
+	bool isUiFocus = m_Graphics->getUiManager()->isFocused();
 	// frame graphic
 	m_Graphics->frame(m_Timer);
 
 
 	// movement camera only unfocussed ui
-	if (!m_Graphics->getUiManager()->isFocused()) {
+	if (!isUiFocus) {
 		int mouseX, mouseY;
 		D3DXVECTOR3 position, rotation;
 		float mouseSensivityX = 18.0f, mouseSensivityY = 10.0f, cameraSensivity = 1.0f;

@@ -1,4 +1,5 @@
 #include "graphicsclass.h"
+#include "Options.h"
 
 GraphicsClass::GraphicsClass()
 {
@@ -27,7 +28,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
-	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, Options::full_screen, SCREEN_DEPTH, SCREEN_NEAR);
+	result = m_D3D->Initialize(screenWidth, screenHeight, Options::screen_vsync, hwnd, Options::full_screen, Options::screen_depth, Options::screen_near);
 	if (!result) {
 		MessageBox(NULL, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
@@ -113,14 +114,13 @@ bool GraphicsClass::Render()
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
-	m_D3D->setViewMatrix(m_Camera->getViewMatrix());
-
+	
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_Camera->GetViewMatrix(viewMatrix);
+	viewMatrix = m_Camera->getViewMatrix();
+	m_D3D->setViewMatrix(viewMatrix);
 
 	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
-
 	m_modelManager->PreRender(m_Camera);
 
 	// Clear the buffers to begin the scene.
