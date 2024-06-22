@@ -60,8 +60,8 @@ private:
 
 private:
 	ID3D11InputLayout* m_layout;
-	ID3D11SamplerState* m_sampleStateWrap;
-	ID3D11SamplerState* m_sampleStateClamp;
+	ID3D11SamplerState* m_sampleStateTexture;
+	ID3D11SamplerState* m_sampleStateShadow;
 	ID3D11SamplerState* m_SamplePointCmp;
 
 

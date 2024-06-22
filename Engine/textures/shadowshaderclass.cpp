@@ -6,9 +6,11 @@ ShadowShaderClass::ShadowShaderClass()
 	m_vertexShader = 0;
 	m_pixelShader = 0;
 	m_layout = 0;
-	m_sampleStateWrap = 0;
+	
+	m_sampleStateTexture = 0;
+	m_sampleStateShadow = 0;
+	m_SamplePointCmp = 0;
 
-	m_sampleStateClamp = 0;
 	m_matrixBuffer = 0;
 	m_lightBuffer = 0;
 	m_lightBuffer2 = 0;
@@ -153,9 +155,15 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
 
+	// 0 clamp = shadow
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateShadow);
 
 	// 1 wrap - linear - texture
-	// Create a wrap texture sampler state description.
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -166,16 +174,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1.0;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
-
-	// 0 clamp = shadow
-	// Create a clamp texture sampler state description.
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
+	device->CreateSamplerState(&samplerDesc, &m_sampleStateTexture);
 
 	// 2 PointCmp - cmp
 	D3D11_SAMPLER_DESC SamDesc;
@@ -257,14 +256,14 @@ void ShadowShaderClass::ShutdownShader()
 	}
 
 	// Release the sampler states.
-	if (m_sampleStateWrap) {
-		m_sampleStateWrap->Release();
-		m_sampleStateWrap = 0;
+	if (m_sampleStateTexture) {
+		m_sampleStateTexture->Release();
+		m_sampleStateTexture = 0;
 	}
 
-	if (m_sampleStateClamp) {
-		m_sampleStateClamp->Release();
-		m_sampleStateClamp = 0;
+	if (m_sampleStateShadow) {
+		m_sampleStateShadow->Release();
+		m_sampleStateShadow = 0;
 	}
 
 	if (m_SamplePointCmp) {
@@ -396,8 +395,8 @@ void ShadowShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int ind
 	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
 
 	// Set the sampler states in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
-	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
+	deviceContext->PSSetSamplers(0, 1, &m_sampleStateShadow);
+	deviceContext->PSSetSamplers(1, 1, &m_sampleStateTexture);
 	deviceContext->PSSetSamplers(2, 1, &m_SamplePointCmp);
 
 	// Render the triangle.
