@@ -345,10 +345,10 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr2->diffuseColor = light->GetDiffuseColor();
 	dataPtr2->lightDirection = light->GetDirection();
 	dataPtr2->lightIntensity = light->getIntensity();
+	dataPtr2->lightType = light->getType();
 	dataPtr2->isSoftShadow = (float)Options::soft_shadow;
 	dataPtr2->isDirection = (float)light->isDirection();
 	dataPtr2->shadowSize = Options::shadow_width;
-	dataPtr2->padding = 0.0f;
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);

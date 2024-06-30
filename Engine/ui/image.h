@@ -12,7 +12,7 @@ public:
     Image();
     ~Image();
 
-    bool Initialize(int, int, int, int);
+    bool Initialize(int width, int height, int x, int y);
     void loadTextureByString(std::string path);
     void loadTextureByResource(ID3D11ShaderResourceView* texture);
     void Shutdown();

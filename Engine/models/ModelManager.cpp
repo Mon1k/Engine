@@ -5,6 +5,8 @@
 #include "sky/skydomeclass.h"
 #include "WaterNode.h"
 
+#include "../ui/image.h"
+
 ModelManager::ModelManager()
 {
     m_models.clear();
@@ -196,9 +198,11 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         // @todo - later calculation for per light
         light = model->getLight(0);
         light->GenerateViewMatrix();
+
         
         light->GetViewMatrix(lightViewMatrix);
-        light->GetProjectionMatrix(lightProjectionMatrix);
+        //light->GetProjectionMatrix(lightProjectionMatrix);
+        light->GetOrthoMatrix(lightProjectionMatrix);
 
 
         model->Render();
@@ -271,7 +275,8 @@ void ModelManager::Render(CameraClass* camera)
                         light->GenerateViewMatrix();
 
                         light->GetViewMatrix(lightViewMatrix);
-                        light->GetProjectionMatrix(lightProjectionMatrix);
+                        //light->GetProjectionMatrix(lightProjectionMatrix);
+                        light->GetOrthoMatrix(lightProjectionMatrix);
 
                         if (m_modelsRender[i]->getAlpha()) {
                             m_D3D->TurnOnAlphaBlending();
@@ -288,6 +293,7 @@ void ModelManager::Render(CameraClass* camera)
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                             }
                         }
+
 
                         if (m_modelsRender[i]->getAlpha()) {
                             m_D3D->TurnOffAlphaBlending();
@@ -318,6 +324,17 @@ void ModelManager::Render(CameraClass* camera)
             modelsAlpha[i]->Render(camera);
         }
     }
+
+
+    /*m_D3D->TurnZBufferOff();
+    m_D3D->TurnOnAlphaBlending();
+    Image* image = new Image();
+    image->m_D3D = m_D3D;
+    image->Initialize(100, 100, 10, 100);
+    image->loadTextureByResource(m_RenderStencilTexture->GetShaderResourceView());
+    image->Render();
+    m_D3D->TurnOffAlphaBlending();
+    m_D3D->TurnZBufferOn();*/
 }
 
 int ModelManager::getNextId()

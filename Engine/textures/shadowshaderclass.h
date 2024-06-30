@@ -29,10 +29,10 @@ private:
 		D3DXVECTOR4 diffuseColor;
 		D3DXVECTOR3 lightDirection;
 		float lightIntensity;
+		float lightType;
 		float isSoftShadow;
 		float isDirection;
 		float shadowSize;
-		float padding;
 	};
 
 	struct LightBufferType2

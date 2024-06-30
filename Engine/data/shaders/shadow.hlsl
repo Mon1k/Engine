@@ -6,10 +6,10 @@ cbuffer LightBuffer
     float4 m_diffuseColor;
     float3 m_lightDirection;
     float m_lightIntensity;
+    float m_lightType;
     float m_isSoftShadow;
     float m_isDirection;
     float m_ShadowSize;
-    float m_padding;
 };
 
 cbuffer MatrixBuffer
@@ -66,11 +66,8 @@ PixelInputType ShadowVertexShader(VertexInputType input)
     output.tex = input.tex;
     
     // Calculate the normal vector against the world matrix only.
-    output.normal = mul(input.normal, (float3x3) worldMatrix);
+    output.normal = normalize(mul(input.normal, (float3x3) worldMatrix));
 	
-    // Normalize the normal vector.
-    output.normal = normalize(output.normal);
-
     // Calculate the position of the vertex in the world.
     worldPosition = mul(input.position, worldMatrix);
 
@@ -88,20 +85,44 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     float4 color;
     float intensity;
 
-    if (m_isDirection) {
+    if (m_lightType == LIGHT_DIRECTIONAL) {
+        intensity = saturate(dot(input.normal, -m_lightDirection));
+    } else if (m_lightType == LIGHT_SPOT) {
         intensity = saturate(dot(input.normal, -m_lightDirection));
     } else {
         intensity = saturate(dot(input.normal, input.lightPos));
     }
-    
+    intensity = saturate(dot(input.normal, -m_lightDirection));
     float4 defaultColor = m_diffuseColor * intensity * m_lightIntensity;
-    float4 textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex); 
+    float4 textureColor = shaderTexture.Sample(SampleTypeTexture, input.tex);
     
     g_ShadowSize = m_ShadowSize;
     g_isSoftShadow = m_isSoftShadow;
     
-    color = m_ambientColor + calcShadow(input.lightViewPosition, defaultColor, intensity);
+    /*color = m_ambientColor + calcShadow(input.lightViewPosition, defaultColor, intensity);
     color = saturate(color) * textureColor;
+    return color;*/
+    
+    /////
+    float3 normalWS = input.normal;
+    float3 positionWS = input.position.xyz;
+    
+    
+    float nDotL = saturate(dot(normalWS, -m_lightDirection));
+    float nmlOffsetScale = saturate(1.0f - nDotL);
+    float texelSize = 2.0f / 2048.0f;
 
+    float3 offset = texelSize * nmlOffsetScale * normalWS;
+    float3 samplePos = positionWS + offset;
+    float3 shadowPosition = mul(float4(samplePos, 1.0f), lightProjectionMatrix).xyz;
+    float lightDepth = shadowPosition.z;
+    float bias = 0.0050f;
+    lightDepth -= bias;
+    
+    float4 shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, shadowPosition.xy, lightDepth);
+    
+    color = nDotL * m_ambientColor * m_diffuseColor * m_lightIntensity * shadowVisibility;
+    color = saturate(color) * textureColor;
     return color;
+    /////
 }
