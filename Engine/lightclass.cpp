@@ -110,7 +110,6 @@ void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
 	fieldOfView = (float)D3DX_PI / 4.0f;
 	screenAspect = 1.0f;
 
-	// Create the projection matrix for the light.
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
 }
 
@@ -126,8 +125,8 @@ void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 
 void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
 {
-	// Create the orthographic matrix for the light.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+	//D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -10, 200, -50, 50, nearPlane, depthPlane);
 }
 
 void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)

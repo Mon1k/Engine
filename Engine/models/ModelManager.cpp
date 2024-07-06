@@ -14,6 +14,10 @@ ModelManager::ModelManager()
     m_DepthShader = 0;
     m_ShadowShader = 0;
     m_RenderStencilTexture = 0;
+
+    m_volumetricClouds = 0;
+    m_WeatherManager = 0;
+    m_bitmapClouds = 0;
 }
 
 bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
@@ -36,7 +40,7 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
         return false;
     }
 
-    m_volumetricClouds = new VolumetricClouds();
+    /*m_volumetricClouds = new VolumetricClouds();
     m_volumetricClouds->setD3D(m_D3D);
     m_volumetricClouds->Initialize(m_D3D->GetDevice());
     
@@ -44,7 +48,7 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     m_WeatherManager->setNextTarget();
 
     m_bitmapClouds = new BitmapClass();
-    m_bitmapClouds->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);
+    m_bitmapClouds->Initialize(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, L"", Options::screen_width, Options::screen_height);*/
 
     return true;
 }
@@ -107,6 +111,10 @@ void ModelManager::Shutdown()
         m_volumetricClouds->Shutdown();
         delete m_volumetricClouds;
         m_volumetricClouds = 0;
+    }
+    if (m_WeatherManager) {
+        delete m_WeatherManager;
+        m_WeatherManager = 0;
     }
     if (m_bitmapClouds) {
         m_bitmapClouds->Shutdown();
@@ -201,7 +209,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         
         light->GetViewMatrix(lightViewMatrix);
-        //light->GetProjectionMatrix(lightProjectionMatrix);
+        light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
 
 
@@ -249,7 +257,7 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
-                // @todo - is so ugly below
+                // @todo - its so ugly below
                 if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr || dynamic_cast<const WaterNode*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
@@ -310,6 +318,13 @@ void ModelManager::Render(CameraClass* camera)
         m_RenderCount++;
     }
 
+    Image* image = new Image;
+    image->m_baseViewMatrix = camera->getBaseViewMatrix();
+    image->m_D3D = m_D3D;
+    image->Initialize(400, 400, 10, 80);
+    image->loadTextureByResource(m_RenderStencilTexture->GetShaderResourceView());
+    image->Render();
+
 
     size_t size = modelsAlpha.size();
     // sort alpha model for render
@@ -359,6 +374,6 @@ void ModelManager::frame(CameraClass* camera, float time)
         m_modelsRender[i]->frame(camera, time);
     }
 
-    m_volumetricClouds->frame(camera, time);
+    //m_volumetricClouds->frame(camera, time);
     //m_WeatherManager->frame(time);
 }

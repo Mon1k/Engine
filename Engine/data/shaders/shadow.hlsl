@@ -119,9 +119,18 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     float bias = 0.0050f;
     lightDepth -= bias;
     
-    float4 shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, shadowPosition.xy, lightDepth);
+    float2 projectTexCoord;
+    projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
     
-    color = nDotL * m_ambientColor * m_diffuseColor * m_lightIntensity * shadowVisibility;
+    //float4 shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, shadowPosition.xy, lightDepth);
+    float shadowVisibility = depthMapTexture.Sample(SampleTypeShadow, projectTexCoord).r;
+    
+    
+    
+    color = nDotL * m_ambientColor * m_diffuseColor * m_lightIntensity;
+    if (shadowVisibility < 0.9)
+        color *= 1 / 3.14;
     color = saturate(color) * textureColor;
     return color;
     /////

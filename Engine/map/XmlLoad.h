@@ -23,8 +23,8 @@ public:
 		m_lightModel->SetAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
 		m_lightModel->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetDirection(0.0f, -1.0f, 1.0f);
-		m_lightModel->SetPosition(0.0f, 40.0f, 0.0f);
-		m_lightModel->SetLookAt(-50.0f, 0.0f, -50.0f);
+		m_lightModel->SetPosition(100.0f, 100.0f, -130.0f);
+		m_lightModel->SetLookAt(-60.0f, 0.0f, -60.0f);
 		m_lightModel->setIntensity(1.0f);
 		m_lightModel->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 		m_lightModel->SetSpecularPower(32.0f);
