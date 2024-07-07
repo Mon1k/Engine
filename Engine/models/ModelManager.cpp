@@ -209,7 +209,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         
         light->GetViewMatrix(lightViewMatrix);
-        light->GetProjectionMatrix(lightProjectionMatrix);
+        //light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
 
 
