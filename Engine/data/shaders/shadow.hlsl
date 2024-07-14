@@ -76,7 +76,7 @@ PixelInputType ShadowVertexShader(VertexInputType input)
 
     // Normalize the light position vector.
     output.lightPos = normalize(output.lightPos);
-
+    
     return output;
 }
 
@@ -92,7 +92,7 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     } else {
         intensity = saturate(dot(input.normal, input.lightPos));
     }
-    intensity = saturate(dot(input.normal, -m_lightDirection));
+    //intensity = saturate(dot(input.normal, -m_lightDirection));
     float4 defaultColor = m_diffuseColor * intensity * m_lightIntensity;
     float4 textureColor = shaderTexture.Sample(SampleTypeTexture, input.tex);
     
@@ -104,34 +104,38 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     return color;*/
     
     /////
-    float3 normalWS = input.normal;
+    float3 normalWS = normalize(input.normal);
     float3 positionWS = input.position.xyz;
     
     
-    float nDotL = saturate(dot(normalWS, m_lightDirection));
+    float nDotL = saturate(dot(normalWS, -m_lightDirection));
     float nmlOffsetScale = saturate(1.0f - nDotL);
     float texelSize = 2.0f / 2048.0f;
 
     float3 offset = texelSize * nmlOffsetScale * normalWS;
     float3 samplePos = positionWS + offset;
-    float3 shadowPosition = mul(float4(samplePos, 1.0f), lightViewMatrix * lightProjectionMatrix).xyz;
+    //float3 shadowPosition = mul(float4(samplePos, 1.0f), lightViewMatrix * lightProjectionMatrix).xyz;
+    float4 shadowPosition = input.lightViewPosition;
     float lightDepth = shadowPosition.z;
     float bias = 0.0050f;
+    
+    
+    lightDepth = input.lightViewPosition.z / input.lightViewPosition.w;
     lightDepth -= bias;
     
     float2 projectTexCoord;
     projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
     projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
     
-    //float shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, projectTexCoord.xy, lightDepth).r;
-    float shadowVisibility = depthMapTexture.Sample(SampleTypeShadow, projectTexCoord.xy).r;
+    float shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, projectTexCoord.xy, lightDepth).r;
+    //float shadowVisibility = depthMapTexture.SampleCmpLevelZero(SamplePointCmp, shadowPosition.xy, lightDepth).r;
+    //return float4(shadowVisibility, 0, 0, 1);
     //return depthMapTexture.Sample(SampleTypeShadow, shadowPosition.xy);
-    //float shadowVisibility = depthMapTexture.Sample(SampleTypeShadow, projectTexCoord).r;
     
     
     
-    color = nDotL * m_ambientColor * m_diffuseColor * (1.0f / 3.14159f) * shadowVisibility;
-    color = saturate(color) * textureColor;
+    color = nDotL * m_ambientColor * m_diffuseColor * m_lightIntensity * (1.0f / 3.14159f) * shadowVisibility;
+    color += 0.1f * textureColor;
     //return color;
     return float4(max(color.xyz, 0.0001f), 1.0f);
     /////

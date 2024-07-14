@@ -10,13 +10,13 @@ public:
 		Options::shadow_width = 2048;
 		Options::shadow_height = 2048;
 
-		Options::shadow_depth = 50.0f;
-		Options::shadow_near = 1.0f;
+		Options::shadow_depth = 1000.0f;
+		Options::shadow_near = 0.1f;
 		Options::soft_shadow = true;
 		Options::shadow_enabled = true;
 
 		Options::full_screen = false;
-		Options::screen_width = 1980;
+		Options::screen_width = 1920;
 		Options::screen_height = 1080;
 
 		Options::reflectionLevel = 0; // 0 - all, 1 - only objects, 2 - disable

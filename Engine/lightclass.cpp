@@ -125,8 +125,9 @@ void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 
 void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
 {
-	D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
-	//D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -50, 100, -100, 100, nearPlane, depthPlane);
+	width /= 16;
+	//D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -width, width, -width, width, nearPlane, depthPlane);
 }
 
 void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
