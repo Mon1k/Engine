@@ -5,6 +5,7 @@
 #include "sky/skydomeclass.h"
 #include "WaterNode.h"
 
+
 #include "../ui/image.h"
 
 ModelManager::ModelManager()
@@ -200,52 +201,64 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
     
 
+
+
+    D3DXMATRIX invViewProj, invView;
+    m_RenderStencilTexture->GetProjectionMatrix(invViewProj);
+
+    D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
+    //D3DXMatrixTranspose(&invViewProj, &invViewProj);
+
+    D3DXMatrixInverse(&invView, NULL, &viewMatrix);
+    D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
+
+    invViewProj = invViewProj * invView;
+
+    D3DXVECTOR3 frustumCorners[8] =
+    {
+        D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
+        D3DXVECTOR3(1.0f,  1.0f, 0.0f),
+        D3DXVECTOR3(1.0f, -1.0f, 0.0f),
+        D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
+        D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
+        D3DXVECTOR3(1.0f,  1.0f, 1.0f),
+        D3DXVECTOR3(1.0f, -1.0f, 1.0f),
+        D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
+    };
+
+    D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
+    for (int i = 0; i < 8; ++i)
+    {
+        D3DXVECTOR3 p;
+        D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
+        frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
+        frustumCenter += frustumCorners[i];
+    }
+    frustumCenter /= 8.0f;
+
+
     LightClass* light;
     for (size_t i = 0; i < size; i++) {
         ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
         // @todo - later calculation for per light
         light = model->getLight(0);
-        //light->GenerateViewMatrix();
+        if (!light->isCastShadows()) {
+            continue;
+        }
 
-        
+
+        //light->GenerateViewMatrix();
         //light->GetViewMatrix(lightViewMatrix);
         //light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
 
-
-        D3DXMATRIX invViewProj, invView;
-        m_RenderStencilTexture->GetProjectionMatrix(invViewProj);
-        D3DXMatrixInverse(&invView, NULL, &viewMatrix);
-        D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
-        invViewProj = invViewProj * invView;
-
-        D3DXVECTOR3 frustumCorners[8] =
-        {
-            D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
-            D3DXVECTOR3(1.0f,  1.0f, 0.0f),
-            D3DXVECTOR3(1.0f, -1.0f, 0.0f),
-            D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
-            D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
-            D3DXVECTOR3(1.0f,  1.0f, 1.0f),
-            D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-            D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
-        };
-
-        D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-        for (int i = 0; i < 8; ++i)
-        {
-            D3DXVECTOR4 p;
-            D3DXVec3Transform(&p, &frustumCorners[i], &invViewProj);
-            frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
-            frustumCenter += frustumCorners[i];
-        }
-        frustumCenter /= 8.0f;
 
         D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -0.5f;
         light->setPosition(shadowCameraPos);
         light->setLookAt(frustumCenter);
         light->GenerateViewMatrix();
         light->GetViewMatrix(lightViewMatrix);
+        D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
 
 
         model->Render();
@@ -323,8 +336,13 @@ void ModelManager::Render(CameraClass* camera)
 
                         D3DXMATRIX invViewProj, invView;
                         m_RenderStencilTexture->GetProjectionMatrix(invViewProj);
+                        
+                        D3DXMatrixTranspose(&invView, &invView);
+                        D3DXMatrixTranspose(&invViewProj, &invViewProj);
+
                         D3DXMatrixInverse(&invView, NULL, &viewMatrix);
                         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
+
                         invViewProj = invViewProj * invView;
                         
                         D3DXVECTOR3 frustumCorners[8] =
@@ -342,9 +360,9 @@ void ModelManager::Render(CameraClass* camera)
                         D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
                         for (int i = 0; i < 8; ++i)
                         {
-                            D3DXVECTOR4 p;
-                            D3DXVec3Transform(&p, &frustumCorners[i], &invViewProj);
-                            frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
+                            D3DXVECTOR3 p;
+                            D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
+                            //frustumCorners[i] = p;
                             frustumCenter += frustumCorners[i];
                         }
                         frustumCenter /= 8.0f;

@@ -7,6 +7,7 @@ LightClass::LightClass()
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_type = LightType::LIGHT_DIRECTIONAL;
+	m_isCastShadows = true;
 }
 
 

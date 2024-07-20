@@ -27,7 +27,7 @@ public:
 		m_lightModel->SetLookAt(-100.0f, 0.0f, 50.0f);
 		m_lightModel->setIntensity(1.0f);
 		m_lightModel->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-		m_lightModel->SetSpecularPower(32.0f);
+		m_lightModel->SetSpecularPower(128.0f);
 		m_lightModel->setType(LightClass::LightType::LIGHT_DIRECTIONAL);
 
 		m_lightModel->GenerateProjectionMatrix(Options::shadow_depth, Options::shadow_near);

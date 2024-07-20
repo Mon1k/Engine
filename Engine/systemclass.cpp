@@ -258,6 +258,7 @@ bool SystemClass::frame()
 		rotation = m_Position->getRotation();
 		m_Graphics->getCamera()->SetRotation(rotation);
 		m_Graphics->getCamera()->SetPosition(position);
+		m_Graphics->getCamera()->Render();
 	}
 	
 	return true;

@@ -58,6 +58,16 @@ public:
 		return m_type;
 	}
 
+	bool isCastShadows()
+	{
+		return m_isCastShadows;
+	}
+
+	void setCastShadows(bool isCastShadows)
+	{
+		m_isCastShadows = isCastShadows;
+	}
+
 	void SetLookAt(float, float, float);
 	void GenerateViewMatrix();
 	void GenerateProjectionMatrix(float, float);
@@ -81,6 +91,7 @@ private:
 	float m_specularPower;
 	float m_intensity;
 	int m_type;
+	bool m_isCastShadows;
 
 	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_lookAt;
