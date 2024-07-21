@@ -1,9 +1,11 @@
 #include "lightclass.h"
+#include "Options.h"
 
 LightClass::LightClass()
 {
 	m_specularPower = 0.0f;
 	m_intensity = 1.5f;
+	D3DXMatrixIdentity(&m_viewMatrix);
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_type = LightType::LIGHT_DIRECTIONAL;
@@ -109,7 +111,8 @@ void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
 
 	// Setup field of view and screen aspect for a square light source.
 	fieldOfView = (float)D3DX_PI / 4.0f;
-	screenAspect = 1.0f;
+	//screenAspect = 1.0f;
+	screenAspect = (float)Options::screen_width / (float)Options::screen_height;
 
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
 }

@@ -217,7 +217,6 @@ bool SystemClass::frame()
 	// movement camera only unfocussed ui
 	if (!isUiFocus) {
 		int mouseX, mouseY;
-		D3DXVECTOR3 position, rotation;
 		float mouseSensivityX = 18.0f, mouseSensivityY = 10.0f, cameraSensivity = 1.0f;
 		int mouseButtonPress = m_Input->getMouseButtonPress();
 
@@ -254,10 +253,8 @@ bool SystemClass::frame()
 		}
 
 		// Get the current view point rotation.
-		position = m_Position->getPosition();
-		rotation = m_Position->getRotation();
-		m_Graphics->getCamera()->SetRotation(rotation);
-		m_Graphics->getCamera()->SetPosition(position);
+		m_Graphics->getCamera()->SetRotation(m_Position->getRotation());
+		m_Graphics->getCamera()->SetPosition(m_Position->getPosition());
 		m_Graphics->getCamera()->Render();
 	}
 	

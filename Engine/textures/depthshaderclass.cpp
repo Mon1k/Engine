@@ -51,7 +51,7 @@ bool DepthShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
-	if(!result) {
+	if (!result) {
 		return false;
 	}
 
@@ -82,9 +82,9 @@ bool DepthShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
     // Compile the vertex shader code.
 	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "DepthVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 								   &vertexShaderBuffer, &errorMessage, NULL);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
-		if(errorMessage) {
+		if (errorMessage) {
 			OutputShaderErrorMessage(errorMessage, vsFilename);
 		}
 		// If there was nothing in the error message then it simply could not find the shader file itself.
@@ -98,7 +98,7 @@ bool DepthShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
     // Compile the pixel shader code.
 	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "DepthPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 								   &pixelShaderBuffer, &errorMessage, NULL);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		// If the shader failed to compile it should have writen something to the error message.
 		if(errorMessage) {
 			OutputShaderErrorMessage(errorMessage, psFilename);
@@ -113,13 +113,13 @@ bool DepthShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 
     // Create the vertex shader from the buffer.
     result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		return false;
 	}
 
     // Create the pixel shader from the buffer.
     result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -146,7 +146,7 @@ bool DepthShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 
 	// Create the vertex input layout.
 	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -167,7 +167,7 @@ bool DepthShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename,
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		return false;
 	}
 
@@ -205,14 +205,14 @@ void DepthShaderClass::ShutdownShader()
 	}
 
 	// Release the matrix constant buffer.
-	if(m_matrixBuffer)
+	if (m_matrixBuffer)
 	{
 		m_matrixBuffer->Release();
 		m_matrixBuffer = 0;
 	}
 
 	// Release the layout.
-	if(m_layout)
+	if (m_layout)
 	{
 		m_layout->Release();
 		m_layout = 0;
@@ -236,7 +236,7 @@ bool DepthShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 
 	// Lock the constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if(FAILED(result)) {
+	if (FAILED(result)) {
 		return false;
 	}
 

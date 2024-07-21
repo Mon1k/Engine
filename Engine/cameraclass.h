@@ -33,6 +33,8 @@ public:
 		return m_viewMatrix;
 	}
 
+	D3DXMATRIX getWorldMatrix();
+
 	void RenderReflection(float);
 	D3DXMATRIX GetReflectionViewMatrix();
 
