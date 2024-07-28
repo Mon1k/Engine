@@ -26,7 +26,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
-	// Create the Direct3D object.
 	m_D3D = new D3DClass;
 	result = m_D3D->Initialize(screenWidth, screenHeight, Options::screen_vsync, hwnd, Options::full_screen, Options::screen_depth, Options::screen_near);
 	if (!result) {
@@ -34,7 +33,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the camera object.
 	m_Camera = new CameraClass;
 	m_Camera->SetPosition(0.0f, 0.0f, -80.0f);
 	m_Camera->Render();
@@ -100,7 +98,7 @@ void GraphicsClass::Shutdown()
 
 void GraphicsClass::frame(TimerClass *timer)
 {
-	m_particleManager->Frame(timer->GetTime(), m_Frustum);
+	m_particleManager->frame(timer->GetTime(), m_Frustum);
 	m_modelManager->frame(m_Camera, timer->GetTime());
 }
 
@@ -120,7 +118,7 @@ bool GraphicsClass::Render()
 	viewMatrix = m_Camera->getViewMatrix();
 	m_D3D->setViewMatrix(viewMatrix);
 
-	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
+	m_Frustum->ConstructFrustum(Options::screen_depth, projectionMatrix, viewMatrix);
 	m_modelManager->PreRender(m_Camera);
 
 	// Clear the buffers to begin the scene.

@@ -101,7 +101,7 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	m_viewport.TopLeftY = 0.0f;
 
 	// Setup the projection matrix.
-	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, ((float)D3DX_PI / 4.0f), ((float)textureWidth / (float)textureHeight), screenNear, screenDepth);
+	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, ((float)D3DX_PI / 3.0f), ((float)textureWidth / (float)textureHeight), screenNear, screenDepth);
 
 	// Create an orthographic projection matrix for 2D rendering.
 	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)textureWidth / 16, (float)textureHeight / 16, screenNear, screenDepth);

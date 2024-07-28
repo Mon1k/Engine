@@ -47,7 +47,7 @@ void ParticleManager::Render(CameraClass* camera, FrustumClass* frustum)
     }
 }
 
-void ParticleManager::Frame(float frameTime, FrustumClass* frustum)
+void ParticleManager::frame(float frameTime, FrustumClass* frustum)
 {
     m_RenderCount = 0;
     m_TriangleCount = 0;

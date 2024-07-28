@@ -110,7 +110,7 @@ void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
 	float fieldOfView, screenAspect;
 
 	// Setup field of view and screen aspect for a square light source.
-	fieldOfView = (float)D3DX_PI / 4.0f;
+	fieldOfView = (float)D3DX_PI / 3.0f;
 	//screenAspect = 1.0f;
 	screenAspect = (float)Options::screen_width / (float)Options::screen_height;
 
@@ -129,8 +129,8 @@ void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 
 void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
 {
-	width /= 16;
 	//D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+	width /= 16;
 	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -width, width, -width, width, nearPlane, depthPlane);
 }
 

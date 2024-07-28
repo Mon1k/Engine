@@ -30,8 +30,8 @@ public:
 		m_lightModel->SetSpecularPower(128.0f);
 		m_lightModel->setType(LightClass::LightType::LIGHT_DIRECTIONAL);
 
-		m_lightModel->GenerateProjectionMatrix(250, 0.25);
-		m_lightModel->GenerateOrthoMatrix(Options::shadow_width, Options::screen_depth, Options::screen_near);
+		m_lightModel->GenerateProjectionMatrix(1000, 0.1f);
+		m_lightModel->GenerateOrthoMatrix(Options::shadow_width, 1000, 0.1f);
 
 		m_light = new LightClass;
 		m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);

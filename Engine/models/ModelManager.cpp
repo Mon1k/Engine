@@ -37,7 +37,7 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     }
 
     m_RenderStencilTexture = new RenderStencilTextureClass;
-    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::screen_width, Options::screen_height, 250, 0.25)) {
+    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, 1000.0f, 0.1f)) {
         return false;
     }
 
@@ -225,7 +225,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
         //D3DXMatrixTranspose(&invViewProj, &invViewProj);
 
-        //D3DXMatrixInverse(&invView, NULL, &lightViewMatrix);
+        //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
 
         invViewProj = invViewProj * lightViewMatrix;
@@ -339,7 +339,7 @@ void ModelManager::Render(CameraClass* camera)
                         //D3DXMatrixTranspose(&invViewProj, &invViewProj);
 
                         lightViewMatrix = camera->getWorldMatrix();
-                        //D3DXMatrixInverse(&invView, NULL, &lightViewMatrix);
+                        //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
                         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
 
                         invViewProj = invViewProj * lightViewMatrix;

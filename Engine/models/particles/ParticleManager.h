@@ -16,7 +16,7 @@ public:
     bool Initialize(D3DClass*);
     bool Add(AbstractParticle* model);
     void Render(CameraClass*, FrustumClass*);
-    void Frame(float, FrustumClass*);
+    void frame(float, FrustumClass*);
     void Shutdown();
 
     int getRenderCount()
