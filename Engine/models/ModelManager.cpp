@@ -213,13 +213,13 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         //light->setPosition(D3DXVECTOR3(0, 0, 0));
         //light->GenerateViewMatrix();
-        light->GetViewMatrix(lightViewMatrix);
-        //light->GetProjectionMatrix(lightProjectionMatrix);
+        //light->GetViewMatrix(lightViewMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
 
 
         D3DXMATRIX invViewProj, invView;
         light->GetProjectionMatrix(invViewProj);
+        //m_D3D->GetProjectionMatrix(invViewProj);
         lightViewMatrix = camera->getWorldMatrix();
 
         //D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
@@ -228,7 +228,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
 
-        invViewProj = invViewProj * lightViewMatrix;
+        invViewProj = lightViewMatrix;
 
         D3DXVECTOR3 frustumCorners[8] = {
             D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
@@ -242,7 +242,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         };
 
         D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 4; ++i) {
             D3DXVECTOR3 p;
             D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
             frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
@@ -356,7 +356,7 @@ void ModelManager::Render(CameraClass* camera)
                         };
 
                         D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-                        for (int i = 0; i < 8; ++i) {
+                        for (int i = 0; i < 4; ++i) {
                             D3DXVECTOR3 p;
                             D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
                             frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);

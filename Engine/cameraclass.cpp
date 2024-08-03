@@ -103,17 +103,24 @@ void CameraClass::Render()
 
 D3DXMATRIX CameraClass::getWorldMatrix()
 {
-	D3DXMATRIX worldMatrix;
+	D3DXMATRIX worldMatrix, rotate, translation;
 	float yaw, pitch, roll;
 
-	pitch = -m_rotationX * 0.0174532925f;
-	yaw = m_rotationY * 0.0174532925f;
+	yaw = m_rotationX * 0.0174532925f;
+	pitch = m_rotationY * 0.0174532925f;
 	roll = m_rotationZ * 0.0174532925f;
 
-	D3DXMatrixRotationYawPitchRoll(&worldMatrix, yaw, pitch, roll);
-	worldMatrix._41 = m_positionX;
+	//D3DXMatrixRotationYawPitchRoll(&rotate, yaw, pitch, roll);
+	D3DXMatrixRotationX(&rotate, m_rotationX);
+	D3DXMatrixRotationX(&rotate, m_rotationY);
+	D3DXMatrixRotationX(&rotate, m_rotationZ);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotate);
+
+	D3DXMatrixTranslation(&translation, m_positionX, m_positionY, m_positionZ);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translation);
+	/*worldMatrix._41 = m_positionX;
 	worldMatrix._42 = m_positionY;
-	worldMatrix._43 = m_positionZ;
+	worldMatrix._43 = m_positionZ;*/
 
 	return worldMatrix;
 }

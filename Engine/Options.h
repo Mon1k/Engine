@@ -7,8 +7,8 @@ private:
 
 public:
 	static void Init() {
-		Options::shadow_width = 2048;
-		Options::shadow_height = 2048;
+		Options::shadow_width = 2048.0f;
+		Options::shadow_height = 2048.0f;
 
 		Options::shadow_depth = 1000.0f;
 		Options::shadow_near = 0.1f;
