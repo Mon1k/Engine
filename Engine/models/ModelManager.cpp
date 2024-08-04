@@ -227,7 +227,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //D3DXMatrixTranspose(&invViewProj, &invViewProj);
 
         //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
-        //D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
+        D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
 
         invViewProj = invViewProj * lightViewMatrix;
 

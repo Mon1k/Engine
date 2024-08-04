@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <ctime>
 
-
 int Options::shadow_width;
 int Options::shadow_height;
 float Options::shadow_near;
