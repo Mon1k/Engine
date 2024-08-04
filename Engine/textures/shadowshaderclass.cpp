@@ -178,7 +178,7 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 
 	// 2 PointCmp - cmp
 	D3D11_SAMPLER_DESC SamDesc;
-	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	/*SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -187,17 +187,17 @@ bool ShadowShaderClass::InitializeShader(ID3D11Device* device, WCHAR* vsFilename
 	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 1.0;
 	SamDesc.MinLOD = 0;
-	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	/*SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;*/
+	SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	SamDesc.MipLODBias = 0.0f;
 	SamDesc.MaxAnisotropy = 1;
 	SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 0.0;
 	SamDesc.MinLOD = 0;
-	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;*/
+	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	device->CreateSamplerState(&SamDesc, &m_SamplePointCmp);
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.

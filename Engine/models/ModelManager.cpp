@@ -198,7 +198,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
     m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
     
 
     LightClass* light;
@@ -213,7 +213,8 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         //light->setPosition(D3DXVECTOR3(0, 0, 0));
         //light->GenerateViewMatrix();
-        //light->GetViewMatrix(lightViewMatrix);
+        light->GetViewMatrix(lightViewMatrix);
+        //light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
 
 
@@ -226,9 +227,9 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         //D3DXMatrixTranspose(&invViewProj, &invViewProj);
 
         //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
-        D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
+        //D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
 
-        invViewProj = lightViewMatrix;
+        invViewProj = invViewProj * lightViewMatrix;
 
         D3DXVECTOR3 frustumCorners[8] = {
             D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
@@ -242,7 +243,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         };
 
         D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 8; ++i) {
             D3DXVECTOR3 p;
             D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
             frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
@@ -255,21 +256,22 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         LightClass* lightn = new LightClass;
         lightn->setPosition(shadowCameraPos);
         lightn->setLookAt(frustumCenter);
-        lightn->GenerateViewMatrix();
-        lightn->GetViewMatrix(lightViewMatrix);
+        lightViewMatrix = lightn->GenerateViewMatrix();
+        //lightProjectionMatrix = lightn->GenerateOrthoMatrix(1000, 1000, 0);
         //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
+        //D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
 
 
         model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
-        CompositeModel* subset = model->getSubset();
+        /*CompositeModel* subset = model->getSubset();
         if (subset) {
             for (size_t j = 0; j < subset->getChilds().size(); j++) {
                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                 modelSubset->Render();
                 m_DepthShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture());
             }
-        }
+        }*/
     }
     
     // Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -356,7 +358,7 @@ void ModelManager::Render(CameraClass* camera)
                         };
 
                         D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-                        for (int i = 0; i < 4; ++i) {
+                        for (int i = 0; i < 8; ++i) {
                             D3DXVECTOR3 p;
                             D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
                             frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);

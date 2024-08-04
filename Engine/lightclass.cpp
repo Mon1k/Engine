@@ -92,7 +92,7 @@ void LightClass::SetLookAt(float x, float y, float z)
 	m_lookAt.z = z;
 }
 
-void LightClass::GenerateViewMatrix()
+D3DXMATRIX LightClass::GenerateViewMatrix()
 {
 	D3DXVECTOR3 up;
 
@@ -103,18 +103,22 @@ void LightClass::GenerateViewMatrix()
 
 	// Create the view matrix from the three vectors.
 	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
+
+	return m_viewMatrix;
 }
 
-void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
+D3DXMATRIX LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
 {
 	float fieldOfView, screenAspect;
 
 	// Setup field of view and screen aspect for a square light source.
-	fieldOfView = (float)D3DX_PI / 3.0f;
+	fieldOfView = (float)D3DX_PI / 4.0f * 0.75f;
 	//screenAspect = 1.0f;
 	screenAspect = (float)Options::screen_width / (float)Options::screen_height;
 
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
+
+	return m_projectionMatrix;
 }
 
 void LightClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
@@ -127,11 +131,15 @@ void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 	projectionMatrix = m_projectionMatrix;
 }
 
-void LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
+D3DXMATRIX LightClass::GenerateOrthoMatrix(float width, float depthPlane, float nearPlane)
 {
 	//D3DXMatrixOrthoLH(&m_orthoMatrix, width, width, nearPlane, depthPlane);
+	//return m_orthoMatrix;
 	width /= 16;
 	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -width, width, -width, width, nearPlane, depthPlane);
+	//D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, -0.5, 0.5, -0.5, 0.5, 0.0f, 1.0f);
+
+	return m_orthoMatrix;
 }
 
 void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)

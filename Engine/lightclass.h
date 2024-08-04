@@ -69,9 +69,9 @@ public:
 	}
 
 	void SetLookAt(float, float, float);
-	void GenerateViewMatrix();
-	void GenerateProjectionMatrix(float, float);
-	void GenerateOrthoMatrix(float, float, float);
+	D3DXMATRIX GenerateViewMatrix();
+	D3DXMATRIX GenerateProjectionMatrix(float, float);
+	D3DXMATRIX GenerateOrthoMatrix(float, float, float);
 
 	void GetViewMatrix(D3DXMATRIX&);
 	void GetProjectionMatrix(D3DXMATRIX&);
