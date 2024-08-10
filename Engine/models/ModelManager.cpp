@@ -211,8 +211,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         }
 
 
-        //light->setPosition(D3DXVECTOR3(0, 0, 0));
-        //light->GenerateViewMatrix();
         light->GetViewMatrix(lightViewMatrix);
         //light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
@@ -222,9 +220,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         light->GetProjectionMatrix(invViewProj);
         //m_D3D->GetProjectionMatrix(invViewProj);
         lightViewMatrix = camera->getWorldMatrix();
-
-        //D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
-        //D3DXMatrixTranspose(&invViewProj, &invViewProj);
 
         //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
@@ -257,10 +252,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         lightn->setPosition(shadowCameraPos);
         lightn->setLookAt(frustumCenter);
         lightViewMatrix = lightn->GenerateViewMatrix();
-        //lightProjectionMatrix = lightn->GenerateOrthoMatrix(1000, 1000, 0);
-        //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
-        //D3DXMatrixTranspose(&lightViewMatrix, &lightViewMatrix);
-
 
         model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());

@@ -117,7 +117,7 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     //float3 shadowPosition = mul(float4(samplePos, 1.0f), lightViewMatrix * lightProjectionMatrix).xyz;
     float4 shadowPosition = input.lightViewPosition;
     float lightDepth = shadowPosition.z;
-    float bias = 0.0050f;
+    float bias = 0.00050f;
     
     
     lightDepth = input.lightViewPosition.z / input.lightViewPosition.w;
@@ -134,8 +134,8 @@ float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
     
     
     
-    color = nDotL * m_ambientColor * m_diffuseColor * m_lightIntensity * (1.0f / 3.14159f) * shadowVisibility;
-    color += 0.1f * textureColor;
+    color = m_ambientColor * nDotL * m_diffuseColor * m_lightIntensity * shadowVisibility * (1 / 3.14f);
+    color = saturate(color) + textureColor * 0.1f;
     //return color;
     return float4(max(color.xyz, 0.0001f), 1.0f);
     /////
