@@ -371,14 +371,14 @@ void ModelManager::Render(CameraClass* camera)
                         model->Render();
                         m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
 
-                        CompositeModel* subset = model->getSubset();
+                        /*CompositeModel* subset = model->getSubset();
                         if (subset) {
                             for (size_t j = 0; j < subset->getChilds().size(); j++) {
                                 ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
                                 modelSubset->Render();
                                 m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
                             }
-                        }
+                        }*/
 
 
                         if (m_modelsRender[i]->getAlpha()) {

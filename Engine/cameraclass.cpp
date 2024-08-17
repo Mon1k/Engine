@@ -106,7 +106,6 @@ D3DXMATRIX CameraClass::getWorldMatrix()
 	D3DXMATRIX worldMatrix, rotate, translation;
 
 	float yaw, pitch, roll;
-
 	yaw = m_rotationX * 0.0174532925f;
 	pitch = m_rotationY * 0.0174532925f;
 	roll = m_rotationZ * 0.0174532925f;
