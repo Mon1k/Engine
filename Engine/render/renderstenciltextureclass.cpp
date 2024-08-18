@@ -143,7 +143,7 @@ void RenderStencilTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceConte
 	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 	ID3D11RenderTargetView* pRTVs[2] = { 0,0 };
 	deviceContext->OMSetRenderTargets(2, pRTVs, m_depthStencilView);
-	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Set the viewport.
 	deviceContext->RSSetViewports(1, &m_viewport);

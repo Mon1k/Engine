@@ -211,10 +211,22 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         }
 
 
+        // set cascades
+        int NumCascades = 4;
+        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        float MinDistance = 0.0000f;
+        float MaxDistance = 1.0000f;
+
+        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
+        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
+        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
+        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
+
+
+        // calc matrixes
         light->GetViewMatrix(lightViewMatrix);
         //light->GetProjectionMatrix(lightProjectionMatrix);
         light->GetOrthoMatrix(lightProjectionMatrix);
-
 
         D3DXMATRIX invViewProj, invView;
         light->GetProjectionMatrix(invViewProj);
@@ -252,6 +264,12 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         lightn->setPosition(shadowCameraPos);
         lightn->setLookAt(frustumCenter);
         lightViewMatrix = lightn->GenerateViewMatrix();
+
+
+        // render mesh to each cascade
+        for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
+
+        }
 
         model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
