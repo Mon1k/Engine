@@ -142,6 +142,13 @@ D3DXMATRIX LightClass::GenerateOrthoMatrix(float width, float depthPlane, float 
 	return m_orthoMatrix;
 }
 
+D3DXMATRIX LightClass::GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane)
+{
+	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, minX, maxX, minY, maxY, nearPlane, depthPlane);
+
+	return m_orthoMatrix;
+}
+
 void LightClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {
 	orthoMatrix = m_orthoMatrix;
