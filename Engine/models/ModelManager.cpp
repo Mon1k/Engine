@@ -265,7 +265,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         lightn->setLookAt(frustumCenter);
         lightViewMatrix = lightn->GenerateViewMatrix();
 
-       /* model->Render();
+       /*model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         continue;*/
 
@@ -351,8 +351,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             LightClass* lightn = new LightClass;
             lightn->setPosition(shadowCameraPos);
             lightn->setLookAt(frustumCenter);
-            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x,
-                maxExtents.y, 0.0f, cascadeExtents.z);
+            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z);
             lightViewMatrix = lightn->GenerateViewMatrix();
 
             // @todo - add check frustum for object, and enumeration light and after already objects
