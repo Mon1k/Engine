@@ -190,8 +190,6 @@ void ModelManager::PreRender(CameraClass* camera)
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
-    size_t size = m_modelsShadow.size();
-
     D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
 
     viewMatrix = camera->getViewMatrix();
@@ -202,6 +200,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
     
 
     LightClass* light;
+    size_t size = m_modelsShadow.size();
     for (size_t i = 0; i < size; i++) {
         ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
         // @todo - later calculation for per light
@@ -271,8 +270,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         // render mesh to each cascade
         for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
-            D3DXVECTOR3 frustumCornersWS[8] =
-            {
+            D3DXVECTOR3 frustumCornersWS[8] = {
                 D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
                 D3DXVECTOR3(1.0f,  1.0f, 0.0f),
                 D3DXVECTOR3(1.0f, -1.0f, 0.0f),
@@ -290,8 +288,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
                 D3DXVec3TransformCoord(&frustumCornersWS[i], &frustumCornersWS[i], &invViewProj);
             }
 
-            for (int i = 0; i < 4; ++i)
-            {
+            for (int i = 0; i < 4; ++i) {
                 D3DXVECTOR3 cornerRay = frustumCornersWS[i + 4] - frustumCornersWS[i];
                 D3DXVECTOR3 nearCornerRay = cornerRay * prevSplitDist;
                 D3DXVECTOR3 farCornerRay = cornerRay * splitDist;
@@ -315,7 +312,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
             // Create a temporary view matrix for the light
             D3DXVECTOR3 lightCameraPos = frustumCenter;
-            D3DXVECTOR3 lookAt = frustumCenter - light->GetDirection();
+            D3DXVECTOR3 lookAt = frustumCenter - D3DXVECTOR3(1, 1, 1);// light->GetDirection();
             D3DXMATRIX lightView;
             D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
 
@@ -323,8 +320,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             // Calculate an AABB around the frustum corners
             D3DXVECTOR3 mins = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
             D3DXVECTOR3 maxes = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-            for (int i = 0; i < 8; ++i)
-            {
+            for (int i = 0; i < 8; ++i) {
                 D3DXVECTOR3 corner;
                 D3DXVec3TransformCoord(&corner, &frustumCornersWS[i], &lightView);
 
@@ -345,7 +341,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             D3DXVECTOR3 cascadeExtents = maxExtents - minExtents;
 
             // Get position of the shadow camera
-            D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -minExtents.z;
+            D3DXVECTOR3 shadowCameraPos = frustumCenter + /*light->GetDirection()*/D3DXVECTOR3(1, 1, 1) * -minExtents.z;
 
             LightClass* lightn = new LightClass;
             lightn->setPosition(shadowCameraPos);
