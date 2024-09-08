@@ -114,14 +114,16 @@ D3DXMATRIX CameraClass::getWorldMatrix()
 	D3DXMatrixRotationX(&rotate, m_rotationX);
 	D3DXMatrixRotationY(&rotate, m_rotationY);
 	//D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotate);
-	worldMatrix *= rotate;
+	//worldMatrix *= rotate;
 
 	D3DXMatrixTranslation(&translation, m_positionX, m_positionY, m_positionZ);
 	//D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translation);
-	worldMatrix *= translation;
+	//worldMatrix *= translation;
 	/*worldMatrix._41 = m_positionX;
 	worldMatrix._42 = m_positionY;
 	worldMatrix._43 = m_positionZ;*/
+
+	worldMatrix = rotate * translation;
 
 	return worldMatrix;
 }

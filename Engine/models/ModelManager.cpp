@@ -312,7 +312,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
             // Create a temporary view matrix for the light
             D3DXVECTOR3 lightCameraPos = frustumCenter;
-            D3DXVECTOR3 lookAt = frustumCenter - D3DXVECTOR3(1, 1, 1);// light->GetDirection();
+            D3DXVECTOR3 lookAt = frustumCenter - light->GetDirection();
             D3DXMATRIX lightView;
             D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
 
@@ -341,7 +341,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             D3DXVECTOR3 cascadeExtents = maxExtents - minExtents;
 
             // Get position of the shadow camera
-            D3DXVECTOR3 shadowCameraPos = frustumCenter + /*light->GetDirection()*/D3DXVECTOR3(1, 1, 1) * -minExtents.z;
+            D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -minExtents.z;
 
             LightClass* lightn = new LightClass;
             lightn->setPosition(shadowCameraPos);
