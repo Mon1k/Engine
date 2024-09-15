@@ -263,7 +263,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         lightn->setLookAt(frustumCenter);
         lightViewMatrix = lightn->GenerateViewMatrix();
 
-       /*model->Render();
+       /* model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         continue;*/
 
