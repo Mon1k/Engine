@@ -210,18 +210,6 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         }
 
 
-        // set cascades
-        int NumCascades = 4;
-        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        float MinDistance = 0.0000f;
-        float MaxDistance = 1.0000f;
-
-        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
-        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
-        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
-        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
-
-
         // calc matrixes
         light->GetViewMatrix(lightViewMatrix);
         //light->GetProjectionMatrix(lightProjectionMatrix);
@@ -236,7 +224,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
         invViewProj = invViewProj * lightViewMatrix;
 
-        D3DXVECTOR3 frustumCorners[8] = {
+        /*D3DXVECTOR3 frustumCorners[8] = {
             D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
             D3DXVECTOR3(1.0f,  1.0f, 0.0f),
             D3DXVECTOR3(1.0f, -1.0f, 0.0f),
@@ -263,10 +251,21 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
         lightn->setLookAt(frustumCenter);
         lightViewMatrix = lightn->GenerateViewMatrix();
 
-        /*model->Render();
+        model->Render();
         m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         continue;*/
 
+
+        // set cascades
+        int NumCascades = 2;
+        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        float MinDistance = 0.0000f;
+        float MaxDistance = 1.0000f;
+
+        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
+        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
+        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
+        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
 
         // render mesh to each cascade
         for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
@@ -348,6 +347,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             lightn->setLookAt(frustumCenter);
             lightViewMatrix = lightn->GenerateViewMatrix();
             lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20); // maybe max shadow view distance for z
+            //m_RenderStencilTexture->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
 
             // @todo - add check frustum for object, and enumeration light and after already objects
             model->Render();
@@ -438,7 +438,7 @@ void ModelManager::Render(CameraClass* camera)
 
                         invViewProj = invViewProj * lightViewMatrix;
                         
-                        D3DXVECTOR3 frustumCorners[8] = {
+                        /*D3DXVECTOR3 frustumCorners[8] = {
                             D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
                             D3DXVECTOR3(1.0f,  1.0f, 0.0f),
                             D3DXVECTOR3(1.0f, -1.0f, 0.0f),
@@ -471,6 +471,104 @@ void ModelManager::Render(CameraClass* camera)
 
                         model->Render();
                         m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
+                        continue;*/
+
+                        // set cascades
+                        int NumCascades = 2;
+                        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+                        float MinDistance = 0.0000f;
+                        float MaxDistance = 1.0000f;
+
+                        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
+                        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
+                        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
+                        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
+
+                        // render mesh to each cascade
+                        for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
+                            D3DXVECTOR3 frustumCornersWS[8] = {
+                                D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
+                                D3DXVECTOR3(1.0f,  1.0f, 0.0f),
+                                D3DXVECTOR3(1.0f, -1.0f, 0.0f),
+                                D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
+                                D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
+                                D3DXVECTOR3(1.0f,  1.0f, 1.0f),
+                                D3DXVECTOR3(1.0f, -1.0f, 1.0f),
+                                D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
+                            };
+
+                            float prevSplitDist = cascadeIdx == 0 ? MinDistance : CascadeSplits[cascadeIdx - 1];
+                            float splitDist = CascadeSplits[cascadeIdx];
+
+                            for (int i = 0; i < 8; ++i) {
+                                D3DXVec3TransformCoord(&frustumCornersWS[i], &frustumCornersWS[i], &invViewProj);
+                            }
+
+                            for (int i = 0; i < 4; ++i) {
+                                D3DXVECTOR3 cornerRay = frustumCornersWS[i + 4] - frustumCornersWS[i];
+                                D3DXVECTOR3 nearCornerRay = cornerRay * prevSplitDist;
+                                D3DXVECTOR3 farCornerRay = cornerRay * splitDist;
+                                frustumCornersWS[i + 4] = frustumCornersWS[i] + farCornerRay;
+                                frustumCornersWS[i] = frustumCornersWS[i] + nearCornerRay;
+                            }
+
+                            D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+                            for (int i = 0; i < 8; ++i) {
+                                frustumCenter = frustumCenter + frustumCornersWS[i];
+                            }
+                            frustumCenter *= 1.0f / 8.0f;
+
+                            D3DXVECTOR3 minExtents;
+                            D3DXVECTOR3 maxExtents;
+                            D3DXVECTOR3 up;
+
+                            up.x = 0.0f;
+                            up.y = 1.0f;
+                            up.z = 0.0f;
+
+                            // Create a temporary view matrix for the light
+                            D3DXVECTOR3 lightCameraPos = frustumCenter;
+                            D3DXVECTOR3 lookAt = frustumCenter - light->GetDirection();
+                            D3DXMATRIX lightView;
+                            D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
+
+
+                            // Calculate an AABB around the frustum corners
+                            D3DXVECTOR3 mins = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
+                            D3DXVECTOR3 maxes = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+                            for (int i = 0; i < 8; ++i) {
+                                D3DXVECTOR3 corner;
+                                D3DXVec3TransformCoord(&corner, &frustumCornersWS[i], &lightView);
+
+                                mins = D3DXVECTOR3(min(mins.x, corner.x), min(mins.y, corner.y), min(mins.z, corner.z));
+                                maxes = D3DXVECTOR3(max(maxes.x, corner.x), max(maxes.y, corner.y), max(maxes.z, corner.z));
+                            }
+
+                            minExtents = mins;
+                            maxExtents = maxes;
+
+                            // Adjust the min/max to accommodate the filtering size
+                            float scale = (Options::shadow_width + 5) / static_cast<float>(Options::shadow_width);
+                            minExtents.x *= scale;
+                            minExtents.y *= scale;
+                            maxExtents.x *= scale;
+                            maxExtents.y *= scale;
+
+                            D3DXVECTOR3 cascadeExtents = maxExtents - minExtents;
+
+                            // Get position of the shadow camera
+                            D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -minExtents.z;
+
+                            LightClass* lightn = new LightClass;
+                            lightn->setPosition(shadowCameraPos);
+                            lightn->setLookAt(frustumCenter);
+                            lightViewMatrix = lightn->GenerateViewMatrix();
+                            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20); // maybe max shadow view distance for z
+                            //m_RenderStencilTexture->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
+
+                            model->Render();
+                            m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
+                        }
 
                         /*CompositeModel* subset = model->getSubset();
                         if (subset) {

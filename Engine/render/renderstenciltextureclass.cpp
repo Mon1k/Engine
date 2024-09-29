@@ -149,6 +149,13 @@ void RenderStencilTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceConte
 	deviceContext->RSSetViewports(1, &m_viewport);
 }
 
+D3DXMATRIX RenderStencilTextureClass::GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane)
+{
+	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, minX, maxX, minY, maxY, nearPlane, depthPlane);
+
+	return m_orthoMatrix;
+}
+
 void RenderStencilTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
 	float red, float green, float blue, float alpha)
 {

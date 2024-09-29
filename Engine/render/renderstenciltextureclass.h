@@ -22,6 +22,8 @@ public:
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetOrthoMatrix(D3DXMATRIX&);
 
+	D3DXMATRIX GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane);
+
 private:
 	ID3D11Texture2D* m_renderTargetTexture;
 	ID3D11RenderTargetView* m_renderTargetView;

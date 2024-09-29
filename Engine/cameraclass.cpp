@@ -112,10 +112,10 @@ D3DXMATRIX CameraClass::getWorldMatrix()
 
 	D3DXMatrixIdentity(&worldMatrix);
 
-	D3DXMatrixRotationYawPitchRoll(&rotate, yaw, pitch, roll);
-	/*D3DXMatrixRotationX(&rotate, m_rotationX);
+	//D3DXMatrixRotationYawPitchRoll(&rotate, yaw, pitch, roll);
+	D3DXMatrixRotationX(&rotate, m_rotationX);
 	D3DXMatrixRotationY(&rotate, m_rotationY);
-	D3DXMatrixRotationZ(&rotate, m_rotationZ);*/
+	D3DXMatrixRotationZ(&rotate, m_rotationZ);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotate);
 	//worldMatrix *= rotate;
 
