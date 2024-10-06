@@ -310,8 +310,10 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             up.z = 0.0f;
 
             // Create a temporary view matrix for the light
+            D3DXVECTOR3 dir = light->GetDirection();
+            dir.y = -dir.y;
             D3DXVECTOR3 lightCameraPos = frustumCenter;
-            D3DXVECTOR3 lookAt = frustumCenter - light->GetDirection();
+            D3DXVECTOR3 lookAt = frustumCenter - dir;
             D3DXMATRIX lightView;
             D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
 
