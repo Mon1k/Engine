@@ -212,11 +212,12 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
         // calc matrixes
         light->GetViewMatrix(lightViewMatrix);
-        //light->GetProjectionMatrix(lightProjectionMatrix);
-        light->GetOrthoMatrix(lightProjectionMatrix);
+        light->GetProjectionMatrix(lightProjectionMatrix);
+        //light->GetOrthoMatrix(lightProjectionMatrix);
 
         D3DXMATRIX invViewProj, invView;
-        light->GetProjectionMatrix(invViewProj);
+        //light->GetProjectionMatrix(invViewProj);
+        invViewProj = lightProjectionMatrix;
         //m_D3D->GetProjectionMatrix(invViewProj);
         lightViewMatrix = camera->getWorldMatrix();
 
@@ -257,7 +258,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 
 
         // set cascades
-        int NumCascades = 2;
+        int NumCascades = 1;
         float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
         float MinDistance = 0.0000f;
         float MaxDistance = 1.0000f;
@@ -348,8 +349,7 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             lightn->setPosition(shadowCameraPos);
             lightn->setLookAt(frustumCenter);
             lightViewMatrix = lightn->GenerateViewMatrix();
-            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20); // maybe max shadow view distance for z
-            //m_RenderStencilTexture->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
+            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
 
             // @todo - add check frustum for object, and enumeration light and after already objects
             model->Render();
