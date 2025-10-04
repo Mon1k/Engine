@@ -1,0 +1,232 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-0c8e20c55b46e9306a27.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						4
+					]
+				},
+				{
+					"build" : "contrib/zlib",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-contrib.zlib-Debug-0353f811b938d22e3cc7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "contrib/zlib",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "code",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-code-Debug-85a9c77d846daf788667.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "code",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "tools/assimp_view",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-tools.assimp_view-Debug-3640a6515e1c7385cc7a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "tools/assimp_view",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "tools/assimp_cmd",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-tools.assimp_cmd-Debug-d44763605911691f0d7b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "tools/assimp_cmd",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "test",
+					"childIndexes" : 
+					[
+						6
+					],
+					"jsonFile" : "directory-test-Debug-f18be1977b403cfd1a50.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "test",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "test/headercheck",
+					"jsonFile" : "directory-test.headercheck-Debug-5932dbc0c669dcc7095c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 0,
+					"source" : "test/headercheck"
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						2,
+						3,
+						4,
+						5,
+						6
+					],
+					"name" : "Assimp",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "zlib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "UpdateAssimpLibsDebugSymbolsAndDLLs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-UpdateAssimpLibsDebugSymbolsAndDLLs-Debug-900d0e19f0afd460c0bb.json",
+					"name" : "UpdateAssimpLibsDebugSymbolsAndDLLs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "assimp::@1c76e98fcac0e60aa45c",
+					"jsonFile" : "target-assimp-Debug-befdc109e0c4c0bf42a4.json",
+					"name" : "assimp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "assimp_cmd::@18392c05a593bb443984",
+					"jsonFile" : "target-assimp_cmd-Debug-bb96407f04f8062b8180.json",
+					"name" : "assimp_cmd",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "assimp_viewer::@c0cbe92a21bb6361bfb0",
+					"jsonFile" : "target-assimp_viewer-Debug-bdd1f6f7eb1f48b3f663.json",
+					"name" : "assimp_viewer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-Debug-dc1cca339ae47886d8ff.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "unit::@36f028580bb02cc8272a",
+					"jsonFile" : "target-unit-Debug-02860425bec9ac8df0d5.json",
+					"name" : "unit",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "zlibstatic::@de27f3809863e2bb7c79",
+					"jsonFile" : "target-zlibstatic-Debug-3c17af1eec26fb0c06b7.json",
+					"name" : "zlibstatic",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/download/assimp-5.1.0/out/build/x64-Debug",
+		"source" : "C:/download/assimp-5.1.0"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}

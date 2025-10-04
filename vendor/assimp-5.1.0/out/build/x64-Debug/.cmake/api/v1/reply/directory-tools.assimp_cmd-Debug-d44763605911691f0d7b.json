@@ -1,0 +1,45 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"INSTALL"
+		],
+		"files" : 
+		[
+			"tools/assimp_cmd/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 71,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "assimp-bin",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"bin/assimpd.exe"
+			],
+			"targetId" : "assimp_cmd::@18392c05a593bb443984",
+			"targetIndex" : 2,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "tools/assimp_cmd",
+		"source" : "tools/assimp_cmd"
+	}
+}

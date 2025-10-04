@@ -1,0 +1,9 @@
+libdir=C:/download/assimp-5.1.0/out/install/x64-Debug/lib
+includedir=C:/download/assimp-5.1.0/out/install/x64-Debug/include
+
+Name: Assimp
+Description: Import various well-known 3D model formats in an uniform manner.
+Version: 5.1.0
+Libs: -L${libdir} -lassimp
+Libs.private:  
+Cflags: -I${includedir}
