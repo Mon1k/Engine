@@ -15,7 +15,9 @@ class Window : public Group
 public:
     enum EventType : int {
         WINDOW_CLOSE = 65537,
-        WINDOW_OPEN = 65538
+        WINDOW_OPEN = 65538,
+        WINDOW_FOCUS = 65539,
+        WINDOW_UNFOCUS = 65540
     };
 
     static const int HEADER_BUTTON_CLOSE = 1;
@@ -36,6 +38,8 @@ public:
     void setTitle(std::string);
     virtual void show();
     virtual void close();
+    virtual void focus();
+    virtual void unfocus();
     
     Group* getHeader() {
         return m_header;

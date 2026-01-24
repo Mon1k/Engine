@@ -70,7 +70,6 @@ public:
 				m_app->initDefaultObjects();
 			});
 			dialog->show();
-			dialog->proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
 		});
 
 		Button* loadWorldButton = new Button;
@@ -92,7 +91,6 @@ public:
 				m_app->initDefaultObjects();
 			});
 			dialog->show();
-			dialog->proccesedEventHandlers(Window::EventType::WINDOW_OPEN);
 		});
 
 		Button* newObjectButton = new Button;

@@ -66,7 +66,7 @@ bool FileChooser::initialize()
 
 void FileChooser::show()
 {
-	AbstractGui::show();
+	Window::show();
 	focus();
 }
 

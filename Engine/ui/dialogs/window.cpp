@@ -128,6 +128,22 @@ void Window::close()
 	}
 }
 
+void Window::focus()
+{
+	if (!m_IsFocused) {
+		proccesedEventHandlers(Window::EventType::WINDOW_FOCUS);
+	}
+	Group::focus();
+}
+
+void Window::unfocus()
+{
+	if (m_IsFocused) {
+		proccesedEventHandlers(Window::EventType::WINDOW_UNFOCUS);
+	}
+	Group::unfocus();
+}
+
 void Window::Shutdown()
 {
 	if (m_BitmapHeader) {
