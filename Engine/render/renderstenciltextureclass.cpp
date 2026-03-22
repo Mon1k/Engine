@@ -25,74 +25,49 @@ bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidt
 
 bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
 {
-	D3D11_TEXTURE2D_DESC textureDesc;
-	HRESULT result;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-
-
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width = textureWidth;
-	textureDesc.Height = textureHeight;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-
-	// Create the render target texture.
-	result = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
-	if (FAILED(result)) {
-		return false;
-	}
-
-	// Setup the description of the render target view.
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-	// Create the render target view.
-	result = device->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
-	if (FAILED(result)) {
-		return false;
-	}
+	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 
 
 	//// for stencil
 	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
-	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // better than r16 as correct depth for shadow
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.MiscFlags = 0;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	depthBufferDesc.CPUAccessFlags = 0;
-	depthBufferDesc.MiscFlags = 0;
 	device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 
 	// Set up the depth stencil view description.
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Flags = 0;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView);
 
+	D3D11_RASTERIZER_DESC shadowRastDesc = {};
+	shadowRastDesc.FillMode = D3D11_FILL_SOLID;
+	shadowRastDesc.CullMode = D3D11_CULL_BACK;
+	shadowRastDesc.DepthClipEnable = true;
+	shadowRastDesc.DepthBias = 1000; // Multiplied by (smallest possible positive value storable in the depth buffer)
+	shadowRastDesc.DepthBiasClamp = 0.0f;
+	shadowRastDesc.SlopeScaledDepthBias = 1.0f;
+	device->CreateRasterizerState(&shadowRastDesc, &m_shadowRasterizer);
 
 	// Setup the viewport for rendering.
+	m_viewport = {};
 	m_viewport.Width = (float)textureWidth;
 	m_viewport.Height = (float)textureHeight;
 	m_viewport.MinDepth = 0.0f;
@@ -104,7 +79,7 @@ bool RenderStencilTextureClass::InitializeFull(ID3D11Device* device, int texture
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, ((float)D3DX_PI / 3.0f), ((float)textureWidth / (float)textureHeight), screenNear, screenDepth);
 
 	// Create an orthographic projection matrix for 2D rendering.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)textureWidth / 16, (float)textureHeight / 16, screenNear, screenDepth);
+	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)30.0f, (float)30.0f, screenNear, screenDepth);
 
 	return true;
 }
@@ -139,21 +114,14 @@ void RenderStencilTextureClass::Shutdown()
 
 void RenderStencilTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
 {
-	// Bind the render target view and depth stencil buffer to the output render pipeline.
-	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
-	ID3D11RenderTargetView* pRTVs[2] = { 0,0 };
-	deviceContext->OMSetRenderTargets(2, pRTVs, m_depthStencilView);
-	//deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 	// Set the viewport.
 	deviceContext->RSSetViewports(1, &m_viewport);
-}
 
-D3DXMATRIX RenderStencilTextureClass::GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane)
-{
-	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, minX, maxX, minY, maxY, nearPlane, depthPlane);
-
-	return m_orthoMatrix;
+	// Bind the render target view and depth stencil buffer to the output render pipeline.
+	//deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+	//ID3D11RenderTargetView* pRTVs[2] = { 0,0 };
+	deviceContext->OMSetRenderTargets(0, 0, m_depthStencilView);
+	//deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void RenderStencilTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext,
@@ -166,10 +134,18 @@ void RenderStencilTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceCon
 	color[3] = alpha;
 
 	// Clear the back buffer.
-	deviceContext->ClearRenderTargetView(m_renderTargetView, color);
-
+	//deviceContext->ClearRenderTargetView(m_renderTargetView, color);
+	
 	// Clear the depth buffer.
-	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	deviceContext->RSSetState(m_shadowRasterizer);
+}
+
+D3DXMATRIX RenderStencilTextureClass::GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane)
+{
+	D3DXMatrixOrthoOffCenterLH(&m_orthoMatrix, minX, maxX, minY, maxY, nearPlane, depthPlane);
+
+	return m_orthoMatrix;
 }
 
 ID3D11ShaderResourceView* RenderStencilTextureClass::GetShaderResourceView()

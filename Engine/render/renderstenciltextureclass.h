@@ -16,7 +16,7 @@ public:
 	void Shutdown();
 
 	void SetRenderTarget(ID3D11DeviceContext*);
-	void ClearRenderTarget(ID3D11DeviceContext*, float, float, float, float);
+	void ClearRenderTarget(ID3D11DeviceContext*, float red = 0.0f, float green = 0.0f, float blue = 0.0f, float alpha = 0.0f);
 	ID3D11ShaderResourceView* GetShaderResourceView();
 
 	void GetProjectionMatrix(D3DXMATRIX&);
@@ -25,6 +25,8 @@ public:
 	D3DXMATRIX GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane);
 
 private:
+	ID3D11RasterizerState* m_shadowRasterizer;
+
 	ID3D11Texture2D* m_renderTargetTexture;
 	ID3D11RenderTargetView* m_renderTargetView;
 	ID3D11ShaderResourceView* m_shaderResourceView;

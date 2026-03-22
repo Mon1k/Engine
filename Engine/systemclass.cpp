@@ -188,7 +188,7 @@ void SystemClass::run()
 			}
 		}
 
-		if (m_Input->IsKeyDown(DIK_F10)) {
+		if (m_Input->IsKeyDown(DIK_ESCAPE)) {
 			m_Done = true;
 		}
 		if (m_Input->IsKeyDown(DIK_F12)) {
@@ -208,13 +208,13 @@ bool SystemClass::frame()
 	// frame ui
 	m_Graphics->getUiManager()->EventProccesor(m_Input);
 	m_Graphics->getUiManager()->frame(m_Timer->GetTime());
-	bool isUiFocus = m_Graphics->getUiManager()->isFocused();
+	
 	// frame graphic
 	m_Graphics->frame(m_Timer);
 
 
 	// movement camera only unfocussed ui
-	if (!isUiFocus) {
+	if (!m_Graphics->getUiManager()->isFocused()) {
 		int mouseX, mouseY;
 		float mouseSensivityX = 18.0f, mouseSensivityY = 10.0f, cameraSensivity = 1.0f;
 		int mouseButtonPress = m_Input->getMouseButtonPress();

@@ -13,6 +13,7 @@ public:
 	void SetAmbientColor(float, float, float, float);
 	void SetDiffuseColor(float, float, float, float);
 	void SetDirection(float, float, float);
+	void setDirection(D3DXVECTOR3 direction);
 	void SetSpecularColor(float, float, float, float);
 	void SetSpecularPower(float);
 	void SetPosition(float, float, float);

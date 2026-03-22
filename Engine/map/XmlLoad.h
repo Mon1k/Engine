@@ -86,7 +86,7 @@ protected:
 		std::map<std::string, std::string> params;
 		std::vector<std::string> textures;
 		std::string name;
-		int id;
+		int id = 0;
 
 		std::vector<Attribute*> attributes = node->getAttributes();
 		for (size_t i = 0; i < attributes.size(); i++) {
@@ -125,7 +125,7 @@ protected:
 		model->addLights({ m_lightModel });
 		LightShaderClass* shader = new LightShaderClass;
 		shader->Initialize(manager->getD3D()->GetDevice());
-		shader->addLights({ m_lightModel });
+		//shader->addLights({ m_lightModel });
 		model->addShader(shader);
 
 		bool result = model->Initialize(manager->getD3D(), &path[0], textures);

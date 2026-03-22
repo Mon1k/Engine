@@ -37,7 +37,7 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
     }
 
     m_RenderStencilTexture = new RenderStencilTextureClass;
-    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, 1000.0f, 0.1f)) {
+    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near)) {
         return false;
     }
 
@@ -192,180 +192,29 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
     D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
 
-    viewMatrix = camera->getViewMatrix();
-    m_D3D->GetProjectionMatrix(projectionMatrix);
+    /*viewMatrix = camera->getViewMatrix();
+    m_D3D->GetProjectionMatrix(projectionMatrix);*/
 
     m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 0.0f);
+    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext());
     
 
-    LightClass* light;
-    size_t size = m_modelsShadow.size();
-    for (size_t i = 0; i < size; i++) {
-        ModelClass* model = dynamic_cast<ModelClass*> (m_modelsShadow[i]);
-        // @todo - later calculation for per light
-        light = model->getLight(0);
+    for (size_t i = 0; i < m_lights.size(); i++) {
+        LightClass* light = m_lights[i];
         if (!light->isCastShadows()) {
             continue;
         }
 
+        for (size_t j = 0; j < m_modelsShadow.size(); j++) {
+            ModelClass* model = dynamic_cast<ModelClass*>(m_modelsShadow[j]);
+            
+            light->setPosition(light->GetDirection() * 200.0f);
+            lightViewMatrix = light->GenerateViewMatrix();
+            light->GetOrthoMatrix(lightProjectionMatrix);
 
-        // calc matrixes
-        light->GetViewMatrix(lightViewMatrix);
-        light->GetProjectionMatrix(lightProjectionMatrix);
-        //light->GetOrthoMatrix(lightProjectionMatrix);
-
-        D3DXMATRIX invViewProj, invView;
-        //light->GetProjectionMatrix(invViewProj);
-        invViewProj = lightProjectionMatrix;
-        //m_D3D->GetProjectionMatrix(invViewProj);
-        lightViewMatrix = camera->getWorldMatrix();
-
-        //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
-        D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
-        invViewProj = invViewProj * lightViewMatrix;
-
-        /*D3DXVECTOR3 frustumCorners[8] = {
-            D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
-            D3DXVECTOR3(1.0f,  1.0f, 0.0f),
-            D3DXVECTOR3(1.0f, -1.0f, 0.0f),
-            D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
-            D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
-            D3DXVECTOR3(1.0f,  1.0f, 1.0f),
-            D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-            D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
-        };
-
-        D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-        for (int i = 0; i < 8; ++i) {
-            D3DXVECTOR3 p;
-            D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
-            frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
-            frustumCenter += frustumCorners[i]; 
-        }
-        frustumCenter /= 8.0f;
-
-
-        D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -0.5f;
-        LightClass* lightn = new LightClass;
-        lightn->setPosition(shadowCameraPos);
-        lightn->setLookAt(frustumCenter);
-        lightViewMatrix = lightn->GenerateViewMatrix();
-
-        model->Render();
-        m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
-        continue;*/
-
-
-        // set cascades
-        int NumCascades = 1;
-        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        float MinDistance = 0.0000f;
-        float MaxDistance = 1.0000f;
-
-        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
-        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
-        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
-        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
-
-        // render mesh to each cascade
-        for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
-            D3DXVECTOR3 frustumCornersWS[8] = {
-                D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
-                D3DXVECTOR3(1.0f,  1.0f, 0.0f),
-                D3DXVECTOR3(1.0f, -1.0f, 0.0f),
-                D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
-                D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
-                D3DXVECTOR3(1.0f,  1.0f, 1.0f),
-                D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-                D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
-            };
-
-            float prevSplitDist = cascadeIdx == 0 ? MinDistance : CascadeSplits[cascadeIdx - 1];
-            float splitDist = CascadeSplits[cascadeIdx];
-
-            for (int i = 0; i < 8; ++i) {
-                D3DXVec3TransformCoord(&frustumCornersWS[i], &frustumCornersWS[i], &invViewProj);
-            }
-
-            for (int i = 0; i < 4; ++i) {
-                D3DXVECTOR3 cornerRay = frustumCornersWS[i + 4] - frustumCornersWS[i];
-                D3DXVECTOR3 nearCornerRay = cornerRay * prevSplitDist;
-                D3DXVECTOR3 farCornerRay = cornerRay * splitDist;
-                frustumCornersWS[i + 4] = frustumCornersWS[i] + farCornerRay;
-                frustumCornersWS[i] = frustumCornersWS[i] + nearCornerRay;
-            }
-
-            D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-            for (int i = 0; i < 8; ++i) {
-                frustumCenter = frustumCenter + frustumCornersWS[i];
-            }
-            frustumCenter *= 1.0f / 8.0f;
-
-            D3DXVECTOR3 minExtents;
-            D3DXVECTOR3 maxExtents;
-            D3DXVECTOR3 up;
-
-            up.x = 0.0f;
-            up.y = 1.0f;
-            up.z = 0.0f;
-
-            // Create a temporary view matrix for the light
-            D3DXVECTOR3 dir = light->GetDirection();
-            dir.y = -dir.y;
-            D3DXVECTOR3 lightCameraPos = frustumCenter;
-            D3DXVECTOR3 lookAt = frustumCenter - dir;
-            D3DXMATRIX lightView;
-            D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
-
-
-            // Calculate an AABB around the frustum corners
-            D3DXVECTOR3 mins = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-            D3DXVECTOR3 maxes = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-            for (int i = 0; i < 8; ++i) {
-                D3DXVECTOR3 corner;
-                D3DXVec3TransformCoord(&corner, &frustumCornersWS[i], &lightView);
-
-                mins = D3DXVECTOR3(min(mins.x, corner.x), min(mins.y, corner.y), min(mins.z, corner.z));
-                maxes = D3DXVECTOR3(max(maxes.x, corner.x), max(maxes.y, corner.y), max(maxes.z, corner.z));
-            }
-
-            minExtents = mins;
-            maxExtents = maxes;
-
-            // Adjust the min/max to accommodate the filtering size
-            float scale = (Options::shadow_width + 5) / static_cast<float>(Options::shadow_width);
-            minExtents.x *= scale;
-            minExtents.y *= scale;
-            maxExtents.x *= scale;
-            maxExtents.y *= scale;
-
-            D3DXVECTOR3 cascadeExtents = maxExtents - minExtents;
-
-            // Get position of the shadow camera
-            D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -minExtents.z;
-
-            LightClass* lightn = new LightClass;
-            lightn->setPosition(shadowCameraPos);
-            lightn->setLookAt(frustumCenter);
-            lightViewMatrix = lightn->GenerateViewMatrix();
-            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
-
-            // @todo - add check frustum for object, and enumeration light and after already objects
             model->Render();
             m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         }
-
-        /*model->Render();
-        m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());*/
-        /*CompositeModel* subset = model->getSubset();
-        if (subset) {
-            for (size_t j = 0; j < subset->getChilds().size(); j++) {
-                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
-                modelSubset->Render();
-                m_DepthShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture());
-            }
-        }*/
     }
     
     // Reset the render target back to the original back buffer and not the render to texture anymore.
@@ -422,168 +271,34 @@ void ModelManager::Render(CameraClass* camera)
                         model->Render(camera);
                     }
                     else {
-                        LightClass* light = model->getLight(0);
-                        light->GenerateViewMatrix();
-                        light->GetViewMatrix(lightViewMatrix);
-                        //light->GetProjectionMatrix(lightProjectionMatrix);
-                        light->GetOrthoMatrix(lightProjectionMatrix);
 
-                        D3DXMATRIX invViewProj, invView;
-                        m_RenderStencilTexture->GetProjectionMatrix(invViewProj);
-                        
-                        //D3DXMatrixTranspose(&invView, &invView);
-                        //D3DXMatrixTranspose(&invViewProj, &invViewProj);
+                        for (size_t j = 0; j < m_lights.size(); j++) {
+                            LightClass* light = m_lights[j];
 
-                        lightViewMatrix = camera->getWorldMatrix();
-                        //D3DXMatrixInverse(&lightViewMatrix, NULL, &lightViewMatrix);
-                        D3DXMatrixInverse(&invViewProj, NULL, &invViewProj);
+                            light->setPosition(light->GetDirection() * 200.0f);
+                            lightViewMatrix = light->GenerateViewMatrix();
+                            light->GetOrthoMatrix(lightProjectionMatrix);
 
-                        invViewProj = invViewProj * lightViewMatrix;
-                        
-                        /*D3DXVECTOR3 frustumCorners[8] = {
-                            D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
-                            D3DXVECTOR3(1.0f,  1.0f, 0.0f),
-                            D3DXVECTOR3(1.0f, -1.0f, 0.0f),
-                            D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
-                            D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
-                            D3DXVECTOR3(1.0f,  1.0f, 1.0f),
-                            D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-                            D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
-                        };
-
-                        D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0, 0, 0);
-                        for (int i = 0; i < 8; ++i) {
-                            D3DXVECTOR3 p;
-                            D3DXVec3TransformCoord(&p, &frustumCorners[i], &invViewProj);
-                            frustumCorners[i] = D3DXVECTOR3(p.x, p.y, p.z);
-                            frustumCenter += frustumCorners[i];
-                        }
-                        frustumCenter /= 8.0f;
-                        D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -0.5f;
-                        LightClass* lightn = new LightClass;
-                        lightn->setPosition(shadowCameraPos);
-                        lightn->setLookAt(frustumCenter);
-                        lightn->GenerateViewMatrix();
-                        lightn->GetViewMatrix(lightViewMatrix);
-
-
-                        if (m_modelsRender[i]->getAlpha()) {
-                            m_D3D->TurnOnAlphaBlending();
-                        }
-
-                        model->Render();
-                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-                        continue;*/
-
-                        // set cascades
-                        int NumCascades = 2;
-                        float CascadeSplits[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-                        float MinDistance = 0.0000f;
-                        float MaxDistance = 1.0000f;
-
-                        CascadeSplits[0] = MinDistance + 0.0500f * MaxDistance;
-                        CascadeSplits[1] = MinDistance + 0.1500f * MaxDistance;
-                        CascadeSplits[2] = MinDistance + 0.5000f * MaxDistance;
-                        CascadeSplits[3] = MinDistance + 1.0000f * MaxDistance;
-
-                        // render mesh to each cascade
-                        for (int cascadeIdx = 0; cascadeIdx < NumCascades; ++cascadeIdx) {
-                            D3DXVECTOR3 frustumCornersWS[8] = {
-                                D3DXVECTOR3(-1.0f,  1.0f, 0.0f),
-                                D3DXVECTOR3(1.0f,  1.0f, 0.0f),
-                                D3DXVECTOR3(1.0f, -1.0f, 0.0f),
-                                D3DXVECTOR3(-1.0f, -1.0f, 0.0f),
-                                D3DXVECTOR3(-1.0f,  1.0f, 1.0f),
-                                D3DXVECTOR3(1.0f,  1.0f, 1.0f),
-                                D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-                                D3DXVECTOR3(-1.0f, -1.0f, 1.0f),
-                            };
-
-                            float prevSplitDist = cascadeIdx == 0 ? MinDistance : CascadeSplits[cascadeIdx - 1];
-                            float splitDist = CascadeSplits[cascadeIdx];
-
-                            for (int i = 0; i < 8; ++i) {
-                                D3DXVec3TransformCoord(&frustumCornersWS[i], &frustumCornersWS[i], &invViewProj);
+                            if (m_modelsRender[i]->getAlpha()) {
+                                m_D3D->TurnOnAlphaBlending();
                             }
-
-                            for (int i = 0; i < 4; ++i) {
-                                D3DXVECTOR3 cornerRay = frustumCornersWS[i + 4] - frustumCornersWS[i];
-                                D3DXVECTOR3 nearCornerRay = cornerRay * prevSplitDist;
-                                D3DXVECTOR3 farCornerRay = cornerRay * splitDist;
-                                frustumCornersWS[i + 4] = frustumCornersWS[i] + farCornerRay;
-                                frustumCornersWS[i] = frustumCornersWS[i] + nearCornerRay;
-                            }
-
-                            D3DXVECTOR3 frustumCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-                            for (int i = 0; i < 8; ++i) {
-                                frustumCenter = frustumCenter + frustumCornersWS[i];
-                            }
-                            frustumCenter *= 1.0f / 8.0f;
-
-                            D3DXVECTOR3 minExtents;
-                            D3DXVECTOR3 maxExtents;
-                            D3DXVECTOR3 up;
-
-                            up.x = 0.0f;
-                            up.y = 1.0f;
-                            up.z = 0.0f;
-
-                            // Create a temporary view matrix for the light
-                            D3DXVECTOR3 lightCameraPos = frustumCenter;
-                            D3DXVECTOR3 lookAt = frustumCenter - light->GetDirection();
-                            D3DXMATRIX lightView;
-                            D3DXMatrixLookAtLH(&lightView, &lightCameraPos, &lookAt, &up);
-
-
-                            // Calculate an AABB around the frustum corners
-                            D3DXVECTOR3 mins = D3DXVECTOR3(FLT_MAX, FLT_MAX, FLT_MAX);
-                            D3DXVECTOR3 maxes = D3DXVECTOR3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-                            for (int i = 0; i < 8; ++i) {
-                                D3DXVECTOR3 corner;
-                                D3DXVec3TransformCoord(&corner, &frustumCornersWS[i], &lightView);
-
-                                mins = D3DXVECTOR3(min(mins.x, corner.x), min(mins.y, corner.y), min(mins.z, corner.z));
-                                maxes = D3DXVECTOR3(max(maxes.x, corner.x), max(maxes.y, corner.y), max(maxes.z, corner.z));
-                            }
-
-                            minExtents = mins;
-                            maxExtents = maxes;
-
-                            // Adjust the min/max to accommodate the filtering size
-                            float scale = (Options::shadow_width + 5) / static_cast<float>(Options::shadow_width);
-                            minExtents.x *= scale;
-                            minExtents.y *= scale;
-                            maxExtents.x *= scale;
-                            maxExtents.y *= scale;
-
-                            D3DXVECTOR3 cascadeExtents = maxExtents - minExtents;
-
-                            // Get position of the shadow camera
-                            D3DXVECTOR3 shadowCameraPos = frustumCenter + light->GetDirection() * -minExtents.z;
-
-                            LightClass* lightn = new LightClass;
-                            lightn->setPosition(shadowCameraPos);
-                            lightn->setLookAt(frustumCenter);
-                            lightViewMatrix = lightn->GenerateViewMatrix();
-                            lightProjectionMatrix = lightn->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20); // maybe max shadow view distance for z
-                            //m_RenderStencilTexture->GenerateOrthoMatrix(minExtents.x, minExtents.y, maxExtents.x, maxExtents.y, 0.0f, cascadeExtents.z * 20);
 
                             model->Render();
                             m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-                        }
 
-                        /*CompositeModel* subset = model->getSubset();
-                        if (subset) {
-                            for (size_t j = 0; j < subset->getChilds().size(); j++) {
-                                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
-                                modelSubset->Render();
-                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
+                            /*CompositeModel* subset = model->getSubset();
+                            if (subset) {
+                                for (size_t j = 0; j < subset->getChilds().size(); j++) {
+                                    ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
+                                    modelSubset->Render();
+                                    m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
+                                }
+                            }*/
+
+
+                            if (m_modelsRender[i]->getAlpha()) {
+                                m_D3D->TurnOffAlphaBlending();
                             }
-                        }*/
-
-
-                        if (m_modelsRender[i]->getAlpha()) {
-                            m_D3D->TurnOffAlphaBlending();
                         }
                     }
                 }
@@ -618,17 +333,6 @@ void ModelManager::Render(CameraClass* camera)
             modelsAlpha[i]->Render(camera);
         }
     }
-
-
-    /*m_D3D->TurnZBufferOff();
-    m_D3D->TurnOnAlphaBlending();
-    Image* image = new Image();
-    image->m_D3D = m_D3D;
-    image->Initialize(100, 100, 10, 100);
-    image->loadTextureByResource(m_RenderStencilTexture->GetShaderResourceView());
-    image->Render();
-    m_D3D->TurnOffAlphaBlending();
-    m_D3D->TurnZBufferOn();*/
 }
 
 int ModelManager::getNextId()
@@ -655,4 +359,17 @@ void ModelManager::frame(CameraClass* camera, float time)
 
     //m_volumetricClouds->frame(camera, time);
     //m_WeatherManager->frame(time);
+}
+
+void ModelManager::addLights(std::vector<LightClass*> lights)
+{
+    this->m_lights.clear();
+    for (int i = 0; i < lights.size(); i++) {
+        this->m_lights.push_back(lights[i]);
+    }
+}
+
+void ModelManager::addLight(LightClass* light)
+{
+    this->m_lights.push_back(light);
 }

@@ -38,7 +38,6 @@ bool DepthShaderClass::Initialize(ID3D11Device* device)
 
 void DepthShaderClass::Shutdown()
 {
-	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
 }
 
@@ -47,7 +46,6 @@ bool DepthShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 							  D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	bool result;
-
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);

@@ -33,6 +33,8 @@ private:
 		float isSoftShadow;
 		float isDirection;
 		float shadowSize;
+		int castShadow;
+		D3DXVECTOR3 padding;
 	};
 
 	struct LightBufferType2
@@ -59,9 +61,12 @@ private:
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
+	ID3D11SamplerState* m_sampleStateShadow;
+
+
 	ID3D11InputLayout* m_layout;
 	ID3D11SamplerState* m_sampleStateTexture;
-	ID3D11SamplerState* m_sampleStateShadow;
+	
 	ID3D11SamplerState* m_SamplePointCmp;
 
 

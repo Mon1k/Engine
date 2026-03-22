@@ -90,10 +90,25 @@ public:
         return m_volumetricClouds;
     }
 
+    void addLights(std::vector<LightClass*>);
+    void addLight(LightClass*);
+
+    LightClass* getLight(int index)
+    {
+        return m_lights[index];
+    }
+
+    std::vector<LightClass*> getLights()
+    {
+        return m_lights;
+    }
+
 private:
-    std::vector<AbstractModel *> m_models;
-    std::vector<AbstractModel *> m_modelsRender;
+    std::vector<AbstractModel*> m_models;
+    std::vector<AbstractModel*> m_modelsRender;
     std::vector<AbstractModel*> m_modelsShadow;
+
+    std::vector<LightClass*> m_lights;
 
     D3DClass* m_D3D;
     FrustumClass* m_frustum;
