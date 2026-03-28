@@ -8,6 +8,7 @@ LightClass::LightClass()
 	m_direction = D3DXVECTOR3(1.0f, -1.0f, 1.0f);
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_lookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	m_type = LightType::LIGHT_DIRECTIONAL;
 	m_isCastShadows = true;
 
@@ -101,15 +102,11 @@ void LightClass::SetLookAt(float x, float y, float z)
 
 D3DXMATRIX LightClass::GenerateViewMatrix()
 {
-	D3DXVECTOR3 up;
-
-	// Setup the vector that points upwards.
-	up.x = 0.0f;
-	up.y = 1.0f;
-	up.z = 0.0f;
-
-	// Create the view matrix from the three vectors.
-	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
+	if (m_type == LightType::LIGHT_POINT) {
+		D3DXMatrixLookAtLH(&m_viewMatrix, &m_direction, &m_lookAt, &m_up);
+	} else {
+		D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &m_up);
+	}
 
 	return m_viewMatrix;
 }
@@ -120,7 +117,6 @@ D3DXMATRIX LightClass::GenerateProjectionMatrix(float screenDepth, float screenN
 
 	// Setup field of view and screen aspect for a square light source.
 	fieldOfView = (float)D3DX_PI / 4.0f * 0.75f;
-	//screenAspect = 1.0f;
 	screenAspect = (float)Options::screen_width / (float)Options::screen_height;
 
 	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);

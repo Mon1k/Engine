@@ -122,11 +122,11 @@ protected:
 			textures.push_back(extraTextures[i]->value);
 		}
 
-		model->addLights({ m_lightModel });
-		LightShaderClass* shader = new LightShaderClass;
-		shader->Initialize(manager->getD3D()->GetDevice());
+		//model->addLights({ m_lightModel });
+		//LightShaderClass* shader = new LightShaderClass;
+		//shader->Initialize(manager->getD3D()->GetDevice());
 		//shader->addLights({ m_lightModel });
-		model->addShader(shader);
+		//model->addShader(shader);
 
 		bool result = model->Initialize(manager->getD3D(), &path[0], textures);
 		if (result) {
@@ -250,7 +250,7 @@ protected:
 		bool result = model->Initialize(manager->getD3D(), manager->getFrustum(), &path[0], texture, params["texture_normal"]);
 		if (result) {
 			model->setId(id);
-			model->addLights({ m_lightModel });
+			//model->addLights({ m_lightModel });
 			manager->Add(model);
 
 			if (params["layer_alpha"].size() > 1 && params["layer1"].size() > 1 && params["layer1_normal"].size() > 1) {

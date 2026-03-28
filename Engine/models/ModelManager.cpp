@@ -14,11 +14,14 @@ ModelManager::ModelManager()
     m_D3D = 0;
     m_DepthShader = 0;
     m_ShadowShader = 0;
-    m_RenderStencilTexture = 0;
+    m_RenderStencilTexture.clear();
+    m_lightShader = 0;
 
     m_volumetricClouds = 0;
     m_WeatherManager = 0;
     m_bitmapClouds = 0;
+
+    m_lights.clear();
 }
 
 bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
@@ -36,10 +39,8 @@ bool ModelManager::Initialize(D3DClass* d3d, FrustumClass* frustum)
         return false;
     }
 
-    m_RenderStencilTexture = new RenderStencilTextureClass;
-    if (!m_RenderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near)) {
-        return false;
-    }
+    m_lightShader = new LightShaderClass;
+    m_lightShader->Initialize(m_D3D->GetDevice());
 
     /*m_volumetricClouds = new VolumetricClouds();
     m_volumetricClouds->setD3D(m_D3D);
@@ -102,11 +103,10 @@ void ModelManager::Shutdown()
         m_ShadowShader = 0;
     }
 
-    if (m_RenderStencilTexture) {
-        m_RenderStencilTexture->Shutdown();
-        delete m_RenderStencilTexture;
-        m_RenderStencilTexture = 0;
+    for (int i = 0; i < m_RenderStencilTexture.size(); i++) {
+        m_RenderStencilTexture[i]->Shutdown();
     }
+    m_RenderStencilTexture.clear();
 
     if (m_volumetricClouds) {
         m_volumetricClouds->Shutdown();
@@ -121,6 +121,12 @@ void ModelManager::Shutdown()
         m_bitmapClouds->Shutdown();
         delete m_bitmapClouds;
         m_bitmapClouds = 0;
+    }
+
+    if (m_lightShader) {
+        m_lightShader->Shutdown();
+        delete m_lightShader;
+        m_lightShader = 0;
     }
 }
 
@@ -190,30 +196,26 @@ void ModelManager::PreRender(CameraClass* camera)
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
-    D3DXMATRIX lightViewMatrix, lightProjectionMatrix, viewMatrix, projectionMatrix;
-
-    /*viewMatrix = camera->getViewMatrix();
-    m_D3D->GetProjectionMatrix(projectionMatrix);*/
-
-    m_RenderStencilTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-    m_RenderStencilTexture->ClearRenderTarget(m_D3D->GetDeviceContext());
-    
+    D3DXMATRIX lightProjectionMatrix;
 
     for (size_t i = 0; i < m_lights.size(); i++) {
-        LightClass* light = m_lights[i];
-        if (!light->isCastShadows()) {
+        if (i >= LightClass::NUM_LIGHTS) {
+            break;
+        }
+
+        if (!m_lights[i]->isCastShadows()) {
             continue;
         }
+
+        m_RenderStencilTexture[i]->SetRenderTarget(m_D3D->GetDeviceContext());
+        m_RenderStencilTexture[i]->ClearRenderTarget(m_D3D->GetDeviceContext());
+        m_RenderStencilTexture[i]->GetOrthoMatrix(lightProjectionMatrix);
 
         for (size_t j = 0; j < m_modelsShadow.size(); j++) {
             ModelClass* model = dynamic_cast<ModelClass*>(m_modelsShadow[j]);
             
-            light->setPosition(light->GetDirection() * 200.0f);
-            lightViewMatrix = light->GenerateViewMatrix();
-            light->GetOrthoMatrix(lightProjectionMatrix);
-
             model->Render();
-            m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
+            m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), m_lights[i]->GenerateViewMatrix(), lightProjectionMatrix, model->GetTexture());
         }
     }
     
@@ -238,6 +240,9 @@ void ModelManager::Render(CameraClass* camera)
 
     modelsAlpha.clear();
 
+    //m_lightShader->addLights(m_lights);
+    m_RenderStencilTexture[0]->GetOrthoMatrix(lightProjectionMatrix);
+
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
@@ -249,11 +254,13 @@ void ModelManager::Render(CameraClass* camera)
                 modelsAlpha.push_back(m_modelsRender[i]);
             } else {
                 ModelClass* model = dynamic_cast<ModelClass*> (m_modelsRender[i]);
+                //model->addShader(m_lightShader);
+
                 // @todo - its so ugly below
-                if ((Options::shadow_enabled && model && model->getLights().size() > 0 && m_modelsShadow.size() > 0) || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr || dynamic_cast<const WaterNode*>(model) != nullptr) {
+                if (model || dynamic_cast<const SkyDomeClass*>(model) != nullptr || dynamic_cast<const TerrainClass*>(model) != nullptr || dynamic_cast<const WaterNode*>(model) != nullptr) {
                     if (dynamic_cast<const TerrainClass*>(model) != nullptr) {
                         TerrainClass* terrain = dynamic_cast<TerrainClass*>(model);
-                        terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture->GetShaderResourceView() : 0);
+                        terrain->Render(camera, m_modelsShadow.size() ? m_RenderStencilTexture[0]->GetShaderResourceView() : 0);
                     }
                     else if (dynamic_cast<const SkyDomeClass*>(model) != nullptr) {
                         model->Render(camera);
@@ -271,39 +278,32 @@ void ModelManager::Render(CameraClass* camera)
                         model->Render(camera);
                     }
                     else {
+                        if (m_modelsRender[i]->getAlpha()) {
+                            m_D3D->TurnOnAlphaBlending();
+                        }
 
-                        for (size_t j = 0; j < m_lights.size(); j++) {
-                            LightClass* light = m_lights[j];
+                        std::vector<ID3D11ShaderResourceView*> shaderResources;
+                        shaderResources.clear();
+                        for (int j = 0; j < m_RenderStencilTexture.size(); j++) {
+                            shaderResources.push_back(m_RenderStencilTexture[j]->GetShaderResourceView());
+                        }
 
-                            light->setPosition(light->GetDirection() * 200.0f);
-                            lightViewMatrix = light->GenerateViewMatrix();
-                            light->GetOrthoMatrix(lightProjectionMatrix);
+                        model->Render();
+                        m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightProjectionMatrix, model->GetTexture(), shaderResources, m_lights);
 
-                            if (m_modelsRender[i]->getAlpha()) {
-                                m_D3D->TurnOnAlphaBlending();
+                        /*CompositeModel* subset = model->getSubset();
+                        if (subset) {
+                            for (size_t j = 0; j < subset->getChilds().size(); j++) {
+                                ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
+                                modelSubset->Render();
+                                m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightProjectionMatrix, modelSubset->GetTexture(),shaderResources, m_lights);
                             }
+                        }*/
 
-                            model->Render();
-                            m_ShadowShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-
-                            /*CompositeModel* subset = model->getSubset();
-                            if (subset) {
-                                for (size_t j = 0; j < subset->getChilds().size(); j++) {
-                                    ModelClass* modelSubset = dynamic_cast<ModelClass*>(subset->getChilds()[j]);
-                                    modelSubset->Render();
-                                    m_ShadowShader->Render(m_D3D->GetDeviceContext(), modelSubset->GetIndexCount(), modelSubset->GetWorldMatrix(), viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, modelSubset->GetTexture(), m_RenderStencilTexture->GetShaderResourceView(), light);
-                                }
-                            }*/
-
-
-                            if (m_modelsRender[i]->getAlpha()) {
-                                m_D3D->TurnOffAlphaBlending();
-                            }
+                        if (m_modelsRender[i]->getAlpha()) {
+                            m_D3D->TurnOffAlphaBlending();
                         }
                     }
-                }
-                else {
-                    m_modelsRender[i]->Render(camera);
                 }
             }
         }
@@ -312,12 +312,14 @@ void ModelManager::Render(CameraClass* camera)
         m_RenderCount++;
     }
 
-    Image* image = new Image;
-    image->m_baseViewMatrix = camera->getBaseViewMatrix();
-    image->m_D3D = m_D3D;
-    image->Initialize(Options::screen_width / 4, Options::screen_height / 4, 10, 80);
-    image->loadTextureByResource(m_RenderStencilTexture->GetShaderResourceView());
-    image->Render();
+    if (m_modelsShadow.size() > 0) {
+        Image* image = new Image;
+        image->m_baseViewMatrix = camera->getBaseViewMatrix();
+        image->m_D3D = m_D3D;
+        image->Initialize(Options::screen_width / 4, Options::screen_height / 4, 10, 80);
+        image->loadTextureByResource(m_RenderStencilTexture[0]->GetShaderResourceView());
+        image->Render();
+    }
 
 
     size_t size = modelsAlpha.size();
@@ -363,13 +365,20 @@ void ModelManager::frame(CameraClass* camera, float time)
 
 void ModelManager::addLights(std::vector<LightClass*> lights)
 {
-    this->m_lights.clear();
     for (int i = 0; i < lights.size(); i++) {
         this->m_lights.push_back(lights[i]);
+
+        RenderStencilTextureClass* renderStencilTexture = new RenderStencilTextureClass;
+        renderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near);
+        m_RenderStencilTexture.push_back(renderStencilTexture);
     }
 }
 
 void ModelManager::addLight(LightClass* light)
 {
     this->m_lights.push_back(light);
+
+    RenderStencilTextureClass* renderStencilTexture = new RenderStencilTextureClass;
+    renderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near);
+    m_RenderStencilTexture.push_back(renderStencilTexture);
 }

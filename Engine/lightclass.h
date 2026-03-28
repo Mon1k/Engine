@@ -25,6 +25,10 @@ public:
 	{
 		m_lookAt = lookAt;
 	}
+	void setUp(D3DXVECTOR3 up)
+	{
+		m_up = up;
+	}
 	void setIntensity(float intensity)
 	{
 		m_intensity = intensity;
@@ -79,10 +83,30 @@ public:
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetOrthoMatrix(D3DXMATRIX&);
 
+	static const int NUM_LIGHTS = 4;
+
 	enum LightType: int {
 		LIGHT_DIRECTIONAL = 0,
 		LIGHT_POINT = 1,
 		LIGHT_SPOT = 2
+	};
+
+	struct ShaderLight
+	{
+		D3DXVECTOR3 position;
+		float intencity;
+		D3DXVECTOR3 direction;
+		float specularPower;
+
+		D3DXVECTOR4 ambientColor;
+		D3DXVECTOR4 diffuseColor;
+		D3DXVECTOR4 specularColor;
+		
+		int shadowSize;
+		int type;
+		int castShadow;
+
+		int padding;
 	};
 
 private:
@@ -97,6 +121,7 @@ private:
 
 	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_lookAt;
+	D3DXVECTOR3 m_up;
 
 	D3DXMATRIX m_viewMatrix;
 	D3DXMATRIX m_projectionMatrix;

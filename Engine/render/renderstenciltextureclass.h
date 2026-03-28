@@ -25,13 +25,10 @@ public:
 	D3DXMATRIX GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane);
 
 private:
-	ID3D11RasterizerState* m_shadowRasterizer;
-
-	ID3D11Texture2D* m_renderTargetTexture;
-	ID3D11RenderTargetView* m_renderTargetView;
-	ID3D11ShaderResourceView* m_shaderResourceView;
-	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11Texture2D* m_depthStencilBuffer;
+	ID3D11DepthStencilView* m_depthStencilView;
+	ID3D11ShaderResourceView* m_shaderResourceView;
+	ID3D11RasterizerState* m_shadowRasterizer;
 	D3D11_VIEWPORT m_viewport;
 
 	D3DXMATRIX m_projectionMatrix;

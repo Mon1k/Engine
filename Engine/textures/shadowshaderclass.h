@@ -19,29 +19,15 @@ private:
 		D3DXMATRIX world;
 		D3DXMATRIX view;
 		D3DXMATRIX projection;
-		D3DXMATRIX lightView;
+		D3DXMATRIX lightView[LightClass::NUM_LIGHTS];
 		D3DXMATRIX lightProjection;
 	};
 
 	struct LightBufferType
 	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
-		float lightIntensity;
-		float lightType;
-		float isSoftShadow;
-		float isDirection;
-		float shadowSize;
-		int castShadow;
-		D3DXVECTOR3 padding;
+		LightClass::ShaderLight light[LightClass::NUM_LIGHTS];
 	};
 
-	struct LightBufferType2
-	{
-		D3DXVECTOR3 lightPosition;
-		float padding;
-	};
 
 public:
 	ShadowShaderClass();
@@ -49,30 +35,25 @@ public:
 
 	bool Initialize(ID3D11Device*);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
-		ID3D11ShaderResourceView*, LightClass*);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
+		std::vector <ID3D11ShaderResourceView*> shadowTextures, std::vector<LightClass*> lights);
 
 private:
 	bool InitializeShader(ID3D11Device*, WCHAR*, WCHAR*);
 	void ShutdownShader();
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
-		ID3D11ShaderResourceView*, LightClass*);
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, std::vector <ID3D11ShaderResourceView*> shadowTextures, std::vector<LightClass*> lights);
 	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
 	ID3D11SamplerState* m_sampleStateShadow;
-
-
-	ID3D11InputLayout* m_layout;
 	ID3D11SamplerState* m_sampleStateTexture;
-	
 	ID3D11SamplerState* m_SamplePointCmp;
 
+	ID3D11InputLayout* m_layout;
 
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11Buffer* m_lightBuffer;
-	ID3D11Buffer* m_lightBuffer2;
 };
 
 #endif

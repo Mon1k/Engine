@@ -103,6 +103,11 @@ public:
         return m_lights;
     }
 
+    void clearLights()
+    {
+        m_lights.clear();
+    }
+
 private:
     std::vector<AbstractModel*> m_models;
     std::vector<AbstractModel*> m_modelsRender;
@@ -118,7 +123,8 @@ private:
 
     DepthShaderClass* m_DepthShader;
     ShadowShaderClass* m_ShadowShader;
-    RenderStencilTextureClass* m_RenderStencilTexture;
+    std::vector<RenderStencilTextureClass*> m_RenderStencilTexture;
+    LightShaderClass* m_lightShader;
 
     VolumetricClouds* m_volumetricClouds;
     WeatherManager* m_WeatherManager;
