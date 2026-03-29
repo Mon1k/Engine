@@ -103,9 +103,9 @@ void LightClass::SetLookAt(float x, float y, float z)
 D3DXMATRIX LightClass::GenerateViewMatrix()
 {
 	if (m_type == LightType::LIGHT_POINT) {
-		D3DXMatrixLookAtLH(&m_viewMatrix, &m_direction, &m_lookAt, &m_up);
-	} else {
 		D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &m_up);
+	} else {
+		D3DXMatrixLookAtLH(&m_viewMatrix, &m_direction, &m_lookAt, &m_up);
 	}
 
 	return m_viewMatrix;

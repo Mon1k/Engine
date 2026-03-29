@@ -196,7 +196,7 @@ void ModelManager::PreRender(CameraClass* camera)
 
 void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
-    D3DXMATRIX lightProjectionMatrix;
+    D3DXMATRIX lightProjectionMatrix, lightViewMatrix;
 
     for (size_t i = 0; i < m_lights.size(); i++) {
         if (i >= LightClass::NUM_LIGHTS) {
@@ -207,15 +207,27 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             continue;
         }
 
+        if (m_lights[i]->getType() == LightClass::LightType::LIGHT_POINT) {
+            lightViewMatrix = m_lights[i]->GenerateViewMatrix();
+        }
+        else {
+            D3DXVECTOR3 dir = m_lights[i]->GetDirection();
+            dir *= -1.0f * Options::shadow_width / 7;
+            D3DXMatrixLookAtLH(&lightViewMatrix, &dir, &m_lights[i]->getLookAt(), &m_lights[i]->getUp());
+        }
+
+        m_lights[i]->setViewMatrix(lightViewMatrix);
+
+
         m_RenderStencilTexture[i]->SetRenderTarget(m_D3D->GetDeviceContext());
         m_RenderStencilTexture[i]->ClearRenderTarget(m_D3D->GetDeviceContext());
         m_RenderStencilTexture[i]->GetOrthoMatrix(lightProjectionMatrix);
 
         for (size_t j = 0; j < m_modelsShadow.size(); j++) {
             ModelClass* model = dynamic_cast<ModelClass*>(m_modelsShadow[j]);
-            
+
             model->Render();
-            m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), m_lights[i]->GenerateViewMatrix(), lightProjectionMatrix, model->GetTexture());
+            m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
         }
     }
     
@@ -236,15 +248,20 @@ void ModelManager::Render(CameraClass* camera)
     }
 
     std::vector<AbstractModel*> modelsAlpha;
-    D3DXMATRIX viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
+    D3DXMATRIX viewMatrix, projectionMatrix, lightProjectionMatrix;
 
     modelsAlpha.clear();
 
     //m_lightShader->addLights(m_lights);
-    m_RenderStencilTexture[0]->GetOrthoMatrix(lightProjectionMatrix);
+    std::vector<ID3D11ShaderResourceView*> shaderResources;
+    shaderResources.clear();
+    for (int j = 0; j < m_RenderStencilTexture.size(); j++) {
+        shaderResources.push_back(m_RenderStencilTexture[j]->GetShaderResourceView());
+    }
 
     camera->GetViewMatrix(viewMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
+    m_RenderStencilTexture[0]->GetOrthoMatrix(lightProjectionMatrix);
 
     for (size_t i = 0; i < m_modelsRender.size(); i++) {
         if (m_modelsRender[i]->GetIndexCount() == 0) {
@@ -280,12 +297,6 @@ void ModelManager::Render(CameraClass* camera)
                     else {
                         if (m_modelsRender[i]->getAlpha()) {
                             m_D3D->TurnOnAlphaBlending();
-                        }
-
-                        std::vector<ID3D11ShaderResourceView*> shaderResources;
-                        shaderResources.clear();
-                        for (int j = 0; j < m_RenderStencilTexture.size(); j++) {
-                            shaderResources.push_back(m_RenderStencilTexture[j]->GetShaderResourceView());
                         }
 
                         model->Render();

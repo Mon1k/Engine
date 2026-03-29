@@ -40,17 +40,16 @@ public:
 	D3DXVECTOR4 GetSpecularColor();
 	float GetSpecularPower();
 	D3DXVECTOR3 GetPosition();
+	
 	D3DXVECTOR3 getLookAt() {
 		return m_lookAt;
+	}
+	D3DXVECTOR3 getUp() {
+		return m_up;
 	};
 	float getIntensity()
 	{
 		return m_intensity;
-	}
-
-	bool isDirection()
-	{
-		return m_direction.x != 0.0f || m_direction.y != 0.0f || m_direction.z != 0.0f;
 	}
 
 	void setType(int type)
@@ -80,8 +79,34 @@ public:
 	D3DXMATRIX GenerateOrthoMatrix(float minX, float minY, float maxX, float maxY, float nearPlane, float depthPlane);
 
 	void GetViewMatrix(D3DXMATRIX&);
+
+	D3DXMATRIX getViewMatrix()
+	{
+		return m_viewMatrix;
+	}
+
 	void GetProjectionMatrix(D3DXMATRIX&);
+
+	D3DXMATRIX getProjectionMatrix()
+	{
+		return m_projectionMatrix;
+	}
+
 	void GetOrthoMatrix(D3DXMATRIX&);
+
+	D3DXMATRIX getOrthoMatrix()
+	{
+		return m_orthoMatrix;
+	}
+
+	void setViewMatrix(D3DXMATRIX view)
+	{
+		m_viewMatrix = view;
+	}
+	void setOrthoMatrix(D3DXMATRIX ortho)
+	{
+		m_orthoMatrix = ortho;
+	}
 
 	static const int NUM_LIGHTS = 4;
 

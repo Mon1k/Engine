@@ -250,7 +250,6 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	LightBufferType* dataPtr2;
 	
@@ -278,7 +277,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 
 	D3DXMATRIX lightView;
 	for (int i = 0; i < lights.size(); i++) {
-		lights[i]->GetViewMatrix(lightView);
+		lightView = lights[i]->getViewMatrix();
 		D3DXMatrixTranspose(&lightView, &lightView);
 		dataPtr->lightView[i] = lightView;
 	}
@@ -287,11 +286,8 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_matrixBuffer, 0);
 
-	// Set the position of the constant buffer in the vertex shader.
-	bufferNumber = 0;
-
 	// Now set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	deviceContext->VSSetConstantBuffers(1, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
@@ -308,35 +304,32 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	dataPtr2 = (LightBufferType*)mappedResource.pData;
 
 	// Copy the lighting variables into the constant buffer.
-	LightClass::ShaderLight light[LightClass::NUM_LIGHTS];
+	LightClass::ShaderLight lightsShader[LightClass::NUM_LIGHTS];
 	for (int i = 0; i < lights.size(); i++) {
-		light[i].position = lights[i]->GetPosition();
-		light[i].intencity = lights[i]->getIntensity();
-		light[i].direction = lights[i]->GetDirection();
-		light[i].specularPower = lights[i]->GetSpecularPower();
+		lightsShader[i].position = lights[i]->GetPosition();
+		lightsShader[i].intencity = lights[i]->getIntensity();
+		lightsShader[i].direction = lights[i]->GetDirection();
+		lightsShader[i].specularPower = lights[i]->GetSpecularPower();
 
-		light[i].ambientColor = lights[i]->GetAmbientColor();
-		light[i].diffuseColor = lights[i]->GetDiffuseColor();
-		light[i].specularColor = lights[i]->GetSpecularColor();
+		lightsShader[i].ambientColor = lights[i]->GetAmbientColor();
+		lightsShader[i].diffuseColor = lights[i]->GetDiffuseColor();
+		lightsShader[i].specularColor = lights[i]->GetSpecularColor();
 
-		light[i].shadowSize = Options::shadow_width;
-		light[i].type = lights[i]->getType();
-		light[i].castShadow = lights[i]->isCastShadows() ? 1 : 0;
+		lightsShader[i].shadowSize = Options::shadow_width;
+		lightsShader[i].type = lights[i]->getType();
+		lightsShader[i].castShadow = lights[i]->isCastShadows() ? 1 : 0;
 
-		light[i].padding = 0;
+		lightsShader[i].padding = 0;
 
-		dataPtr2->light[i] = light[i];
+		dataPtr2->light[i] = lightsShader[i];
 	}
 
 	// Unlock the constant buffer.
 	deviceContext->Unmap(m_lightBuffer, 0);
 
-	// Set the position of the light constant buffer in the pixel shader.
-	bufferNumber = 0;
-
 	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
-	deviceContext->VSSetConstantBuffers(1, 1, &m_matrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &m_lightBuffer);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_lightBuffer);
 
 	return true;
 }
