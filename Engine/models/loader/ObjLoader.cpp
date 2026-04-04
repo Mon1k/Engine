@@ -250,8 +250,8 @@ bool ObjLoader::load(char* filename, ModelClass* model)
 			}
 
 			subset->setAlpha(model->getAlpha());
-			subset->addLights(model->getLights());
-			subset->addShader(model->getShader());
+			//subset->addLights(model->getLights());
+			//subset->addShader(model->getShader());
 			std::string texture = model->GetTextureClass()->getTexturePath(i);
 			subset->LoadTextures(texture.size() > 0 ? texture : model->GetTextureClass()->getTexturePath(0));
 
