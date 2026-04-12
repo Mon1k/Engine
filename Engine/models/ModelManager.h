@@ -90,8 +90,10 @@ public:
         return m_volumetricClouds;
     }
 
-    void addLights(std::vector<LightClass*>);
-    void addLight(LightClass*);
+    void addLights(std::vector<LightClass*> lights);
+    void addLight(LightClass* light);
+    void removeLight(LightClass* light);
+    void clearLights();
 
     LightClass* getLight(int index)
     {
@@ -102,11 +104,7 @@ public:
     {
         return m_lights;
     }
-
-    void clearLights()
-    {
-        m_lights.clear();
-    }
+    
 
 private:
     std::vector<AbstractModel*> m_models;

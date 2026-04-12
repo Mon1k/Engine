@@ -1,5 +1,4 @@
-#ifndef _RenderStencilTextureClass_H_
-#define _RenderStencilTextureClass_H_
+#pragma once
 
 #include <d3d11.h>
 #include <d3dx10math.h>
@@ -8,11 +7,9 @@ class RenderStencilTextureClass
 {
 public:
 	RenderStencilTextureClass();
-	RenderStencilTextureClass(const RenderStencilTextureClass&);
 	~RenderStencilTextureClass();
 
-	bool Initialize(ID3D11Device*, int, int);
-	bool InitializeFull(ID3D11Device*, int, int, float, float);
+	bool Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenNear, float screenDepth, int depthArray = 1);
 	void Shutdown();
 
 	void SetRenderTarget(ID3D11DeviceContext*);
@@ -34,5 +31,3 @@ private:
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_orthoMatrix;
 };
-
-#endif

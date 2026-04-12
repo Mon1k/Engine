@@ -90,6 +90,7 @@ void ModelManager::clear()
 void ModelManager::Shutdown()
 {
     clear();
+    clearLights();
 
     if (m_DepthShader) {
         m_DepthShader->Shutdown();
@@ -102,11 +103,6 @@ void ModelManager::Shutdown()
         delete m_ShadowShader;
         m_ShadowShader = 0;
     }
-
-    for (int i = 0; i < m_RenderStencilTexture.size(); i++) {
-        m_RenderStencilTexture[i]->Shutdown();
-    }
-    m_RenderStencilTexture.clear();
 
     if (m_volumetricClouds) {
         m_volumetricClouds->Shutdown();
@@ -363,7 +359,6 @@ int ModelManager::getNextId()
     return nextId;
 }
 
-
 void ModelManager::frame(CameraClass* camera, float time)
 {
     for (int i = 0; i < m_modelsRender.size(); i++) {
@@ -377,19 +372,45 @@ void ModelManager::frame(CameraClass* camera, float time)
 void ModelManager::addLights(std::vector<LightClass*> lights)
 {
     for (int i = 0; i < lights.size(); i++) {
-        this->m_lights.push_back(lights[i]);
-
-        RenderStencilTextureClass* renderStencilTexture = new RenderStencilTextureClass;
-        renderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near);
-        m_RenderStencilTexture.push_back(renderStencilTexture);
+        addLight(lights[i]);
     }
 }
 
 void ModelManager::addLight(LightClass* light)
 {
+    int depthArray = 1;
+
+    if (light->getType() == LightClass::LightType::LIGHT_POINT) {
+        depthArray = 6;
+    }
+
     this->m_lights.push_back(light);
 
     RenderStencilTextureClass* renderStencilTexture = new RenderStencilTextureClass;
-    renderStencilTexture->InitializeFull(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_depth, Options::screen_near);
+    renderStencilTexture->Initialize(m_D3D->GetDevice(), Options::shadow_width, Options::shadow_height, Options::screen_near, Options::screen_depth, depthArray);
     m_RenderStencilTexture.push_back(renderStencilTexture);
+}
+
+void  ModelManager::removeLight(LightClass* light)
+{
+    for (int i = 0; i < m_lights.size(); i++) {
+        if (m_lights[i] == light) {
+            m_RenderStencilTexture[i]->Shutdown();
+
+            m_lights.erase(m_lights.begin() + i);
+            m_RenderStencilTexture.erase(m_RenderStencilTexture.begin() + i);
+
+            break;
+        }
+    }
+}
+
+void ModelManager::clearLights()
+{
+    for (int i = 0; i < m_lights.size(); i++) {
+        m_RenderStencilTexture[i]->Shutdown();
+    }
+
+    m_lights.clear();
+    m_RenderStencilTexture.clear();
 }
