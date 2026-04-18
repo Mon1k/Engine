@@ -14,34 +14,46 @@ RenderStencilTextureClass::~RenderStencilTextureClass()
 
 bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenNear, float screenDepth, int depthArray)
 {
-	// setup the description of the depth buffer
+	// dsv
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
-	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	if (depthArray == 6) {
+		depthBufferDesc.ArraySize = depthArray;
+		depthBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	}
+	else {
+		depthBufferDesc.ArraySize = 1;
+		depthBufferDesc.MiscFlags = 0;
+	}
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	depthBufferDesc.MipLevels = 1;
-	depthBufferDesc.MiscFlags = 0;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 
-	// setup the depth stencil view description
+	// srv
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	if (depthArray == 6) {
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		depthStencilViewDesc.Texture2DArray.ArraySize = depthArray;
+	}
+	else {
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	}
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 
-	// setup shader resource
+	// render to texture
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	if (depthArray == 6) {
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-		shaderResourceViewDesc.TextureCube.MipLevels = 1;
+		shaderResourceViewDesc.TextureCube.MipLevels = depthArray;
 		shaderResourceViewDesc.TextureCube.MostDetailedMip = 0;
 	} else {
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
