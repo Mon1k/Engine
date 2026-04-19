@@ -381,7 +381,7 @@ void ModelManager::addLight(LightClass* light)
     int depthArray = 1;
 
     if (light->getType() == LightClass::LightType::LIGHT_POINT) {
-        depthArray = 6;
+        //depthArray = 6;
     }
 
     this->m_lights.push_back(light);
