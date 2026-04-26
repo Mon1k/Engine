@@ -193,6 +193,7 @@ void ModelManager::PreRender(CameraClass* camera)
 void ModelManager::RenderShadowDepth(CameraClass* camera)
 {
     D3DXMATRIX lightProjectionMatrix, lightViewMatrix;
+    std::vector<D3DXMATRIX> lightViewMatrixArray;
 
     for (size_t i = 0; i < m_lights.size(); i++) {
         if (i >= LightClass::NUM_LIGHTS) {
@@ -203,16 +204,56 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             continue;
         }
 
+        lightViewMatrixArray.clear();
+
         if (m_lights[i]->getType() == LightClass::LightType::LIGHT_POINT) {
-            lightViewMatrix = m_lights[i]->GenerateViewMatrix();
+            D3DXVECTOR3 look;
+            D3DXVECTOR3 up;
+            D3DXVECTOR3 position = m_lights[i]->GetPosition();
+
+            // x+
+            look = position + D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+            up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+
+            // y+
+            look = position + D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+            up = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+
+            // z+
+            look = position + D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+            up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+
+            // x-
+            look = position + D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+            up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+
+            // y-
+            look = position + D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+            up = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+
+            // z-
+            look = position + D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+            up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+            D3DXMatrixLookAtLH(&lightViewMatrix, &position, &look, &up);
+            lightViewMatrixArray.push_back(lightViewMatrix);
         }
         else {
             D3DXVECTOR3 dir = m_lights[i]->GetDirection();
             dir *= -1.0f * Options::shadow_width / 7;
             D3DXMatrixLookAtLH(&lightViewMatrix, &dir, &m_lights[i]->getLookAt(), &m_lights[i]->getUp());
-        }
 
-        m_lights[i]->setViewMatrix(lightViewMatrix);
+            lightViewMatrixArray.push_back(lightViewMatrix);
+        }
 
 
         m_RenderStencilTexture[i]->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -223,7 +264,13 @@ void ModelManager::RenderShadowDepth(CameraClass* camera)
             ModelClass* model = dynamic_cast<ModelClass*>(m_modelsShadow[j]);
 
             model->Render();
-            m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
+
+            for (size_t k = 0; k < lightViewMatrixArray.size(); k++) {
+                lightViewMatrix = lightViewMatrixArray[k];
+                m_lights[i]->setViewMatrix(lightViewMatrix);
+
+                m_DepthShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), model->GetWorldMatrix(), lightViewMatrix, lightProjectionMatrix, model->GetTexture());
+            }
         }
     }
     
@@ -323,6 +370,7 @@ void ModelManager::Render(CameraClass* camera)
         Image* image = new Image;
         image->m_baseViewMatrix = camera->getBaseViewMatrix();
         image->m_D3D = m_D3D;
+        image->set3D(true);
         image->Initialize(Options::screen_width / 4, Options::screen_height / 4, 10, 80);
         image->loadTextureByResource(m_RenderStencilTexture[0]->GetShaderResourceView());
         image->Render();
@@ -381,7 +429,7 @@ void ModelManager::addLight(LightClass* light)
     int depthArray = 1;
 
     if (light->getType() == LightClass::LightType::LIGHT_POINT) {
-        //depthArray = 6;
+        depthArray = 6;
     }
 
     this->m_lights.push_back(light);

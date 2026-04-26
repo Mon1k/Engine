@@ -14,7 +14,7 @@ RenderStencilTextureClass::~RenderStencilTextureClass()
 
 bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenNear, float screenDepth, int depthArray)
 {
-	// dsv
+	
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 	depthBufferDesc.Width = textureWidth;
 	depthBufferDesc.Height = textureHeight;
@@ -35,7 +35,7 @@ bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidt
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	device->CreateTexture2D(&depthBufferDesc, 0, &m_depthStencilBuffer);
 
-	// srv
+	// dsv
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	if (depthArray == 6) {
@@ -48,12 +48,12 @@ bool RenderStencilTextureClass::Initialize(ID3D11Device* device, int textureWidt
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 
-	// render to texture
+	// srv
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	if (depthArray == 6) {
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-		shaderResourceViewDesc.TextureCube.MipLevels = depthArray;
+		shaderResourceViewDesc.TextureCube.MipLevels = 1;
 		shaderResourceViewDesc.TextureCube.MostDetailedMip = 0;
 	} else {
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

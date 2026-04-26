@@ -292,6 +292,7 @@ bool ShadowShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	// Set shader texture resource in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 	deviceContext->PSSetShaderResources(1, shadowTextures.size(), &shadowTextures[0]);
+	//deviceContext->PSSetShaderResources(2, shadowTextures.size(), &shadowTextures[0]);
 	
 
 	// Lock the light constant buffer so it can be written to.

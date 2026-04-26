@@ -103,6 +103,7 @@ public:
 	{
 		m_viewMatrix = view;
 	}
+
 	void setOrthoMatrix(D3DXMATRIX ortho)
 	{
 		m_orthoMatrix = ortho;

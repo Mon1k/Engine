@@ -5,6 +5,7 @@ Image::Image()
 {
 	m_TextureShader = 0;
 	m_Bitmap = 0;
+	m_is3D = false;
 }
 
 Image::~Image()
@@ -19,8 +20,6 @@ bool Image::Initialize(int width, int height, int x, int y)
 	m_height = height;
 	m_x = x;
 	m_y = y;
-
-	m_is3D = false;
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
